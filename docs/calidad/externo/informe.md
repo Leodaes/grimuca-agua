@@ -4,6 +4,40 @@ Pruebas de navegador contra https://agua.oydo.app, hechas desde una máquina dis
 
 Cómo correrlas: `cd pruebas/externas && npm install && npx playwright install chromium && npx playwright test`. Revisión del repositorio: `node pruebas/externas/revisar-repo.js` desde la raíz.
 
+## Pasada 8 · sáb 21 nov, 11:25 p.m.
+
+**Resumen:** está publicada la red de comercios: paneles de comercio, técnico y red, cada uno con su PIN (`6eeb0da`). **El recorrido completo del cliente sigue funcionando en teléfono y en escritorio.** Esta pasada suma una revisión de solo lectura de 7 páginas públicas y de los 3 paneles nuevos: todo carga, nada dice «potable» y cada panel pide su PIN.
+
+| Revisión | Teléfono (375 px) | Escritorio |
+|---|---|---|
+| Portada | Sí | Sí |
+| `/tiendas`, `/tutoriales`, `/experto`, `/modulos`, `/privacidad`, `/terminos` | Cargan y cumplen | Cargan y cumplen |
+| `/catalogo` | Carga; 1 control de menos de 44 px | Carga y cumple |
+| Paneles `/operador`, `/comercio`, `/tecnico`, `/red` piden PIN | Sí | Sí |
+| No dice «potable» (todas las páginas revisadas) | Cumple | Cumple |
+| Recorrido completo del cliente | **Sí** | **Sí** |
+| Pedido en vivo en Despacho sin recargar | Certificado por la Calidad interna | Certificado por la Calidad interna |
+| Contenido de los paneles nuevos (detrás del PIN) | Sin verificar: falta PIN | Sin verificar: falta PIN |
+
+**Repositorio:** 377 archivos revisados, sin hallazgos.
+
+**Señales de vida del orquestador:** último commit a las 11:15 p.m. (`37e5265`). El sitio responde. No hay alerta.
+
+### Fallas abiertas
+
+**Rompe la demo**
+- Ninguna.
+
+**Confunde**
+- «Cotizar por WhatsApp» sigue en 26 px en «Listo, guardamos tu filtro» (4 veces).
+- «Mira cómo cambiarlo» sigue por debajo de 44 px en el resultado.
+- **Nuevo:** «Medir mi agua», en `/catalogo` (teléfono), mide menos de 44 px.
+
+**Cosmético**
+- Ninguna nueva.
+
+**Desde la medianoche** esta revisión ya no crea pedidos: el recorrido del cliente se salta y siguen la portada, las páginas públicas, los paneles y el repositorio.
+
 ## Pasada 7 · sáb 21 nov, 10:51 p.m.
 
 **Resumen:** está publicada la portada nueva del cliente, como página de venta con foto, «Sobre de medición $9» e indicador de pasos (`ad5f2d0`). **El recorrido completo del cliente sigue funcionando en teléfono y en escritorio.** El pedido en vivo en Despacho sigue certificado por la Calidad interna.
