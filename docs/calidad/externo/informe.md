@@ -4,6 +4,13 @@ Pruebas de navegador contra https://agua.oydo.app, hechas desde una máquina dis
 
 Cómo correrlas: `cd pruebas/externas && npm install && npx playwright install chromium && npx playwright test`. Revisión del repositorio: `node pruebas/externas/revisar-repo.js` desde la raíz.
 
+## Nota · sáb 21 nov, 9:40 p.m.
+
+- **Compuerta 3 certificada por la Calidad interna**, no por esta revisión. El pedido aparece en Despacho sin recargar en menos de medio segundo; la evidencia está en `docs/calidad/informe-compuertas-1-3.md` (`8a57cae`). Esta revisión no la repite porque no usa el PIN en el sitio publicado.
+- **Los pedidos «Prueba Calidad» a secas (hallazgo C1 de la Calidad interna) los creó esta revisión externa**, en las corridas de ajuste de la pasada 4: fueron unos 13, más de los 4 que estimé. El orquestador ya los borró.
+- Desde ahora, todo lo que crean estas pruebas se llama **«Prueba Calidad externa»**. **Desde la medianoche no se crean pedidos** en el sitio publicado: el recorrido se salta solo y siguen corriendo la navegación, la lectura y las reglas fijas.
+- El orquestador incluye en el próximo despliegue las fallas 1, 2 y 4 de la pasada 4 (botón de 26 px, fotos de los cartuchos y textos de la especificación). Ese despliegue cambia otra vez los textos de los botones y el perfil del hogar; las pruebas se ajustan después de verlo.
+
 ## Pasada 4 · sáb 21 nov, 9:22 p.m.
 
 **Resumen:** la app ya está publicada en https://agua.oydo.app. **El recorrido completo del cliente funciona en teléfono y en escritorio**: bienvenida → perfil → dirección → pago simulado → «Ya me llegó el sobre» → carga manual → semáforo por parámetro con el aviso fijo → cartucho Oasis sugerido → pedido confirmado. **El pedido en vivo en el panel no se pudo verificar**: el panel pide PIN y esta máquina no lo tiene.
