@@ -2,7 +2,7 @@
 // la app usa los de `lib/` y las pruebas inyectan dobles con <ProveedorServicios>.
 import { createContext, useContext } from 'react';
 import type { ReactNode } from 'react';
-import type { AlertaZona, FilaInventario, Pedido, ResumenTienda } from '../../lib/tipos';
+import type { AlertaZona, FilaInventario, Pedido, ResumenTienda, UrbanizacionMapa } from '../../lib/tipos';
 import { serviciosReales } from './servicios';
 
 export type EstadoConexion = 'conectando' | 'en_vivo' | 'reconectando';
@@ -28,6 +28,8 @@ export interface ServiciosOperador {
   resumen(token: string): Promise<ResumenTienda[]>;
   inventario(token: string): Promise<FilaInventario[]>;
   zonas(token: string): Promise<AlertaZona[]>;
+  /** Mapa por urbanización. Opcional para que los dobles viejos de las pruebas sigan sirviendo. */
+  mapa?(token: string): Promise<UrbanizacionMapa[]>;
   /** Devuelve la función para dejar de escuchar. */
   enVivo(token: string, manejadores: ManejadoresEnVivo): () => void;
 }

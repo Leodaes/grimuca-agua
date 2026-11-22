@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react';
-import { useLocation, useParams, useSearchParams } from 'react-router-dom';
+import { Link, useLocation, useParams, useSearchParams } from 'react-router-dom';
 import { api } from '../../lib/api';
 import type { Cartucho, Pedido, Tienda } from '../../lib/tipos';
 import { Aviso, Boton, Cargando, EstadoVacio, Insignia } from '../../components/grimuca';
 import { TEXTO_SIN_COBRO, mensajeError } from '../resultado/textos';
+import { nombreServicio, textoFechaPreferida } from '../tutoriales/contenido';
+
+const ESTILO_ENLACE = { minHeight: 44, display: 'inline-flex', alignItems: 'center' } as const;
 
 type Estado =
   | { tipo: 'cargando' }
@@ -62,6 +65,7 @@ export function PaginaPedido() {
 
   const nombreTienda = (tiendaId: string) => estado.tiendas.find((t) => t.id === tiendaId)?.nombre ?? tiendaId;
   const nombreProducto = (pedido: Pedido) =>
+    (pedido.tipo === 'servicio' ? `Servicio técnico: ${nombreServicio(pedido.servicio).toLowerCase()}` : null) ??
     pedido.cartucho_nombre ??
     estado.cartuchos.find((c) => c.codigo === pedido.cartucho_codigo)?.nombre ??
     pedido.cartucho_codigo ??
@@ -78,7 +82,9 @@ export function PaginaPedido() {
       <h1 className="g-h1">Listo, tu pedido ya está en la tienda</h1>
       {primero && (
         <p>
-          {primero.modalidad === 'retiro'
+          {primero.tipo === 'servicio'
+            ? `Grimuca ${tiendaPrimero} te contactará para confirmar el costo y la fecha de la visita.`
+            : primero.modalidad === 'retiro'
             ? `Pasa por Grimuca ${tiendaPrimero} y da tu nombre en el mostrador.`
             : `Sale de Grimuca ${tiendaPrimero} hacia ${primero.direccion ?? 'tu dirección'}.`}
         </p>
@@ -94,21 +100,30 @@ export function PaginaPedido() {
           >
             <p className="g-h4">Pedido N.º {pedido.id}</p>
             <p>
-              {nombreProducto(pedido)} × {pedido.cantidad}
+              {nombreProducto(pedido)}
+              {pedido.tipo !== 'servicio' && ` × ${pedido.cantidad}`}
             </p>
+            {pedido.tipo === 'servicio' && pedido.fecha_preferida && (
+              <p>Fecha preferida: {textoFechaPreferida(pedido.fecha_preferida, pedido.momento)}</p>
+            )}
             <p>
-              {pedido.modalidad === 'retiro' ? 'Retiro en tienda' : 'Envío a mi dirección'} · Grimuca{' '}
-              {nombreTienda(pedido.tienda_id)}
+              {pedido.tipo === 'servicio'
+                ? 'Visita a domicilio'
+                : pedido.modalidad === 'retiro'
+                  ? 'Retiro en tienda'
+                  : 'Envío a mi dirección'}{' '}
+              · Grimuca {nombreTienda(pedido.tienda_id)}
             </p>
             {pedido.modalidad === 'envio' && pedido.direccion && <p className="g-apagado">{pedido.direccion}</p>}
+            {pedido.tipo === 'servicio' && pedido.nota && <p className="g-apagado">Nota: {pedido.nota}</p>}
             <div>
               {pedido.estado === 'despachado' ? (
                 <Insignia tono="ok" punto>
-                  Despachado
+                  {pedido.tipo === 'servicio' ? 'Atendido' : 'Despachado'}
                 </Insignia>
               ) : (
                 <Insignia tono="aviso" punto>
-                  En preparación
+                  {pedido.tipo === 'servicio' ? 'Por confirmar' : 'En preparación'}
                 </Insignia>
               )}
             </div>
@@ -117,6 +132,17 @@ export function PaginaPedido() {
       </ul>
 
       <Aviso>{TEXTO_SIN_COBRO}</Aviso>
+
+      {estado.pedidos.some((p) => p.tipo === 'cartucho') && (
+        <nav className="g-pila" aria-label="Cambiar el cartucho" style={{ gap: 'var(--s2)' }}>
+          <Link className="g-enlace" to="/tutoriales" style={ESTILO_ENLACE}>
+            Cuando lo tengas, mira cómo cambiarlo
+          </Link>
+          <Link className="g-enlace" to="/experto?servicio=cambio" style={ESTILO_ENLACE}>
+            ¿No sabes hacerlo? Contrata a un experto
+          </Link>
+        </nav>
+      )}
 
       <Boton a="/resultados" anchoCompleto>
         Volver a mis resultados

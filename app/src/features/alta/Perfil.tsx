@@ -5,13 +5,17 @@ import { Aviso, Boton, Campo, Cargando, Casilla } from '../../components/grimuca
 import { api } from '../../lib/api';
 import { guardarHogarId, hogarId } from '../../lib/sesion';
 import type { Hogar, OrigenAgua } from '../../lib/tipos';
+import { urbanizacionesDeZona } from '../../lib/urbanizaciones';
 import { ErrorConReintento, mensajeDeError, OpcionesRadio, ORIGENES, PaginaAlta, useCarga, ZONAS } from './comun';
 
 interface Formulario {
   nombre: string;
   zona: string;
+  /** Nombre de la urbanización, 'Otra' o '' (no la indicó). */
+  urbanizacion: string;
   origen_agua: string;
   personas: string;
+  mascotas: string; // 'si' | 'no'
   tiene_filtro: string; // 'si' | 'no' | ''
   etapas_filtro: string;
   fecha_ultimo_cambio: string;
@@ -25,8 +29,10 @@ type Errores = Partial<Record<keyof Formulario, string>>;
 const VACIO: Formulario = {
   nombre: '',
   zona: '',
+  urbanizacion: '',
   origen_agua: '',
   personas: '',
+  mascotas: 'no',
   tiene_filtro: '',
   etapas_filtro: '',
   fecha_ultimo_cambio: '',
@@ -41,13 +47,21 @@ const SI_NO = [
 ];
 
 const FALTA = 'Este dato hace falta.';
+const OTRA = 'Otra';
+
+/** Opciones del campo Urbanización: las de la zona en orden alfabético, más "Otra". */
+export function opcionesUrbanizacion(zona: string): Array<{ valor: string; etiqueta: string }> {
+  return [...urbanizacionesDeZona(zona).map((u) => ({ valor: u.nombre, etiqueta: u.nombre })), { valor: OTRA, etiqueta: OTRA }];
+}
 
 function desdeHogar(h: Hogar): Formulario {
   return {
     nombre: h.nombre ?? '',
     zona: h.zona ?? '',
+    urbanizacion: h.urbanizacion ?? '',
     origen_agua: h.origen_agua ?? '',
     personas: h.personas ? String(h.personas) : '',
+    mascotas: h.mascotas ? 'si' : 'no',
     tiene_filtro: h.tiene_filtro ? 'si' : 'no',
     etapas_filtro: h.etapas_filtro ? String(h.etapas_filtro) : '',
     fecha_ultimo_cambio: h.fecha_ultimo_cambio ? h.fecha_ultimo_cambio.slice(0, 10) : '',
@@ -68,7 +82,6 @@ export function validarPerfil(f: Formulario): Errores {
     e.personas = 'Escribe un número del 1 al 20.';
   }
   if (!f.tiene_filtro) e.tiene_filtro = FALTA;
-  if (f.tiene_filtro === 'si' && !f.etapas_filtro) e.etapas_filtro = FALTA;
   if (!f.agua_turbia) e.agua_turbia = FALTA;
   const digitos = f.whatsapp.replace(/\D/g, '');
   if (!/^04\d{9}$/.test(digitos)) e.whatsapp = 'Revisa el número: deben ser 11 dígitos, empezando por 04.';
@@ -107,10 +120,13 @@ export function Perfil() {
     const perfil = {
       nombre: f.nombre.trim(),
       zona: f.zona,
+      urbanizacion: f.urbanizacion && f.urbanizacion !== OTRA ? f.urbanizacion : null,
       origen_agua: f.origen_agua as OrigenAgua,
       personas: Number(f.personas),
+      mascotas: f.mascotas === 'si',
       tiene_filtro: tieneFiltro,
-      etapas_filtro: tieneFiltro ? Number(f.etapas_filtro) : null,
+      // Las etapas ya no se preguntan aquí: salen de la foto del filtro (o de la carga a mano en /mi-filtro).
+      etapas_filtro: tieneFiltro ? (f.etapas_filtro ? Number(f.etapas_filtro) : undefined) : null,
       fecha_ultimo_cambio: tieneFiltro && f.fecha_ultimo_cambio ? f.fecha_ultimo_cambio : null,
       agua_turbia: f.agua_turbia === 'si',
       whatsapp: f.whatsapp.replace(/\D/g, ''),
@@ -119,13 +135,16 @@ export function Perfil() {
     setEnviando(true);
     setErrorEnvio(null);
     try {
+      let guardado: Hogar;
       if (idExistente && carga.datos) {
-        await api.actualizarHogar(idExistente, perfil);
+        guardado = await api.actualizarHogar(idExistente, perfil);
       } else {
-        const hogar = await api.crearHogar({ ...perfil, consentimiento: true });
-        guardarHogarId(hogar.id);
+        guardado = await api.crearHogar({ ...perfil, consentimiento: true });
+        guardarHogarId(guardado.id);
       }
-      navegar(yaTieneSobre ? '/medir' : '/envio');
+      const destino = yaTieneSobre ? '/medir' : '/envio';
+      // Con filtro y sin registrarlo todavía: primero la foto del filtro, luego sigue el recorrido.
+      navegar(tieneFiltro && !guardado?.filtro ? `/mi-filtro?sigue=${encodeURIComponent(destino)}` : destino);
     } catch (e) {
       setErrorEnvio(mensajeDeError(e, 'No se pudo guardar. Intenta otra vez.'));
     } finally {
@@ -177,8 +196,25 @@ export function Perfil() {
           marcador="Elige tu zona"
           opciones={ZONAS.map((z) => ({ valor: z, etiqueta: z }))}
           value={f.zona}
-          onChange={(e) => poner('zona', e.target.value)}
+          onChange={(e) => {
+            const zona = e.target.value;
+            poner('zona', zona);
+            // Si la urbanización elegida no es de la zona nueva, se limpia.
+            if (!opcionesUrbanizacion(zona).some((o) => o.valor === f.urbanizacion)) poner('urbanizacion', '');
+          }}
           error={errores.zona}
+        />
+
+        <Campo
+          como="select"
+          etiqueta="Urbanización"
+          ayuda="Nos ayuda a ver cómo está el agua en tu sector."
+          opcional
+          name="urbanizacion"
+          marcador="Elige tu urbanización"
+          opciones={opcionesUrbanizacion(f.zona)}
+          value={f.urbanizacion}
+          onChange={(e) => poner('urbanizacion', e.target.value)}
         />
 
         <OpcionesRadio
@@ -205,6 +241,15 @@ export function Perfil() {
         />
 
         <OpcionesRadio
+          pregunta="¿Hay mascotas en casa?"
+          ayuda="Ellas también toman de esa agua."
+          nombre="mascotas"
+          opciones={SI_NO}
+          valor={f.mascotas}
+          onCambio={(v) => poner('mascotas', v)}
+        />
+
+        <OpcionesRadio
           pregunta="¿Tienen filtro en casa?"
           nombre="tiene_filtro"
           opciones={SI_NO}
@@ -215,17 +260,9 @@ export function Perfil() {
 
         {tieneFiltro && (
           <>
-            <Campo
-              como="select"
-              etiqueta="¿De cuántas etapas es?"
-              ayuda="Cuenta los vasos o cartuchos que tiene el filtro."
-              name="etapas_filtro"
-              marcador="Elige"
-              opciones={[1, 2, 3, 4, 5, 6, 7].map((n) => ({ valor: String(n), etiqueta: String(n) }))}
-              value={f.etapas_filtro}
-              onChange={(e) => poner('etapas_filtro', e.target.value)}
-              error={errores.etapas_filtro}
-            />
+            {!carga.datos?.filtro && (
+              <p className="g-apagado">En el siguiente paso le tomas una foto a tu filtro y lo identificamos.</p>
+            )}
             <Campo
               etiqueta="¿Cuándo cambiaron el cartucho la última vez?"
               ayuda="Una fecha aproximada sirve. Si no te acuerdas, déjalo vacío."

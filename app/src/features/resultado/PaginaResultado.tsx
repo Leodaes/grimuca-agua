@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { api } from '../../lib/api';
 import { agregarALista, hogarId, lista } from '../../lib/sesion';
+import { LineaFiltro } from '../filtro/LineaFiltro';
 import type { Cartucho, Medicion, Nivel, ResultadoParametro } from '../../lib/tipos';
 import {
   Aviso,
@@ -158,7 +159,17 @@ function Resultado({ medicion }: { medicion: Medicion }) {
         />
       )}
 
+      <LineaFiltro />
       <Sugeridos sugeridos={sugeridos} />
+
+      <nav className="g-pila" aria-label="Cambiar el cartucho" style={{ gap: 'var(--s2)' }}>
+        <Link className="g-enlace" to="/tutoriales" style={{ minHeight: 44, display: 'inline-flex', alignItems: 'center' }}>
+          Aprende a cambiar tu cartucho
+        </Link>
+        <Link className="g-enlace" to="/experto" style={{ minHeight: 44, display: 'inline-flex', alignItems: 'center' }}>
+          ¿No sabes hacerlo? Contrata a un experto
+        </Link>
+      </nav>
 
       <nav className="g-pila" aria-label="Qué hacer ahora">
         <Link className="g-enlace" to="/bacterias" style={{ minHeight: 44, display: 'inline-flex', alignItems: 'center' }}>
@@ -185,7 +196,11 @@ export function AvisoRecambio({ dias, destino, etiqueta }: { dias: number; desti
         <Link className="g-enlace" to={destino}>
           {etiqueta}
         </Link>
-      )}
+      )}{' '}
+      ·{' '}
+      <Link className="g-enlace" to="/tutoriales">
+        Mira cómo cambiarlo
+      </Link>
     </Aviso>
   );
 }

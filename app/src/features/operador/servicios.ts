@@ -13,6 +13,7 @@ export const serviciosReales: ServiciosOperador = {
   resumen: (token) => api.resumen(token),
   inventario: (token) => api.inventario(token),
   zonas: (token) => api.zonas(token),
+  mapa: (token) => api.mapa(token),
   enVivo: (token, m) =>
     suscribirEventos(token, {
       pedido_nuevo: m.pedidoNuevo,

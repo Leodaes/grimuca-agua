@@ -13,6 +13,7 @@ import { rutasBacterias } from './rutas/bacterias';
 import { rutasCatalogo } from './rutas/catalogo';
 import { ErrorHttp } from './rutas/errores';
 import { rutasEventos } from './rutas/eventos';
+import { rutasFiltro } from './rutas/filtro';
 import { rutasHogares } from './rutas/hogares';
 import { rutasMediciones, TAMANO_MAXIMO_FOTO } from './rutas/mediciones';
 import { rutasOperador } from './rutas/operador';
@@ -171,7 +172,7 @@ export async function crearApp(opciones: OpcionesApp): Promise<FastifyInstance> 
     limits: { fileSize: TAMANO_MAXIMO_FOTO, files: 1, fields: 5, fieldSize: 1_000 },
   });
 
-  for (const rutas of [rutasCatalogo, rutasHogares, rutasMediciones, rutasPedidos, rutasBacterias, rutasOperador, rutasEventos]) {
+  for (const rutas of [rutasCatalogo, rutasHogares, rutasMediciones, rutasPedidos, rutasBacterias, rutasOperador, rutasEventos, rutasFiltro]) {
     await app.register(rutas, { prefix: '/api' });
   }
   if (opciones.conLogistica !== false) await registrarLogistica(app, opciones.bd);

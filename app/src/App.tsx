@@ -5,6 +5,9 @@ import { rutasMedicion } from './features/medicion/rutas';
 import { rutasResultado } from './features/resultado/rutas';
 import { rutasPedido } from './features/pedido/rutas';
 import { rutasOperador } from './features/operador/rutas';
+import { rutasFiltro } from './features/filtro/rutas';
+import { rutasCatalogo } from './features/catalogo/rutas';
+import { rutasTutoriales } from './features/tutoriales/rutas';
 
 function NoEncontrada() {
   return (
@@ -21,7 +24,7 @@ const rutas: RouteObject[] = [
   ...rutasOperador,
   {
     element: <Marco />,
-    children: [...rutasAlta, ...rutasMedicion, ...rutasResultado, ...rutasPedido, { path: '*', element: <NoEncontrada /> }],
+    children: [...rutasAlta, ...rutasMedicion, ...rutasResultado, ...rutasPedido, ...rutasFiltro, ...rutasCatalogo, ...rutasTutoriales, { path: '*', element: <NoEncontrada /> }],
   },
 ];
 

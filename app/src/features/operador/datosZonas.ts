@@ -18,6 +18,10 @@ const NOMBRES_PARAMETRO: Record<string, string> = {
   nitrato: 'nitrato',
   nitrito: 'nitrito',
   cloro_libre: 'cloro libre',
+  dureza: 'dureza (sarro)',
+  alcalinidad: 'alcalinidad',
+  ph: 'pH (acidez)',
+  hierro: 'hierro (color u óxido)',
 };
 
 export function nombreParametro(clave: string): string {

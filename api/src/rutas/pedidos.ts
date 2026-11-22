@@ -1,8 +1,13 @@
-// Pedidos del cliente: el sobre (pago simulado) y los cartuchos de "Mi lista" (sin cobro).
+// Pedidos del cliente: el sobre (pago simulado), los cartuchos de "Mi lista" y el servicio técnico (sin cobro).
 import type { FastifyInstance } from 'fastify';
 import { buscarCartucho, buscarHogar, buscarPedido, existeTienda } from './datos';
 import { datosInvalidos, ErrorHttp, noEncontrado } from './errores';
 import { esquemaCrearPedido, esquemaIdPedido } from './esquemas';
+
+/** AAAA-MM-DD de hoy en Venezuela (UTC-4, sin horario de verano). */
+function hoyEnVenezuela(ahora = new Date()): string {
+  return new Date(ahora.getTime() - 4 * 3_600_000).toISOString().slice(0, 10);
+}
 
 export async function rutasPedidos(app: FastifyInstance): Promise<void> {
   const { bd, eventos } = app.contexto;
@@ -22,21 +27,46 @@ export async function rutasPedidos(app: FastifyInstance): Promise<void> {
       cartuchoCodigo = cartucho.codigo;
     }
 
-    // Para envío hace falta una dirección: la del pedido o, si no viene, la del hogar.
-    let direccion: string | null = null;
-    if (datos.modalidad === 'envio') {
-      direccion = datos.direccion ?? hogar.direccion;
-      if (!direccion) throw datosInvalidos('Para enviarlo necesitamos una dirección.');
+    // Servicio técnico: el experto va a la casa (siempre 'envio'), una visita, con fecha preferida.
+    const esServicio = datos.tipo === 'servicio';
+    const modalidad = esServicio ? 'envio' : datos.modalidad;
+    if (esServicio) {
+      if (!datos.servicio) throw datosInvalidos('Falta el servicio que necesitas (servicio).');
+      if (!datos.fecha_preferida) throw datosInvalidos('Falta la fecha preferida (fecha_preferida).');
+      if (datos.fecha_preferida < hoyEnVenezuela()) throw datosInvalidos('La fecha preferida ya pasó.');
     }
 
-    // El servidor decide el pago: el sobre va con pago simulado; los cartuchos no se cobran aquí.
+    // Para envío hace falta una dirección: la del pedido o, si no viene, la del hogar.
+    let direccion: string | null = null;
+    if (modalidad === 'envio') {
+      direccion = datos.direccion ?? hogar.direccion;
+      if (!direccion) {
+        throw datosInvalidos(esServicio ? 'Para ir a tu casa necesitamos una dirección.' : 'Para enviarlo necesitamos una dirección.');
+      }
+    }
+
+    // El servidor decide el pago: el sobre va con pago simulado; cartuchos y servicios no se cobran aquí.
     const pago = datos.tipo === 'sobre' ? 'simulado' : 'no_aplica';
 
     const { rows } = await bd.query(
-      `INSERT INTO pedidos (hogar_id, tipo, cartucho_codigo, cantidad, modalidad, direccion, pago, tienda_id)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      `INSERT INTO pedidos (hogar_id, tipo, cartucho_codigo, cantidad, modalidad, direccion, pago, tienda_id,
+                            servicio, fecha_preferida, momento, nota)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
        RETURNING id`,
-      [hogar.id, datos.tipo, cartuchoCodigo, datos.cantidad, datos.modalidad, direccion, pago, datos.tienda_id],
+      [
+        hogar.id,
+        datos.tipo,
+        cartuchoCodigo,
+        esServicio ? 1 : datos.cantidad,
+        modalidad,
+        direccion,
+        pago,
+        datos.tienda_id,
+        esServicio ? datos.servicio : null,
+        esServicio ? datos.fecha_preferida : null,
+        esServicio ? (datos.momento ?? null) : null,
+        esServicio ? (datos.nota ?? null) : null,
+      ],
     );
     const id = Number(rows[0].id);
     const conDetalle = await buscarPedido(bd, id, true);

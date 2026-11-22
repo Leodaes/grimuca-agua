@@ -99,6 +99,20 @@ export function Bienvenida() {
           <Boton a="/perfil" variante="secundario" anchoCompleto>
             Pedir el sobre a domicilio ($9)
           </Boton>
+          <Link
+            className="g-enlace"
+            to="/tutoriales"
+            style={{ minHeight: 44, display: 'inline-flex', alignItems: 'center' }}
+          >
+            Tutoriales para cambiar tu cartucho
+          </Link>
+          <Link
+            className="g-enlace"
+            to="/mi-filtro"
+            style={{ minHeight: 44, display: 'inline-flex', alignItems: 'center' }}
+          >
+            Mi filtro
+          </Link>
         </div>
       ) : (
         <div className="g-pila">

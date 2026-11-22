@@ -1,0 +1,157 @@
+/* Pestaña Zonas: mapa de hexágonos por urbanización. Solo tokens de tokens.css y grimuca.css. */
+
+.mapa-disposicion {
+  display: grid;
+  gap: var(--s4);
+  grid-template-columns: minmax(0, 1fr);
+}
+@media (min-width: 1000px) {
+  .mapa-disposicion {
+    grid-template-columns: minmax(0, 1fr) 300px;
+    align-items: start;
+  }
+}
+
+/* El desplazamiento horizontal queda dentro de este contenedor, nunca en la página. */
+.mapa-lienzo {
+  overflow-x: auto;
+  border: 1px solid var(--linea);
+  background: var(--fondo);
+  max-width: 100%;
+}
+.mapa-svg {
+  display: block;
+  max-width: none;
+  /* En pantallas anchas se ajusta al espacio; en angostas mantiene un mínimo legible y se desplaza. */
+  width: 100%;
+  min-width: 640px;
+  height: auto;
+}
+
+.mapa-rotulo {
+  font-family: var(--f-titulo);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  fill: var(--apagado);
+}
+
+.mapa-hex {
+  cursor: pointer;
+  outline: none;
+}
+.mapa-hex__forma {
+  stroke-width: 2;
+  fill: var(--fondo);
+  stroke: var(--borde-control);
+}
+.mapa-hex__nombre {
+  font-family: var(--f-texto);
+  font-size: 10.5px;
+  font-weight: 600;
+  fill: var(--tinta);
+}
+.mapa-hex__letra {
+  font-family: var(--f-texto);
+  font-size: 11px;
+  font-weight: 800;
+  fill: var(--tinta);
+}
+.mapa-hex__numero {
+  font-family: var(--f-titulo);
+  font-size: 13px;
+  font-weight: 800;
+  fill: var(--tinta);
+  font-variant-numeric: tabular-nums;
+}
+.mapa-hex__icono-alerta {
+  fill: none;
+  stroke: var(--error);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.mapa-hex__tienda circle {
+  fill: var(--azul);
+  stroke: var(--fondo);
+  stroke-width: 1.5;
+}
+.mapa-hex__tienda g {
+  fill: none;
+  stroke: var(--blanco);
+  stroke-width: 2.2;
+  stroke-linejoin: round;
+}
+
+/* Calidad del agua */
+.mapa-hex--verde .mapa-hex__forma { fill: var(--ok-bg); stroke: var(--ok); }
+.mapa-hex--verde .mapa-hex__letra { fill: var(--ok); }
+.mapa-hex--amarillo .mapa-hex__forma { fill: var(--ambar-bg); stroke: var(--ambar); }
+.mapa-hex--amarillo .mapa-hex__letra { fill: var(--ambar); }
+.mapa-hex--rojo .mapa-hex__forma { fill: var(--error-bg); stroke: var(--error); }
+.mapa-hex--rojo .mapa-hex__letra { fill: var(--error); }
+.mapa-hex--sin-medicion .mapa-hex__forma { fill: var(--linea); stroke: var(--borde-control); }
+.mapa-hex--alerta .mapa-hex__forma { stroke-width: 5; }
+
+/* Sin clientes: solo contorno punteado */
+.mapa-hex--vacio .mapa-hex__forma {
+  fill: var(--fondo);
+  stroke: var(--borde-control);
+  stroke-dasharray: 4 3;
+  stroke-width: 1.25;
+}
+.mapa-hex--vacio .mapa-hex__nombre,
+.mapa-hex--vacio .mapa-hex__numero { fill: var(--apagado); font-weight: 400; }
+
+/* Clientes: 4 tonos de azul */
+.mapa-hex--azul-0 .mapa-hex__forma { fill: var(--azul-50); stroke: var(--azul); }
+.mapa-hex--azul-1 .mapa-hex__forma { fill: var(--azul-100); stroke: var(--azul); }
+.mapa-hex--azul-2 .mapa-hex__forma { fill: var(--azul); stroke: var(--azul-900); }
+.mapa-hex--azul-3 .mapa-hex__forma { fill: var(--azul-900); stroke: var(--azul-900); }
+.mapa-hex--azul-2 text,
+.mapa-hex--azul-3 text { fill: var(--blanco); }
+
+/* Elegido y foco con teclado */
+.mapa-hex--elegido .mapa-hex__forma { stroke: var(--tinta); stroke-width: 4; }
+.mapa-hex:focus-visible .mapa-hex__forma { stroke: var(--foco); stroke-width: 5; }
+.mapa-hex:hover .mapa-hex__forma { filter: brightness(0.96); }
+
+/* Leyenda */
+.mapa-leyenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2) var(--s4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--t-1);
+}
+.mapa-leyenda li {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s2);
+}
+.mapa-leyenda svg { flex-shrink: 0; }
+
+/* Panel de detalle */
+.mapa-detalle {
+  border: 1px solid var(--linea);
+  background: var(--papel);
+  padding: var(--s4);
+  display: grid;
+  gap: var(--s3);
+}
+.mapa-detalle dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--s1) var(--s3);
+  margin: 0;
+}
+.mapa-detalle dt { color: var(--apagado); }
+.mapa-detalle dd { margin: 0; font-weight: 600; }
+
+.mapa-otras {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2);
+}

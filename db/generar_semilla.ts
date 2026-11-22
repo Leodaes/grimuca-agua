@@ -5,7 +5,9 @@ import { writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { evaluarAgua } from '../api/src/medicion/index';
-import { tiendaSugerida, type Nivel, type OrigenAgua, type PerfilHogar, type ValoresMedicion } from '../api/src/tipos';
+import { calcularMapa, type FilaMedicionMapa } from '../api/src/logistica/mapa';
+import { buscarUrbanizacion, URBANIZACIONES } from '../api/src/logistica/urbanizaciones';
+import type { Nivel, OrigenAgua, PerfilHogar, ValoresMedicion } from '../api/src/tipos';
 
 const AQUI = path.dirname(fileURLToPath(import.meta.url));
 const HOY = new Date();
@@ -42,6 +44,10 @@ type Paso = [number, NombreLectura, 'foto' | 'manual'];
 interface HogarSemilla {
   nombre: string;
   zona: string;
+  /** Nombre tal cual en api/src/logistica/urbanizaciones.ts. */
+  urbanizacion: string;
+  /** Tienda que eligió el hogar (no siempre es la sugerida por su zona). */
+  tienda: string;
   origen: OrigenAgua;
   personas: number;
   /** 0 = sin filtro */
@@ -50,56 +56,106 @@ interface HogarSemilla {
   diasCambio: number | null;
   turbia: boolean;
   serie: Paso[];
+  /** Código del cartucho de su último cambio, si lo pidió por la app (queda como pedido despachado). */
+  ultimoCartucho: string | null;
 }
 
 const h = (
-  nombre: string, zona: string, origen: OrigenAgua, personas: number, etapas: number,
-  diasCambio: number | null, turbia: boolean, serie: Paso[],
-): HogarSemilla => ({ nombre, zona, origen, personas, etapas, diasCambio, turbia, serie });
+  nombre: string, zona: string, urbanizacion: string, tienda: string, origen: OrigenAgua, personas: number, etapas: number,
+  diasCambio: number | null, turbia: boolean, serie: Paso[], ultimoCartucho: string | null = null,
+): HogarSemilla => ({ nombre, zona, urbanizacion, tienda, origen, personas, etapas, diasCambio, turbia, serie, ultimoCartucho });
+
+const MAN = 'manongo';
+const BIG = 'biglow';
+const CEM = 'cem';
 
 const N = 'Naguanagua';
 const S = 'San Diego';
 const V = 'Valencia norte';
 
-// Naguanagua concentra varios hogares en rojo (nitrato, nitrito, plomo) en la última semana:
-// es la zona que debe disparar la alerta del panel del operador.
+// Historia del mapa por urbanización (pestaña Zonas del operador):
+// - Foco con alerta en dos urbanizaciones vecinas de Naguanagua con pozos: La Begoña y El Naranjal
+//   (3 o más hogares cada una en rojo por nitrato o nitrito en los últimos 7 días).
+// - En rojo sin llegar a alerta: Las Quintas (plomo) y El Morro I (cobre).
+// - Amarillo por dureza o cloro: Yuma, La Esmeralda, Prebo I, Camoruco, La Viña, Bárbula, Capremco...
+// - Verde: Trigal Norte, El Viñedo, Mañongo, Kerdell, Valle de Oro...
+// - Con hogares pero sin medición reciente: Palma Real, Los Guayabitos, La Cumaca, Las Chimeneas.
+// - El resto de las urbanizaciones de la lista queda sin clientes (zonas por captar).
+// El nombre de la urbanización debe existir en api/src/logistica/urbanizaciones.ts (se comprueba abajo).
 const HOGARES: HogarSemilla[] = [
-  h('Ana P.', N, 'pozo', 4, 0, null, true, [[34, 'nitrato_medio', 'manual'], [3, 'nitrato_rojo', 'foto']]),
-  h('Luis M.', N, 'tanque', 5, 2, 176, false, [[60, 'bien', 'foto'], [28, 'nitrato_medio', 'foto'], [2, 'nitrato_rojo', 'foto']]),
-  h('Carmen R.', N, 'chorro', 3, 0, null, false, [[5, 'plomo_rojo', 'foto']]),
-  h('José G.', N, 'pozo', 6, 3, 190, true, [[45, 'nitrito_medio', 'manual'], [4, 'nitrito_rojo', 'foto']]),
-  h('María T.', N, 'chorro', 2, 3, 40, false, [[70, 'cloro_alto', 'foto'], [10, 'bien', 'foto']]),
-  h('Pedro L.', N, 'botellon', 4, 0, null, false, [[15, 'bien_2', 'foto']]),
-  h('Rosa D.', N, 'tanque', 3, 0, null, true, [[50, 'dura', 'manual'], [20, 'dura', 'foto'], [6, 'nitrato_rojo', 'foto']]),
-  h('Carlos V.', N, 'filtro', 4, 5, 160, false, [[80, 'bien', 'foto'], [40, 'bien_2', 'foto'], [9, 'faltan_casillas', 'foto']]),
-  h('Elena S.', N, 'chorro', 1, 0, null, false, [[22, 'cloro_alto', 'manual']]),
-  h('Miguel A.', N, 'chorro', 5, 2, 95, false, [[30, 'plomo_medio', 'foto'], [8, 'bien', 'foto']]),
+  // Naguanagua
+  h('Ana P.', N, 'La Begoña', MAN, 'pozo', 4, 0, null, true, [[34, 'nitrato_medio', 'manual'], [3, 'nitrato_rojo', 'foto']]),
+  h('Luis M.', N, 'La Begoña', MAN, 'tanque', 5, 2, 176, false, [[60, 'bien', 'foto'], [28, 'nitrato_medio', 'foto'], [2, 'nitrato_rojo', 'foto']], 'OPW-PP20A022'),
+  h('Carmen R.', N, 'Las Quintas', MAN, 'chorro', 3, 0, null, false, [[5, 'plomo_rojo', 'foto']]),
+  h('José G.', N, 'El Naranjal', MAN, 'pozo', 6, 3, 190, true, [[45, 'nitrito_medio', 'manual'], [4, 'nitrito_rojo', 'foto']], 'OPW-CTOSU5'),
+  h('María T.', N, 'Mañongo', MAN, 'chorro', 2, 3, 40, false, [[70, 'cloro_alto', 'foto'], [10, 'bien', 'foto']]),
+  h('Pedro L.', N, 'Mañongo', MAN, 'botellon', 4, 0, null, false, [[15, 'bien_2', 'foto']]),
+  h('Rosa D.', N, 'El Naranjal', MAN, 'tanque', 3, 0, null, true, [[50, 'dura', 'manual'], [20, 'dura', 'foto'], [6, 'nitrato_rojo', 'foto']]),
+  h('Carlos V.', N, 'La Granja', MAN, 'filtro', 4, 5, 86, false, [[80, 'bien', 'foto'], [40, 'bien_2', 'foto'], [9, 'faltan_casillas', 'foto']]),
+  h('Elena S.', N, 'Las Quintas', MAN, 'chorro', 1, 0, null, false, [[22, 'cloro_alto', 'manual']]),
+  h('Miguel A.', N, 'Tazajal', MAN, 'chorro', 5, 2, 95, false, [[30, 'plomo_medio', 'foto'], [8, 'bien', 'foto']]),
 
-  h('Laura B.', S, 'chorro', 4, 3, 178, false, [[65, 'dura', 'foto'], [12, 'muy_dura', 'foto']]),
-  h('Jorge C.', S, 'pozo', 5, 0, null, true, [[40, 'muy_dura', 'manual'], [3, 'muy_dura', 'foto']]),
-  h('Daniela F.', S, 'tanque', 3, 0, null, false, [[6, 'cobre_rojo', 'foto']]),
-  h('Andrés H.', S, 'botellon', 2, 0, null, false, [[18, 'bien', 'foto']]),
-  h('Patricia N.', S, 'filtro', 4, 5, 200, false, [[90, 'bien', 'foto'], [55, 'bien_2', 'foto'], [25, 'dura', 'foto'], [4, 'dura', 'foto']]),
-  h('Rafael O.', S, 'chorro', 6, 2, 152, false, [[33, 'cloro_alto', 'foto'], [7, 'bien', 'foto']]),
-  h('Gabriela Q.', S, 'chorro', 3, 0, null, false, [[11, 'acida', 'manual']]),
-  h('Héctor Z.', S, 'tanque', 4, 3, 20, false, [[48, 'nitrato_medio', 'foto'], [16, 'bien_2', 'foto']]),
-  h('Mariana E.', S, 'botellon', 2, 0, null, false, [[27, 'faltan_casillas', 'manual']]),
-  h('Ricardo J.', S, 'pozo', 7, 4, 120, true, [[75, 'nitrato_medio', 'foto'], [35, 'nitrato_medio', 'foto'], [5, 'nitrato_medio', 'foto']]),
+  // San Diego
+  h('Laura B.', S, 'Yuma', BIG, 'chorro', 4, 3, 178, false, [[65, 'dura', 'foto'], [12, 'muy_dura', 'foto']], 'OPW-GACSU5'),
+  h('Jorge C.', S, 'Yuma', BIG, 'pozo', 5, 0, null, true, [[40, 'muy_dura', 'manual'], [3, 'muy_dura', 'foto']]),
+  h('Daniela F.', S, 'El Morro I', BIG, 'tanque', 3, 0, null, false, [[6, 'cobre_rojo', 'foto']]),
+  h('Andrés H.', S, 'Pueblo de San Diego', BIG, 'botellon', 2, 0, null, false, [[18, 'bien', 'foto']]),
+  h('Patricia N.', S, 'La Esmeralda', BIG, 'filtro', 4, 5, 70, false, [[90, 'bien', 'foto'], [55, 'bien_2', 'foto'], [25, 'dura', 'foto'], [4, 'dura', 'foto']]),
+  h('Rafael O.', S, 'El Morro II', CEM, 'chorro', 6, 2, 152, false, [[33, 'cloro_alto', 'foto'], [7, 'bien', 'foto']], 'OPW-PP20BFL02'),
+  h('Gabriela Q.', S, 'Monteserino', CEM, 'chorro', 3, 0, null, false, [[11, 'acida', 'manual']]),
+  h('Héctor Z.', S, 'Valle de Oro', CEM, 'tanque', 4, 3, 20, false, [[48, 'nitrato_medio', 'foto'], [16, 'bien_2', 'foto']]),
+  h('Mariana E.', S, 'El Remanso', CEM, 'botellon', 2, 0, null, false, [[27, 'faltan_casillas', 'manual']]),
+  h('Ricardo J.', S, 'Valle Verde', CEM, 'pozo', 7, 4, 88, true, [[75, 'nitrato_medio', 'foto'], [35, 'nitrato_medio', 'foto'], [5, 'nitrato_medio', 'foto']]),
 
-  h('Sofía K.', V, 'chorro', 3, 3, 60, false, [[21, 'plomo_rojo', 'foto'], [2, 'bien', 'foto']]),
-  h('Alberto U.', V, 'chorro', 4, 0, null, false, [[14, 'cloro_alto', 'foto']]),
-  h('Valentina I.', V, 'botellon', 1, 0, null, false, [[9, 'bien', 'manual']]),
-  h('Fernando Y.', V, 'filtro', 5, 5, 174, false, [[85, 'bien', 'foto'], [44, 'bien_2', 'foto'], [13, 'bien', 'foto']]),
-  h('Isabel W.', V, 'tanque', 4, 0, null, true, [[30, 'dura', 'foto'], [6, 'dura', 'foto']]),
-  h('Tomás X.', V, 'chorro', 2, 2, 10, false, [[19, 'bien_2', 'foto']]),
-  h('Adriana P.', V, 'chorro', 3, 0, null, false, [[26, 'alcalina', 'manual'], [4, 'bien', 'foto']]),
-  h('Manuel R.', V, 'pozo', 6, 3, 165, false, [[58, 'nitrato_medio', 'foto'], [17, 'bien', 'foto']]),
-  h('Beatriz G.', V, 'botellon', 2, 0, null, false, [[8, 'bien', 'foto']]),
-  h('Óscar M.', V, 'chorro', 4, 1, 130, false, [[36, 'cloro_alto', 'foto'], [1, 'cloro_alto', 'foto']]),
+  // Valencia norte
+  h('Sofía K.', V, 'Trigal Norte', MAN, 'chorro', 3, 3, 65, false, [[21, 'plomo_rojo', 'foto'], [2, 'bien', 'foto']]),
+  h('Alberto U.', V, 'Prebo I', MAN, 'chorro', 4, 0, null, false, [[14, 'cloro_alto', 'foto']]),
+  h('Valentina I.', V, 'El Viñedo', MAN, 'botellon', 1, 0, null, false, [[9, 'bien', 'manual']]),
+  h('Fernando Y.', V, 'Trigal Norte', MAN, 'filtro', 5, 5, 174, false, [[85, 'bien', 'foto'], [44, 'bien_2', 'foto'], [13, 'bien', 'foto']], 'OPW-RSSU5'),
+  h('Isabel W.', V, 'La Viña', MAN, 'tanque', 4, 0, null, true, [[30, 'dura', 'foto'], [6, 'dura', 'foto']]),
+  h('Tomás X.', V, 'Trigal Sur', MAN, 'chorro', 2, 2, 10, false, [[19, 'bien_2', 'foto']]),
+  h('Adriana P.', V, 'El Viñedo', BIG, 'chorro', 3, 0, null, false, [[26, 'alcalina', 'manual'], [4, 'bien', 'foto']]),
+  h('Manuel R.', V, 'Guaparo', BIG, 'pozo', 6, 3, 165, false, [[58, 'nitrato_medio', 'foto'], [17, 'bien', 'foto']], 'OPW-GACSU5'),
+  h('Beatriz G.', V, 'Kerdell', CEM, 'botellon', 2, 0, null, false, [[8, 'bien', 'foto']]),
+  h('Óscar M.', V, 'Prebo I', CEM, 'chorro', 4, 1, 130, false, [[36, 'cloro_alto', 'foto'], [1, 'cloro_alto', 'foto']]),
+
+  // Segunda tanda (31 a 60): más hogares para el mapa por urbanización.
+  // Naguanagua
+  h('Gustavo T.', N, 'La Begoña', MAN, 'pozo', 5, 0, null, true, [[2, 'nitrato_rojo', 'foto']]),
+  h('Paola R.', N, 'El Naranjal', MAN, 'pozo', 4, 0, null, false, [[38, 'nitrito_medio', 'manual'], [5, 'nitrito_rojo', 'foto']]),
+  h('Ramón V.', N, 'La Begoña', MAN, 'tanque', 3, 2, 60, false, [[4, 'nitrato_medio', 'foto']]),
+  h('Yolanda C.', N, 'Capremco', MAN, 'chorro', 4, 0, null, false, [[9, 'dura', 'foto']]),
+  h('Ernesto B.', N, 'Palma Real', MAN, 'botellon', 2, 0, null, false, [[45, 'bien', 'manual']]),
+  h('Lucía M.', N, 'Bárbula', MAN, 'chorro', 3, 0, null, false, [[6, 'cloro_alto', 'foto']]),
+  h('Wilmer D.', N, 'Bárbula', MAN, 'tanque', 5, 3, 120, false, [[12, 'bien', 'foto']]),
+  h('Marisol F.', N, 'La Granja', MAN, 'chorro', 2, 0, null, false, [[11, 'bien_2', 'foto']]),
+  h('Nelson G.', N, 'Los Guayabitos', MAN, 'pozo', 6, 0, null, true, [[40, 'bien', 'manual']]),
+  h('Carolina S.', N, 'Mañongo', MAN, 'filtro', 3, 5, 30, false, [[3, 'bien', 'foto']]),
+  // San Diego
+  h('Alejandro P.', S, 'Yuma', BIG, 'chorro', 4, 0, null, false, [[6, 'dura', 'foto']]),
+  h('Yusmary L.', S, 'El Morro I', BIG, 'botellon', 2, 0, null, false, [[5, 'bien', 'foto']]),
+  h('Enrique A.', S, 'Pueblo de San Diego', BIG, 'chorro', 5, 2, 75, false, [[10, 'bien_2', 'foto']]),
+  h('Gloria N.', S, 'La Cumaca', BIG, 'pozo', 4, 0, null, true, [[50, 'dura', 'manual']]),
+  h('Simón E.', S, 'El Morro II', CEM, 'chorro', 3, 0, null, false, [[3, 'cloro_alto', 'foto']]),
+  h('Teresa O.', S, 'Monteserino', CEM, 'botellon', 2, 0, null, false, [[9, 'bien', 'foto']]),
+  h('Jesús H.', S, 'Valle de Oro', CEM, 'chorro', 6, 3, 100, false, [[13, 'bien', 'foto']]),
+  h('Mónica Z.', S, 'Valle Verde', BIG, 'tanque', 3, 0, null, false, [[8, 'alcalina', 'foto']]),
+  h('Douglas K.', S, 'La Esmeralda', CEM, 'chorro', 4, 0, null, false, [[14, 'dura', 'foto']]),
+  h('Rebeca U.', S, 'El Remanso', BIG, 'filtro', 2, 5, 50, false, [[20, 'bien_2', 'foto']]),
+  // Valencia norte
+  h('Orlando J.', V, 'Trigal Norte', MAN, 'chorro', 4, 0, null, false, [[6, 'bien', 'foto']]),
+  h('Natalia W.', V, 'Trigal Norte', CEM, 'botellon', 2, 0, null, false, [[3, 'bien_2', 'foto']]),
+  h('Arturo Y.', V, 'El Viñedo', MAN, 'chorro', 5, 2, 45, false, [[15, 'bien', 'foto']]),
+  h('Milagros I.', V, 'Camoruco', CEM, 'tanque', 3, 0, null, false, [[7, 'dura', 'foto']]),
+  h('Freddy Q.', V, 'Las Chimeneas', MAN, 'chorro', 4, 0, null, false, [[60, 'bien', 'manual']]),
+  h('Susana X.', V, 'La Trigaleña', MAN, 'filtro', 3, 5, 25, false, [[5, 'bien', 'foto']]),
+  h('Ángel D.', V, 'Altos de Guataparo', CEM, 'pozo', 6, 0, null, true, [[10, 'dura', 'foto']]),
+  h('Diana B.', V, 'Kerdell', CEM, 'chorro', 2, 0, null, false, [[12, 'bien', 'foto']]),
+  h('Víctor C.', V, 'Camoruco', MAN, 'chorro', 4, 0, null, false, [[2, 'cloro_alto', 'foto']]),
+  h('Irene F.', V, 'Guaparo', MAN, 'botellon', 3, 0, null, false, [[18, 'bien_2', 'foto']]),
 ];
 
-// Códigos reales del catálogo (db/semilla_cartuchos.sql).
-const CARTUCHOS_DE_RECAMBIO = ['OPW-PP20A022', 'OPW-CTOSU5', 'OPW-GACSU5', 'OPW-PP20BFL02', 'OPW-RSSU5'];
+// Todos los códigos de este archivo existen en el catálogo (db/semilla_cartuchos.sql).
 
 /** Pedidos pendientes: [n.º de hogar, tipo, código, cantidad, modalidad, hace cuántas horas] */
 const PENDIENTES: Array<[number, 'sobre' | 'cartucho', string | null, number, 'retiro' | 'envio', number]> = [
@@ -108,8 +164,11 @@ const PENDIENTES: Array<[number, 'sobre' | 'cartucho', string | null, number, 'r
   [14, 'sobre', null, 1, 'envio', 5],
   [12, 'cartucho', 'OPW-RSSU5', 1, 'retiro', 8],
   [3, 'cartucho', 'OPW-100GPD-8TN', 1, 'envio', 20],
-  [23, 'sobre', null, 1, 'retiro', 26],
-  [22, 'cartucho', 'OPW-CTOSU5', 1, 'envio', 30],
+  [19, 'sobre', null, 1, 'retiro', 26],
+  [30, 'cartucho', 'OPW-CTOSU5', 1, 'envio', 30],
+  [33, 'sobre', null, 1, 'envio', 4],
+  [41, 'cartucho', 'OPW-RSSU5', 1, 'retiro', 12],
+  [52, 'cartucho', 'OPW-GACSU5', 1, 'envio', 15],
 ];
 
 /** Existencias por tienda. Los ceros y los números bajos son los faltantes que debe mostrar el inventario. */
@@ -128,12 +187,21 @@ const STOCK: Record<string, Record<string, number>> = {
   },
 };
 
+/** Tiendas: [id, nombre, horario, dirección]. Datos públicos de grimuca.com (los mismos de db/migraciones/003_tiendas.sql). */
+const HORARIO = 'Lunes a viernes de 8:30 a.m. a 4:30 p.m. Sábados de 9:00 a.m. a 2:00 p.m.';
+const TIENDAS: Array<[string, string, string, string]> = [
+  ['manongo', 'Mañongo', HORARIO, 'C.C. Profesional Paseo Orquídea, local A-3, Av. Salvador Feo La Cruz, Naguanagua'],
+  ['biglow', 'Big Low', HORARIO, 'C.C. Big Low Center, nivel 1, nave F, locales 1-3 y 35-37, calle 101, San Diego'],
+  ['cem', 'CC CEM', HORARIO, 'C.C. CEM I, nivel 1, local 06, Av. Don Julio Centeno, San Diego'],
+];
+
 /** Pruebas de bacterias: [n.º de hogar, iniciada hace cuántos días, reportada hace cuántos días o null, resultado] */
 const BACTERIAS: Array<[number, number, number | null, 'pendiente' | 'cambio' | 'sin_cambio']> = [
   [1, 1, null, 'pendiente'],
   [2, 5, 3, 'cambio'],
   [13, 6, 4, 'sin_cambio'],
   [21, 2, null, 'pendiente'],
+  [32, 3, null, 'pendiente'],
 ];
 
 // ---------- Utilidades SQL ----------
@@ -153,6 +221,9 @@ function diaHace(dias: number): string {
   return fecha.toISOString().slice(0, 10);
 }
 
+/** Cerca de la mitad de los hogares tiene mascotas. */
+const mascotasDe = (n: number) => n % 2 === 1;
+
 function direccionDe(n: number): string {
   return n % 3 === 0
     ? `Avenida ${(n % 7) + 1}, edificio ${'ABCDEFG'[n % 7]}, apartamento ${(n % 9) + 1} (dato de prueba)`
@@ -166,12 +237,13 @@ const filasMediciones: string[] = [];
 const filasPedidos: string[] = [];
 const rojosRecientesPorZona = new Map<string, number>();
 let totalMediciones = 0;
+const ultimasParaMapa: FilaMedicionMapa[] = [];
 
 HOGARES.forEach((hogar, indice) => {
   const n = indice + 1;
   const id = idHogar(n);
   const tieneFiltro = hogar.etapas > 0;
-  const tienda = tiendaSugerida(hogar.zona);
+  const tienda = hogar.tienda;
   const direccion = direccionDe(n);
   const masVieja = Math.max(...hogar.serie.map((paso) => paso[0]));
   const diasSobre = masVieja + 4; // el sobre se pidió unos días antes de la primera medición
@@ -179,7 +251,8 @@ HOGARES.forEach((hogar, indice) => {
   filasHogares.push(
     `  (${txt(id)}, ${txt(hogar.nombre)}, ${txt(hogar.zona)}, ${txt(hogar.origen)}, ${hogar.personas}, ${tieneFiltro}, ` +
       `${tieneFiltro ? hogar.etapas : 'NULL'}, ${hogar.diasCambio === null ? 'NULL' : `(${hace(hogar.diasCambio)})::date`}, ` +
-      `${hogar.turbia}, ${txt(`0414-555-01${dos(n)}`)}, ${txt(direccion)}, ${txt(tienda)}, ${hace(diasSobre, 1)})`,
+      `${hogar.turbia}, ${txt(`0414-555-01${dos(n)}`)}, ${txt(direccion)}, ${txt(tienda)}, ${txt(hogar.urbanizacion)}, ` +
+      `${mascotasDe(n)}, ${hace(diasSobre, 1)})`,
   );
 
   const perfil: PerfilHogar = {
@@ -193,6 +266,7 @@ HOGARES.forEach((hogar, indice) => {
 
   let ultimoNivel: Nivel = 'sin_dato';
   let ultimoDias = Infinity;
+  let ultimaParaMapa: FilaMedicionMapa | null = null;
   hogar.serie.forEach(([dias, nombre, origen], m) => {
     const valores = LECTURAS[nombre];
     const evaluacion = evaluarAgua(valores, perfil, HOY);
@@ -206,8 +280,15 @@ HOGARES.forEach((hogar, indice) => {
     if (dias < ultimoDias) {
       ultimoDias = dias;
       ultimoNivel = evaluacion.semaforo;
+      ultimaParaMapa = {
+        hogar_id: id,
+        fecha: new Date(HOY.getTime() - dias * 86_400_000 - horas * 3_600_000),
+        semaforo: evaluacion.semaforo,
+        semaforo_por_parametro: porParametro,
+      };
     }
   });
+  if (ultimaParaMapa) ultimasParaMapa.push(ultimaParaMapa);
   if (ultimoNivel === 'rojo' && ultimoDias < 7) {
     rojosRecientesPorZona.set(hogar.zona, (rojosRecientesPorZona.get(hogar.zona) ?? 0) + 1);
   }
@@ -217,10 +298,9 @@ HOGARES.forEach((hogar, indice) => {
     `  (${txt(id)}, 'sobre', NULL, 1, 'envio', ${txt(direccion)}, 'simulado', ${txt(tienda)}, 'despachado', ` +
       `${hace(diasSobre)}, ${hace(diasSobre - 1)})`,
   );
-  if (tieneFiltro && hogar.diasCambio !== null) {
-    const codigo = CARTUCHOS_DE_RECAMBIO[indice % CARTUCHOS_DE_RECAMBIO.length];
+  if (tieneFiltro && hogar.diasCambio !== null && hogar.ultimoCartucho) {
     filasPedidos.push(
-      `  (${txt(id)}, 'cartucho', ${txt(codigo)}, 1, 'retiro', NULL, 'no_aplica', ${txt(tienda)}, 'despachado', ` +
+      `  (${txt(id)}, 'cartucho', ${txt(hogar.ultimoCartucho)}, 1, 'retiro', NULL, 'no_aplica', ${txt(tienda)}, 'despachado', ` +
         `${hace(hogar.diasCambio, 3)}, ${hace(hogar.diasCambio)})`,
     );
   }
@@ -232,7 +312,7 @@ for (const [n, tipo, codigo, cantidad, modalidad, horas] of [...PENDIENTES].sort
   filasPedidos.push(
     `  (${txt(idHogar(n))}, ${txt(tipo)}, ${txt(codigo)}, ${cantidad}, ${txt(modalidad)}, ` +
       `${modalidad === 'envio' ? txt(direccionDe(n)) : 'NULL'}, ${txt(tipo === 'sobre' ? 'simulado' : 'no_aplica')}, ` +
-      `${txt(tiendaSugerida(hogar.zona))}, 'pendiente', ${haceHoras(horas)}, NULL)`,
+      `${txt(hogar.tienda)}, 'pendiente', ${haceHoras(horas)}, NULL)`,
   );
 }
 
@@ -247,7 +327,28 @@ const filasBacterias = BACTERIAS.map(
 
 // ---------- Comprobaciones antes de escribir ----------
 
-if (HOGARES.length !== 30) throw new Error('La semilla debe tener 30 hogares.');
+if (HOGARES.length !== 60) throw new Error('La semilla debe tener 60 hogares.');
+for (const hogar of HOGARES) {
+  const u = buscarUrbanizacion(hogar.urbanizacion);
+  if (!u || u.nombre !== hogar.urbanizacion || u.zona !== hogar.zona) {
+    throw new Error(`Urbanización desconocida o de otra zona: ${hogar.urbanizacion} (${hogar.zona}).`);
+  }
+}
+// El mapa debe contar la historia de arriba (mismo cálculo que GET /api/operador/mapa).
+const mapa = calcularMapa(
+  HOGARES.map((hogar, i) => ({ id: idHogar(i + 1), zona: hogar.zona, urbanizacion: hogar.urbanizacion })),
+  ultimasParaMapa,
+  new Map(),
+  HOY,
+);
+const conClientes = mapa.filter((u) => u.en_tablero && u.hogares > 0);
+const enAlerta = mapa.filter((u) => u.alerta).map((u) => u.nombre).sort((x, y) => x.localeCompare(y, 'es'));
+const sinMedicion = mapa.filter((u) => u.estado === 'sin_medicion').map((u) => u.nombre);
+if (conClientes.length < 28 || conClientes.length > 32) {
+  throw new Error(`Hay ${conClientes.length} urbanizaciones con clientes (se esperan 28 a 32).`);
+}
+if (enAlerta.join('|') !== 'El Naranjal|La Begoña') throw new Error(`Urbanizaciones en alerta inesperadas: ${enAlerta.join(', ')}`);
+if (sinMedicion.length < 3 || sinMedicion.length > 4) throw new Error(`Sin medición reciente: ${sinMedicion.join(', ')}`);
 if (HOGARES.some((hogar) => hogar.serie.length < 1 || hogar.serie.length > 4)) {
   throw new Error('Cada hogar lleva de 1 a 4 mediciones.');
 }
@@ -264,15 +365,15 @@ const sql = `-- Datos de demostración de Grimuca Agua. TODO ES INVENTADO: nombr
 -- Contenido: 3 tiendas, ${HOGARES.length} hogares, ${totalMediciones} mediciones, ${filasPedidos.length} pedidos (${PENDIENTES.length} pendientes),
 -- ${filasStock.length} filas de stock y ${filasBacterias.length} pruebas de bacterias.
 
--- Tiendas (identificadores fijos; la migración inicial ya las crea).
+-- Tiendas (identificadores fijos; las migraciones ya las crean con su horario y dirección).
 INSERT INTO tiendas (id, nombre, horario, direccion) VALUES
-  ('manongo', 'Mañongo', 'Por confirmar', NULL),
-  ('biglow', 'Big Low', 'Por confirmar', NULL),
-  ('cem', 'CC CEM', 'Por confirmar', NULL)
+${TIENDAS.map((tienda) => `  (${tienda.map(txt).join(', ')})`).join(',\n')}
 ON CONFLICT (id) DO NOTHING;
 
--- Hogares inventados: 10 en Naguanagua, 10 en San Diego y 10 en Valencia norte.
-INSERT INTO hogares (id, nombre, zona, origen_agua, personas, tiene_filtro, etapas_filtro, fecha_ultimo_cambio, agua_turbia, whatsapp, direccion, tienda_id, consentimiento_fecha) VALUES
+-- Hogares inventados: 20 en Naguanagua, 20 en San Diego y 20 en Valencia norte, repartidos entre las tres tiendas
+-- y en ${conClientes.length} urbanizaciones (de ${URBANIZACIONES.length} de la lista; el resto queda "por captar").
+-- Urbanizaciones en alerta: ${enAlerta.join(', ')}. Sin medición reciente: ${sinMedicion.join(', ')}.
+INSERT INTO hogares (id, nombre, zona, origen_agua, personas, tiene_filtro, etapas_filtro, fecha_ultimo_cambio, agua_turbia, whatsapp, direccion, tienda_id, urbanizacion, mascotas, consentimiento_fecha) VALUES
 ${filasHogares.join(',\n')};
 
 -- Mediciones. Naguanagua tiene ${rojosRecientesPorZona.get(N)} hogares en rojo en los últimos 7 días (dispara la alerta de zona).
@@ -297,5 +398,7 @@ writeFileSync(destino, sql);
 console.log(
   `semilla.sql: ${HOGARES.length} hogares, ${totalMediciones} mediciones, ${filasPedidos.length} pedidos ` +
     `(${PENDIENTES.length} pendientes), ${filasStock.length} filas de stock. ` +
-    `Rojos recientes por zona: ${JSON.stringify(Object.fromEntries(rojosRecientesPorZona))}`,
+    `Rojos recientes por zona: ${JSON.stringify(Object.fromEntries(rojosRecientesPorZona))}. ` +
+    `Urbanizaciones con clientes: ${conClientes.length}; en alerta: ${enAlerta.join(', ')}; sin medición: ${sinMedicion.join(', ')}.\n` +
+    `Estados: ${conClientes.map((u) => `${u.nombre}=${u.estado}`).join(', ')}`,
 );

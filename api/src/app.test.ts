@@ -359,6 +359,75 @@ describe('pedidos', () => {
     expect(lista.json()).toHaveLength(1);
   });
 
+  it('crea el pedido de servicio técnico sin cobro, en la casa, y emite pedido_nuevo', async () => {
+    const hogar = await crearHogar({ nombre: 'Casa del experto', direccion: 'Av. Principal, casa 7' });
+    const antes = e.emitidos.length;
+    const respuesta = await e.app.inject({
+      method: 'POST',
+      url: '/api/pedidos',
+      payload: {
+        hogar_id: hogar.id,
+        tipo: 'servicio',
+        servicio: 'cambio_cartucho',
+        fecha_preferida: '2099-01-15',
+        momento: 'tarde',
+        nota: 'Tocar el timbre de abajo',
+        cartucho_codigo: null,
+        modalidad: 'envio',
+        tienda_id: 'biglow',
+        pago: 'simulado', // lo decide el servidor
+      },
+    });
+    expect(respuesta.statusCode).toBe(201);
+    const pedido: Pedido = respuesta.json();
+    expect(pedido).toMatchObject({
+      tipo: 'servicio',
+      servicio: 'cambio_cartucho',
+      fecha_preferida: '2099-01-15',
+      momento: 'tarde',
+      nota: 'Tocar el timbre de abajo',
+      cartucho_codigo: null,
+      cantidad: 1,
+      modalidad: 'envio',
+      direccion: 'Av. Principal, casa 7',
+      pago: 'no_aplica',
+      tienda_id: 'biglow',
+      estado: 'pendiente',
+    });
+
+    const nuevos = e.emitidos.slice(antes);
+    expect(nuevos).toHaveLength(1);
+    expect(nuevos[0]).toMatchObject({
+      tipo: 'pedido_nuevo',
+      datos: { id: pedido.id, tipo: 'servicio', servicio: 'cambio_cartucho', hogar_nombre: 'Casa del experto', zona: 'Naguanagua' },
+    });
+    expect((await e.app.inject({ method: 'GET', url: `/api/pedidos/${pedido.id}` })).json()).toEqual(pedido);
+
+    // Los pedidos de antes siguen sin campos de servicio.
+    const sobre = await e.app.inject({
+      method: 'POST',
+      url: '/api/pedidos',
+      payload: { hogar_id: hogar.id, tipo: 'sobre', modalidad: 'retiro', tienda_id: 'manongo', servicio: 'cambio_cartucho' },
+    });
+    expect(sobre.json()).toMatchObject({ tipo: 'sobre', servicio: null, fecha_preferida: null, momento: null, nota: null });
+  });
+
+  it('rechaza un servicio sin tipo de servicio, sin fecha, con fecha pasada o sin dirección', async () => {
+    const hogar = await crearHogar();
+    const base = { hogar_id: hogar.id, tipo: 'servicio', servicio: 'instalacion_filtro', fecha_preferida: '2099-02-01', modalidad: 'envio', direccion: 'Calle 3', tienda_id: 'manongo' };
+    const casos: Array<Record<string, unknown>> = [
+      { ...base, servicio: undefined },
+      { ...base, servicio: 'otro' },
+      { ...base, fecha_preferida: undefined },
+      { ...base, fecha_preferida: '2020-01-01' },
+      { ...base, direccion: null }, // el hogar no tiene dirección
+    ];
+    for (const payload of casos) {
+      const respuesta = await e.app.inject({ method: 'POST', url: '/api/pedidos', payload });
+      expect(respuesta.statusCode, JSON.stringify(payload)).toBe(400);
+    }
+  });
+
   it('rechaza pedidos incompletos o con datos que no existen', async () => {
     const hogar = await crearHogar();
     const base = { hogar_id: hogar.id, tipo: 'cartucho', cartucho_codigo: 'PR-SED', modalidad: 'retiro', tienda_id: 'cem' };

@@ -19,3 +19,7 @@ export {
   parametrosSaludEnRojo,
 } from './alertas';
 export type { FilaUltimaMedicion } from './alertas';
+export { DIAS_MEDICION_RECIENTE, calcularMapa, mapaUrbanizaciones } from './mapa';
+export type { FilaHogarMapa, FilaMedicionMapa } from './mapa';
+export { URBANIZACIONES, buscarUrbanizacion, urbanizacionesDeZona } from './urbanizaciones';
+export type { Urbanizacion } from './urbanizaciones';

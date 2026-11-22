@@ -56,6 +56,7 @@ export async function rutasMediciones(app: FastifyInstance): Promise<void> {
     const nueva = filaAMedicion(rows[0], {
       catalogo: await listarCatalogo(bd),
       perfil,
+      filtro: hogar.filtro,
       marcasExcluidas: config.marcasExcluidas,
     });
     await eventos.publicar({
@@ -133,6 +134,7 @@ export async function rutasMediciones(app: FastifyInstance): Promise<void> {
     return filaAMedicion(rows[0], {
       catalogo: await listarCatalogo(bd),
       perfil: perfilDe(hogar),
+      filtro: hogar.filtro,
       marcasExcluidas: config.marcasExcluidas,
       diasParaRecambio: medicion.diasParaRecambio,
     });

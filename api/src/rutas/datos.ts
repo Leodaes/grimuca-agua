@@ -1,5 +1,7 @@
 // Consultas y conversión de filas a los tipos del contrato. Lo usan todas las rutas.
 import { aDia, aIso, aIsoONulo, aJson, aNumeroONulo, type Bd } from '../bd';
+import { cartuchosParaFiltro, filaAFiltro } from '../filtro';
+import type { FiltroHogar } from '../tipos';
 import type {
   Cartucho,
   Evaluacion,
@@ -75,7 +77,10 @@ export function filaAHogar(fila: Fila): Hogar {
     whatsapp: String(fila.whatsapp),
     direccion: (fila.direccion as string | null) ?? null,
     tienda_id: (fila.tienda_id as string | null) ?? null,
+    urbanizacion: (fila.urbanizacion as string | null) ?? null,
+    mascotas: Boolean(fila.mascotas),
     consentimiento_fecha: aIso(fila.consentimiento_fecha),
+    filtro: filaAFiltro(fila),
   };
 }
 
@@ -105,6 +110,10 @@ export function filaAPedido(fila: Fila, conDetalle = false): Pedido {
     estado: fila.estado as Pedido['estado'],
     fecha: aIso(fila.fecha),
     fecha_despacho: aIsoONulo(fila.fecha_despacho),
+    servicio: (fila.servicio as Pedido['servicio']) ?? null,
+    fecha_preferida: aDia(fila.fecha_preferida),
+    momento: (fila.momento as Pedido['momento']) ?? null,
+    nota: (fila.nota as string | null) ?? null,
     cartucho_nombre: (fila.cartucho_nombre as string | null) ?? null,
   };
   if (conDetalle) {
@@ -157,7 +166,7 @@ export async function buscarHogar(bd: Consultable, id: string): Promise<Hogar | 
 
 const SELECT_PEDIDO = `
   SELECT p.id, p.hogar_id, p.tipo, p.cartucho_codigo, p.cantidad, p.modalidad, p.direccion, p.pago,
-         p.tienda_id, p.estado, p.fecha, p.fecha_despacho,
+         p.tienda_id, p.estado, p.fecha, p.fecha_despacho, p.servicio, p.fecha_preferida, p.momento, p.nota,
          h.nombre AS hogar_nombre, h.zona AS zona, c.nombre AS cartucho_nombre
     FROM pedidos p
     JOIN hogares h ON h.id = p.hogar_id
@@ -273,6 +282,8 @@ export interface ParaArmarMedicion {
   marcasExcluidas?: string[];
   /** Recalcula los días para el recambio con el perfil de hoy; si falla se deja el valor guardado. */
   diasParaRecambio?: (perfil: PerfilHogar) => number | null;
+  /** Filtro registrado del hogar: los cartuchos compatibles que atienden lo hallado van primero. */
+  filtro?: FiltroHogar | null;
 }
 
 export function filaAMedicion(fila: Fila, extra: ParaArmarMedicion): Medicion {
@@ -298,10 +309,51 @@ export function filaAMedicion(fila: Fila, extra: ParaArmarMedicion): Medicion {
     origen: fila.origen as Medicion['origen'],
     valores: aJson<ValoresMedicion | null>(fila.valores) ?? {},
     evaluacion,
-    sugeridos: sugerirCartuchos(extra.catalogo, {
-      corrige: evaluacion.corrige,
-      tieneFiltro: extra.perfil.tiene_filtro,
-      marcasExcluidas: extra.marcasExcluidas,
-    }),
+    sugeridos: sugerirConFiltro(
+      extra.catalogo,
+      {
+        corrige: evaluacion.corrige,
+        tieneFiltro: extra.perfil.tiene_filtro,
+        marcasExcluidas: extra.marcasExcluidas,
+      },
+      extra.perfil.tiene_filtro ? extra.filtro : null,
+    ),
   };
+}
+
+/**
+ * Sugeridos adaptados al filtro del hogar: primero los cartuchos compatibles con ese filtro que atienden lo hallado;
+ * después, los de `sugerirCartuchos` que hagan falta para que cada hallazgo siga cubierto por algún producto.
+ * Sin filtro registrado (o sin compatibles que atiendan algo) devuelve lo mismo que `sugerirCartuchos`.
+ */
+export function sugerirConFiltro(
+  catalogo: CartuchoCatalogo[],
+  criterio: CriterioSugeridos,
+  filtro: FiltroHogar | null | undefined,
+): Cartucho[] {
+  const base = sugerirCartuchos(catalogo, criterio);
+  if (!filtro) return base;
+  const excluidas = new Set((criterio.marcasExcluidas ?? []).map((marca) => marca.trim().toLowerCase()));
+  const preferidos: Cartucho[] = cartuchosParaFiltro(filtro, catalogo, criterio.corrige)
+    .filter((c) => c.atiende_medicion && !excluidas.has(c.marca.trim().toLowerCase()))
+    .map(({ funcion: _f, para_que: _p, atiende_medicion: _a, ...cartucho }) => cartucho);
+  if (preferidos.length === 0) return base;
+
+  const cubiertas = (lista: Cartucho[]) => new Set(lista.flatMap((c) => c.corrige));
+  // Cuántos compatibles caben sin dejar sin cubrir algo que `base` sí cubría.
+  for (let cuantos = Math.min(preferidos.length, MAXIMO_SUGERIDOS); cuantos >= 0; cuantos -= 1) {
+    const elegidos = preferidos.slice(0, cuantos);
+    for (const cartucho of base) {
+      const ya = cubiertas(elegidos);
+      const aporta = cartucho.corrige.some((clave) => criterio.corrige.includes(clave) && !ya.has(clave));
+      if (aporta && !elegidos.some((e) => e.codigo === cartucho.codigo)) elegidos.push(cartucho);
+    }
+    if (elegidos.length > MAXIMO_SUGERIDOS) continue;
+    for (const cartucho of base) {
+      if (elegidos.length >= MAXIMO_SUGERIDOS) break;
+      if (!elegidos.some((e) => e.codigo === cartucho.codigo)) elegidos.push(cartucho);
+    }
+    return elegidos;
+  }
+  return base;
 }

@@ -1,0 +1,76 @@
+/* Catálogo de la tienda: solo lo que no traen los componentes Grimuca. */
+
+/* Fila de chips que se desplaza dentro de su caja, sin desbordar la página. */
+.catalogo-chips {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: var(--s2);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: var(--s1);
+  scrollbar-width: thin;
+  max-width: 100%;
+}
+.catalogo-chips > .g-chip {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.catalogo-grupo {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.catalogo-grupo > legend {
+  margin-bottom: var(--s2);
+  font-weight: 700;
+}
+
+/* Rejilla de tarjetas: 1 columna en teléfono, 2 desde 560px. */
+.catalogo-rejilla {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+@media (min-width: 560px) {
+  .catalogo-rejilla {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.catalogo-rejilla > li {
+  display: grid;
+  min-width: 0;
+}
+
+.catalogo-foto-falta {
+  padding: var(--s1);
+  color: var(--apagado);
+  font-size: var(--t-1);
+  text-align: center;
+}
+
+.catalogo-enlace {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+
+.catalogo-nota {
+  margin: 0;
+  color: var(--tinta-2);
+  font-size: var(--t-1);
+}
+
+/* Tarjeta compacta de los recomendados. */
+.catalogo-compacta {
+  grid-template-columns: 64px 1fr;
+}
+.catalogo-compacta .g-tarjeta-producto__foto {
+  width: 64px;
+  height: 64px;
+}

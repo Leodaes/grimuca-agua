@@ -19,6 +19,36 @@ export const CONFIG_PRUEBA: ConfigApp = {
   marcasExcluidas: [],
 };
 
+/**
+ * Nombres que Postgres pone a los CHECK en línea y su equivalente en pg-mem, que los numera por tabla
+ * (`<tabla>_constraint_<n>`, en el orden en que aparecen en el CREATE TABLE). Solo afecta a las pruebas:
+ * la migración real sigue usando el nombre de Postgres.
+ */
+const RESTRICCIONES_PG_MEM: ReadonlyArray<[postgres: string, pgMem: string]> = [
+  ['pedidos_tipo_check', 'pedidos_constraint_1'], // 001_inicial.sql: primer CHECK de `pedidos`
+];
+
+/** Traduce los `DROP CONSTRAINT` con nombre de Postgres al nombre que usa pg-mem. */
+export function adaptarSqlPgMem(sql: string): string {
+  let resultado = sql;
+  for (const [postgres, pgMem] of RESTRICCIONES_PG_MEM) {
+    resultado = resultado.replace(
+      new RegExp(`(DROP\\s+CONSTRAINT\\s+(?:IF\\s+EXISTS\\s+)?)${postgres}\\b`, 'gi'),
+      `$1${pgMem}`,
+    );
+  }
+  return resultado;
+}
+
+type ConQuery = { query: (...argumentos: unknown[]) => unknown };
+
+function adaptarQuery<T extends ConQuery>(objeto: T): T {
+  const original = objeto.query.bind(objeto);
+  objeto.query = (texto: unknown, ...resto: unknown[]) =>
+    original(typeof texto === 'string' ? adaptarSqlPgMem(texto) : texto, ...resto);
+  return objeto;
+}
+
 /** Base de datos en memoria, vacía. */
 export function crearBdVacia(): Bd {
   const memoria = newDb();
@@ -29,7 +59,10 @@ export function crearBdVacia(): Bd {
     impure: true,
   });
   const { Pool } = memoria.adapters.createPg();
-  return new Pool() as Bd;
+  const pool = adaptarQuery(new Pool() as unknown as ConQuery & { connect: () => Promise<ConQuery> });
+  const conectar = pool.connect.bind(pool);
+  pool.connect = async () => adaptarQuery(await conectar());
+  return pool as unknown as Bd;
 }
 
 /** Base en memoria con todas las migraciones de `db/migraciones` aplicadas. */

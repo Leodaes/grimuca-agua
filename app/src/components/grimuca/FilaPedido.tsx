@@ -23,10 +23,12 @@ export function ListaPedidos({ children, etiqueta = 'Pedidos', className }: Prop
 }
 
 export interface PropsFilaPedido {
-  /** Tipo de pedido. */
-  tipo: 'sobre' | 'cartucho';
-  /** Qué se despacha: "Sobre de medición" o el nombre del cartucho. */
+  /** Tipo de pedido. 'servicio' = servicio técnico en la casa: se cierra con "Atendido". */
+  tipo: 'sobre' | 'cartucho' | 'servicio';
+  /** Qué se despacha: "Sobre de medición", el nombre del cartucho o el servicio ("Cambio de cartucho"). */
   descripcion: string;
+  /** Fecha preferida ya formateada (solo servicios): "lunes, 23 de noviembre · En la tarde". */
+  fechaPreferida?: string;
   /** Zona del hogar. */
   zona: string;
   /** Cómo se entrega. */
@@ -51,6 +53,7 @@ export interface PropsFilaPedido {
 export function FilaPedido({
   tipo,
   descripcion,
+  fechaPreferida,
   zona,
   modalidad,
   direccion,
@@ -63,8 +66,21 @@ export function FilaPedido({
 }: PropsFilaPedido) {
   const despachado = estado === 'despachado';
   const esNuevo = nuevo && !despachado;
-  const textoModalidad =
-    modalidad === 'retiro' ? 'Retiro en tienda' : `Envío${direccion ? `: ${direccion}` : ''}`;
+  const esServicio = tipo === 'servicio';
+  const cierre = esServicio ? 'Atendido' : 'Despachado';
+  const textoModalidad = esServicio
+    ? `Visita${direccion ? `: ${direccion}` : ''}`
+    : modalidad === 'retiro'
+      ? 'Retiro en tienda'
+      : `Envío${direccion ? `: ${direccion}` : ''}`;
+  const insignia =
+    tipo === 'sobre' ? (
+      <Insignia tono="oscuro">Sobre</Insignia>
+    ) : esServicio ? (
+      <Insignia tono="aviso">Servicio técnico</Insignia>
+    ) : (
+      <Insignia tono="neutro">Cartucho</Insignia>
+    );
 
   return (
     <li
@@ -77,9 +93,7 @@ export function FilaPedido({
     >
       <div className="g-fila-pedido__que">
         {esNuevo && <Insignia tono="azul">Nuevo</Insignia>}
-        <Insignia tono={tipo === 'sobre' ? 'oscuro' : 'neutro'}>
-          {tipo === 'sobre' ? 'Sobre' : 'Cartucho'}
-        </Insignia>
+        {insignia}
         <span>{descripcion}</span>
       </div>
       <span className="g-fila-pedido__hora">{hora}</span>
@@ -89,13 +103,19 @@ export function FilaPedido({
           {zona}
         </span>
         <span className="g-fila-pedido__dato">
-          <Icono nombre={modalidad === 'retiro' ? 'tienda' : 'camion'} tamano={18} />
+          <Icono nombre={esServicio ? 'ubicacion' : modalidad === 'retiro' ? 'tienda' : 'camion'} tamano={18} />
           {textoModalidad}
         </span>
+        {esServicio && fechaPreferida && (
+          <span className="g-fila-pedido__dato">
+            <Icono nombre="reloj" tamano={18} />
+            Fecha preferida: {fechaPreferida}
+          </span>
+        )}
       </div>
       {despachado ? (
         <Insignia tono="ok" punto>
-          Despachado
+          {cierre}
         </Insignia>
       ) : (
         alDespachar && (
@@ -103,9 +123,9 @@ export function FilaPedido({
             variante="secundario"
             cargando={despachando}
             onClick={alDespachar}
-            aria-label={`Marcar como despachado: ${descripcion}, ${zona}`}
+            aria-label={`Marcar como ${cierre.toLowerCase()}: ${descripcion}, ${zona}`}
           >
-            Despachado
+            {cierre}
           </Boton>
         )
       )}

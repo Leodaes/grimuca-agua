@@ -19,6 +19,8 @@ const COLUMNAS_EDITABLES = [
   'whatsapp',
   'direccion',
   'tienda_id',
+  'urbanizacion',
+  'mascotas',
 ] as const;
 
 export async function rutasHogares(app: FastifyInstance): Promise<void> {
@@ -41,8 +43,9 @@ export async function rutasHogares(app: FastifyInstance): Promise<void> {
     const tieneFiltro = datos.tiene_filtro;
     const { rows } = await bd.query(
       `INSERT INTO hogares (id, nombre, zona, origen_agua, personas, tiene_filtro, etapas_filtro,
-                            fecha_ultimo_cambio, agua_turbia, whatsapp, direccion, tienda_id, consentimiento_fecha)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, now())
+                            fecha_ultimo_cambio, agua_turbia, whatsapp, direccion, tienda_id, urbanizacion, mascotas,
+                            consentimiento_fecha)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, now())
        RETURNING *`,
       [
         randomUUID(),
@@ -57,6 +60,8 @@ export async function rutasHogares(app: FastifyInstance): Promise<void> {
         datos.whatsapp,
         datos.direccion ?? null,
         tiendaId,
+        datos.urbanizacion ?? null,
+        datos.mascotas,
       ],
     );
     return reply.code(201).send(filaAHogar(rows[0]));
@@ -109,6 +114,7 @@ export async function rutasHogares(app: FastifyInstance): Promise<void> {
       filaAMedicion(fila, {
         catalogo,
         perfil,
+        filtro: hogar.filtro,
         marcasExcluidas: config.marcasExcluidas,
         diasParaRecambio: medicion.diasParaRecambio,
       }),

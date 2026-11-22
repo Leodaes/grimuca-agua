@@ -21,6 +21,10 @@ function pedido(id: number, cambios: Partial<Pedido> = {}): Pedido {
     estado: 'pendiente',
     fecha: new Date(Date.UTC(2026, 10, 21, 13, id)).toISOString(),
     fecha_despacho: null,
+    servicio: null,
+    fecha_preferida: null,
+    momento: null,
+    nota: null,
     hogar_nombre: `Hogar ${id}`,
     zona: 'Naguanagua',
     cartucho_nombre: null,
@@ -94,6 +98,42 @@ describe('Despacho en vivo', () => {
     act(() => emitir().pedidoDespachado({ ...pedido(1), estado: 'despachado' }));
     expect(screen.queryByText(/Hogar 1/)).not.toBeInTheDocument();
     expect(screen.getByText('No hay nada por despachar en Mañongo.')).toBeInTheDocument();
+  });
+
+  it('un servicio técnico llega en vivo con su insignia, el detalle y la fecha, y se cierra con "Atendido"', async () => {
+    const usuario = userEvent.setup();
+    const { servicios, emitir } = montar([pedido(1)]);
+    await screen.findByText(/Hogar 1/);
+
+    act(() =>
+      emitir().pedidoNuevo(
+        pedido(3, {
+          tipo: 'servicio',
+          servicio: 'instalacion_filtro',
+          fecha_preferida: '2026-11-23',
+          momento: 'tarde',
+          pago: 'no_aplica',
+          hogar_nombre: 'Luis',
+          zona: 'San Diego',
+        }),
+      ),
+    );
+
+    const lista = screen.getByRole('list', { name: 'Pedidos de Mañongo' });
+    const fila = within(lista).getAllByRole('listitem')[0];
+    expect(within(fila).getByText('Servicio técnico')).toBeInTheDocument();
+    expect(fila).toHaveTextContent('Instalación de filtro · Luis');
+    expect(fila).toHaveTextContent('San Diego');
+    expect(fila).toHaveTextContent(/Fecha preferida: .*23.*En la tarde/);
+    // Los demás siguen con su insignia y su botón.
+    expect(within(lista).getByText('Sobre')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Marcar como despachado: .*Hogar 1/ })).toHaveTextContent('Despachado');
+
+    const atendido = within(fila).getByRole('button', { name: /Marcar como atendido: .*Luis/ });
+    expect(atendido).toHaveTextContent('Atendido');
+    await usuario.click(atendido);
+    expect(servicios.despachar).toHaveBeenCalledWith('token-prueba', 3);
+    expect(screen.queryByText(/Luis/)).not.toBeInTheDocument();
   });
 
   it('si despachar falla, el pedido vuelve a la lista', async () => {

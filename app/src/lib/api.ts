@@ -17,8 +17,10 @@ import type {
   ResumenTienda,
   Salud,
   Tienda,
+  UrbanizacionMapa,
   ValoresMedicion,
 } from './tipos';
+import type { EntradaFiltro, ModeloFiltro, RespuestaFiltro, ResultadoFotoFiltro } from './tipos';
 
 export const BASE_API = '/api';
 
@@ -155,6 +157,19 @@ export const api = {
   /** Más reciente primero. */
   medicionesDeHogar: (hogarId: string) => pedir<Medicion[]>(`/hogares/${id(hogarId)}/mediciones`),
 
+  // --- Filtro del hogar ---
+  /** Sube la foto del filtro. Responde `{ estado: 'ok', filtro, cartuchos }` o `{ estado: 'no_identificado', motivo }`. */
+  identificarFiltro: (hogarId: string, archivo: Blob) => {
+    const formulario = new FormData();
+    const nombre = archivo instanceof File && archivo.name ? archivo.name : 'filtro.jpg';
+    formulario.append('foto', archivo, nombre);
+    return pedir<ResultadoFotoFiltro>(`/hogares/${id(hogarId)}/filtro/foto`, { metodo: 'POST', formulario });
+  },
+  guardarFiltro: (hogarId: string, datos: EntradaFiltro) =>
+    pedir<RespuestaFiltro>(`/hogares/${id(hogarId)}/filtro`, { metodo: 'PUT', cuerpo: datos }),
+  filtroDeHogar: (hogarId: string) => pedir<RespuestaFiltro>(`/hogares/${id(hogarId)}/filtro`),
+  modelosDeFiltro: () => pedir<ModeloFiltro[]>('/filtros/modelos'),
+
   // --- Pedidos ---
   crearPedido: (datos: EntradaPedido) => pedir<Pedido>('/pedidos', { metodo: 'POST', cuerpo: datos }),
   pedido: (pedidoId: number | string) => pedir<Pedido>(`/pedidos/${id(pedidoId)}`),
@@ -186,6 +201,8 @@ export const api = {
   resumen: (token?: string) => pedirComoOperador<ResumenTienda[]>('/operador/resumen', { token }),
   inventario: (token?: string) => pedirComoOperador<FilaInventario[]>('/operador/inventario', { token }),
   zonas: (token?: string) => pedirComoOperador<AlertaZona[]>('/operador/zonas', { token }),
+  /** Mapa de hexágonos: una entrada por urbanización, más las "Otras de <zona>" (`en_tablero: false`). */
+  mapa: (token?: string) => pedirComoOperador<UrbanizacionMapa[]>('/operador/mapa', { token }),
 };
 
 export type Api = typeof api;

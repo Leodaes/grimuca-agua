@@ -116,6 +116,59 @@ describe('alta', () => {
     expect(await screen.findByText('Pantalla de medir')).toBeInTheDocument();
   });
 
+  it('con filtro no pregunta las etapas y lleva a la foto del filtro antes de seguir', async () => {
+    simulada.crearHogar.mockResolvedValue({ ...hogar, tiene_filtro: true, filtro: null });
+    const usuario = userEvent.setup();
+    render(
+      <MemoryRouter initialEntries={['/perfil?ya=1']}>
+        <Routes>
+          <Route path="/perfil" element={<Perfil />} />
+          <Route path="/mi-filtro" element={<p>Pantalla de mi filtro</p>} />
+        </Routes>
+      </MemoryRouter>,
+    );
+    await llenarPerfil(usuario);
+    await usuario.click(within(screen.getByRole('group', { name: '¿Tienen filtro en casa?' })).getByLabelText('Sí'));
+    expect(screen.queryByLabelText(/etapas/)).not.toBeInTheDocument();
+    expect(screen.getByText('En el siguiente paso le tomas una foto a tu filtro y lo identificamos.')).toBeInTheDocument();
+    await usuario.click(screen.getByRole('checkbox'));
+    await usuario.click(screen.getByRole('button', { name: 'Continuar' }));
+    expect(await screen.findByText('Pantalla de mi filtro')).toBeInTheDocument();
+    expect(simulada.crearHogar).toHaveBeenCalledWith(expect.objectContaining({ tiene_filtro: true }));
+  });
+
+  it('urbanización según la zona y mascotas: se guardan con el perfil', async () => {
+    simulada.crearHogar.mockResolvedValue(hogar);
+    const usuario = userEvent.setup();
+    enRuta('/perfil', <Perfil />);
+    await llenarPerfil(usuario);
+    const urbanizacion = screen.getByLabelText(/^Urbanización/) as HTMLSelectElement;
+    const opciones = [...urbanizacion.options].map((o) => o.value).filter(Boolean);
+    expect(opciones).toContain('El Retobo');
+    expect(opciones).not.toContain('Trigal Norte');
+    expect(opciones[opciones.length - 1]).toBe('Otra');
+    await usuario.selectOptions(urbanizacion, 'El Retobo');
+
+    const mascotas = screen.getByRole('group', { name: '¿Hay mascotas en casa?' });
+    expect(within(mascotas).getByLabelText('No')).toBeChecked();
+    expect(screen.getByText('Ellas también toman de esa agua.')).toBeInTheDocument();
+    await usuario.click(within(mascotas).getByLabelText('Sí'));
+
+    await usuario.click(screen.getByRole('checkbox'));
+    await usuario.click(screen.getByRole('button', { name: 'Continuar' }));
+    expect(simulada.crearHogar).toHaveBeenCalledWith(
+      expect.objectContaining({ zona: 'Naguanagua', urbanizacion: 'El Retobo', mascotas: true }),
+    );
+  });
+
+  it('en Valencia sur la urbanización solo ofrece "Otra"', async () => {
+    const usuario = userEvent.setup();
+    enRuta('/perfil', <Perfil />);
+    await usuario.selectOptions(screen.getByLabelText('¿En qué zona vives?'), 'Valencia sur');
+    const urbanizacion = screen.getByLabelText(/^Urbanización/) as HTMLSelectElement;
+    expect([...urbanizacion.options].map((o) => o.value).filter(Boolean)).toEqual(['Otra']);
+  });
+
   it('si falla el guardado, el botón conserva su nombre', async () => {
     simulada.crearHogar.mockRejectedValue({ mensaje: 'No se pudo guardar.' });
     const usuario = userEvent.setup();

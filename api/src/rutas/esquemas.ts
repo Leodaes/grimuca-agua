@@ -1,6 +1,16 @@
 // Esquemas de validación (zod) compartidos por las rutas.
 import { z } from 'zod';
-import { CLAVES_PARAMETRO, ORIGENES_AGUA, ZONAS, type ClaveParametro, type OrigenAgua } from '../tipos';
+import {
+  CLAVES_PARAMETRO,
+  MOMENTOS_DIA,
+  ORIGENES_AGUA,
+  SERVICIOS_TECNICOS,
+  ZONAS,
+  type ClaveParametro,
+  type MomentoDia,
+  type OrigenAgua,
+  type ServicioTecnico,
+} from '../tipos';
 
 export const esquemaUuid = z.string().uuid('El identificador no es válido.');
 export const esquemaIdHogar = z.object({ id: esquemaUuid });
@@ -39,6 +49,8 @@ const camposHogar = {
     .regex(/^\+?[\d\s().-]{7,20}$/, 'Escribe el número de WhatsApp solo con dígitos.'),
   direccion: textoONulo(200),
   tienda_id: textoONulo(40),
+  urbanizacion: textoONulo(80),
+  mascotas: z.boolean(),
 };
 
 export const esquemaCrearHogar = z.object({
@@ -53,6 +65,8 @@ export const esquemaCrearHogar = z.object({
   whatsapp: camposHogar.whatsapp,
   direccion: camposHogar.direccion.optional(),
   tienda_id: camposHogar.tienda_id.optional(),
+  urbanizacion: camposHogar.urbanizacion.optional(),
+  mascotas: camposHogar.mascotas.default(false),
   consentimiento: z.literal(true, {
     errorMap: () => ({ message: 'Hace falta aceptar el aviso de privacidad para continuar.' }),
   }),
@@ -71,6 +85,8 @@ export const esquemaCambiarHogar = z
     whatsapp: camposHogar.whatsapp,
     direccion: camposHogar.direccion,
     tienda_id: camposHogar.tienda_id,
+    urbanizacion: camposHogar.urbanizacion,
+    mascotas: camposHogar.mascotas,
   })
   .partial();
 
@@ -91,12 +107,17 @@ export const esquemaMedicionManual = z.object({
 
 export const esquemaCrearPedido = z.object({
   hogar_id: esquemaUuid,
-  tipo: z.enum(['sobre', 'cartucho']),
+  tipo: z.enum(['sobre', 'cartucho', 'servicio']),
   cartucho_codigo: textoONulo(60).optional(),
   cantidad: z.number().int().min(1).max(50).default(1),
   modalidad: z.enum(['retiro', 'envio']),
   direccion: textoONulo(200).optional(),
   tienda_id: textoCorto(40),
+  // Solo para tipo 'servicio' (la ruta exige `servicio` y `fecha_preferida`).
+  servicio: z.enum(SERVICIOS_TECNICOS as [ServicioTecnico, ...ServicioTecnico[]]).nullable().optional(),
+  fecha_preferida: esquemaDia.nullable().optional(),
+  momento: z.enum(MOMENTOS_DIA as [MomentoDia, ...MomentoDia[]]).nullable().optional(),
+  nota: textoONulo(300).optional(),
 });
 
 export const esquemaIdPedido = z.object({ id: z.coerce.number().int().positive().max(2_147_483_647) });

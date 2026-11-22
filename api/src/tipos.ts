@@ -81,7 +81,13 @@ export interface Hogar {
   whatsapp: string;
   direccion: string | null;
   tienda_id: string | null;
+  /** Nombre de la urbanización (lista en urbanizaciones.ts, junto al mapa); null si no se indicó. */
+  urbanizacion: string | null;
+  /** ¿Hay mascotas en casa? */
+  mascotas: boolean;
   consentimiento_fecha: string;
+  /** Filtro registrado (por foto o a mano); null si no hay o aún no se identificó. */
+  filtro?: FiltroHogar | null;
 }
 
 /** Cuerpo de POST /api/hogares. `consentimiento` debe ser `true`. Sin `tienda_id`, el servidor pone la sugerida por zona. */
@@ -97,6 +103,8 @@ export interface EntradaHogar {
   whatsapp: string;
   direccion?: string | null;
   tienda_id?: string | null;
+  urbanizacion?: string | null;
+  mascotas?: boolean;
   consentimiento: true;
 }
 
@@ -170,9 +178,116 @@ export type ResultadoFoto =
   | { estado: 'ok'; medicion: Medicion }
   | { estado: 'no_legible'; motivo: string };
 
-export type TipoPedido = 'sobre' | 'cartucho';
+// ---------- Filtro del hogar (identificado por foto o cargado a mano) ----------
+
+export type TipoFiltro =
+  | 'portafiltro_simple'
+  | 'portafiltro_doble'
+  | 'portafiltro_triple'
+  | 'ultrafiltracion'
+  | 'osmosis_inversa'
+  | 'desbarrador_tanque'
+  | 'suavizador'
+  | 'filtro_de_grifo_o_ducha'
+  | 'otro';
+
+export const TIPOS_FILTRO: readonly TipoFiltro[] = [
+  'portafiltro_simple',
+  'portafiltro_doble',
+  'portafiltro_triple',
+  'ultrafiltracion',
+  'osmosis_inversa',
+  'desbarrador_tanque',
+  'suavizador',
+  'filtro_de_grifo_o_ducha',
+  'otro',
+];
+
+export const NOMBRES_TIPO_FILTRO: Readonly<Record<TipoFiltro, string>> = {
+  portafiltro_simple: 'Portafiltro simple',
+  portafiltro_doble: 'Portafiltro doble',
+  portafiltro_triple: 'Portafiltro triple',
+  ultrafiltracion: 'Ultrafiltración',
+  osmosis_inversa: 'Ósmosis inversa',
+  desbarrador_tanque: 'Filtro de tanque para toda la casa',
+  suavizador: 'Suavizador',
+  filtro_de_grifo_o_ducha: 'Filtro de grifo o ducha',
+  otro: 'Otro filtro',
+};
+
+/** Largo x diámetro del cartucho, en pulgadas. */
+export type MedidaCartucho = '10x2.5' | '10x4.5' | '20x2.5' | '20x4.5';
+export const MEDIDAS_CARTUCHO: readonly MedidaCartucho[] = ['10x2.5', '10x4.5', '20x2.5', '20x4.5'];
+
+export type ConfianzaFiltro = 'alta' | 'media' | 'baja';
+
+export interface FiltroHogar {
+  tipo: TipoFiltro;
+  /** Texto legible: "Portafiltro triple", "Ósmosis inversa"… */
+  tipo_nombre: string;
+  etapas: number | null;
+  medida: MedidaCartucho | null;
+  /** Código del catálogo; null si no se identificó un modelo exacto. */
+  modelo_codigo: string | null;
+  modelo_nombre: string | null;
+  /** Marca y modelo que se leen en la etiqueta de la foto (sin confirmar). */
+  marca_visible: string | null;
+  modelo_visible: string | null;
+  /** Solo si vino de una foto. */
+  confianza: ConfianzaFiltro | null;
+  origen: 'foto' | 'manual';
+  observaciones: string | null;
+}
+
+/** Función del cartucho dentro del filtro. */
+export type FuncionCartucho = 'sedimentos' | 'carbon' | 'resina' | 'membrana' | 'minerales';
+
+export interface CartuchoDelFiltro extends Cartucho {
+  funcion: FuncionCartucho;
+  /** Para qué sirve, en palabras simples ("Pensado para…"). */
+  para_que: string;
+  /** true si atiende algo de lo que midió la tira del hogar. */
+  atiende_medicion: boolean;
+}
+
+/** GET /api/hogares/:id/filtro y PUT /api/hogares/:id/filtro. */
+export interface RespuestaFiltro {
+  filtro: FiltroHogar | null;
+  cartuchos: CartuchoDelFiltro[];
+}
+
+/** POST /api/hogares/:id/filtro/foto (200 en ambos casos). */
+export type ResultadoFotoFiltro =
+  | { estado: 'ok'; filtro: FiltroHogar; cartuchos: CartuchoDelFiltro[] }
+  | { estado: 'no_identificado'; motivo: string };
+
+/** Cuerpo de PUT /api/hogares/:id/filtro. */
+export interface EntradaFiltro {
+  tipo: TipoFiltro;
+  etapas?: number | null;
+  medida?: MedidaCartucho | null;
+  modelo_codigo?: string | null;
+}
+
+/** GET /api/filtros/modelos: equipos del catálogo para el selector manual. */
+export interface ModeloFiltro {
+  codigo: string;
+  nombre: string;
+  categoria: string | null;
+}
+
+export type TipoPedido = 'sobre' | 'cartucho' | 'servicio';
 export type Modalidad = 'retiro' | 'envio';
+/** En los pedidos de servicio, 'despachado' se muestra como "Atendido". */
 export type EstadoPedido = 'pendiente' | 'despachado';
+
+/** Servicio técnico que se pide con "Contrata a un experto". */
+export type ServicioTecnico = 'cambio_cartucho' | 'instalacion_filtro';
+export const SERVICIOS_TECNICOS: readonly ServicioTecnico[] = ['cambio_cartucho', 'instalacion_filtro'];
+
+/** Momento del día preferido para el servicio técnico. */
+export type MomentoDia = 'manana' | 'tarde';
+export const MOMENTOS_DIA: readonly MomentoDia[] = ['manana', 'tarde'];
 
 export interface Pedido {
   id: number;
@@ -187,6 +302,14 @@ export interface Pedido {
   estado: EstadoPedido;
   fecha: string;
   fecha_despacho: string | null;
+  /** Solo en pedidos de servicio; null en los demás. */
+  servicio: ServicioTecnico | null;
+  /** AAAA-MM-DD. Solo en pedidos de servicio. */
+  fecha_preferida: string | null;
+  /** Solo en pedidos de servicio. */
+  momento: MomentoDia | null;
+  /** Nota opcional del cliente (servicio). */
+  nota: string | null;
   /** Solo en respuestas del operador y en los eventos. */
   hogar_nombre?: string;
   /** Solo en respuestas del operador y en los eventos. */
@@ -194,7 +317,10 @@ export interface Pedido {
   cartucho_nombre?: string | null;
 }
 
-/** Cuerpo de POST /api/pedidos. El servidor decide `pago`. */
+/**
+ * Cuerpo de POST /api/pedidos. El servidor decide `pago`.
+ * Con `tipo: 'servicio'` van `servicio` y `fecha_preferida` (obligatorios), `momento` y `nota`; la modalidad es 'envio'.
+ */
 export interface EntradaPedido {
   hogar_id: string;
   tipo: TipoPedido;
@@ -203,6 +329,10 @@ export interface EntradaPedido {
   modalidad: Modalidad;
   direccion?: string | null;
   tienda_id: string;
+  servicio?: ServicioTecnico | null;
+  fecha_preferida?: string | null;
+  momento?: MomentoDia | null;
+  nota?: string | null;
 }
 
 export interface PruebaBacterias {
@@ -251,6 +381,38 @@ export interface AlertaZona {
   hogares_en_rojo_7_dias: number;
   alerta: boolean;
   parametros: string[];
+}
+
+/** Estado de una urbanización en el mapa del operador. */
+export type EstadoUrbanizacion = 'rojo' | 'amarillo' | 'verde' | 'sin_medicion' | 'sin_clientes';
+
+/**
+ * GET /api/operador/mapa: una entrada por urbanización de la lista, más una "Otras de <zona>"
+ * por zona con hogares sin urbanización conocida (`en_tablero: false`, `col`/`fila` en null).
+ */
+export interface UrbanizacionMapa {
+  id: string;
+  nombre: string;
+  zona: string;
+  col: number | null;
+  fila: number | null;
+  en_tablero: boolean;
+  /** Grupo dentro de la zona para el rótulo del mapa (Valencia norte tiene 3); null si no aplica. */
+  grupo: string | null;
+  /** false = urbanización por confirmar. */
+  verificada: boolean;
+  /** Id de la tienda que queda en esa urbanización (no la que despacha). */
+  tienda: string | null;
+  hogares: number;
+  hogares_con_medicion_30_dias: number;
+  /** Solo parámetros de salud: cobre, nitrato, nitrito, plomo, cloro_libre. */
+  hogares_en_rojo_7_dias: number;
+  estado: EstadoUrbanizacion;
+  /** 3 o más hogares en rojo en 7 días. */
+  alerta: boolean;
+  /** Los parámetros que más se repiten en amarillo o rojo. */
+  parametros: string[];
+  pedidos_pendientes: number;
 }
 
 // --- Tiempo real (GET /api/eventos, SSE) ---

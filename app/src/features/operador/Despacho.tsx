@@ -15,9 +15,11 @@ import type { Pedido } from '../../lib/tipos';
 import { TIENDAS_OPERADOR, horaDe } from './estadoPedidos';
 import { ZONAS_OPERADOR } from './datosZonas';
 import type { PedidosEnVivo } from './usePedidosEnVivo';
+import { nombreServicio, textoFechaPreferida } from '../tutoriales/contenido';
 
 function queLleva(p: Pedido): string {
   if (p.tipo === 'sobre') return 'Sobre de medición';
+  if (p.tipo === 'servicio') return nombreServicio(p.servicio);
   const nombre = p.cartucho_nombre ?? p.cartucho_codigo ?? 'Cartucho';
   return p.cantidad > 1 ? `${nombre} × ${p.cantidad}` : nombre;
 }
@@ -37,7 +39,7 @@ export function Despacho({ envivo }: { envivo: PedidosEnVivo }) {
       <div className="flex flex-wrap items-center gap-3">
         <div className="mr-auto">
           <h1 className="g-h1">Despacho</h1>
-          <p>Sobres y cartuchos por salir, por tienda y zona.</p>
+          <p>Sobres, cartuchos y servicios técnicos por atender, por tienda y zona.</p>
         </div>
         <Insignia tono="azul">{totalVisibles} por despachar</Insignia>
         <Insignia tono={envivo.contadorNuevos > 0 ? 'oscuro' : 'neutro'}>Nuevos: {envivo.contadorNuevos}</Insignia>
@@ -108,6 +110,9 @@ export function Despacho({ envivo }: { envivo: PedidosEnVivo }) {
                         key={p.id}
                         tipo={p.tipo}
                         descripcion={`${queLleva(p)} · ${p.hogar_nombre ?? 'Hogar'}`}
+                        fechaPreferida={
+                          p.tipo === 'servicio' ? textoFechaPreferida(p.fecha_preferida, p.momento) || undefined : undefined
+                        }
                         zona={p.zona ?? '—'}
                         modalidad={p.modalidad}
                         direccion={p.direccion ?? undefined}

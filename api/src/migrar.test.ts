@@ -5,6 +5,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import type { Bd } from './bd';
 import { DIR_DB, migrar } from './migrar';
 import { crearBdDePrueba, crearBdVacia, crearEntorno, insertarCartuchos, type CartuchoDePrueba } from './rutas/ayudas-prueba';
+import { buscarUrbanizacion } from './logistica/urbanizaciones';
 import { CLAVES_PARAMETRO, NIVELES, type Evaluacion, type Medicion, type Pedido } from './tipos';
 
 /** Códigos del catálogo que usa db/semilla.sql; aquí se crean con datos de prueba, sin leer el catálogo. */
@@ -118,30 +119,41 @@ describe('db/semilla.sql (datos de demostración)', () => {
     await bd.query(sql);
   });
 
-  it('carga 3 tiendas y 30 hogares repartidos en las tres zonas', async () => {
+  it('carga 3 tiendas y 60 hogares repartidos en las tres zonas', async () => {
     expect(await total(bd, 'tiendas')).toBe(3);
     const { rows } = await bd.query('SELECT zona, count(*) AS total FROM hogares GROUP BY zona ORDER BY zona');
     expect(rows.map((fila) => [fila.zona, Number(fila.total)])).toEqual([
-      ['Naguanagua', 10],
-      ['San Diego', 10],
-      ['Valencia norte', 10],
+      ['Naguanagua', 20],
+      ['San Diego', 20],
+      ['Valencia norte', 20],
     ]);
+  });
+
+  it('cada hogar tiene urbanización de la lista (28 a 32 distintas) y cerca de la mitad tiene mascotas', async () => {
+    const { rows } = await bd.query('SELECT zona, urbanizacion, mascotas FROM hogares');
+    const distintas = new Set(rows.map((fila) => fila.urbanizacion));
+    expect(distintas.size).toBeGreaterThanOrEqual(28);
+    expect(distintas.size).toBeLessThanOrEqual(32);
+    for (const fila of rows) expect(buscarUrbanizacion(fila.urbanizacion)?.zona).toBe(fila.zona);
+    const conMascotas = rows.filter((fila) => fila.mascotas === true).length;
+    expect(conMascotas).toBeGreaterThanOrEqual(24);
+    expect(conMascotas).toBeLessThanOrEqual(36);
   });
 
   it('todos los datos personales son inventados y están marcados como de prueba', async () => {
     const { rows } = await bd.query('SELECT nombre, whatsapp, direccion FROM hogares');
-    expect(rows).toHaveLength(30);
+    expect(rows).toHaveLength(60);
     for (const fila of rows) {
       expect(fila.nombre).toMatch(/^\p{Lu}\p{Ll}+ \p{Lu}\.$/u); // nombre de pila + inicial
-      expect(fila.whatsapp).toMatch(/^0414-555-01\d\d$/);
+      expect(fila.whatsapp).toMatch(/^0414-555-0[12]\d\d$/);
       expect(fila.direccion).toMatch(/\(dato de prueba\)$/);
     }
-    expect(new Set(rows.map((fila) => fila.whatsapp)).size).toBe(30);
+    expect(new Set(rows.map((fila) => fila.whatsapp)).size).toBe(60);
   });
 
   it('cada hogar tiene de 1 a 4 mediciones con la forma del contrato', async () => {
     const porHogar = await bd.query('SELECT hogar_id, count(*) AS total FROM mediciones GROUP BY hogar_id');
-    expect(porHogar.rows).toHaveLength(30);
+    expect(porHogar.rows).toHaveLength(60);
     for (const fila of porHogar.rows) {
       expect(Number(fila.total)).toBeGreaterThanOrEqual(1);
       expect(Number(fila.total)).toBeLessThanOrEqual(4);
@@ -195,7 +207,7 @@ describe('db/semilla.sql (datos de demostración)', () => {
     expect(porZona.get('Valencia norte') ?? 0).toBeLessThan(3);
   });
 
-  it('trae stock en las tres tiendas (con faltantes) y de 6 a 8 pedidos pendientes mezclados', async () => {
+  it('trae stock en las tres tiendas (con faltantes) y de 8 a 12 pedidos pendientes mezclados', async () => {
     const stock = await bd.query('SELECT tienda_id, cantidad FROM stock');
     expect(new Set(stock.rows.map((fila) => fila.tienda_id)).size).toBe(3);
     // Las tres tiendas tienen hogares y pedidos pendientes: ninguna queda vacía en el panel.
@@ -207,8 +219,8 @@ describe('db/semilla.sql (datos de demostración)', () => {
     expect(stock.rows.some((fila) => Number(fila.cantidad) > 0)).toBe(true);
 
     const pendientes = await bd.query("SELECT tipo, pago, cartucho_codigo, modalidad, direccion FROM pedidos WHERE estado = 'pendiente'");
-    expect(pendientes.rows.length).toBeGreaterThanOrEqual(6);
-    expect(pendientes.rows.length).toBeLessThanOrEqual(8);
+    expect(pendientes.rows.length).toBeGreaterThanOrEqual(8);
+    expect(pendientes.rows.length).toBeLessThanOrEqual(12);
     expect(pendientes.rows.some((fila) => fila.tipo === 'sobre')).toBe(true);
     expect(pendientes.rows.some((fila) => fila.tipo === 'cartucho')).toBe(true);
     for (const fila of pendientes.rows) {
