@@ -16,7 +16,7 @@ for (const [nombre, viewport] of [
   ['teléfono 375', { width: 375, height: 812 }],
 ] as const) {
   test(`cerrar sesión con medición en rojo · ${nombre}`, async ({ browser, request }) => {
-    test.skip(() => SOLO_LECTURA, AVISO_SOLO_LECTURA);
+    test.skip(SOLO_LECTURA, AVISO_SOLO_LECTURA);
     const hogar = await crearHogar(request, { tiene_filtro: true, fecha_ultimo_cambio: null, ultimo_cambio: 'no_me_acuerdo' });
     const { valores } = planDeValores(await obtenerTira(request));
     await medirManual(request, hogar.id, valores);
