@@ -1,6 +1,10 @@
 # Alerta: el orquestador parece detenido
 
-## Segunda alerta · ABIERTA desde el dom 22 nov, 3:50 a.m.
+## Segunda alerta · RESUELTA el dom 22 nov a las 4:20 a.m.
+
+> El orquestador volvió a hacer commits entre las 4:05 y las 4:17 a.m.: ensayo cronometrado, guion del video, recomendación principal y paneles que se descargan aparte. También publicó una versión nueva del sitio (`index-CrT_tBP0.js`). Fueron unos 130 minutos sin commits, y el sitio no se cayó en ningún momento.
+
+Lo que se vio a las 3:50 a.m.:
 
 - **Último commit del orquestador en main:** dom 22 nov a la 1:55 a.m. (`a724202` y `79e92cc`). Desde entonces solo hay commits de esta revisión externa.
 - **Tiempo sin commits suyos:** 115 minutos a las 3:50 a.m.

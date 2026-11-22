@@ -4,6 +4,36 @@ Pruebas de navegador contra https://agua.oydo.app, hechas desde una máquina dis
 
 Cómo correrlas: `cd pruebas/externas && npm install && npx playwright install chromium && npx playwright test`. Revisión del repositorio: `node pruebas/externas/revisar-repo.js` desde la raíz.
 
+## Pasada 18 · dom 22 nov, 4:20 a.m. (solo lectura)
+
+**Resumen:** el orquestador publicó una versión nueva entre las 4:05 y las 4:17 a.m.:
+- ensayo cronometrado de la demo y guion del video al día;
+- la recomendación principal atiende primero lo más grave;
+- el técnico recibe los servicios en vivo, en orden de ruta;
+- los paneles de comercio, red y técnico se descargan aparte, con lo que el cliente baja un 40% menos.
+
+**Pasan las 24 revisiones de lectura, sin fallas.** Se saltan 2: el recorrido que crea pedidos.
+
+| Revisión | Teléfono (375 px) | Escritorio |
+|---|---|---|
+| Portada y 7 páginas públicas | Cargan y cumplen | Cargan y cumplen |
+| Paneles `/operador`, `/comercio`, `/tecnico`, `/red` piden PIN (ahora se descargan aparte) | Sí | Sí |
+| No dice «potable» | Cumple | Cumple |
+| Recorrido completo del cliente | Sin probar desde las 11:51 p.m. (no se crean pedidos de madrugada). El orquestador hizo un ensayo cronometrado contra el sitio a las 4:05 a.m. (`e84eb67`) | Igual |
+| Pedido en vivo en Despacho sin recargar | Certificado por la Calidad interna | Certificado por la Calidad interna |
+
+**Repositorio:** 478 archivos revisados, sin hallazgos.
+
+**Orquestador:** último commit a las 4:17 a.m. El sitio responde con la versión nueva. **La segunda alerta queda resuelta.**
+
+### Fallas abiertas
+
+**Rompe la demo**
+- Ninguna.
+
+**Confunde**
+- «Cotizar por WhatsApp» (filtro guardado) y «Mira cómo cambiarlo» (resultado): por confirmar en la prueba de la mañana, porque están dentro del recorrido.
+
 ## Pasada 17 · dom 22 nov, 3:50 a.m. (solo lectura)
 
 **Resumen:** sin cambios: misma versión publicada. **Pasan las 24 revisiones de lectura, sin fallas**, y se saltan 2. Ninguna falla rompe la demo.
