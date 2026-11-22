@@ -1,30 +1,25 @@
-Tulio, este es el resumen del modelo de negocio de Grimuca Agua. Detalle en docs/negocio/modelo.md.
+Tulio, resumen del modelo con tus cifras. Detalle en docs/negocio/modelo.md.
 
-EL MODELO
+NUMEROS FINALES
+- Sobre: $1,54 a $2,04 en fábrica (tuyo). Con importación y empaque ($1,00, supuesto) y envío ($2,50, supuesto) deja $3,56 a domicilio y $6,06 con retiro.
+- Cada 100 sobres: 10 filtro, 30 cartuchos, 60 informan (tuyo).
+- Por tienda, primer mes: $1.150 a $1.830 con costos extra (supuestos).
+- Equilibrio: 40 a 44 sobres al mes por tienda (con la mitad de conversión, 62). Tu meta es 150.
+- Caja a 12 meses, 3 tiendas: base +$65.500, positiva desde el mes 3. Conservador (mitad de captación y conversión): +$6.200, positiva desde el mes 8.
+- Lo que lo tumba: la captación. Con menos de unos 34 hogares por tienda al mes (57 con conversión a la mitad), la caja del año 1 no cierra.
+- Botellón (tu estimación, $240 a $576 al año) contra filtro de 6 etapas: se paga en 4 a 5 meses con delivery y en 10 a 13 sin él. Un hogar mueve 2.370 a 2.844 kg al año con botellón y unos 6 con filtro.
 
-- El sobre de $9 cuesta unos $7,26 armado y entregado (supuesto) y deja $1,74. Se paga solo. Con retiro en tienda deja $4,24.
-- El negocio es el filtro (supuse $60, margen $18) y los recambios (juego de cartuchos a $18, margen $6,30, cada 6 meses).
-- De cada 100 sobres supuse 15 filtros vendidos. Cada cliente deja $24 de margen en 12 meses y $34 en 24.
-- Conseguir un cliente no cuesta: los sobres pagan la publicidad y sobra $1,57.
-- Punto de equilibrio: 69 sobres al mes por tienda, menos de 3 al día.
-- Flujo de caja, 3 tiendas: el primer año queda casi tablas (-$1.400) y el segundo gana $3.800. Cobrando el envío aparte, el primer año cierra en +$5.000.
-- Familia de 4: botellón a domicilio $208 al año; con filtro, $102 el primer año y $45 el segundo.
-- Logística: un hogar con botellón mueve 2.054 kg y 52 entregas al año; con filtro, menos de 4 kg y 3 envíos.
+DIFERENCIAS AL VERIFICAR TUS CUENTAS
+1. Los $1.050 de sobres son margen (150 x $7), no ingreso. El ingreso es $1.350.
+2. Tu rango alto, $2.450, con tus datos da $2.377 ($2.737 menos $360). El bajo, $1.650, cuadra.
+3. Filtros: son 15 al mes por tienda (10% de 150), no 60. Los 60 son hogares que compran algo (15 + 45).
+4. Los 720 hogares con filtro al mes 12 incluyen a los 540 que ya tenían filtro; solo 180 compraron filtro a Grimuca.
+5. 240 cambios y $2.280 al mes suponen que nadie abandona. Mes a mes salen unos 213 a 225 y $2.020 a $2.140.
+6. Piloto: $1.540 de costo solo se logra con 2.000 unidades; con 1.000 son $1.940.
 
-OJO: si el frasco de bacterias pasa de $3,92, o si menos de 12 de cada 100 sobres compran filtro, el modelo no cierra.
-
-LO QUE NECESITO QUE CONFIRMES
-
-1. Prueba de bacterias: proveedor y costo por frasco. Supuse $2,70.
-2. Envío del sobre en Valencia: costo, y si va dentro de los $9 o aparte. Supuse $2,50 incluido.
-3. De cada 100 sobres, cuántos compran filtro. Supuse 15.
-4. Filtros que vamos a ofrecer: precio y costo.
-5. Cartuchos: precio, costo y cada cuánto se cambian.
-6. Importación: flete y nacionalización. Supuse 35%.
-7. Empaque e impresos. Supuse $0,50.
-8. La tira de 4 centavos: ¿incluye flete? ¿Viene sellada de a una?
-9. Instalación del filtro: quién la hace y cuánto cobra. Supuse $15.
-10. Precio del botellón hoy en Valencia, recarga y a domicilio.
-11. Cuál tienda vende más y qué zonas atiende.
-
-Con los puntos 1 a 5 cierro los números del pitch. Responde con lo que tengas, así sea aproximado.
+PENDIENTE DE TI
+- Tarifa de envío (SAMA Logística 3), con cobertura en Naguanagua y San Diego.
+- Costos de la pasarela (Cobrix).
+- Importación y empaque.
+- Precios internos de Grimuca: costo y precio de venta de filtros y cartuchos, y confirmar 50% y 3 meses.
+- Cuántos sobres van a domicilio.

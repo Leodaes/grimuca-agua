@@ -44,6 +44,13 @@ export function Bienvenida() {
 
   return (
     <PaginaAlta>
+      <img
+        src="/promo/saber-que-tomas.jpg"
+        alt=""
+        width={1024}
+        height={1024}
+        style={{ width: '100%', height: 'auto', display: 'block' }}
+      />
       <p className="g-kicker">Grimuca Agua</p>
       <h1 className="g-h1">Descubre la calidad del agua de tu casa</h1>
       <p className="g-h3" style={{ margin: 0 }}>
@@ -67,6 +74,15 @@ export function Bienvenida() {
           </li>
         ))}
       </ul>
+
+      <img
+        src="/promo/mide-entiende-filtra.jpg"
+        alt="Mide, entiende y filtra: retira en Mañongo o San Diego, o te lo llevamos."
+        width={1024}
+        height={1024}
+        loading="lazy"
+        style={{ width: '100%', height: 'auto', display: 'block' }}
+      />
 
       {conHogar && diasRecambio !== null && (
         <AvisoRecambio dias={diasRecambio} destino="/resultado/ultimo" etiqueta="Ver productos sugeridos" />

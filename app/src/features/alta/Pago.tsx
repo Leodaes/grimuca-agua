@@ -110,6 +110,14 @@ export function Pago() {
         <h2 className="g-h2" id="resumen-sobre">
           Sobre de medición Grimuca Agua
         </h2>
+        <img
+          src="/promo/sobre.jpg"
+          alt="El sobre trae la tira, el frasco de la prueba de bacterias, la tabla de colores y un código QR."
+          width={1024}
+          height={1024}
+          loading="lazy"
+          style={{ width: '100%', height: 'auto', display: 'block' }}
+        />
         <ul>
           <li>1 tira para medir tu agua</li>
           <li>1 prueba de bacterias (E. coli y coliformes)</li>
