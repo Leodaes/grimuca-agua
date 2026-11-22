@@ -1,0 +1,74 @@
+# Grimuca Agua en el servidor compartido.
+#
+# Se usa SIEMPRE con el archivo de variables en la línea de comandos, porque
+# ${POSTGRES_PASSWORD} se interpola al leer este archivo:
+#
+#   docker compose -p agua --env-file /opt/agua/agua.env \
+#     -f /opt/agua/fuente/infra/docker-compose.yml up -d --build --remove-orphans
+#
+# Todo lo que se crea aquí pertenece al proyecto de compose "agua":
+# contenedores agua-app-1 y agua-bd-1, red agua_default y volumen agua_bd.
+
+name: agua
+
+x-registro: &registro
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+  bd:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: agua
+      POSTGRES_DB: agua
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:?Falta POSTGRES_PASSWORD; usa --env-file /opt/agua/agua.env}"
+    # Sin "ports": la base solo se alcanza desde la red del proyecto.
+    volumes:
+      - agua_bd:/var/lib/postgresql/data
+    healthcheck:
+      # Por TCP a propósito: durante la inicialización Postgres solo escucha
+      # en el socket y no debe darse por lista todavía.
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U agua -d agua"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 15s
+    mem_limit: 512m
+    cpus: 1.0
+    logging: *registro
+
+  app:
+    build:
+      context: ..
+      dockerfile: infra/Dockerfile
+    init: true
+    restart: unless-stopped
+    env_file:
+      - /opt/agua/agua.env
+    environment:
+      # agua.env no trae DATABASE_URL: se compone aquí. La contraseña debe ser
+      # segura para URL (letras, números, punto, guion, guion bajo, virgulilla).
+      DATABASE_URL: "postgres://agua:${POSTGRES_PASSWORD}@bd:5432/agua"
+      PUERTO: "3070"
+    ports:
+      - "127.0.0.1:3070:3070"
+    depends_on:
+      bd:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:3070/api/salud"]
+      interval: 15s
+      timeout: 5s
+      retries: 4
+      start_period: 40s
+    stop_grace_period: 15s
+    mem_limit: 512m
+    cpus: 1.0
+    logging: *registro
+
+volumes:
+  agua_bd:
+    name: agua_bd
