@@ -240,8 +240,8 @@ test.describe('Compuerta 3 · despacho en vivo', () => {
 
       const segundos = await esperarPedidoNuevo(paginaA, antes, desde);
       testInfo.annotations.push({ type: 'tiempo de aparición', description: `${segundos.toFixed(1)} s (pedido ${pedidoId})` });
-      await testInfo.attach('telefono-pedido-confirmado', { body: await paginaB.screenshot(), contentType: 'image/png' });
-      await testInfo.attach('despacho-con-pedido-del-telefono', { body: await paginaA.screenshot(), contentType: 'image/png' });
+      await testInfo.attach('telefono-pedido-confirmado', { body: await paginaB.screenshot({ path: 'docs/calidad/capturas/41-telefono-pedido-para-despacho.png' }), contentType: 'image/png' });
+      await testInfo.attach('despacho-con-pedido-del-telefono', { body: await paginaA.screenshot({ path: 'docs/calidad/capturas/40-despacho-pedido-del-telefono-en-vivo.png' }), contentType: 'image/png' });
 
       const pedido = await (await request.get(`/api/pedidos/${pedidoId}`)).json();
       expect(pedido.tienda_id, 'El pedido del teléfono debe salir de Mañongo').toBe('manongo');
@@ -254,7 +254,7 @@ test.describe('Compuerta 3 · despacho en vivo', () => {
         async () => (await (await request.get(`/api/pedidos/${pedidoId}`)).json()).estado,
         producto.nombre,
       );
-      await testInfo.attach('despacho-despues-de-despachar', { body: await paginaA.screenshot(), contentType: 'image/png' });
+      await testInfo.attach('despacho-despues-de-despachar', { body: await paginaA.screenshot({ path: 'docs/calidad/capturas/42-despacho-despues-de-despachar.png' }), contentType: 'image/png' });
     } finally {
       await contextoB.close();
       await contextoA.close();

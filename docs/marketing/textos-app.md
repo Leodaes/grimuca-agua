@@ -1,6 +1,6 @@
 # Textos de la app · Grimuca Agua
 
-Versión 2 (21 nov, noche): aplica las decisiones de Tulio (lema, promesa, semáforo con sus palabras, flujo con QR, tiendas reales). Detalle en `cambios-tulio.md`. Listos para pegar.
+Versión 3 (21 nov, noche): aplica las decisiones de Tulio (lema, promesa, semáforo con sus palabras, flujo con QR, tiendas reales) y el lente de marketing y ventas: el cliente es el protagonista y Grimuca lo guía. Cambios de esta versión: bienvenida, sobre, resultado con llamado a la acción por semáforo, tarjeta de producto, Mi lista, pedido confirmado y mensajes de WhatsApp (sección 19). La lista corta que Desarrollo aplica a la app está en `cambios-para-la-app.md`. Detalle de Tulio en `cambios-tulio.md`. Listos para pegar.
 
 **Lema definitivo:** Saber qué tomas empieza en casa
 **Promesa:** Menos botellones: mide tu agua y cambia el cartucho cuando toca
@@ -45,10 +45,11 @@ Versión 2 (21 nov, noche): aplica las decisiones de Tulio (lema, promesa, semá
 | Título (lema) | Saber qué tomas empieza en casa |
 | Subtítulo (promesa) | Menos botellones: mide tu agua y cambia el cartucho cuando toca. |
 | Línea fija bajo el subtítulo | Medición orientativa con tira. No es un análisis de laboratorio. |
-| Explicación del sobre | El sobre trae una tira y una prueba de bacterias. Lo compras en el mostrador de Grimuca Mañongo o San Diego, o en las farmacias y supermercados aliados, o te lo llevamos a la casa. |
+| Explicación (el plan en tres pasos) | Escanea el QR de tu sobre, pon una gota en cada casilla de la tira y toma una foto. Te explicamos cada resultado y, si hace falta cambiar el cartucho, te decimos cuál. |
+| Dónde se consigue el sobre | Lo compras en el mostrador de Grimuca Mañongo o San Diego, o en las farmacias y supermercados aliados, o te lo llevamos a la casa. |
 | Beneficio 1 | **Mides en tu casa.** Una tira, una gota por casilla y una foto. |
 | Beneficio 2 | **Te lo explicamos claro.** Verde, amarillo o rojo, casilla por casilla. |
-| Beneficio 3 | **Te decimos cuándo cambiar el cartucho.** Y cuál va. |
+| Beneficio 3 | **Te decimos cuándo cambiar el cartucho.** Y cuál va. Sale de la tienda Grimuca que te quede más cerca. |
 | Botón principal (camino A) | Ya tengo mi sobre |
 | Botón secundario (camino B) | Pedir el sobre a domicilio ($9) |
 | Pie | Grimuca · Mañongo · Big Low · CC CEM |
@@ -107,7 +108,7 @@ Versión 2 (21 nov, noche): aplica las decisiones de Tulio (lema, promesa, semá
 | Cambiar tienda | Prefiero otra tienda |
 | Qué trae el sobre (título) | Qué te llega |
 | Qué trae 1 | 1 tira para medir tu agua |
-| Qué trae 2 | 1 prueba casera de bacterias coliformes |
+| Qué trae 2 | 1 prueba casera de bacterias coliformes ("E. coli" solo si lo dice la caja del frasco real) |
 | Qué trae 3 | La tabla de colores impresa |
 | Qué trae 4 | Un código QR con el video de cómo se hace |
 | Nota | El sobre es para una sola medición. |
@@ -132,7 +133,7 @@ Versión 2 (21 nov, noche): aplica las decisiones de Tulio (lema, promesa, semá
 | Confirmación: línea fija | Pago simulado registrado. No se hizo ningún cobro. |
 | Confirmación: título | Listo, {nombre}. Tu sobre está pedido. |
 | Confirmación: detalle | Pedido N.º {numero} · Sale de Grimuca {tienda} |
-| Confirmación: qué sigue | Cuando te llegue, abre la app y escanea el QR del sobre. |
+| Confirmación: qué sigue | Cuando el pedido salga de la tienda, su estado cambia a Despachado en la app. Cuando te llegue el sobre, abre la app y escanea su QR. |
 | Botón | Entendido |
 | Botón de la demo | Ya me llegó el sobre (saltar la espera): lleva a escanear el QR |
 | Error | No se pudo registrar el pedido. No se cobró nada. Intenta otra vez. |
@@ -253,13 +254,15 @@ Versión 2 (21 nov, noche): aplica las decisiones de Tulio (lema, promesa, semá
 
 ## 10. Resultado
 
-**Encabezado general (según el peor color de la tira)**
+**Encabezado general (según el peor color de la tira) y llamado a la acción**
 
-| Estado | Título | Línea de apoyo |
-|---|---|---|
-| Verde | Todo lo que medimos salió en rango | Ninguna casilla salió fuera de lo esperado en esta medición. |
-| Amarillo | Hay casillas para vigilar | Una o más casillas salieron cerca del límite. Abajo te decimos cuáles. |
-| Rojo | Hay casillas que atender | Una o más casillas salieron fuera de rango. Abajo te decimos cuáles y qué hacer. |
+| Estado | Título | Línea de apoyo | Acción principal |
+|---|---|---|---|
+| Verde | Todo lo que medimos salió en rango | Todos los parámetros medidos están en rango. | Si tiene filtro: "Cotizar el recambio de mi filtro por WhatsApp". Si no: "Medir otra vez cuando cambies el cartucho". |
+| Amarillo | Hay casillas para vigilar | Una o más casillas salieron cerca del límite. Abajo te decimos cuáles y qué opciones hay en la tienda. | "Agregar a mi lista" en la primera tarjeta de "Lo que te recomendamos". |
+| Rojo | Hay casillas que atender | Una o más casillas salieron fuera de rango. Abajo te decimos cuáles y qué opciones hay en la tienda. | "Agregar a mi lista" en la primera tarjeta; "Cotizar por WhatsApp" como segunda vía. |
+
+> Legal: el verde no lleva tono de tranquilidad ni ícono de aprobado, y el aviso fijo va pegado. El llamado a la acción del verde habla de recambio y de repetir la medición, y no de la calidad del agua.
 
 **Aviso fijo (siempre visible, debajo del encabezado, no se puede cerrar)**
 
@@ -320,22 +323,30 @@ Versión 2 (21 nov, noche): aplica las decisiones de Tulio (lema, promesa, semá
 | Frecuencia de referencia (estimación de Tulio) | Los cartuchos se cambian más o menos cada 3 meses. |
 | Siguiente paso, marcado como "Próximamente" | Recordatorio por WhatsApp. |
 
-**Productos sugeridos**
+**Lo que te recomendamos (tarjeta de producto)**
 
 | Elemento | Texto |
 |---|---|
 | Encabezado | Lo que te recomendamos |
 | Subtítulo | Según tu resultado y lo que nos contaste de tu casa. |
 | En la tarjeta | Pensado para: {hallazgos} |
-| Precio | ${precio} |
+| Precio | No se muestra (decisión de Tulio). Enlace: **Cotizar por WhatsApp** |
+| Línea bajo el enlace | El precio te lo confirma la tienda por WhatsApp, sin compromiso. |
 | Disponibilidad | Hay en Grimuca {tienda} |
 | Sin existencia | Por ahora no hay en {tienda}. Mira si hay en otra tienda. |
 | Botón de la tarjeta | Agregar a mi lista |
 | Ya agregado | En tu lista |
 | Aviso al agregar | Agregado a tu lista |
-| Marcador de catálogo | Sugerido según tu resultado. Producto y precio de ejemplo. |
-| Sin productos (todo en verde) | Con esta medición no tenemos un cartucho que recomendarte. Vuelve a medir cuando cambies el cartucho o si notas el agua distinta. |
-| Pie | ¿Dudas? Pasa por la tienda y lo vemos contigo. |
+| Marcador de catálogo (literal de Legal) | Sugerido según tu resultado. Producto y precio de ejemplo. |
+| Sección sin productos: título | Lo que sigue |
+| Sección sin productos: texto | Con esta medición no tenemos un cartucho que recomendarte. Lo que toca ahora es cambiar el cartucho a tiempo y volver a medir cuando lo cambies. |
+| Sección sin productos: botón (solo si tiene filtro) | Cotizar el recambio de mi filtro por WhatsApp |
+| Sección sin productos: enlace | ¿Dudas? Pasa por la tienda y lo vemos contigo. |
+| Tarjeta "Tu cartucho": enlace con productos | Ver productos sugeridos |
+| Tarjeta "Tu cartucho": enlace sin productos | Cotizar el recambio |
+| Hogar sin filtro: título | ¿Todavía no tienes filtro? |
+| Hogar sin filtro: texto | Pregunta en la tienda qué filtro se ajusta a tu casa. Te contamos las opciones según lo que midió tu tira y cuántos son en casa. |
+| Hogar sin filtro: botón | Preguntar por filtros por WhatsApp |
 
 > Nota: "Pensado para" en vez de "corrige" o "elimina": no prometemos lo que hace el cartucho. Con la ficha del fabricante en mano se puede decir "Pensado para reducir {hallazgo} (según el fabricante)"; sin ficha, no se afirma nada.
 
@@ -346,12 +357,12 @@ Versión 2 (21 nov, noche): aplica las decisiones de Tulio (lema, promesa, semá
 | Elemento | Texto |
 |---|---|
 | Título | Mi lista |
-| Subtítulo | Lo que vas a pedir a la tienda. |
+| Subtítulo | Lo que le pedimos a la tienda por ti. |
 | Cantidad | Cantidad |
 | Quitar | Quitar |
 | Total | Total estimado: ${total} |
-| Nota | Aquí no se cobra nada. La tienda te confirma el precio y cómo pagar. |
-| Botón | Pedir |
+| Nota | No se cobra nada ahora. La tienda te escribe al WhatsApp que nos diste para confirmarte el precio y la entrega. (Se aplica cuando Tulio confirme quién escribe y cuándo.) |
+| Botón | Hacer pedido |
 | Lista vacía: título | Tu lista está vacía |
 | Lista vacía: línea | Mide tu agua y te decimos qué cartucho te sirve. |
 | Lista vacía: botón | Medir mi agua |
@@ -388,6 +399,9 @@ Versión 2 (21 nov, noche): aplica las decisiones de Tulio (lema, promesa, semá
 | Estado: pendiente | En preparación |
 | Estado: despachado | Despachado |
 | Aviso al despachar | Tu pedido ya salió de Grimuca {tienda}. |
+| Qué sigue | La tienda te escribe al WhatsApp que nos diste para confirmarte el precio y la entrega. |
+| Aviso | No se cobra nada ahora. |
+| Recordatorio de recambio (si hay fecha) | Te toca cambiar el cartucho en {dias} días. Vuelve a medir cuando lo cambies. |
 | Botón principal | Volver a mis resultados |
 | Botón secundario | Ver tiendas |
 
@@ -559,3 +573,16 @@ Datos tomados de grimuca.com por Tulio. WhatsApp compartido de las tres tiendas.
 | Columnas | Zona · Hogares · En rojo (7 días) · Tienda que la atiende |
 | Sin alertas | Ninguna zona en alerta esta semana. |
 | Regla (texto pequeño) | Una zona entra en alerta con 3 o más hogares en rojo en 7 días. |
+
+---
+
+## 19. Mensajes que la app escribe en WhatsApp (los envía el cliente, que puede editarlos)
+
+El enlace abre el chat de las tiendas con el texto ya escrito. Datos que usa: nombre, zona, fecha de la medición, casillas en Amarillo o Rojo (con "orientativo" en plomo y cobre), cuántos viven, filtro y etapas. Las variables y el detalle están en `cambios-para-la-app.md` (cambios 1, 3, 5 y 12). El Asesor legal confirma este uso.
+
+| Cuándo | Mensaje |
+|---|---|
+| Cotizar un cartucho | Hola, soy {nombre}, de {zona}. Medí mi agua con el sobre de Grimuca Agua el {fecha}. Casillas para vigilar o atender: {lista}. Somos {personas} en casa{filtro}. Quiero cotizar: {producto} (código {codigo}). ¿Tienen en {tienda}? |
+| Resultado todo en verde | Hola, soy {nombre}, de {zona}. Tengo un filtro de {etapas} etapas y el último cambio de cartucho fue {fecha, o "no me acuerdo"}. Mi medición del {fecha}: todas las casillas medidas salieron en Verde. Quiero cotizar el recambio. |
+| Sin filtro | Hola, soy {nombre}, de {zona}. Somos {personas} en casa y no tenemos filtro. Mi medición del {fecha}: {lista}. ¿Qué filtros tienen y cuánto cuestan? |
+| Frasco de bacterias que cambió | Hola, soy {nombre}, de {zona}. Mi prueba de bacterias cambió de color a las 48 horas. Quiero consultar la lámpara UV. |

@@ -1,0 +1,7 @@
+{
+  "prueba": "camino \"Pedir el sobre a domicilio\": perfil → envío → pago simulado → \"Ya me llegó el sobre\" → medir",
+  "estado": "passed",
+  "hallazgos": [],
+  "erroresConsola": [],
+  "tiempos": {}
+}

@@ -1,25 +1,17 @@
-Tulio, resumen del modelo con tus cifras. Detalle en docs/negocio/modelo.md.
+Tulio, resumen de la auditoria del asesor de marketing y ventas. Detalle en docs/negocio/auditoria-asesor.md y modelo.md.
 
-NUMEROS FINALES
-- Sobre: $1,54 a $2,04 en fábrica (tuyo). Con importación y empaque ($1,00, supuesto) y envío ($2,50, supuesto) deja $3,56 a domicilio y $6,06 con retiro.
-- Cada 100 sobres: 10 filtro, 30 cartuchos, 60 informan (tuyo).
-- Por tienda, primer mes: $1.150 a $1.830 con costos extra (supuestos).
-- Equilibrio: 40 a 44 sobres al mes por tienda (con la mitad de conversión, 62). Tu meta es 150.
-- Caja a 12 meses, 3 tiendas: base +$65.500, positiva desde el mes 3. Conservador (mitad de captación y conversión): +$6.200, positiva desde el mes 8.
-- Lo que lo tumba: la captación. Con menos de unos 34 hogares por tienda al mes (57 con conversión a la mitad), la caja del año 1 no cierra.
-- Botellón (tu estimación, $240 a $576 al año) contra filtro de 6 etapas: se paga en 4 a 5 meses con delivery y en 10 a 13 sin él. Un hogar mueve 2.370 a 2.844 kg al año con botellón y unos 6 con filtro.
+HALLAZGOS
+- El sobre se paga solo ($3,56 a $6,06). Lo que manda es la captacion: con menos de 34 hogares por tienda al mes la caja anual no cierra. Tu meta es 150.
+- Fuga 1: si los 30 de cada 100 con filtro no compran cartuchos, la caja base baja de $65.500 a $33.900.
+- Fuga 2: si cada sobre cuesta $4 en anuncios, el escenario conservador queda en -$3.500. El tope sano es $1,80 a $2,70 por sobre.
+- Fuga 3: si la mitad abandona el recambio, la caja base baja a unos $53.400.
+- Capital: comprando filtros y cartuchos por adelantado, el piloto pide $15.000 a $20.000, no $4.440. Propongo filtros contra anticipo.
+- "Cotizar por WhatsApp" pierde compradores. Propongo precio de cartuchos visible (con el abogado) y respuesta en 2 horas habiles.
+- modelo.md ahora trae 6 indicadores del piloto con meta y alarma, y 3 experimentos baratos.
+- Las 6 diferencias en tus cuentas siguen vigentes: corregirlas antes del pitch.
 
-DIFERENCIAS AL VERIFICAR TUS CUENTAS
-1. Los $1.050 de sobres son margen (150 x $7), no ingreso. El ingreso es $1.350.
-2. Tu rango alto, $2.450, con tus datos da $2.377 ($2.737 menos $360). El bajo, $1.650, cuadra.
-3. Filtros: son 15 al mes por tienda (10% de 150), no 60. Los 60 son hogares que compran algo (15 + 45).
-4. Los 720 hogares con filtro al mes 12 incluyen a los 540 que ya tenían filtro; solo 180 compraron filtro a Grimuca.
-5. 240 cambios y $2.280 al mes suponen que nadie abandona. Mes a mes salen unos 213 a 225 y $2.020 a $2.140.
-6. Piloto: $1.540 de costo solo se logra con 2.000 unidades; con 1.000 son $1.940.
-
-PENDIENTE DE TI
-- Tarifa de envío (SAMA Logística 3), con cobertura en Naguanagua y San Diego.
-- Costos de la pasarela (Cobrix).
-- Importación y empaque.
-- Precios internos de Grimuca: costo y precio de venta de filtros y cartuchos, y confirmar 50% y 3 meses.
-- Cuántos sobres van a domicilio.
+NECESITO DE TI
+1. Cuantos clientes entran por dia a cada tienda.
+2. Que comision cobrarian farmacias y supermercados por vender el sobre.
+3. Cada cuanto se cambia cada etapa del filtro segun Oasis (el modelo supone 3 meses para todo).
+4. Precios internos de Grimuca de filtros y cartuchos, y la tarifa de SAMA.

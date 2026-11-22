@@ -62,6 +62,15 @@ function primerNumero(texto: string): number {
  * (un nivel de la tabla de colores: se compara con el texto de la opción y con su valor).
  */
 export async function elegirEnLista(lista: Locator, opcion: RegExp | number): Promise<void> {
+  // La lista puede estar todavía cargando ("Cargando tiendas…"): se espera a que aparezca la opción.
+  if (opcion instanceof RegExp) {
+    await expect
+      .poll(async () => (await lista.locator('option').allTextContents()).some((t) => opcion.test(t.trim())), {
+        timeout: 10_000,
+      })
+      .toBe(true)
+      .catch(() => undefined);
+  }
   const opciones = await lista.locator('option').evaluateAll((elementos) =>
     elementos.map((elemento) => ({
       valor: (elemento as HTMLOptionElement).value,

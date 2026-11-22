@@ -1,0 +1,9 @@
+{
+  "prueba": "lectura por foto con una imagen que no es una tira: \"no legible\" y ofrece la carga manual",
+  "estado": "passed",
+  "hallazgos": [],
+  "erroresConsola": [],
+  "tiempos": {
+    "fotoNoLegibleSegundos": 3.544
+  }
+}

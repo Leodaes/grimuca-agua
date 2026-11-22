@@ -81,8 +81,8 @@ test.describe('Salud del sitio', () => {
     expect(respuesta?.status(), 'La portada debe responder 200').toBe(200);
     await expect(page.getByRole('heading', { level: 1, name: TITULO_PORTADA })).toBeVisible();
     await expect.soft(page, 'El título de la pestaña debe nombrar la app').toHaveTitle(/Grimuca/i);
-    await expect.soft(page.getByRole('link', { name: /empezar|seguir donde qued/i }).or(
-      page.getByRole('button', { name: /empezar|seguir donde qued/i }),
+    await expect.soft(page.getByRole('link', { name: /ya tengo mi sobre|pedir el sobre a domicilio|medir mi agua/i }).or(
+      page.getByRole('button', { name: /ya tengo mi sobre|pedir el sobre a domicilio|medir mi agua/i }),
     ).first(), 'La portada debe tener el botón para arrancar').toBeVisible();
   });
 });

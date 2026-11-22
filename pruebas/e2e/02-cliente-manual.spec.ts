@@ -67,7 +67,9 @@ import {
  */
 const T = {
   tituloPortada: /Descubre la calidad del agua de tu casa/i,
-  empezar: /^\s*(empezar|comenzar)\s*$/i,
+  // 21 nov: la portada ya no tiene "Empezar"; este recorrido va por el camino a domicilio
+  // (el camino "Ya tengo mi sobre" lo recorre 06-capturas-revision).
+  empezar: /pedir el sobre a domicilio/i,
   nombre: /nombre|c[oó]mo te llamas/i,
   zona: /zona/i,
   origenAgua: /de d[oó]nde (viene|sale) el agua/i,
@@ -86,11 +88,13 @@ const T = {
   yaLlegoElSobre: /ya me lleg[oó] el sobre/i,
   cargaManual: /colores\s+(a mano|yo mismo|t[uú] mismo)/i,
   verResultado: /ver mi resultado/i,
-  nivelVerde: /\b(bien|en rango)\b/i,
-  nivelAmarillo: /atenci[oó]n|para vigilar/i,
-  nivelRojo: /alerta|fuera de rango/i,
+  // 21 nov: el semáforo dice el color tal cual (Verde, Amarillo, Rojo).
+  // Con mayúscula y sin \b: en el texto de la fila la unidad va pegada ("mg/LVerde").
+  nivelVerde: /Verde/,
+  nivelAmarillo: /Amarillo/,
+  nivelRojo: /Rojo/,
   agregarALista: /agregar a mi lista/i,
-  agregado: /agregado a tu lista|qued[oó] en tu lista|en tu lista/i,
+  agregado: /^\s*agregado\s*$|agregado a tu lista|qued[oó] en tu lista/i,
   miLista: /mi lista/i,
   retiro: /retir/i,
   tienda: /tienda/i,
@@ -303,7 +307,12 @@ test.describe('Compuerta 2 · recorrido del cliente con carga manual', () => {
         if (await chip.isVisible().catch(() => false)) await chip.click();
         else expect.soft(false, 'No se encontró cómo elegir la tienda de retiro (lista o chips)').toBe(true);
       }
-      await expect(page.getByText(T.manongo).first(), 'Debe verse la tienda Mañongo como punto de retiro').toBeVisible();
+      // La tienda es una lista desplegable: lo que se ve es la opción elegida, no un texto suelto.
+      if (await tienda.isVisible().catch(() => false)) {
+        await expect(tienda, 'Debe quedar elegida la tienda Mañongo como punto de retiro').toHaveValue('manongo');
+      } else {
+        await expect(page.getByText(T.manongo).first(), 'Debe verse la tienda Mañongo como punto de retiro').toBeVisible();
+      }
 
       await sinPalabraProhibida(page, '/lista', false);
       await accion(page, T.confirmarPedido).click();

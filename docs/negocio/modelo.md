@@ -217,7 +217,7 @@ Si todos los sobres fueran a domicilio, el envío es −$375 y el rango baja a *
 
 **Conclusión:** ninguna variable sola tumba el base. El modelo se rompe por la **captación**: con la conversión de Tulio, la caja del año 1 cierra en cero con unos **34 hogares al mes por tienda**; con la mitad de conversión, con unos **57**. La meta es 150. Después viene la combinación **conversión baja + abandono del recambio**, que deja el conservador en cero. Por eso el piloto debe medir **cuántos hogares por tienda y cuántos de cada 100 compran qué**.
 
-**No incluido (SUPUESTO que no tiene dato):** publicidad. Tulio no dio presupuesto; la captación es por QR, mostrador y aliados. Si se pagara $1,50 por sobre vendido, el año 1 base cuesta $7.300 más y sigue positivo.
+**No incluido (SUPUESTO que no tiene dato):** publicidad. Tulio no dio presupuesto; la captación es por QR, mostrador y aliados. Si se pagara $1,50 por sobre vendido, el año 1 base cuesta $7.300 más y sigue positivo. Ese $1,50 es optimista. A partir de los planes de medios del curso del asesor (casos de otros rubros, no Valencia; ver `auditoria-asesor.md`), Business estima $3,50 a $5,50 por sobre vendido. Con $4,00 en todos los sobres, el año 1 base cuesta $19.400 más y cierra con $46.100 de caja; el conservador cuesta $9.700 más y cierra en −$3.500. El tope sano es 20% a 30% del ticket: $1,80 a $2,70 por sobre.
 
 ---
 
@@ -341,6 +341,41 @@ Con ósmosis ($446 el primer año) el ahorro del primer año es $34 a $130 solo 
 
 **El piloto es la prueba del modelo.** Al terminar se sabe: cuántos de cada 100 compran filtro, cuántos ya tenían, cuántos hogares reales llegan por tienda al mes, qué porcentaje pide domicilio y cuánto cuesta el envío de verdad. Con eso se corrigen las 5 cifras que más mueven la caja.
 
+**Capital de trabajo que el flujo no cuenta (inferencia de Business, ver `auditoria-asesor.md`):** el hueco de caja de $4.440 a $4.940 no incluye inventario de filtros ni de cartuchos. Si se compraran por adelantado los ~100 filtros y ~300 juegos de cartuchos que debería traer el piloto, a 80% y 50% del precio de referencia, la caja que hay que tener lista sube a unos $15.000 (todo ultrafiltración) o $20.000 (mezcla 70/30). Para el piloto se propone vender el filtro contra anticipo del cliente y comprarlo a Oasis al recibirlo, y mantener solo unas dos semanas de cartuchos.
+
+---
+
+## KPI del piloto
+
+Seis indicadores, medidos cada semana con una reunión de 30 minutos. Los porcentajes se calculan sobre sobres vendidos, como los cuenta Tulio (de cada 100). Origen de las metas: **Tulio** donde dice Tulio; **SUPUESTO** donde es de Business y se recalibra con los primeros 100 sobres. Un porcentaje con menos de 30 sobres detrás no se interpreta.
+
+| KPI | Cómo se mide con lo que la app ya registra | Meta | Umbral de alarma |
+|---|---|---|---|
+| **1. Sobres por tienda por semana** (variable que tumba el modelo) | `pedidos` con tipo sobre, por `tienda_id` y `fecha`. Se lleva con desviación productiva: meta semanal 35, el déficit pasa a la semana siguiente | 35 por semana, 150 al mes (Tulio) | Menos de 20 durante dos semanas seguidas (cerca del equilibrio de 62 a 68 al mes) |
+| **2. Conversión sobre→filtro** | Hogares con un pedido de filtro dentro de 30 días de su primera `medicion` ÷ sobres vendidos. Hoy `pedidos.tipo` solo tiene sobre y cartucho: en el piloto se anota el filtro en hoja con `hogar_id` | 10 de cada 100 (Tulio) | Menos de 5 (la conversión a la mitad lleva el equilibrio a 62) |
+| **3. Conversión sobre→cartucho** | Hogares con pedido de cartucho dentro de 30 días de su primera `medicion` ÷ sobres vendidos. Se separa por `origen_agua` y `tipo_filtro` para ver si los que ya tienen filtro son 30 de cada 100 | 30 de cada 100 (Tulio) | Menos de 15 (si nadie compra, la caja base baja de $65.500 a $33.900) |
+| **4. Tasa de recambio a 90 días** | De los hogares con compra de cartucho o filtro hace 90 a 105 días, los que repiten pedido de cartucho dentro de ese plazo. La primera lectura completa llega en el mes 4; antes se usa `fecha_ultimo_cambio` de los hogares que ya tenían filtro | 70% (SUPUESTO; el modelo de Tulio usa 100%) | Menos de 50% (la caja base baja a unos $53.400) |
+| **5. Costo por sobre vendido, por canal** | (comisión del aliado + gasto en anuncios + incentivos del canal) ÷ sobres del canal. Pide un campo `canal` en el hogar, con un QR distinto por mostrador, farmacia, supermercado, lista de clientes por WhatsApp y anuncio | $1,80 o menos (20% de $9) | Más de $2,70 (30% de $9): se pausa el canal |
+| **6. Margen por tienda** | Ventas (`pedidos` × `cartuchos.precio_usd` y precios de filtro) − costo de lo vendido − envío − pasarela − captación − $493 de fijos | $1.150 o más al mes con 150 sobres (modelo, primer mes) | Negativo después del mes 3 |
+
+**Dato de apoyo, fuera de los seis:** activación = hogares con `medicion` dentro de 7 días del despacho del sobre ÷ sobres despachados. Meta 80% y alarma 60% (SUPUESTO). Un sobre sin medición no puede convertir, así que este número explica por qué fallan los KPI 2 y 3.
+
+**Faltan en los datos de la app:** el campo `canal` del hogar, el tipo filtro en `pedidos` y el monto de cada pedido. Mientras no estén, se llevan en una hoja con `hogar_id` y no se espera a la app.
+
+**Regla de decisión al cerrar el piloto (SUPUESTO):** si los KPI 1, 2 y 3 están en meta, se compra el siguiente lote y se abre publicidad pagada con tope de $2,70 por sobre. Si falla uno, se corrige ese canal u oferta y se repite con 300 sobres. Si fallan el 1 y el 3 a la vez, no se compra más inventario.
+
+---
+
+## Experimentos del piloto
+
+Tres pruebas que cuestan tiempo del almacenista y no dinero (la prueba de anuncios tiene un tope de $100). Cada una tiene su criterio antes de empezar.
+
+| Experimento | Qué se compara | Cómo se corre | Criterio de éxito |
+|---|---|---|---|
+| **1. Precio visible contra "Cotizar por WhatsApp"** | Tarjeta de cartuchos con precio y botón de pedir, contra la tarjeta que pide escribir por WhatsApp para cotizar | Semanas alternas en las tres tiendas durante tres semanas, para que no pese la tienda. Se mide pedidos de cartucho ÷ hogares con producto sugerido. La exhibición de precios en divisas se confirma antes con el abogado (`puede-y-no-puede-decir.md`, reglas para publicidad) | Precio visible logra 1,3 veces o más los pedidos de la otra versión, con al menos 60 hogares en cada una. Si hay menos, no se concluye |
+| **2. Costo por sobre en cuatro canales** | Mostrador con QR, farmacia o supermercado aliado, mensaje a la lista de clientes de Grimuca por WhatsApp, y un anuncio de prueba con tope de $100 | Tres semanas, un QR distinto por canal. Se anota la comisión pactada, el gasto del anuncio y las horas | Al menos dos canales con costo de $2,70 o menos por sobre y 10 o más sobres por semana. El anuncio solo se escala si vende 37 sobres o más con sus $100 (CAC de $2,70) |
+| **3. Recambio con recordatorio manual** | Mensaje A: recordatorio con foto del cartucho y precio. Mensaje B: lo mismo más plan anual de 4 juegos prepagados con 10% de descuento ($68,36 contra $75,96; deja $30,38 de margen contra $37,98) | El almacenista escribe por WhatsApp a los hogares cuya `fecha_ultimo_cambio` supera 90 días (no hay que esperar tres meses), mitad con cada mensaje, y vuelve a escribir a los 2 días con un dato nuevo | A: 25% o más compra dentro de 14 días. B: 10% o más toma el plan. Si ninguno llega, el recordatorio por sí solo no sostiene el mes 12 del modelo |
+
 ---
 
 ## 10. Por qué esto es logística
@@ -447,6 +482,9 @@ Recarga de 20 L por país (Bloomberg Línea, oct 2022): Venezuela $0,50 a $2,50;
 7. Si los **$1.050** de sobres son margen (como indica la cuenta) y de dónde sale el **$2.450** (la suma da $2.377).
 8. Si "720 hogares con filtro" incluye al 30% que ya tenía filtro (así cuadra).
 9. Cuántos sobres van a domicilio y cuántos se retiran.
+10. Cuántos clientes entran por día a cada tienda (para ver si 5 sobres por día de atención es razonable).
+11. Qué comisión cobrarían farmacias y supermercados aliados por vender el sobre (hoy no está en ningún costo).
+12. Cada cuánto se cambia cada etapa del filtro según Oasis; el modelo supone 3 meses para todo el juego, y las membranas de ósmosis suelen durar más.
 
 ---
 
