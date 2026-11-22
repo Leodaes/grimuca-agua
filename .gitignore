@@ -22,3 +22,6 @@ id_*
 pruebas/informe-html/
 *.privado.md
 docs/calidad/ensayo/respaldo/*.webm
+
+# Fotos originales del teléfono (pueden traer ubicación en EXIF): no se suben.
+insumos/medicion-real/

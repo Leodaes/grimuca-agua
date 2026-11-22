@@ -10,3 +10,7 @@ Piezas que entregó el equipo el sábado 21 de noviembre para la app, el deck y 
 | `04-mide-entiende-filtra.jpg` | Portada de la app (cómo funciona) y lámina de la demo. |
 | `05-toldo-campana.svg` | Lámina 6, en pequeño: toldo de campaña de una ferretería aliada en una urbanización sin clientes, con mesa de medición en vivo. Dibujo propio (22 nov) inspirado en los toldos de venta de las empresas de internet, sin marcas de terceros. |
 | `06-punto-de-venta.svg` | Lámina 6, en pequeño: mostrador portátil con sobres de $9 y QR para registrarse. Dibujo propio con la paleta de Grimuca. |
+| `07-medicion-tomar-la-muestra.jpg` | Lámina 2. Foto real de Leonardo (22 nov): se toma la muestra con el gotero. Comprimida y sin EXIF; el original no se sube. |
+| `08-medicion-una-gota-por-casilla.jpg` | Lámina 2. Foto real: la primera gota en la tira. |
+| `09-medicion-casilla-por-casilla.jpg` | Lámina 3, junto a la captura del cliente. Foto real: una gota por casilla. |
+| `10-medicion-tira-completa.jpg` | Reserva. Foto real: la tira con todas las casillas mojadas. La foto con la tabla impresa del fabricante no se usa (revisión legal, M5). |

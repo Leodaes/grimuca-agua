@@ -20,8 +20,8 @@ Versión 4.1 (22 nov): costo del sobre en $2,94 como base (decisión de Leonardo
 **Imágenes disponibles** (`docs/marketing/imagenes/` y capturas de `docs/calidad/capturas/`):
 - Portada, antes de la lámina 1 (no cuenta): `01-saber-que-tomas.jpg`.
 - Lámina 1: `02-botellones.jpg` con el pie legal.
-- Lámina 2: `03-sobre.jpg` (la tabla de colores es ilustrativa) y un esquema de tres cajas: familia, plataforma y ferretería.
-- Lámina 3: cuatro capturas, una por módulo (detalle abajo). **Las de `/red`, `/tecnico` y la pestaña Productos de `/comercio` no existen todavía**: se toman cuando la migración `008_red_de_comercios.sql` esté desplegada.
+- Lámina 2: `03-sobre.jpg` (la tabla de colores es ilustrativa), un esquema de tres cajas (familia, plataforma y ferretería) y las fotos reales `07-medicion-tomar-la-muestra.jpg` y `08-medicion-una-gota-por-casilla.jpg`.
+- Lámina 3: cuatro capturas, una por módulo (detalle abajo), con la foto real `09-medicion-casilla-por-casilla.jpg` junto al cliente.
 - Lámina 4: `33-operador-inventario.png` y `34-operador-zonas.png`.
 - Lámina 5: sin imagen; tabla de las cuatro líneas de ingreso.
 - Lámina 6: mapa de Venezuela con estados cubiertos (la Red lo muestra como cifra) y `01-saber-que-tomas.jpg` de fondo; abajo, `05-toldo-campana.svg` y `06-punto-de-venta.svg` en pequeño.
@@ -47,7 +47,7 @@ Versión 4.1 (22 nov): costo del sobre en $2,94 como base (decisión de Leonardo
 
 ## Lámina 2 · La solución
 
-**Imagen:** `03-sobre.jpg` y el esquema familia → plataforma → ferretería
+**Imagen:** `03-sobre.jpg` y el esquema familia → plataforma → ferretería. Abajo, una tira de dos fotos reales de la medición (tomadas por Leonardo el 22 nov): `07-medicion-tomar-la-muestra.jpg` y `08-medicion-una-gota-por-casilla.jpg`, con el pie "Así se mide en casa: se toma la muestra y va una gota en cada casilla de la tira."
 **Título:** La medición es la entrada; la plataforma para ferreterías es el negocio
 
 - Una familia mide su agua con un sobre de $9 (Tulio): tira, prueba de bacterias y tabla de colores. El sistema la asigna a la ferretería más cercana que tiene el producto.
@@ -60,11 +60,12 @@ Versión 4.1 (22 nov): costo del sobre en $2,94 como base (decisión de Leonardo
 
 ## Lámina 3 · Demo: los cuatro módulos
 
-**Imagen:** cuatro capturas en fila, con el nombre del módulo y la dirección debajo
-1. Red (`/red`): lista de comercios con plan y periodo gratis, cifras de toda la red. *Captura nueva pendiente.*
-2. Comercio (`/comercio`): `31-operador-despacho.png` y pestaña Productos. *Productos pendiente.*
-3. Cliente (`/`): `41-telefono-pedido-para-despacho.png`.
-4. Técnico (`/tecnico`): servicio asignado con "Ya fui". *Captura nueva pendiente.*
+**Imagen:** cuatro capturas en fila, con el nombre del módulo y la dirección debajo (capturas del 22 nov, 2:33 p.m., en `docs/calidad/ensayo/respaldo/`)
+1. Red (`/red`): `01-red.png`.
+2. Comercio (`/comercio`): `02a-comercio-despacho.png`.
+3. Cliente (`/`): la foto real `09-medicion-casilla-por-casilla.jpg` al lado de `03e-cliente-confirmar-lectura.png` ("¿Esto es lo que ves en tu tira?"). Pie: "De la tira real a la app: la foto propone y la persona confirma."
+4. Técnico (`/tecnico`): `05d-tecnico-ya-fui-con-foto.png`.
+Foto de reserva: `10-medicion-tira-completa.jpg` (la tira con todas las casillas mojadas), si hace falta para el video o una lámina de apoyo.
 
 **Título:** Un mismo pedido recorre los cuatro módulos
 **Pie legal en la lámina:** Grimuca Agua ofrece mediciones caseras orientativas. No certifica agua ni reemplaza un análisis de laboratorio.
