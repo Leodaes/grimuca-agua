@@ -277,7 +277,7 @@ export function RutasDespacho({ token, version, alNoAutorizado }: Props) {
               { valor: t.paradas, etiqueta: 'Paradas' },
               {
                 valor: rutasActivas,
-                etiqueta: `1 ruta por tienda contra ${t.entregas} viajes sueltos`,
+                etiqueta: `${rutasActivas === 1 ? 'ruta' : 'rutas'} (una por tienda) contra ${t.entregas} ${t.entregas === 1 ? 'viaje suelto' : 'viajes sueltos'}`,
               },
               { valor: `${km(t.distancia_ruta_km)} km`, etiqueta: 'Km de la ruta' },
               { valor: `${km(t.distancia_viajes_sueltos_km)} km`, etiqueta: 'Km de viajes sueltos', detalle: 'ida y vuelta por pedido' },

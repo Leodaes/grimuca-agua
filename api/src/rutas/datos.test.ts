@@ -72,6 +72,22 @@ describe('sugerirCartuchos', () => {
     ];
     expect(codigos(sugerirCartuchos(conFoto, { corrige: ['sedimentos'], tieneFiltro: true }))).toEqual(['B-CONFOTO', 'A-SINFOTO']);
   });
+
+  it('con gravedad, el primero atiende lo más grave aunque el hogar tenga filtro (nitrato rojo antes que dureza amarilla)', () => {
+    const gravedad = { nitrato: 4, dureza: 1 };
+    const sugeridos = sugerirCartuchos(catalogo, { corrige: ['nitrato', 'dureza', 'sedimentos'], tieneFiltro: true, gravedad });
+    expect(codigos(sugeridos)[0]).toBe('O-RO');
+    // Cada hallazgo sigue cubierto y no pasa de 4.
+    expect(codigos(sugeridos)).toContain('S-SUAV');
+    expect(sugeridos.length).toBeLessThanOrEqual(4);
+  });
+
+  it('con gravedad, a igual color va primero lo de salud (cloro libre antes que dureza)', () => {
+    const gravedad = { cloro_libre: 2, dureza: 1 };
+    const sugeridos = sugerirCartuchos(catalogo, { corrige: ['dureza', 'cloro_libre'], tieneFiltro: true, gravedad });
+    expect(codigos(sugeridos)[0]).toBe('C-CTO');
+    expect(codigos(sugeridos)).toContain('S-SUAV');
+  });
 });
 
 describe('sugerirDesinfeccion', () => {

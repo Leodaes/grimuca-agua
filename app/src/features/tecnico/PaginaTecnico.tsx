@@ -250,14 +250,22 @@ function TecnicoConSesion({ token, alSalir }: { token: string; alSalir: () => vo
   const refSalir = useRef(alSalir);
   refSalir.current = alSalir;
 
-  const cargar = useCallback(async () => {
+  // Solo se aplica la respuesta del pedido más reciente (el refresco y un evento pueden cruzarse).
+  const ultimaCarga = useRef(0);
+
+  /** Pide la lista a la API (ya viene ordenada por ruta, con `orden_ruta` y `destino_ruta`). Devuelve si se pudo. */
+  const cargar = useCallback(async (): Promise<boolean> => {
+    const numero = ++ultimaCarga.current;
     try {
       const lista = await api.tecnicoServicios('todos', token);
+      if (numero !== ultimaCarga.current) return true;
       setServicios(lista.filter((s) => s.tipo === 'servicio'));
       setEstado('listo');
+      return true;
     } catch (error) {
       if (esNoAutorizado(error)) refSalir.current();
-      else setEstado((e) => (e === 'listo' ? e : 'error'));
+      else if (numero === ultimaCarga.current) setEstado((e) => (e === 'listo' ? e : 'error'));
+      return false;
     }
   }, [token]);
 
@@ -267,8 +275,12 @@ function TecnicoConSesion({ token, alSalir }: { token: string; alSalir: () => vo
     const quitar = escucharEventos(token, {
       pedidoNuevo: (p) => {
         if (p.tipo !== 'servicio') return;
-        setServicios((lista) => (lista && !lista.some((s) => s.id === p.id) ? [aServicio(p), ...lista] : lista));
         setToast('Servicio nuevo');
+        // Se vuelve a pedir la lista para que el servicio nuevo llegue con su parada y "Cómo llegar".
+        // Si la API no responde, se agrega tal cual para no perderlo hasta el próximo refresco.
+        void cargar().then((ok) => {
+          if (!ok) setServicios((lista) => (lista && !lista.some((s) => s.id === p.id) ? [aServicio(p), ...lista] : lista));
+        });
       },
       pedidoDespachado: (p) => {
         if (p.tipo === 'servicio') void cargar();

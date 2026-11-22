@@ -42,6 +42,23 @@ const PESO_NIVEL: Record<Nivel, number> = { rojo: 0, amarillo: 1, verde: 2, sin_
 /** Dentro del mismo color, primero lo que más importa para la salud. */
 const PRIORIDAD: ClaveParametro[] = ['plomo', 'cobre', 'nitrito', 'nitrato', 'cloro_libre', 'hierro', 'dureza', 'alcalinidad', 'ph'];
 
+/** Parámetros de salud: a igual color van antes que los operativos (dureza, hierro, alcalinidad, pH). */
+export const CLAVES_SALUD: readonly ClaveParametro[] = ['nitrato', 'nitrito', 'plomo', 'cobre', 'cloro_libre'];
+
+/**
+ * Gravedad de cada parámetro de la medición (mayor = más grave): rojo de salud 4, rojo operativo 3,
+ * amarillo de salud 2, amarillo operativo 1; verde o sin lectura 0. Ordena los sugeridos y la frase de cada uno.
+ */
+export function gravedadPorClave(porParametro: ResultadoParametro[]): Record<string, number> {
+  const gravedad: Record<string, number> = {};
+  for (const p of porParametro) {
+    const salud = CLAVES_SALUD.includes(p.clave) ? 1 : 0;
+    const valor = p.nivel === 'rojo' ? 3 + salud : p.nivel === 'amarillo' ? 1 + salud : 0;
+    gravedad[p.clave] = Math.max(gravedad[p.clave] ?? 0, valor);
+  }
+  return gravedad;
+}
+
 /** Explicación corta cuando la frase nombra un solo parámetro. */
 const EXPLICACION: Partial<Record<ClaveParametro, string>> = {
   dureza: 'es el sarro que mancha la grifería',
@@ -196,12 +213,18 @@ const VARIANTES_MEDICION = [
   (lista: string) => `la tira marcó ${lista}`,
 ];
 
-/** Parámetros de esta medición en amarillo o rojo que el producto atiende (peor primero, máximo 3). */
+/** Parámetros de esta medición en amarillo o rojo que el producto atiende (más grave primero, máximo 3). */
 export function parametrosAtendidos(producto: Cartucho, contexto: ContextoMotivo): ResultadoParametro[] {
   const pedidas = new Set(contexto.corrige);
+  const gravedad = gravedadPorClave(contexto.porParametro);
   return contexto.porParametro
     .filter((p) => (p.nivel === 'rojo' || p.nivel === 'amarillo') && pedidas.has(p.clave) && producto.corrige.includes(p.clave))
-    .sort((a, b) => PESO_NIVEL[a.nivel] - PESO_NIVEL[b.nivel] || PRIORIDAD.indexOf(a.clave) - PRIORIDAD.indexOf(b.clave))
+    .sort(
+      (a, b) =>
+        (gravedad[b.clave] ?? 0) - (gravedad[a.clave] ?? 0) ||
+        PESO_NIVEL[a.nivel] - PESO_NIVEL[b.nivel] ||
+        PRIORIDAD.indexOf(a.clave) - PRIORIDAD.indexOf(b.clave),
+    )
     .slice(0, MAXIMO_PARAMETROS_FRASE);
 }
 

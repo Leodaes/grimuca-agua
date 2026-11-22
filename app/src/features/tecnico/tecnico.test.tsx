@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react';
+import { act, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, useRoutes } from 'react-router-dom';
 import type { ServicioConReporte } from '../../lib/tipos';
@@ -15,6 +15,16 @@ const api = vi.hoisted(() => ({
   urlFotoServicio: vi.fn((id: number) => `/api/servicios/${id}/foto?token=t-tec`),
 }));
 
+const enVivo = vi.hoisted(() => ({
+  manejadores: null as null | { pedidoNuevo?: (p: unknown) => void },
+}));
+
+vi.mock('../red/enVivo', () => ({
+  escucharEventos: (_token: string, m: { pedidoNuevo?: (p: unknown) => void }) => {
+    enVivo.manejadores = m;
+    return () => {};
+  },
+}));
 vi.mock('../../lib/sesion', () => sesion);
 vi.mock('../../lib/api', () => ({
   api,
@@ -137,6 +147,35 @@ describe('/tecnico', () => {
       'https://www.google.com/maps/dir/?api=1&destination=10.245,-68.007',
     );
     expect(within(tarjetas[1]).getByText('Parada 2')).toBeInTheDocument();
+  });
+
+  it('un servicio que llega en vivo vuelve a pedir la lista y sale en el orden de la ruta, con su parada', async () => {
+    api.tecnicoServicios.mockResolvedValueOnce([
+      servicio(1, { orden_ruta: 1, destino_ruta: { lat: 10.245, lng: -68.007 }, hogar_nombre: 'Primero' }),
+      servicio(2, { orden_ruta: 2, destino_ruta: { lat: 10.26, lng: -68.022 }, hogar_nombre: 'Tercero' }),
+    ]);
+    montar();
+    await screen.findByText('Tercero');
+    expect(api.tecnicoServicios).toHaveBeenCalledTimes(1);
+
+    // La API ya devuelve el nuevo en medio de la ruta, como Parada 2.
+    api.tecnicoServicios.mockResolvedValueOnce([
+      servicio(1, { orden_ruta: 1, destino_ruta: { lat: 10.245, lng: -68.007 }, hogar_nombre: 'Primero' }),
+      servicio(9, { orden_ruta: 2, destino_ruta: { lat: 10.25, lng: -68.01 }, hogar_nombre: 'En vivo' }),
+      servicio(2, { orden_ruta: 3, destino_ruta: { lat: 10.26, lng: -68.022 }, hogar_nombre: 'Tercero' }),
+    ]);
+    act(() => enVivo.manejadores?.pedidoNuevo?.(servicio(9, { hogar_nombre: 'En vivo' })));
+
+    expect(await screen.findByText('Servicio nuevo')).toBeInTheDocument();
+    await waitFor(() => expect(within(screen.getByRole('list', { name: 'Servicios pendientes' })).getAllByRole('listitem')).toHaveLength(3));
+    expect(api.tecnicoServicios).toHaveBeenCalledTimes(2);
+    const tarjetas = within(screen.getByRole('list', { name: 'Servicios pendientes' })).getAllByRole('listitem');
+    expect(tarjetas.map((t) => within(t).getByText(/Primero|En vivo|Tercero/).textContent)).toEqual(['Primero', 'En vivo', 'Tercero']);
+    expect(within(tarjetas[1]).getByText('Parada 2')).toBeInTheDocument();
+    expect(within(tarjetas[1]).getByRole('link', { name: /Cómo llegar/ })).toHaveAttribute(
+      'href',
+      'https://www.google.com/maps/dir/?api=1&destination=10.25,-68.01',
+    );
   });
 
   it('sin servicios muestra el estado vacío; si falla, ofrece reintentar', async () => {

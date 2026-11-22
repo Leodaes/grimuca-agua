@@ -7,7 +7,7 @@ import type { Cartucho, FiltroHogar, Nivel, ResultadoParametro, ValoresMedicion 
 import { adaptarSqlPgMem, crearBdDePrueba } from './ayudas-prueba';
 import { cartuchosParaFiltro } from '../filtro';
 import { listarCatalogo, sugerirConFiltro, type CartuchoCatalogo } from './datos';
-import { conMotivos, motivoDe, NOTA_LABORATORIO, PALABRAS_PROHIBIDAS, type ContextoMotivo, type HogarParaMotivo } from './motivos';
+import { conMotivos, gravedadPorClave, motivoDe, NOTA_LABORATORIO, PALABRAS_PROHIBIDAS, type ContextoMotivo, type HogarParaMotivo } from './motivos';
 
 function producto(cambios: Partial<Cartucho>): Cartucho {
   return {
@@ -200,6 +200,16 @@ describe('frases con el catálogo real (db/semilla_cartuchos.sql)', () => {
           ctx,
         );
         expect(new Set(sugeridos.map((s) => s.motivo)).size).toBe(sugeridos.length);
+        const conGravedad = sugerirConFiltro(
+          catalogo,
+          { corrige: evaluacion.corrige, tieneFiltro: hogar.tiene_filtro, gravedad: gravedadPorClave(evaluacion.porParametro) },
+          filtro,
+        );
+        expect(conGravedad.length).toBeLessThanOrEqual(4);
+        // Con gravedad, todo hallazgo que ya quedaba cubierto sigue cubierto.
+        for (const clave of evaluacion.corrige.filter((c) => sugeridos.some((s) => s.corrige.includes(c)))) {
+          expect(conGravedad.some((s) => s.corrige.includes(clave)), clave).toBe(true);
+        }
         // Además, la frase de cada producto del catálogo, aunque no salga sugerido.
         const todas = [...sugeridos, ...catalogo.map((p) => ({ ...p, ...motivoDe(p, ctx) }))];
         for (const s of todas) {
@@ -213,5 +223,36 @@ describe('frases con el catálogo real (db/semilla_cartuchos.sql)', () => {
       }
     }
     expect(total).toBeGreaterThan(1000);
+  });
+
+  it('nitrato en rojo y dureza en amarillo: el primero atiende el nitrato y su frase lo nombra primero', async () => {
+    const catalogo = await catalogoReal();
+    for (const hogar of [HOGARES[0], { ...HOGARES[1], agua_turbia: false }]) {
+      const evaluacion = evaluarAgua({ nitrato: 50, dureza: 250, cloro_libre: 1, ph: 7.2 }, { ...hogar, etapas_filtro: null, fecha_ultimo_cambio: null });
+      const nivel = (clave: string) => evaluacion.porParametro.find((p) => p.clave === clave)?.nivel;
+      expect(nivel('nitrato')).toBe('rojo');
+      expect(nivel('dureza')).toBe('amarillo');
+      const filtro = hogar.tiene_filtro ? (hogar.filtro ?? null) : null;
+      const sugeridos = conMotivos(
+        sugerirConFiltro(
+          catalogo,
+          { corrige: evaluacion.corrige, tieneFiltro: hogar.tiene_filtro, gravedad: gravedadPorClave(evaluacion.porParametro) },
+          filtro,
+        ),
+        {
+          porParametro: evaluacion.porParametro,
+          corrige: evaluacion.corrige,
+          diasParaRecambio: evaluacion.diasParaRecambio,
+          hogar,
+          compatibles: filtro ? new Set(cartuchosParaFiltro(filtro, catalogo, evaluacion.corrige).map((c) => c.codigo)) : undefined,
+        },
+      );
+      const [primero] = sugeridos;
+      expect(primero.corrige).toContain('nitrato');
+      expect(primero.atiende[0]).toMatchObject({ clave: 'nitrato', nivel: 'rojo' });
+      expect(primero.motivo).toMatch(/^Te recomendamos [^.]+ porque (tu medición dio|en tu medición salió|la tira marcó) Nitrato en Rojo/);
+      // Cada hallazgo sigue atendido por algún sugerido.
+      expect(sugeridos.some((s) => s.corrige.includes('dureza'))).toBe(true);
+    }
   });
 });

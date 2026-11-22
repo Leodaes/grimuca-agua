@@ -201,7 +201,7 @@ describe('rutas del filtro del hogar', () => {
     expect(codigos.sort()).toEqual(['OSMO-8', 'UF-6']);
   });
 
-  it('la medición pone primero los cartuchos del filtro que atienden lo hallado', async () => {
+  it('la medición pone primero lo que atiende lo más grave y después los cartuchos del filtro', async () => {
     await entorno.app.inject({
       method: 'PUT',
       url: `/api/hogares/${hogarId}/filtro`,
@@ -214,9 +214,10 @@ describe('rutas del filtro del hogar', () => {
     });
     expect(medicion.statusCode).toBe(201);
     const sugeridos = medicion.json().sugeridos.map((c: { codigo: string }) => c.codigo);
-    expect(sugeridos[0]).toBe('RES-10');
-    // El nitrato en rojo sigue cubierto por algún producto.
-    expect(sugeridos).toContain('OSMO-8');
+    // El nitrato en rojo va antes que la dureza en amarillo: primero el equipo que lo atiende.
+    expect(sugeridos[0]).toBe('OSMO-8');
+    // Después, el cartucho compatible con el filtro que atiende la dureza.
+    expect(sugeridos[1]).toBe('RES-10');
   });
 
   it('hogar que no existe → 404', async () => {

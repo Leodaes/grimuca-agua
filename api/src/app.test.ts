@@ -177,7 +177,7 @@ describe('mediciones', () => {
     expect(leida.json()).toEqual(medicion);
   });
 
-  it('con filtro en casa sugiere primero los cartuchos de recambio y recalcula los días para el recambio', async () => {
+  it('con filtro en casa sugiere primero lo que atiende lo más grave, luego los recambios, y recalcula los días', async () => {
     const hogar = await crearHogar({ tiene_filtro: true, etapas_filtro: 2, fecha_ultimo_cambio: '2026-09-01', agua_turbia: true });
     const respuesta = await e.app.inject({
       method: 'POST',
@@ -185,7 +185,8 @@ describe('mediciones', () => {
       payload: { hogar_id: hogar.id, valores: { nitrato: 100, dureza: 425 } },
     });
     const medicion: Medicion = respuesta.json();
-    expect(medicion.sugeridos.map((c) => c.codigo)).toEqual(['PR-RESINA', 'PR-SED', 'PR-OSMOSIS', 'PR-FILTRO']);
+    // Nitrato y dureza en rojo: a igual color va primero el de salud (nitrato), que atiende la ósmosis.
+    expect(medicion.sugeridos.map((c) => c.codigo)).toEqual(['PR-OSMOSIS', 'PR-RESINA', 'PR-SED', 'PR-FILTRO']);
     expect(medicion.evaluacion.diasParaRecambio).toBe(42);
   });
 

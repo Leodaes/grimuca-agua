@@ -79,13 +79,20 @@ function montar(rutas: () => Promise<DatosRutas>, version = 0) {
 }
 
 describe('pestaña Rutas', () => {
+  it('con una sola ruta, la etiqueta de la cifra va en singular', async () => {
+    montar(async () => ({ rutas: [BIGLOW], totales: { ...DATOS.totales, entregas: 1, paradas: 1 } }));
+    const banda = await screen.findByLabelText('Cifras de las rutas');
+    expect(within(banda).getByText('ruta (una por tienda) contra 1 viaje suelto').closest('div')).toHaveTextContent('1');
+  });
+
   it('muestra la banda, el mapa, la hoja de ruta en orden y el detalle de una parada', async () => {
     const usuario = userEvent.setup();
     const { container, servicios, cambiarVersion } = montar(async () => DATOS);
 
     const banda = await screen.findByLabelText('Cifras de las rutas');
     expect(within(banda).getByText('Entregas con envío').closest('div')).toHaveTextContent('4');
-    expect(within(banda).getByText('1 ruta por tienda contra 4 viajes sueltos').closest('div')).toHaveTextContent('2');
+    expect(within(banda).getByText('rutas (una por tienda) contra 4 viajes sueltos').closest('div')).toHaveTextContent('2');
+    expect(within(banda).queryByText(/1 ruta por tienda/)).not.toBeInTheDocument();
     expect(within(banda).getByText('Km de la ruta').closest('div')).toHaveTextContent('21,8 km');
     expect(within(banda).getByText('Km de viajes sueltos').closest('div')).toHaveTextContent('44,8 km');
     expect(within(banda).getByText('Ahorro (51 %)').closest('div')).toHaveTextContent('23,0 km');

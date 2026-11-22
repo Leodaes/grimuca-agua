@@ -2,7 +2,7 @@
 import { aDia, aIso, aIsoONulo, aJson, aNumeroONulo, type Bd } from '../bd';
 import { cartuchosParaFiltro, filaAFiltro } from '../filtro';
 import { ULTIMOS_CAMBIOS, type FiltroHogar, type UltimoCambio } from '../tipos';
-import { conMotivos, type HogarParaMotivo } from './motivos';
+import { conMotivos, gravedadPorClave, type HogarParaMotivo } from './motivos';
 import type {
   Cartucho,
   Evaluacion,
@@ -247,19 +247,41 @@ export interface CriterioSugeridos {
   tieneFiltro: boolean;
   /** Marcas que no se sugieren (opcional; normalmente vacío). */
   marcasExcluidas?: string[];
+  /**
+   * Gravedad de cada clave de la medición (mayor = más grave; ver `gravedadPorClave`). Opcional: sin ella todas
+   * pesan igual. El primer sugerido atiende lo más grave.
+   */
+  gravedad?: Record<string, number>;
+}
+
+/** Gravedad del hallazgo más grave que atiende un producto (0 si no atiende nada con gravedad). */
+function gravedadDe(corrige: string[], criterio: CriterioSugeridos, claves: readonly string[] = criterio.corrige): number {
+  const gravedad = criterio.gravedad ?? {};
+  return corrige.reduce((maximo, clave) => (claves.includes(clave) ? Math.max(maximo, gravedad[clave] ?? 0) : maximo), 0);
+}
+
+/** Orden estable: primero lo que atiende lo más grave; a igual gravedad se respeta el orden que traen. */
+function porGravedad<T extends { corrige: string[] }>(lista: T[], criterio: CriterioSugeridos): T[] {
+  if (!criterio.gravedad) return lista;
+  return lista
+    .map((item, indice) => ({ item, indice, gravedad: gravedadDe(item.corrige, criterio) }))
+    .sort((a, b) => b.gravedad - a.gravedad || a.indice - b.indice)
+    .map(({ item }) => item);
 }
 
 /**
  * Productos para una medición de la tira: recomendables, disponibles y que corrigen algo de lo hallado.
- * Orden: (a) con filtro en casa, primero los cartuchos de recambio; sin filtro, primero filtros y ósmosis;
- * (b) los que corrigen más hallazgos; (c) los que tienen foto; (d) código. Máximo 4.
+ * Orden: (a) los que atienden el hallazgo más grave (`criterio.gravedad`); (b) con filtro en casa, primero los
+ * cartuchos de recambio; sin filtro, primero filtros y ósmosis; (c) los que corrigen más hallazgos; (d) los que
+ * tienen foto; (e) código. Máximo 4.
  * Los equipos de desinfección no salen aquí: van con la prueba de bacterias.
  */
 export function sugerirCartuchos(catalogo: CartuchoCatalogo[], criterio: CriterioSugeridos): Cartucho[] {
   const candidatos = ordenarCandidatos(catalogo, criterio);
   const elegidos = candidatos.slice(0, MAXIMO_SUGERIDOS);
-  // Si algún hallazgo queda sin producto que lo atienda, entra el que más hallazgos pendientes cubra y sale el último
-  // de la lista. Así un nitrato en rojo trae un equipo que lo trate aunque el hogar ya tenga filtro.
+  // Si algún hallazgo queda sin producto que lo atienda, entra el que atienda el pendiente más grave (y, a igual
+  // gravedad, el que más pendientes cubra) y sale el último de la lista. Así un nitrato en rojo trae un equipo que
+  // lo trate aunque el hogar ya tenga filtro.
   const cubre = (clave: string) => elegidos.some((par) => par.cartucho.corrige.includes(clave));
   let cupo = elegidos.length - 1;
   while (cupo >= 1) {
@@ -267,14 +289,21 @@ export function sugerirCartuchos(catalogo: CartuchoCatalogo[], criterio: Criteri
     if (pendientes.length === 0) break;
     const aporte = (par: (typeof candidatos)[number]) =>
       par.cartucho.corrige.filter((clave) => pendientes.includes(clave)).length;
+    const peso = (par: (typeof candidatos)[number]) => gravedadDe(par.cartucho.corrige, criterio, pendientes);
     const mejor = candidatos
-      .filter((par) => !elegidos.includes(par))
-      .reduce<(typeof candidatos)[number] | null>((m, par) => (aporte(par) > (m ? aporte(m) : 0) ? par : m), null);
+      .filter((par) => !elegidos.includes(par) && aporte(par) > 0)
+      .reduce<(typeof candidatos)[number] | null>(
+        (m, par) => (!m || peso(par) > peso(m) || (peso(par) === peso(m) && aporte(par) > aporte(m)) ? par : m),
+        null,
+      );
     if (!mejor) break;
     elegidos[cupo] = mejor;
     cupo -= 1;
   }
-  return elegidos.map((par) => aCartuchoPublico(par.cartucho));
+  return porGravedad(
+    elegidos.map((par) => aCartuchoPublico(par.cartucho)),
+    criterio,
+  );
 }
 
 function ordenarCandidatos(catalogo: CartuchoCatalogo[], criterio: CriterioSugeridos) {
@@ -293,10 +322,12 @@ function ordenarCandidatos(catalogo: CartuchoCatalogo[], criterio: CriterioSuger
       cartucho,
       aciertos: cartucho.corrige.filter((clave) => pedidas.has(clave)).length,
       preferido: cartucho.categoria !== null && preferidas.includes(cartucho.categoria) ? 0 : 1,
+      gravedad: gravedadDe(cartucho.corrige, criterio),
     }))
     .filter((par) => par.aciertos > 0)
     .sort(
       (a, b) =>
+        b.gravedad - a.gravedad ||
         a.preferido - b.preferido ||
         b.aciertos - a.aciertos ||
         sinFoto(a.cartucho) - sinFoto(b.cartucho) ||
@@ -357,6 +388,7 @@ export function filaAMedicion(fila: Fila, extra: ParaArmarMedicion): Medicion {
       corrige: evaluacion.corrige,
       tieneFiltro: extra.perfil.tiene_filtro,
       marcasExcluidas: extra.marcasExcluidas,
+      gravedad: gravedadPorClave(evaluacion.porParametro),
     },
     filtro,
   );
@@ -383,6 +415,7 @@ export function filaAMedicion(fila: Fila, extra: ParaArmarMedicion): Medicion {
 /**
  * Sugeridos adaptados al filtro del hogar: primero los cartuchos compatibles con ese filtro que atienden lo hallado;
  * después, los de `sugerirCartuchos` que hagan falta para que cada hallazgo siga cubierto por algún producto.
+ * Con `criterio.gravedad`, el que atiende lo más grave va primero; los compatibles van delante solo a igual gravedad.
  * Sin filtro registrado (o sin compatibles que atiendan algo) devuelve lo mismo que `sugerirCartuchos`.
  */
 export function sugerirConFiltro(
@@ -412,7 +445,8 @@ export function sugerirConFiltro(
       if (elegidos.length >= MAXIMO_SUGERIDOS) break;
       if (!elegidos.some((e) => e.codigo === cartucho.codigo)) elegidos.push(cartucho);
     }
-    return elegidos;
+    // Lo más grave primero; a igual gravedad, los compatibles con el filtro del hogar siguen delante.
+    return porGravedad(elegidos, criterio);
   }
   return base;
 }
