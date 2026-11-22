@@ -4,6 +4,38 @@ Pruebas de navegador contra https://agua.oydo.app, hechas desde una máquina dis
 
 Cómo correrlas: `cd pruebas/externas && npm install && npx playwright install chromium && npx playwright test`. Revisión del repositorio: `node pruebas/externas/revisar-repo.js` desde la raíz.
 
+## Pasada 20 · dom 22 nov, 5:20 a.m. · INFORME DE LA MAÑANA
+
+### Veredicto
+
+| Pregunta | Respuesta | Evidencia |
+|---|---|---|
+| ¿Responde el sitio? | **Sí.** https://agua.oydo.app responde 200 con la versión publicada a las 4:17 a.m. (`index-CrT_tBP0.js`) | Esta pasada |
+| ¿Funciona el recorrido completo en teléfono? | **Sí funcionó** en las pruebas completas de las pasadas 4 a 8 (9:22 p.m. a 11:25 p.m.), en teléfono de 375 px y en escritorio: bienvenida → perfil → filtro → dirección → pago simulado → carga manual → semáforo por parámetro con el aviso fijo → cartucho Oasis → pedido. **No se ha vuelto a probar completo** desde los despliegues de las 11:51 p.m., la 1:55 a.m. y las 4:12 a.m., porque esta revisión no crea pedidos después de la medianoche (acuerdo con el orquestador) | Pasadas 4 a 8 y capturas `pasada4-*` a `pasada6-*`. El orquestador hizo un ensayo cronometrado contra el sitio a las 4:05 a.m. (`e84eb67`) |
+| ¿Aparece el pedido en vivo en el panel sin recargar? | **Sí, según la Calidad interna:** en menos de medio segundo, sin recargar (Compuerta 3). **Esta revisión no lo verificó por su cuenta**, porque no usa el PIN en el sitio publicado | `docs/calidad/informe-compuertas-1-3.md` (`8a57cae`) y la pasada 2 de Calidad interna (`2471b84`) |
+| ¿Pasan las revisiones de solo lectura? | **Sí, las 24:** portada, 7 páginas públicas y los paneles de operador, comercio, técnico y red (cargan y piden PIN), en teléfono y escritorio. Ninguna pantalla dice «potable» | Esta pasada |
+| ¿Repositorio limpio? | **Sí:** 478 archivos sin secretos, sin `.env`, sin teléfonos reales y sin `.github/workflows` | `revisar-repo.js` |
+
+### Fallas abiertas, por gravedad
+
+**Rompe la demo**
+- Ninguna encontrada.
+
+**Confunde**
+- **Por confirmar en la prueba de la mañana**, porque están dentro del recorrido y no se pudieron revisar de madrugada: «Cotizar por WhatsApp» medía 26 px en «Listo, guardamos tu filtro» y «Mira cómo cambiarlo» medía menos de 44 px en el resultado. Es probable que el commit de la 1:55 a.m. («Botones de 44 px… en el aviso de recambio») haya corregido el segundo.
+
+**Cosmético**
+- Ninguna abierta.
+
+### Lo que conviene hacer antes de la demo
+1. Recorrer una vez el flujo completo en el teléfono contra el sitio publicado, porque cambió tres veces desde la última prueba completa externa.
+2. Limpiar los pedidos de prueba «Prueba Calidad externa» que crearon las pasadas 5 a 8 (antes de la medianoche).
+
+### La noche en cifras
+- 20 pasadas, de las 8:30 p.m. a las 5:20 a.m.
+- Fallas reportadas y corregidas por el equipo: la foto de los cartuchos, «Medir mi agua» y «Cotizar por WhatsApp» en el resultado. La de textos de la especificación se dejó de revisar.
+- Dos alertas por orquestador sin commits (1:50 y 3:50 a.m.). Las dos se resolvieron solas: había terminado su cola. El sitio nunca se cayó.
+
 ## Pasada 19 · dom 22 nov, 4:50 a.m. (solo lectura)
 
 **Resumen:** sin cambios desde la pasada 18: misma versión publicada (`index-CrT_tBP0.js`). **Pasan las 24 revisiones de lectura, sin fallas**, y se saltan 2. Ninguna falla rompe la demo.
