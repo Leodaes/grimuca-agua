@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import { Aviso, Boton, Campo } from '../../components/grimuca';
+import { IlustracionFiltro } from './IlustracionFiltro';
 import { ListaModelos } from './ListaModelos';
 import { modelosDelTipo } from './modelos';
 import { api, ErrorApi } from '../../lib/api';
@@ -13,6 +14,12 @@ import { CartuchosQueNecesita, FichaFiltro } from './Piezas';
 import { destinoSeguro, OPCIONES_MEDIDA, OPCIONES_TIPO } from './textos';
 
 const MENSAJE_FALLA = 'No se pudo guardar. Intenta otra vez.';
+
+/** Cada tipo con su dibujo, como guía para reconocer el filtro de la casa. */
+const OPCIONES_CON_DIBUJO = OPCIONES_TIPO.map((opcion) => ({
+  ...opcion,
+  icono: <IlustracionFiltro tipo={opcion.valor} />,
+}));
 
 function filtroDelEstado(estado: unknown): FiltroHogar | null {
   const filtro = (estado as { filtro?: unknown } | null)?.filtro;
@@ -133,7 +140,8 @@ export function PaginaFiltroManual() {
           <OpcionesRadio
             pregunta="¿Cómo es tu filtro?"
             nombre="tipo_filtro"
-            opciones={OPCIONES_TIPO}
+            ayuda="Fíjate cuántos vasos tiene y si lleva un tanque al lado."
+            opciones={OPCIONES_CON_DIBUJO}
             valor={tipo}
             onCambio={(v) => {
               setTipo(v);
