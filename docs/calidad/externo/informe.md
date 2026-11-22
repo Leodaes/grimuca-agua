@@ -4,6 +4,40 @@ Pruebas de navegador contra https://agua.oydo.app, hechas desde una máquina dis
 
 Cómo correrlas: `cd pruebas/externas && npm install && npx playwright install chromium && npx playwright test`. Revisión del repositorio: `node pruebas/externas/revisar-repo.js` desde la raíz.
 
+## Pasada 3 · sáb 21 nov, 8:46 p.m.
+
+**Resumen:** el orquestador avanza rápido: componentes, especificación de pantallas, contenedores y guion de despliegue (último commit `4cc3a9a`, 8:44 p.m.). La URL pública sigue con la página provisional y las rutas del operador siguen vacías en el código. El recorrido aún no se puede probar.
+
+| Revisión | Teléfono (375 px) | Escritorio |
+|---|---|---|
+| La bienvenida carga con su título | **No:** página provisional | **No:** página provisional |
+| No dice «potable» | Cumple | Cumple |
+| Controles de 44 px o más | No hay controles todavía | No aplica |
+| Recorrido completo en teléfono | **No:** la app no está publicada | — |
+| Pedido en vivo en Despacho sin recargar | **No:** `/operador` no muestra «Panel de despacho» | **No** |
+| Aviso fijo en el resultado | No probado | No probado |
+
+**Repositorio:** 96 archivos revisados. No hay `.github/workflows`, secretos, archivos `.env` ni teléfonos reales, y «potable» no aparece en el código. Siguen faltando `LICENCIAS.md` y `.env.example`.
+
+**Señales de vida del orquestador:** commits a las 8:41, 8:43 y 8:44 p.m. El sitio responde con la página provisional. No hay alerta.
+
+**Ajustes a las pruebas:** el recorrido se reescribió contra `docs/diseno/especificacion.md`, con sus rutas (§1) y los textos exactos de cada botón:
+- Cliente: «Empezar» → «Guardar y seguir» → «Seguir al pago» → «Pagar $9 (simulación)» → «Ya me llegó el sobre» → «Marca los colores a mano» → «Ver mi resultado» → «Agregar a mi lista» → «Confirmar pedido».
+- Operador: PIN → «Entrar» → `/operador/despacho`, abierto desde antes de que el cliente empiece. La prueba exige que el pedido aparezca sin recargar.
+- Los datos de prueba son inventados («Prueba Calidad», 0414 123 4567).
+
+### Fallas abiertas
+
+**Rompe la demo**
+- Ninguna todavía. Lo que falla es esperado: la app no está publicada.
+
+**Confunde**
+- Faltan `LICENCIAS.md` y `.env.example`.
+- ~~Aqual en el catálogo~~: resuelto. El catálogo quedó solo con Oasis (`b1bbfe5`).
+
+**Cosmético**
+- Nada nuevo.
+
 ## Pasada 2 · sáb 21 nov, 8:38 p.m.
 
 **Resumen:** el esqueleto del monorepo ya está en main (`3d097c4`, 8:34 p.m.), pero la URL pública sigue sirviendo la página provisional. Las rutas de la app existen en el código y están vacías, incluida la del operador. El recorrido de la demo todavía no se puede probar en la URL pública.
