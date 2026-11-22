@@ -1469,7 +1469,7 @@ button.g-toast__accion {
 /* Dentro de la app (con menú) el título de pantalla no compite con el héroe de la portada. */
 @media (min-width: 900px) {
   .g-pantalla--con-barra .g-h1 {
-    max-width: 24ch;
+    max-width: 30ch;
     font-size: min(var(--t4), 2.75rem);
   }
 }
