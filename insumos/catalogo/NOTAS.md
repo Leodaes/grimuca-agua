@@ -1,8 +1,8 @@
-# Catálogo de productos de agua de Grimuca · Oasis y Aqual
+# Catálogo de productos de agua de Grimuca · Oasis
 
 Extraído el sáb 21 nov 2026, 9:00 p.m. (hora de Caracas). Archivo: `catalogo_grimuca_agua.csv`. Para regenerarlo: `node insumos/catalogo/extraer.js` desde la raíz.
 
-> **Aviso:** `HANDOFF-hackaton.md` dice que **la línea Aqual no se usa** (secciones 2 y 11). Este archivo trae Aqual porque así lo pidió el encargo. Antes de cargar el catálogo en `semilla_cartuchos.sql`, filtren `marca = Oasis`, salvo que Tulio diga otra cosa.
+**Solo marca Oasis.** La línea Aqual queda fuera por decisión de Leonardo y Tulio (sáb 21 nov), en línea con `HANDOFF-hackaton.md`, secciones 2 y 11. Una primera versión de este archivo traía también 34 productos Aqual; ya no están.
 
 ## De dónde sale cada dato
 
@@ -11,7 +11,7 @@ Todo sale de la API pública de la tienda de grimuca.com (`/wp-json/wc/store/v1/
 | Columna | Origen |
 |---|---|
 | `sku`, `nombre`, `id_web` | Ficha pública del producto |
-| `marca` | Marca asignada en la tienda (filtro `brand=oasis` / `brand=aqual`) |
+| `marca` | Marca asignada en la tienda (filtro `brand=oasis`) |
 | `categorias_web` | Categorías públicas del producto |
 | `categoria` | Deducida: primero la categoría web, después el nombre. Ver `extraer.js` |
 | `corrige` | Deducida de palabras del nombre y la descripción pública (ver abajo) |
@@ -26,12 +26,8 @@ Solo se incluyen productos de las categorías de tratamiento de agua: Filtros y 
 | Marca | Productos | Con precio público | `corrige` por confirmar |
 |---|---|---|---|
 | Oasis | 104 | 0 | 16 |
-| Aqual | 34 | 0 | 4 |
-| **Total** | **138** | **0** | **20** |
 
-Por categoría:
-- **Oasis:** 18 cartuchos, 13 portafiltros, 10 filtros, 10 membranas de ósmosis, 9 filtros desbarradores, 7 membranas de ultrafiltración, 5 tanques de ósmosis, 4 sistemas de ósmosis inversa, 2 suavizadores, 2 repuestos y 24 accesorios.
-- **Aqual:** 22 cartuchos, 5 filtros, 3 sistemas de ósmosis inversa, 2 membranas de ósmosis y 2 portafiltros.
+Por categoría: 18 cartuchos, 13 portafiltros, 10 filtros, 10 membranas de ósmosis, 9 filtros desbarradores, 7 membranas de ultrafiltración, 5 tanques de ósmosis, 4 sistemas de ósmosis inversa, 2 suavizadores, 2 repuestos y 24 accesorios.
 
 ## Precios
 
@@ -49,11 +45,11 @@ Por palabras que aparecen en el nombre o la descripción pública:
 
 Un producto puede corregir varias cosas; se separan con `|`. Los 24 accesorios (válvulas, mangueras, grifos, difusores y similares) llevan `no_aplica`, porque no tratan el agua por sí solos.
 
-## Qué quedó «por_confirmar» (20)
+## Qué quedó «por_confirmar» (16)
 
-- **Lámparas ultravioleta, sus repuestos y un esterilizador (10):** tratan bacterias, y esa opción no está en la lista de `corrige`. Como la demo incluye una prueba de bacterias, conviene agregar `bacterias` a esa lista. Esa decisión le toca al equipo.
+- **Lámparas ultravioleta y sus repuestos (9):** tratan bacterias, y esa opción no está en la lista de `corrige`. Como la demo incluye una prueba de bacterias, conviene agregar `bacterias` a esa lista. Esa decisión le toca al equipo.
 - **Membranas y cartuchos de ultrafiltración (3):** la ficha no dice qué retienen.
-- **Portamembranas, carcasas y un anillo O-ring (7):** son piezas de soporte; la ficha no dice qué tratan.
+- **Portamembranas y un anillo O-ring (4):** son piezas de soporte; la ficha no dice qué tratan.
 
 ## Lo que no se copió
 

@@ -4,7 +4,8 @@ const fs = require('fs');
 const path = require('path');
 
 const API = 'https://grimuca.com/wp-json/wc/store/v1/products';
-const BRANDS = { oasis: 'Oasis', aqual: 'Aqual' };
+// Only Oasis: the Aqual line is out (decision by Leonardo and Tulio, sat 21 nov).
+const BRANDS = { oasis: 'Oasis' };
 // Water-treatment categories (slugs). Faucet cartridges (repuestos-cartuchos) are excluded on purpose.
 const WATER_CATS = new Set(['filtros', 'filtros-cartuchos', 'filtros-membranas', 'filtros-tanques-osmosis',
   'repuestos-filtros', 'filtros-ducha', 'filtros-griferia', 'filtros-nevera', 'filtros-regadera', 'regaderas-filtros']);
