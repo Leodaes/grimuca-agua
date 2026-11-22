@@ -8,6 +8,35 @@ Objetivo: que la app lea bien la tira que Tulio trae de Valencia y que el semáf
 - Esa foto es ideal: colores limpios y luz pareja. Una foto real de teléfono va a ser más difícil. Por eso existe la carga manual.
 - La tira configurada hoy es la de referencia de 8 casillas (`tiraW8` en `api/src/medicion/config/tira.ts`).
 
+## Casos difíciles probados (22 nov, 4 a.m.)
+
+Ocho fotos difíciles en [`casos/`](casos/LEEME.md), enviadas al sitio publicado (de 1 a 3 rondas cada una). **En ningún caso apareció un valor inventado.** Lo que no se veía quedó en "sin lectura" o la foto se rechazó.
+
+| Foto | Resultado | Segundos |
+|---|---|---|
+| a · Poca luz y ruido | No legible: "poca luz" | 5 a 6 |
+| b · Girada 30° y desenfocada | 8 de 8 bien (una vez, plomo sin lectura) | 9 a 10 |
+| c · 3 casillas tapadas | Las 3 tapadas sin lectura, las otras 5 bien | 7 a 8 |
+| d · Solo la tabla, sin tira | No legible, pero decía "no se ve la tabla" → **corregido** | 3 |
+| e · Foto que no tiene nada que ver | No legible ("no se ve la tabla" → ahora pide la tira) | 3 |
+| f · Tira sin tabla | No legible: "no se ve la tabla" | 3 |
+| g · Reflejo que lava 2 casillas | No legible: "reflejos" | 6 |
+| h · Tabla de otra marca | Las filas con valores distintos sin lectura, las otras 5 bien | 11 a 13 |
+
+Ajustes en `lector.ts` (hay que desplegarlos): campo `tira_visible` y motivo correcto cuando falta la tira; un valor que no es nivel de la casilla queda nulo, en vez de ajustarse al más cercano; las casillas repetidas con valores distintos quedan nulas. Detalle en [`casos/LEEME.md`](casos/LEEME.md).
+
+Límite conocido: si hay casillas "sin lectura", el semáforo general se arma solo con las que se leyeron (en `c`, el rojo real estaba tapado y salió verde con 3 casillas sin dato). Por eso hay que ver siempre cuántas quedaron sin lectura.
+
+## Pasos de la sesión de las 8:30 (lista para seguir)
+
+1. **8:30 · Antes de mojar nada:** comprueba que el despliegue de anoche está arriba: `node docs/calibracion/casos/probar-casos.mjs`. Debe dar lo de la tabla de arriba y, en `d` y `e`, "No vemos la tira en la foto…". Si `b` no lee 8 de 8 (o 7 con una sin lectura), avisa antes de seguir.
+2. **8:35 · Empaque y tabla (sección 1):** llena la tabla de casillas, revisa nitrato (NO3 o NO3-N), nitrito y pH alto. Foto de la tabla a `insumos-tulio/`.
+3. **8:45 · Cambiar la tira (sección 2):** edita solo `tira` en `config/tira.ts`, con los valores **exactos** impresos en la tabla (el lector ya no ajusta valores que no estén en la lista: si falta uno, esa casilla saldrá "sin lectura"). Corre `npm run test -w api` y `npm run revisar -w api`; commit y `infra/desplegar.sh`.
+4. **8:55 · Foto de control:** foto de la tabla real con una tira **seca** al lado. Envíala con `node docs/calibracion/casos/probar-casos.mjs nuevo ruta/de/la/foto.jpg`: debe leer lo mismo que ves tú a ojo o dejar casillas sin lectura, nunca un color distinto.
+5. **9:00 · Tres muestras (sección 3):** moja, espera el tiempo del empaque, lee a ojo, toma la foto en el teléfono y anota la comparación. Toma también una foto mala a propósito (sin la tabla) para ver el mensaje.
+6. **9:15 · Decide:** con al menos 2 de 3 muestras buenas (6 casillas bien o sin lectura y ningún color cambiado), la Compuerta 4 queda aprobada. Si no, la demo va con la carga manual (sección 4).
+7. **9:20 · Demo (sección 5):** guarda en el teléfono la mejor foto de la tira real.
+
 ## 1. Con la tira en la mano (10 min)
 
 Anota del empaque y de la tabla de colores, casilla por casilla y en el orden de la tira:

@@ -97,9 +97,11 @@ export function construirInstrucciones(tiraEnUso: ParametroTira[] = tira): strin
     '4. Si el color queda entre dos niveles, elige el más alto.',
     '5. Si una casilla no se ve, está tapada, o la tira de la foto no trae ese parámetro, pon "valor": null. No adivines.',
     '6. En "confianza" di qué tan clara es la comparación: "alta", "media" o "baja".',
-    '7. "tabla_visible" es true solo si la tabla de colores impresa se ve en la foto.',
+    '7. "tabla_visible" es true solo si la tabla de colores impresa se ve en la foto. "tira_visible" es true solo si se ve una tira reactiva con sus casillas de color (la tabla sola no cuenta como tira).',
     '8. Pon "legible": false si no hay una tira en la foto, si está borrosa o movida, si hay mala luz (oscura, con sombras fuertes o reflejos) o si no puedes comparar con la tabla. En ese caso escribe en "motivo" una sola frase corta y simple, en español y de tú, que diga qué corregir en la foto (por ejemplo: "La foto salió oscura. Tómala cerca de una ventana."), y deja "lecturas" vacía.',
     '9. No opines sobre el agua ni des consejos: solo registra la lectura.',
+    '10. Si en una fila los valores impresos en la tabla de la foto no son los niveles de la lista (por ejemplo, la tabla es de otra marca), pon "valor": null en esa casilla. No conviertas ni redondees un valor impreso a un nivel de la lista.',
+    '11. Si un reflejo, una sombra o algo encima lava o tapa el color de una casilla, pon "valor": null en esa casilla. No la leas como el nivel más claro.',
     '',
     `Responde siempre llamando una sola vez a la herramienta ${NOMBRE_HERRAMIENTA}. No escribas nada fuera de la herramienta.`,
   ].join('\n');
@@ -125,6 +127,10 @@ export function construirHerramienta(tiraEnUso: ParametroTira[] = tira) {
           type: 'boolean',
           description: 'true si la tabla de colores impresa se ve en la foto.',
         },
+        tira_visible: {
+          type: 'boolean',
+          description: 'true si se ve una tira reactiva con sus casillas de color (la tabla sola no cuenta).',
+        },
         lecturas: {
           type: 'array',
           description: 'Una lectura por cada parámetro de la lista.',
@@ -142,7 +148,7 @@ export function construirHerramienta(tiraEnUso: ParametroTira[] = tira) {
           },
         },
       },
-      required: ['legible', 'tabla_visible', 'lecturas'],
+      required: ['legible', 'tabla_visible', 'tira_visible', 'lecturas'],
     },
   };
 }
@@ -185,6 +191,8 @@ const esquemaLectura = z.object({
   legible: z.boolean(),
   motivo: z.string().optional().nullable(),
   tabla_visible: z.boolean(),
+  // Opcional para no romper con respuestas que no lo traigan; si llega en false, manda.
+  tira_visible: z.boolean().optional().nullable(),
   lecturas: z.array(
     z.object({
       clave: z.string(),
@@ -215,15 +223,39 @@ export function nivelMasCercano(valor: number, niveles: number[], forzar = false
 }
 
 /**
+ * Acepta el valor solo si es uno de los niveles de la casilla (con un margen para decimales:
+ * el 10 % del salto al nivel vecino más cercano). Un valor que no es un nivel suele venir de una
+ * tabla de otra marca o de una interpolación: ajustarlo podría cambiar el color del semáforo
+ * (por ejemplo, un 40 de otra tabla ajustado a 50 pasa a rojo), así que queda en null.
+ */
+export function nivelExacto(valor: number, niveles: number[]): number | null {
+  const cercano = nivelMasCercano(valor, niveles);
+  if (cercano === null) return null;
+  const ordenados = [...niveles].sort((a, b) => a - b);
+  const i = ordenados.indexOf(cercano);
+  const saltos = [ordenados[i] - ordenados[i - 1], ordenados[i + 1] - ordenados[i]].filter(
+    (s) => Number.isFinite(s) && s > 0,
+  );
+  const margen = saltos.length > 0 ? Math.min(...saltos) * 0.1 : 1e-9;
+  return Math.abs(valor - cercano) <= margen ? cercano : null;
+}
+
+const NIEGA = '(no hay|no veo|no se ve|no se ven|no aparece|no encuentro|sin|falta|ninguna)';
+const SIN_TIRA = new RegExp(`${NIEGA}( una| la| ninguna)? tira|solo (se ve |aparece |hay )?(la )?tabla|no es una tira|nada que ver`);
+const SIN_TABLA = new RegExp(`${NIEGA}( una| la)? (tabla|carta de colores|referencia)`);
+
+/**
  * Lo que escribe el servicio nunca llega al cliente: se usa solo para elegir uno de los
- * motivos fijos de la app, escritos en lenguaje simple.
+ * motivos fijos de la app, escritos en lenguaje simple. Se busca primero qué falta (la tira
+ * o la tabla) y después cómo salió la foto, porque "solo se ve la tabla" habla de la tira.
  */
 function motivoSimple(motivo: string | null | undefined): string {
   const texto = (motivo ?? '').toLowerCase();
-  if (/tabla|carta de colores|referencia/.test(texto)) return MOTIVO_SIN_TABLA;
+  if (SIN_TIRA.test(texto)) return MOTIVO_SIN_TIRA;
+  if (SIN_TABLA.test(texto)) return MOTIVO_SIN_TABLA;
   if (/borros|movid|enfo/.test(texto)) return MOTIVO_BORROSA;
   if (/oscur|luz|sombra|reflej|brillo/.test(texto)) return MOTIVO_POCA_LUZ;
-  if (/no hay|sin tira|no aparece|no se ve/.test(texto)) return MOTIVO_SIN_TIRA;
+  if (/tabla|carta de colores|referencia/.test(texto)) return MOTIVO_SIN_TABLA;
   return MOTIVO_NO_LEGIBLE;
 }
 
@@ -238,16 +270,28 @@ export function interpretarRespuesta(cuerpo: unknown, tiraEnUso: ParametroTira[]
   const lectura = esquemaLectura.safeParse(bloque.input);
   if (!lectura.success) return { estado: 'no_legible', motivo: MOTIVO_FALLO };
 
-  if (!lectura.data.legible) return { estado: 'no_legible', motivo: motivoSimple(lectura.data.motivo) };
-  if (!lectura.data.tabla_visible) return { estado: 'no_legible', motivo: MOTIVO_SIN_TABLA };
+  const { legible, tabla_visible, tira_visible } = lectura.data;
+  const porTexto = motivoSimple(lectura.data.motivo);
+  // Sin tira no hay nada que leer, diga lo que diga el resto de la respuesta. Si la causa es
+  // la luz o el foco, se dice eso, que es lo que hay que corregir.
+  if (tira_visible === false) {
+    const foto = porTexto === MOTIVO_POCA_LUZ || porTexto === MOTIVO_BORROSA;
+    return { estado: 'no_legible', motivo: foto ? porTexto : MOTIVO_SIN_TIRA };
+  }
+  if (!legible) return { estado: 'no_legible', motivo: porTexto };
+  if (!tabla_visible) return { estado: 'no_legible', motivo: MOTIVO_SIN_TABLA };
 
   const valores: ValoresMedicion = {};
   let validas = 0;
   for (const parametro of tiraEnUso) {
-    const leida = lectura.data.lecturas.find((l) => l.clave === parametro.clave);
+    // Las claves que no están en la tira configurada se ignoran.
+    const leidas = lectura.data.lecturas.filter((l) => l.clave === parametro.clave);
     let valor: number | null = null;
-    if (leida && leida.valor !== null && leida.confianza !== 'baja') {
-      valor = nivelMasCercano(leida.valor, parametro.niveles);
+    // Una casilla leída dos veces con valores distintos es una contradicción: queda sin lectura.
+    const distintas = new Set(leidas.map((l) => l.valor));
+    const leida = distintas.size === 1 ? leidas[0] : undefined;
+    if (leida && leida.valor !== null && !leidas.some((l) => l.confianza === 'baja')) {
+      valor = nivelExacto(leida.valor, parametro.niveles);
     }
     valores[parametro.clave] = valor;
     if (valor !== null) validas += 1;

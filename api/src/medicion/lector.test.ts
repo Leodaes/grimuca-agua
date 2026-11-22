@@ -9,6 +9,8 @@ import {
   MOTIVO_POCA_LUZ,
   MOTIVO_POCAS_CASILLAS,
   MOTIVO_SIN_TABLA,
+  MOTIVO_SIN_TIRA,
+  nivelExacto,
   nivelMasCercano,
   TIEMPO_LIMITE_MS,
 } from './lector';
@@ -113,7 +115,7 @@ describe('leerTira', () => {
     expect(cuerpo.messages[0].content[1].type).toBe('text');
     expect(cuerpo.tools).toHaveLength(1);
     expect(cuerpo.tools[0].name).toBe('registrar_lectura');
-    expect(cuerpo.tools[0].input_schema.required).toEqual(['legible', 'tabla_visible', 'lecturas']);
+    expect(cuerpo.tools[0].input_schema.required).toEqual(['legible', 'tabla_visible', 'tira_visible', 'lecturas']);
     expect(cuerpo.tools[0].input_schema.properties.lecturas.items.properties.clave.enum).toEqual(
       tira.map((p) => p.clave),
     );
@@ -244,6 +246,188 @@ describe('leerTira', () => {
       estado: 'ok',
       valores: { ph: 7, cloro_libre: 1 },
     });
+  });
+});
+
+// Casos difíciles probados contra el sitio (docs/calibracion/casos/LEEME.md): lo que el
+// servicio puede responder y lo que la app debe hacer. Ningún valor inventado, nunca.
+describe('leerTira con fotos difíciles', () => {
+  const fetchSimulado = vi.fn();
+
+  beforeEach(() => {
+    vi.stubGlobal('fetch', fetchSimulado);
+    vi.stubEnv('LECTOR_SIMULADO', '0');
+    vi.stubEnv('VISION_API_URL', URL_PRUEBA);
+    vi.stubEnv('VISION_API_KEY', 'clave-de-prueba');
+    vi.stubEnv('VISION_MODELO', 'modelo-de-prueba');
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    fetchSimulado.mockReset();
+    vi.unstubAllGlobals();
+    vi.unstubAllEnvs();
+    vi.restoreAllMocks();
+  });
+
+  async function leerCon(input: unknown) {
+    fetchSimulado.mockResolvedValueOnce(respuestaCon(input));
+    return leerTira(foto, 'image/jpeg');
+  }
+
+  const todas = (valor: number | null, confianza: Lectura['confianza']): Lectura[] =>
+    tira.map((p) => ({ clave: p.clave, valor: valor === null ? null : p.niveles[0], confianza }));
+
+  it('foto con solo la tabla (sin tira): pide la tira, aunque el texto del servicio hable de la tabla', async () => {
+    expect(
+      await leerCon({
+        legible: false,
+        motivo: 'Solo se ve la tabla de colores, no hay ninguna tira en la foto.',
+        tabla_visible: true,
+        tira_visible: false,
+        lecturas: [],
+      }),
+    ).toEqual({ estado: 'no_legible', motivo: MOTIVO_SIN_TIRA });
+    // Aunque falte el campo tira_visible, el texto basta para elegir el motivo correcto.
+    expect(
+      await leerCon({ legible: false, motivo: 'No hay tira, solo la tabla de colores.', tabla_visible: true, lecturas: [] }),
+    ).toEqual({ estado: 'no_legible', motivo: MOTIVO_SIN_TIRA });
+  });
+
+  it('foto que no tiene nada que ver: no legible y pide la tira', async () => {
+    expect(
+      await leerCon({
+        legible: false,
+        motivo: 'La imagen es un logo; no hay tira ni tabla de colores.',
+        tabla_visible: false,
+        tira_visible: false,
+        lecturas: [],
+      }),
+    ).toEqual({ estado: 'no_legible', motivo: MOTIVO_SIN_TIRA });
+  });
+
+  it('tira sin la tabla al lado: pide la tabla', async () => {
+    expect(
+      await leerCon({
+        legible: false,
+        motivo: 'No se ve la tabla de colores para comparar.',
+        tabla_visible: false,
+        tira_visible: true,
+        lecturas: [],
+      }),
+    ).toEqual({ estado: 'no_legible', motivo: MOTIVO_SIN_TABLA });
+    // tabla_visible: false manda aunque el servicio diga que sí pudo leer.
+    expect(await leerCon({ legible: true, tabla_visible: false, tira_visible: true, lecturas: lecturasBuenas })).toEqual({
+      estado: 'no_legible',
+      motivo: MOTIVO_SIN_TABLA,
+    });
+  });
+
+  it('tira_visible: false descarta las lecturas aunque vengan; si la causa es la luz, lo dice', async () => {
+    expect(await leerCon({ legible: true, tabla_visible: true, tira_visible: false, lecturas: lecturasBuenas })).toEqual({
+      estado: 'no_legible',
+      motivo: MOTIVO_SIN_TIRA,
+    });
+    expect(
+      await leerCon({
+        legible: false,
+        motivo: 'La foto está muy oscura y no se distingue la tira.',
+        tabla_visible: true,
+        tira_visible: false,
+        lecturas: [],
+      }),
+    ).toEqual({ estado: 'no_legible', motivo: MOTIVO_POCA_LUZ });
+  });
+
+  it('todas las casillas nulas: no legible, nunca un resultado vacío', async () => {
+    expect(await leerCon({ legible: true, tabla_visible: true, tira_visible: true, lecturas: todas(null, 'alta') })).toEqual(
+      { estado: 'no_legible', motivo: MOTIVO_POCAS_CASILLAS },
+    );
+  });
+
+  it('todas con confianza baja: se descartan y queda no legible', async () => {
+    expect(await leerCon({ legible: true, tabla_visible: true, tira_visible: true, lecturas: todas(0, 'baja') })).toEqual({
+      estado: 'no_legible',
+      motivo: MOTIVO_POCAS_CASILLAS,
+    });
+  });
+
+  it('casillas de más: las claves que la tira no trae se ignoran y una casilla repetida con valores distintos queda sin lectura', async () => {
+    const r = await leerCon({
+      legible: true,
+      tabla_visible: true,
+      tira_visible: true,
+      lecturas: [
+        ...lecturasBuenas,
+        { clave: 'hierro', valor: 5, confianza: 'alta' }, // la tira W-8 no trae hierro
+        { clave: 'nitrato', valor: 250, confianza: 'alta' }, // repetida y distinta: contradicción
+        { clave: 'ph', valor: 7.2, confianza: 'alta' }, // repetida e igual: se acepta
+      ],
+    });
+    expect(r.estado).toBe('ok');
+    if (r.estado !== 'ok') return;
+    expect(Object.keys(r.valores)).toEqual(tira.map((p) => p.clave));
+    expect(r.valores.nitrato).toBeNull();
+    expect(r.valores.ph).toBe(7.2);
+    expect(r.valores).not.toHaveProperty('hierro');
+  });
+
+  it('una repetida con confianza baja en cualquiera de sus copias queda sin lectura', async () => {
+    const r = await leerCon({
+      legible: true,
+      tabla_visible: true,
+      tira_visible: true,
+      lecturas: [...lecturasBuenas, { clave: 'dureza', valor: 250, confianza: 'baja' }],
+    });
+    expect(r.estado === 'ok' && r.valores.dureza).toBeNull();
+  });
+
+  it('tabla de otra marca: un valor impreso que no es nivel de la tira queda nulo y no cambia el semáforo', async () => {
+    // Caso h: la tabla de la foto dice dureza 200, nitrato 40 y pH 6.5 (otra marca).
+    // Si se ajustaran, nitrato 40 → 50 pasaría de amarillo a rojo. Deben quedar sin lectura.
+    const r = await leerCon({
+      legible: true,
+      tabla_visible: true,
+      tira_visible: true,
+      lecturas: [
+        { clave: 'alcalinidad', valor: 120, confianza: 'alta' },
+        { clave: 'dureza', valor: 200, confianza: 'alta' },
+        { clave: 'cobre', valor: 0, confianza: 'alta' },
+        { clave: 'nitrato', valor: 40, confianza: 'alta' },
+        { clave: 'cloro_libre', valor: 1, confianza: 'alta' },
+        { clave: 'plomo', valor: 0, confianza: 'alta' },
+        { clave: 'ph', valor: 6.5, confianza: 'alta' },
+        { clave: 'nitrito', valor: 0, confianza: 'alta' },
+      ],
+    });
+    expect(r.estado).toBe('ok');
+    if (r.estado !== 'ok') return;
+    expect(r.valores).toMatchObject({ alcalinidad: 120, dureza: null, nitrato: null, ph: null, cloro_libre: 1 });
+    const niveles = evaluarAgua(r.valores).porParametro;
+    expect(niveles.find((p) => p.clave === 'nitrato')!.nivel).toBe('sin_dato');
+    expect(niveles.some((p) => p.nivel === 'rojo')).toBe(false);
+  });
+
+  it('las instrucciones piden nulo para casillas tapadas, lavadas por un reflejo o de otra tabla', () => {
+    const texto = construirInstrucciones();
+    expect(texto).toContain('tira_visible');
+    expect(texto).toMatch(/otra marca/);
+    expect(texto).toMatch(/reflejo/);
+  });
+});
+
+describe('nivelExacto', () => {
+  it('acepta los niveles y los decimales muy cercanos', () => {
+    expect(nivelExacto(50, [0, 10, 25, 50, 100, 250])).toBe(50);
+    expect(nivelExacto(0.52, [0, 0.5, 1, 3, 5, 10])).toBe(0.5);
+    expect(nivelExacto(7.19, [6.2, 6.8, 7.2, 7.6, 8.4, 8.8])).toBe(7.2);
+  });
+
+  it('un valor que no es nivel de la casilla queda nulo, aunque esté dentro del rango', () => {
+    expect(nivelExacto(40, [0, 10, 25, 50, 100, 250])).toBeNull();
+    expect(nivelExacto(200, [0, 25, 50, 120, 250, 425])).toBeNull();
+    expect(nivelExacto(6.5, [6.2, 6.8, 7.2, 7.6, 8.4, 8.8])).toBeNull();
+    expect(nivelExacto(9999, [0, 10, 25, 50])).toBeNull();
   });
 });
 
