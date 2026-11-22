@@ -63,6 +63,16 @@ bash infra/desplegar.sh --reiniciar-datos --confirmo
 
 Respalda la base, construye la imagen, baja los servicios del proyecto y borra **solo** el volumen `agua_bd`. Al arrancar se aplican las migraciones y las semillas desde cero. Sin `--confirmo` no hace nada.
 
+### Restablecer los datos de la demo (sin desplegar)
+
+Antes de presentar, o si la demo quedó con pedidos de ensayo:
+
+```bash
+SERVIDOR=usuario@host LLAVE=ruta/de/la/llave bash infra/restablecer-demo.sh --confirmo
+```
+
+No sube ni construye código: respalda la base, borra **solo** el volumen `agua_bd` y vuelve a levantar la misma imagen, que siembra los datos de demostración al arrancar (3 comercios, 70 hogares, pedidos con envío para las rutas y 3 servicios técnicos). Tarda menos de un minuto. Los PIN no cambian.
+
 ## Cómo se ven los logs
 
 En el servidor conviene definir una vez el comando completo (hace falta `--env-file` porque el compose interpola la contraseña):
