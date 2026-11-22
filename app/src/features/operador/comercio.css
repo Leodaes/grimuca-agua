@@ -14,6 +14,36 @@
   font-size: var(--t1);
 }
 
+.op-productos-filtros {
+  display: grid;
+  gap: var(--s3);
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  align-items: end;
+}
+.op-productos-filtros > :first-child {
+  grid-column: 1 / -1;
+}
+.op-producto-celda {
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+  min-width: 220px;
+}
+.op-producto-foto {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border: 1px solid var(--linea);
+  background: #ffffff;
+  color: var(--azul);
+}
+.op-producto-foto img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
 .op-productos {
   display: grid;
   gap: var(--s5);
