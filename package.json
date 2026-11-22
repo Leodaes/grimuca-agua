@@ -1,0 +1,21 @@
+{
+  "name": "grimuca-agua",
+  "private": true,
+  "version": "0.1.0",
+  "license": "MIT",
+  "workspaces": [
+    "api",
+    "app"
+  ],
+  "scripts": {
+    "test": "npm run test -w api && npm run test -w app",
+    "revisar": "npm run revisar -w api && npm run revisar -w app",
+    "build": "npm run build -w app",
+    "dev:api": "npm run dev -w api",
+    "dev:app": "npm run dev -w app",
+    "e2e": "playwright test -c pruebas/playwright.config.ts"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.65.1"
+  }
+}

@@ -14,7 +14,7 @@ playwright-report/
 test-results/
 .claude/
 insumos-tulio/
-HANDOFF-hackaton.md
+HANDOFF-hackaton.interno.md
 grimuca-design/_raw/
 *.pem
 *.key

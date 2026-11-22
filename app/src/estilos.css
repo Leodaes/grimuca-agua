@@ -1,0 +1,20 @@
+@import './tokens.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html { color-scheme: light; }
+body {
+  margin: 0;
+  background: var(--fondo);
+  color: var(--tinta);
+  font-family: var(--f-texto);
+  font-size: var(--t0);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3, h4 { font-family: var(--f-titulo); color: var(--azul); font-stretch: 112%; letter-spacing: -0.01em; }
+h1 { font-size: var(--t4); font-weight: 800; line-height: 1.05; }
+h2 { font-size: var(--t3); font-weight: 700; line-height: 1.15; }
+h3 { font-size: var(--t2); font-weight: 600; line-height: 1.25; }
+:focus-visible { outline: 2px solid var(--foco); outline-offset: 2px; }
