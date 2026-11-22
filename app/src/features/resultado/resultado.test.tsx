@@ -308,14 +308,14 @@ describe('PaginaResultado', () => {
     expect((verdes.parentElement as HTMLDetailsElement).open).toBe(false);
     expect(within(verdes.parentElement!).getAllByRole('listitem')).toHaveLength(5);
     expect(within(casillas).queryByRole('button', { name: 'Agregar a mi lista' })).not.toBeInTheDocument();
-    // Orden: conclusión → qué hacer hoy → recomendación → si no haces nada → casillas.
+    // Orden: primero el agua (conclusión → casillas → si no haces nada), después qué hacer y al final la venta.
     const titulos = screen.getAllByRole('heading', { level: 2 }).map((h) => h.textContent);
     expect(titulos.slice(0, 5)).toEqual([
       'Tu conclusión',
+      'Tu agua, casilla por casilla',
+      'Si no haces nada',
       'Qué hacer hoy',
       'Lo que te recomendamos',
-      'Si no haces nada',
-      'Tu agua, casilla por casilla',
     ]);
     expect(screen.getByRole('heading', { name: 'Lo que te recomendamos' })).toBeInTheDocument();
     expect(

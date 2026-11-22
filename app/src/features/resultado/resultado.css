@@ -251,12 +251,11 @@
   margin: 0;
 }
 
-/* ── Computadora: dos columnas ──
-   Izquierda: conclusión, qué hacer hoy, detalle por casilla. Derecha: "Lo que te recomendamos".
-   El orden del documento es el mismo del teléfono; solo cambia dónde se dibuja. */
+/* ── Computadora: una columna de lectura cómoda, en el mismo orden del teléfono ──
+   Primero el agua y al final "Lo que te recomendamos" (antes iba en una columna derecha junto a la conclusión). */
 @media (min-width: 900px) {
   .resultado-cuerpo {
-    grid-template-columns: minmax(0, 1.45fr) minmax(340px, 1fr);
+    grid-template-columns: minmax(0, 880px);
     column-gap: var(--s7);
     row-gap: var(--s5);
     align-items: start;
@@ -269,9 +268,9 @@
     grid-column: 1 / -1;
     max-width: 760px;
   }
+  /* La venta va después de la información del agua, también en computadora (pedido de Leonardo, 22 nov). */
   .resultado-cuerpo > .resultado-lateral {
-    grid-column: 2;
-    grid-row: 2 / span 6;
+    grid-column: 1 / -1;
     padding: var(--s5);
     border: 1px solid var(--linea);
     background: var(--papel);

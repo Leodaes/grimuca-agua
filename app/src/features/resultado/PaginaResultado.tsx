@@ -199,7 +199,8 @@ function Resultado({ medicion }: { medicion: Medicion }) {
   const consecuencias = siNoHacesNada(evaluacion.porParametro);
   const pasos = pasosQueHacerHoy({ ...entrada, hayRecomendado: sugeridos.length > 0 });
 
-  // Hilo de la página: conclusión → qué hacer → productos → detalle. Los productos solo salen en "Lo que te recomendamos".
+  // Hilo de la página: primero el agua (conclusión → casilla por casilla → si no haces nada → aviso), después
+  // qué hacer y al final la venta ("Lo que te recomendamos").
   // En computadora, "Lo que te recomendamos" pasa a la columna derecha (resultado.css); el orden del documento no cambia.
   return (
     <div className="g-pila resultado-cuerpo">
@@ -231,6 +232,11 @@ function Resultado({ medicion }: { medicion: Medicion }) {
         </h2>
         <p className="resultado-conclusion__texto">{conclusion}</p>
       </section>
+
+      {/* Primero la información del agua (pedido de Leonardo, 22 nov): casillas y qué pasa si no se hace nada. */}
+      <Casillas parametros={parametros} medicionId={medicion.id} />
+
+      {consecuencias.length > 0 && <SiNoHacesNada consecuencias={consecuencias} />}
 
       <AvisoTira />
 
@@ -276,10 +282,6 @@ function Resultado({ medicion }: { medicion: Medicion }) {
           <CotizarWhatsApp etiqueta="Preguntar por filtros por WhatsApp" mensaje={mensajePreguntarFiltros(datos)} />
         </section>
       )}
-
-      {consecuencias.length > 0 && <SiNoHacesNada consecuencias={consecuencias} />}
-
-      <Casillas parametros={parametros} medicionId={medicion.id} />
 
       <p className="g-apagado">{PIE_ORIENTACION}</p>
 
