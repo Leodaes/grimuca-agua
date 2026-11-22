@@ -1473,3 +1473,24 @@ button.g-toast__accion {
     font-size: min(var(--t4), 2.75rem);
   }
 }
+
+/* ── Menos scroll vertical en el teléfono (pedido de Leonardo, 22 nov 2:27 p.m.) ──
+   Solo espacios y tamaños: no cambia textos, orden ni áreas táctiles de 44 px. */
+@media (max-width: 899px) {
+  .g-pila {
+    gap: var(--s3);
+  }
+  .g-pila--amplia {
+    gap: var(--s4);
+  }
+  .g-pantalla__contenido {
+    padding-top: var(--s4);
+  }
+  .g-h1 {
+    font-size: clamp(1.75rem, 1.2rem + 2.6vw, 2.5rem);
+    max-width: 18ch;
+  }
+  .g-h3 {
+    margin-block: 0;
+  }
+}

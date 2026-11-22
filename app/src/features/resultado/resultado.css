@@ -296,3 +296,10 @@
     gap: var(--s5);
   }
 }
+
+/* Menos scroll en el teléfono: filas de casillas y bloques más juntos (22 nov 2:27 p.m.). */
+@media (max-width: 899px) {
+  .resultado-cuerpo {
+    gap: var(--s4);
+  }
+}
