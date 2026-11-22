@@ -114,7 +114,7 @@ describe('evaluarAgua', () => {
   });
 
   it('alcalinidad y pH nunca dan rojo; fuera de rango quedan en amarillo', () => {
-    const e = evaluarAgua({ ...todoEnRango, alcalinidad: 0, ph: 8.8 });
+    const e = evaluarAgua({ ...todoEnRango, alcalinidad: 0, ph: 6.2 });
     expect(e.porParametro.find((p) => p.clave === 'alcalinidad')!.nivel).toBe('amarillo');
     expect(e.porParametro.find((p) => p.clave === 'ph')!.nivel).toBe('amarillo');
     expect(e.semaforo).toBe('amarillo');
@@ -144,7 +144,7 @@ describe('evaluarAgua', () => {
       nitrato: [[10, 'verde'], [25, 'amarillo'], [50, 'rojo']],
       cloro_libre: [[1, 'verde'], [3, 'amarillo'], [5, 'rojo']],
       plomo: [[0, 'verde'], [5, 'amarillo'], [15, 'rojo']],
-      ph: [[6.2, 'amarillo'], [6.8, 'verde'], [8.4, 'verde'], [8.8, 'amarillo']],
+      ph: [[6.2, 'amarillo'], [6.8, 'verde'], [8.4, 'verde']],
       nitrito: [[0, 'verde'], [1, 'amarillo'], [5, 'rojo']],
     };
     for (const [clave, casos] of Object.entries(esperado)) {

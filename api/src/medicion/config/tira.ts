@@ -116,5 +116,24 @@ export const tiraHoryzon: ParametroTira[] = [
   parametros.hierro,
 ];
 
+/**
+ * Tira real de la demo: Qteeyou "Drinking Water 8 in 1", leída de su tabla de colores el 22 nov 2026.
+ * Orden de la tabla: alcalinidad total, pH, dureza, cobre, nitrato, nitrito, cloro libre y plomo.
+ * Todas se leen a los 30 segundos (1 gota por casilla; leer antes de 60 segundos).
+ * Rango ideal que marca el fabricante (recuadros): alcalinidad 40-120, pH 6,8-8,4, cobre 0-1, nitrato 0-10,
+ * nitrito 0-1, cloro libre 0-0,5 y plomo 0-15 ppb. El semáforo de la app usa sus propios umbrales (umbrales.ts).
+ * La tabla dice "mg/L" en nitrato sin aclarar si es NO3 o NO3-N: se toma como NO3 (por confirmar).
+ */
+export const tiraQteeyou8en1: ParametroTira[] = [
+  parametros.alcalinidad,
+  conNiveles(parametros.ph, [6.2, 6.8, 7.2, 7.6, 7.8, 8.4]),
+  parametros.dureza,
+  parametros.cobre,
+  conNiveles(parametros.nitrato, [0, 10, 25, 50, 100, 250, 500]),
+  conNiveles(parametros.nitrito, [0, 1, 5, 10, 20, 40, 80]),
+  conNiveles(parametros.cloro_libre, [0, 0.5, 1, 3, 5, 10, 20]),
+  parametros.plomo,
+];
+
 /** ← LA TIRA EN USO. Es lo único que se toca para cambiar de tira. */
-export const tira: ParametroTira[] = tiraW8;
+export const tira: ParametroTira[] = tiraQteeyou8en1;
