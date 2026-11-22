@@ -159,6 +159,12 @@ describe('pestaña Zonas: tablero de hexágonos', () => {
     // Los hogares sin urbanización se listan fuera del tablero y la lista de alertas por zona se conserva.
     expect(screen.getByRole('button', { name: /Otras de Naguanagua: 1 hogar/ })).toBeInTheDocument();
     expect(screen.getByText(/Alerta en Naguanagua: 3 hogares en rojo/)).toBeInTheDocument();
+
+    // Avisar a los vecinos: solo muestra el WhatsApp simulado con el texto aprobado, sin nombrar hogares.
+    await usuario.click(screen.getByRole('button', { name: 'Avisar a los vecinos de la zona' }));
+    expect(screen.getByText('Varios hogares de tu zona reportaron resultados fuera de rango. Te sugerimos medir tu agua.')).toBeInTheDocument();
+    expect(screen.getByText('Enviado (simulado)')).toBeInTheDocument();
+    expect(screen.getByText(/en la demo no se envía un WhatsApp real/)).toBeInTheDocument();
   });
 
   it('abrevia los nombres largos en dos líneas', () => {

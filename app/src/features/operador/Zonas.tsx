@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Aviso, BandaCifras, Boton, Cargando, Chip, EstadoVacio } from '../../components/grimuca';
+import { Aviso, BandaCifras, Boton, Cargando, Chip, EstadoVacio, WhatsAppSimulado } from '../../components/grimuca';
 import type { AlertaZona, UrbanizacionMapa } from '../../lib/tipos';
 import { useServicios } from './contexto';
 import { nombreTienda } from './estadoPedidos';
@@ -125,6 +125,30 @@ function Leyenda({ vista, forma }: { vista: VistaMapa; forma: FormaMapa }) {
       <li><MuestraHex clase="mapa-hex--vacio" /> Por captar (sin clientes)</li>
       <li><MuestraIcono tipo="tienda" /> Tienda Grimuca</li>
     </ul>
+  );
+}
+
+/** Texto aprobado por Legal (docs/legal/riesgos.md, M3): sin nombrar hogares y sin decir "contaminada". */
+export const MENSAJE_AVISO_VECINOS =
+  'Varios hogares de tu zona reportaron resultados fuera de rango. Te sugerimos medir tu agua.';
+
+/** Aviso a los vecinos de una zona en alerta: en la demo solo muestra el WhatsApp simulado, no envía nada. */
+function AvisarVecinos({ zona }: { zona: string }) {
+  const [enviado, setEnviado] = useState(false);
+  if (!enviado) {
+    return (
+      <Boton variante="secundario" onClick={() => setEnviado(true)}>
+        Avisar a los vecinos de la zona
+      </Boton>
+    );
+  }
+  return (
+    <div className="g-pila" role="status">
+      <WhatsAppSimulado de={`Grimuca ${nombreTienda(tiendaDeZona(zona))}`} para={`Vecinos de ${zona}`} mensaje={MENSAJE_AVISO_VECINOS} />
+      <p>
+        <strong>Enviado (simulado)</strong> solo a los hogares de {zona} que aceptaron recibir avisos. No se nombra a ningún hogar.
+      </p>
+    </div>
   );
 }
 
@@ -343,6 +367,7 @@ export function Zonas({ token, version, alNoAutorizado }: Props) {
                 <Boton variante="secundario" a={`${base}/inventario`}>
                   Ver inventario
                 </Boton>
+                <AvisarVecinos key={z.zona} zona={z.zona} />
               </Aviso>
             ))
           )}
