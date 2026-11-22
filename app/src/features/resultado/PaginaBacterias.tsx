@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { api } from '../../lib/api';
 import { hogarId } from '../../lib/sesion';
-import type { Cartucho, PruebaBacterias } from '../../lib/tipos';
+import type { Cartucho, Hogar, PruebaBacterias } from '../../lib/tipos';
 import { Aviso, AvisoTira, Boton, Cargando, EstadoVacio } from '../../components/grimuca';
 import {
   BACTERIAS_ANTES,
@@ -10,10 +10,12 @@ import {
   BACTERIAS_CAMBIO,
   BACTERIAS_SIN_CAMBIO,
   BACTERIAS_TITULO,
-  enlaceCotizar,
+  datosDelHogar,
   formatearFecha,
+  mensajeBacteriasUV,
   mensajeError,
 } from './textos';
+import { CotizarWhatsApp } from './Producto';
 
 /** LITERAL (aprobado por legal). */
 const TEXTO_UV =
@@ -40,7 +42,24 @@ export function PaginaBacterias() {
   const [enviando, setEnviando] = useState(false);
   const [falla, setFalla] = useState<string | null>(null);
   const [intento, setIntento] = useState(0);
+  const [datosHogar, setDatosHogar] = useState<Hogar | null>(null);
+  const [parametros] = useSearchParams();
+  const saltarEspera = parametros.get('saltar') === '1';
   const hogar = hogarId();
+
+  useEffect(() => {
+    if (!hogar) return undefined;
+    let vigente = true;
+    Promise.resolve()
+      .then(() => api.obtenerHogar(hogar))
+      .then((datos) => {
+        if (vigente && datos) setDatosHogar(datos);
+      })
+      .catch(() => undefined);
+    return () => {
+      vigente = false;
+    };
+  }, [hogar]);
 
   useEffect(() => {
     if (!hogar) {
@@ -112,13 +131,14 @@ export function PaginaBacterias() {
       {estado.tipo === 'listo' && hogar && estado.prueba?.resultado === 'pendiente' && (
         <Pendiente
           prueba={estado.prueba}
+          saltarEspera={saltarEspera}
           enviando={enviando}
           alReportar={(resultado) => ejecutar(() => api.reportarBacterias(hogar, resultado))}
         />
       )}
 
       {estado.tipo === 'listo' && estado.prueba && estado.prueba.resultado !== 'pendiente' && (
-        <Reportada prueba={estado.prueba} />
+        <Reportada prueba={estado.prueba} hogar={datosHogar} />
       )}
 
       {falla && (
@@ -136,15 +156,18 @@ export function PaginaBacterias() {
 
 function Pendiente({
   prueba,
+  saltarEspera,
   enviando,
   alReportar,
 }: {
   prueba: Prueba;
+  saltarEspera: boolean;
   enviando: boolean;
   alReportar: (resultado: 'cambio' | 'sin_cambio') => void;
 }) {
   const cumple = new Date(new Date(prueba.fecha_inicio).getTime() + HORAS_48);
   const yaPasaron = Date.now() >= cumple.getTime();
+  const puedeReportar = yaPasaron || saltarEspera;
 
   return (
     <>
@@ -153,22 +176,47 @@ function Pendiente({
         {formatearFecha(cumple.toISOString(), true)}.
       </Aviso>
       <p>{BACTERIAS_ANTES}</p>
-      <h2 className="g-h3">¿Cómo está el frasco?</h2>
-      <div className="g-pila">
-        <Boton variante="secundario" anchoCompleto disabled={enviando} onClick={() => alReportar('cambio')}>
-          Cambió de color
-        </Boton>
-        <Boton variante="secundario" anchoCompleto disabled={enviando} onClick={() => alReportar('sin_cambio')}>
-          Sigue igual
-        </Boton>
-      </div>
+      {puedeReportar ? (
+        <>
+          {!yaPasaron && (
+            <p className="g-apagado">Demostración: estás reportando antes de que se cumplan las 48 horas.</p>
+          )}
+          <h2 className="g-h3">¿Cómo está el frasco?</h2>
+          <div className="g-pila">
+            <Boton variante="secundario" anchoCompleto disabled={enviando} onClick={() => alReportar('cambio')}>
+              Cambió de color
+            </Boton>
+            <Boton variante="secundario" anchoCompleto disabled={enviando} onClick={() => alReportar('sin_cambio')}>
+              Sigue igual
+            </Boton>
+          </div>
+        </>
+      ) : (
+        <>
+          <p>Vuelve cuando se cumplan las 48 horas para decirnos cómo quedó el frasco.</p>
+          <p>
+            <Link
+              className="g-enlace"
+              to="/bacterias?saltar=1"
+              replace
+              style={{ minHeight: 44, display: 'inline-flex', alignItems: 'center' }}
+            >
+              Saltar la espera (demostración)
+            </Link>
+          </p>
+          <p className="g-apagado" style={{ fontSize: '0.9em' }}>
+            Enlace de la demostración: permite reportar sin esperar las 48 horas.
+          </p>
+        </>
+      )}
     </>
   );
 }
 
-function Reportada({ prueba }: { prueba: Prueba }) {
+function Reportada({ prueba, hogar }: { prueba: Prueba; hogar: Hogar | null }) {
   const cambio = prueba.resultado === 'cambio';
   const sugeridos = prueba.sugeridos ?? [];
+  const mensaje = mensajeBacteriasUV(datosDelHogar(hogar));
 
   return (
     <>
@@ -192,26 +240,15 @@ function Reportada({ prueba }: { prueba: Prueba }) {
           <div className="g-tarjeta-producto__cuerpo g-pila">
             <p>{TEXTO_UV}</p>
             <ul className="g-pila">
-              {sugeridos.map((cartucho) => {
-                const cotizar = enlaceCotizar(cartucho.nombre, cartucho.codigo);
-                return (
-                  <li key={cartucho.codigo}>
-                    <p className="g-tarjeta-producto__nombre">{cartucho.nombre}</p>
-                    <p className="g-tarjeta-producto__codigo">
-                      {[cartucho.marca, cartucho.codigo].filter(Boolean).join(' · ')}
-                    </p>
-                    {cotizar.interno ? (
-                      <Link className="g-enlace" to={cotizar.destino}>
-                        Cotizar por WhatsApp
-                      </Link>
-                    ) : (
-                      <a className="g-enlace" href={cotizar.destino} target="_blank" rel="noopener noreferrer">
-                        Cotizar por WhatsApp
-                      </a>
-                    )}
-                  </li>
-                );
-              })}
+              {sugeridos.map((cartucho) => (
+                <li key={cartucho.codigo}>
+                  <p className="g-tarjeta-producto__nombre">{cartucho.nombre}</p>
+                  <p className="g-tarjeta-producto__codigo">
+                    {[cartucho.marca, cartucho.codigo].filter(Boolean).join(' · ')}
+                  </p>
+                  <CotizarWhatsApp mensaje={mensaje} />
+                </li>
+              ))}
             </ul>
           </div>
         </section>

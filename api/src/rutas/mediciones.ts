@@ -57,6 +57,7 @@ export async function rutasMediciones(app: FastifyInstance): Promise<void> {
       catalogo: await listarCatalogo(bd),
       perfil,
       filtro: hogar.filtro,
+      hogar,
       marcasExcluidas: config.marcasExcluidas,
     });
     await eventos.publicar({
@@ -135,6 +136,7 @@ export async function rutasMediciones(app: FastifyInstance): Promise<void> {
       catalogo: await listarCatalogo(bd),
       perfil: perfilDe(hogar),
       filtro: hogar.filtro,
+      hogar,
       marcasExcluidas: config.marcasExcluidas,
       diasParaRecambio: medicion.diasParaRecambio,
     });

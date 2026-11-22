@@ -82,14 +82,15 @@ export function Pago() {
     return (
       <PaginaAlta>
         <Insignia tono="aviso">Simulación</Insignia>
-        <h1 className="g-h1">Listo, {hogar.nombre}. Tu sobre está pedido.</h1>
+        <h1 className="g-h1">Listo. Tu sobre está pedido.</h1>
+        <p>Gracias, {hogar.nombre}.</p>
         <Aviso tono="ok" rol="status">
           Pago simulado registrado. No se hizo ningún cobro.
         </Aviso>
         <p>
           <strong>Pedido N.º {pedido.id}</strong> · Sale de {nombreTienda}
         </p>
-        <p>Te avisaremos cuando salga de la tienda.</p>
+        <p>Cuando el pedido salga de la tienda, su estado cambia a Despachado en la app.</p>
         <p className="g-apagado">Cuando te llegue, abre la app y toca "Ya me llegó el sobre".</p>
         <Boton a="/medir" anchoCompleto>
           Ya me llegó el sobre (saltar la espera)
@@ -120,7 +121,7 @@ export function Pago() {
         />
         <ul>
           <li>1 tira para medir tu agua</li>
-          <li>1 prueba de bacterias (E. coli y coliformes)</li>
+          <li>1 prueba casera de bacterias coliformes</li>
           <li>La tabla de colores impresa</li>
           <li>Un código QR con el video de cómo se hace</li>
         </ul>

@@ -98,7 +98,7 @@ describe('alta', () => {
         origen_agua: 'chorro',
         personas: 4,
         tiene_filtro: false,
-        whatsapp: '04141234567',
+        whatsapp: '+584141234567',
         consentimiento: true,
       }),
     );
@@ -131,10 +131,68 @@ describe('alta', () => {
     await usuario.click(within(screen.getByRole('group', { name: '¿Tienen filtro en casa?' })).getByLabelText('Sí'));
     expect(screen.queryByLabelText(/etapas/)).not.toBeInTheDocument();
     expect(screen.getByText('En el siguiente paso le tomas una foto a tu filtro y lo identificamos.')).toBeInTheDocument();
+    await usuario.click(within(screen.getByRole('group', { name: '¿Cuándo cambiaste el cartucho por última vez?' })).getByLabelText('No me acuerdo'));
     await usuario.click(screen.getByRole('checkbox'));
     await usuario.click(screen.getByRole('button', { name: 'Continuar' }));
     expect(await screen.findByText('Pantalla de mi filtro')).toBeInTheDocument();
     expect(simulada.crearHogar).toHaveBeenCalledWith(expect.objectContaining({ tiene_filtro: true }));
+  });
+
+  it.each([
+    ['Hace menos de un mes', 'menos_de_un_mes'],
+    ['Hace más de tres meses', 'mas_de_tres_meses'],
+    ['No me acuerdo', 'no_me_acuerdo'],
+  ])('con filtro, "%s" se guarda como %s (sin campo de fecha)', async (etiqueta, valor) => {
+    simulada.crearHogar.mockResolvedValue({ ...hogar, tiene_filtro: true, filtro: null });
+    const usuario = userEvent.setup();
+    enRuta('/perfil', <Perfil />);
+    await llenarPerfil(usuario);
+    expect(screen.queryByRole('group', { name: '¿Cuándo cambiaste el cartucho por última vez?' })).not.toBeInTheDocument();
+    await usuario.click(within(screen.getByRole('group', { name: '¿Tienen filtro en casa?' })).getByLabelText('Sí'));
+    const grupo = screen.getByRole('group', { name: '¿Cuándo cambiaste el cartucho por última vez?' });
+    expect(within(grupo).getAllByRole('radio').map((r) => r.closest('label')?.textContent)).toEqual([
+      'Hace menos de un mes',
+      'Hace más de tres meses',
+      'No me acuerdo',
+    ]);
+    expect(document.querySelector('input[type="date"]')).toBeNull();
+
+    await usuario.click(screen.getByRole('checkbox'));
+    await usuario.click(screen.getByRole('button', { name: 'Continuar' }));
+    expect(screen.getByText('Elige una opción.')).toBeInTheDocument();
+    expect(simulada.crearHogar).not.toHaveBeenCalled();
+
+    await usuario.click(within(grupo).getByLabelText(etiqueta));
+    await usuario.click(screen.getByRole('button', { name: 'Continuar' }));
+    expect(simulada.crearHogar).toHaveBeenCalledWith(expect.objectContaining({ tiene_filtro: true, ultimo_cambio: valor }));
+    expect(simulada.crearHogar.mock.calls[0][0]).not.toHaveProperty('fecha_ultimo_cambio');
+  });
+
+  it('WhatsApp: código de país, formato al salir del campo y error claro', async () => {
+    const usuario = userEvent.setup();
+    enRuta('/perfil', <Perfil />);
+    const codigo = screen.getByLabelText('Código de país') as HTMLSelectElement;
+    expect(codigo.value).toBe('58');
+    expect([...codigo.options].map((o) => o.textContent)).toContain('+58 Venezuela');
+    expect([...codigo.options]).toHaveLength(10);
+    const campo = screen.getByLabelText('Tu WhatsApp') as HTMLInputElement;
+    expect(campo).toHaveAttribute('inputmode', 'tel');
+    expect(campo).toHaveAttribute('autocomplete', 'tel-national');
+
+    await usuario.type(campo, '+58 414-555.01(99)');
+    await usuario.tab();
+    expect(campo.value).toBe('0414 555 01 99');
+
+    await usuario.clear(campo);
+    await usuario.type(campo, '0212 555 0199');
+    await usuario.tab();
+    expect(screen.getByText('Revisa el número: debe ser un celular, por ejemplo 0414 555 01 99')).toBeInTheDocument();
+
+    await usuario.clear(campo);
+    await usuario.type(campo, '+57 300 123 4567');
+    await usuario.tab();
+    expect(codigo.value).toBe('57');
+    expect(campo.value).toBe('3001234567');
   });
 
   it('urbanización según la zona y mascotas: se guardan con el perfil', async () => {
@@ -202,5 +260,9 @@ describe('alta', () => {
     expect(await screen.findByText('Pago simulado registrado. No se hizo ningún cobro.')).toBeInTheDocument();
     expect(screen.getByText(/Pedido N\.º 42/)).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /Ya me llegó el sobre/ })).toHaveAttribute('href', '/medir');
+    // El título no lleva el nombre del hogar (va en el cuerpo).
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Listo. Tu sobre está pedido.');
+    expect(screen.getByText('Gracias, Ana.')).toBeInTheDocument();
+    expect(screen.getByText('Cuando el pedido salga de la tienda, su estado cambia a Despachado en la app.')).toBeInTheDocument();
   });
 });

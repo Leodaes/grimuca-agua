@@ -5,12 +5,15 @@ import {
   MOMENTOS_DIA,
   ORIGENES_AGUA,
   SERVICIOS_TECNICOS,
+  ULTIMOS_CAMBIOS,
   ZONAS,
   type ClaveParametro,
+  type UltimoCambio,
   type MomentoDia,
   type OrigenAgua,
   type ServicioTecnico,
 } from '../tipos';
+import { normalizarTelefono } from '../telefono';
 
 export const esquemaUuid = z.string().uuid('El identificador no es válido.');
 export const esquemaIdHogar = z.object({ id: esquemaUuid });
@@ -43,14 +46,24 @@ const camposHogar = {
   etapas_filtro: z.number().int().min(1).max(12).nullable(),
   fecha_ultimo_cambio: esquemaDia.nullable(),
   agua_turbia: z.boolean(),
+  // Se guarda siempre en formato internacional sin espacios (+584145550199): misma regla que el front (telefono.ts).
   whatsapp: z
     .string()
     .trim()
-    .regex(/^\+?[\d\s().-]{7,20}$/, 'Escribe el número de WhatsApp solo con dígitos.'),
+    .max(30, 'El número de WhatsApp es demasiado largo.')
+    .transform((valor, ctx) => {
+      const resultado = normalizarTelefono(valor);
+      if (!resultado.ok) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, message: resultado.error });
+        return z.NEVER;
+      }
+      return resultado.numero;
+    }),
   direccion: textoONulo(200),
   tienda_id: textoONulo(40),
   urbanizacion: textoONulo(80),
   mascotas: z.boolean(),
+  ultimo_cambio: z.enum(ULTIMOS_CAMBIOS as [UltimoCambio, ...UltimoCambio[]]).nullable(),
 };
 
 export const esquemaCrearHogar = z.object({
@@ -67,6 +80,7 @@ export const esquemaCrearHogar = z.object({
   tienda_id: camposHogar.tienda_id.optional(),
   urbanizacion: camposHogar.urbanizacion.optional(),
   mascotas: camposHogar.mascotas.default(false),
+  ultimo_cambio: camposHogar.ultimo_cambio.optional(),
   consentimiento: z.literal(true, {
     errorMap: () => ({ message: 'Hace falta aceptar el aviso de privacidad para continuar.' }),
   }),
@@ -87,6 +101,7 @@ export const esquemaCambiarHogar = z
     tienda_id: camposHogar.tienda_id,
     urbanizacion: camposHogar.urbanizacion,
     mascotas: camposHogar.mascotas,
+    ultimo_cambio: camposHogar.ultimo_cambio,
   })
   .partial();
 

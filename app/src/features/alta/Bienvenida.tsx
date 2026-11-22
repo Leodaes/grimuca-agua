@@ -4,6 +4,7 @@ import { Boton } from '../../components/grimuca';
 import { api } from '../../lib/api';
 import { hogarId } from '../../lib/sesion';
 import { AvisoRecambio } from '../resultado/PaginaResultado';
+import type { UltimoCambio } from '../../lib/tipos';
 import { PaginaAlta } from './comun';
 
 export const LEMA = 'Saber qué tomas empieza en casa';
@@ -18,9 +19,11 @@ const BENEFICIOS = [
   },
 ];
 
-/** Días para el recambio según la última medición del hogar (null si no hay dato). */
-function useDiasRecambio(id: string | null): number | null {
+/** Días para el recambio según la última medición del hogar (null si no hay dato) y la respuesta del perfil. */
+function useDiasRecambio(id: string | null): { dias: number | null; ultimoCambio: UltimoCambio | null; tieneFiltro: boolean } {
   const [dias, setDias] = useState<number | null>(null);
+  const [ultimoCambio, setUltimoCambio] = useState<UltimoCambio | null>(null);
+  const [tieneFiltro, setTieneFiltro] = useState(false);
   useEffect(() => {
     if (!id) return;
     let vigente = true;
@@ -30,17 +33,26 @@ function useDiasRecambio(id: string | null): number | null {
         if (vigente && typeof valor === 'number') setDias(valor);
       })
       .catch(() => undefined);
+    Promise.resolve()
+      .then(() => api.obtenerHogar(id))
+      .then((hogar) => {
+        if (!vigente || !hogar) return;
+        setUltimoCambio(hogar.ultimo_cambio ?? null);
+        setTieneFiltro(Boolean(hogar.tiene_filtro));
+      })
+      .catch(() => undefined);
     return () => {
       vigente = false;
     };
   }, [id]);
-  return dias;
+  return { dias, ultimoCambio, tieneFiltro };
 }
 
 export function Bienvenida() {
   const id = hogarId();
   const conHogar = Boolean(id);
-  const diasRecambio = useDiasRecambio(id);
+  const recambio = useDiasRecambio(id);
+  const hayAvisoRecambio = recambio.dias !== null || (recambio.tieneFiltro && recambio.ultimoCambio !== null);
 
   return (
     <PaginaAlta>
@@ -84,8 +96,13 @@ export function Bienvenida() {
         style={{ width: '100%', height: 'auto', display: 'block' }}
       />
 
-      {conHogar && diasRecambio !== null && (
-        <AvisoRecambio dias={diasRecambio} destino="/resultado/ultimo" etiqueta="Ver productos sugeridos" />
+      {conHogar && hayAvisoRecambio && (
+        <AvisoRecambio
+          dias={recambio.dias}
+          ultimoCambio={recambio.ultimoCambio}
+          destino="/resultado/ultimo"
+          etiqueta="Ver productos sugeridos"
+        />
       )}
 
       {conHogar ? (
@@ -105,6 +122,13 @@ export function Bienvenida() {
             style={{ minHeight: 44, display: 'inline-flex', alignItems: 'center' }}
           >
             Tutoriales para cambiar tu cartucho
+          </Link>
+          <Link
+            className="g-enlace"
+            to="/catalogo"
+            style={{ minHeight: 44, display: 'inline-flex', alignItems: 'center' }}
+          >
+            Productos de la tienda
           </Link>
           <Link
             className="g-enlace"

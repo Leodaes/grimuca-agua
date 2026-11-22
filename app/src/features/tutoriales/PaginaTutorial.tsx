@@ -36,7 +36,7 @@ export function PaginaTutorial() {
     if (!idHogar) return;
     setAnotar({ tipo: 'guardando' });
     try {
-      await api.actualizarHogar(idHogar, { tiene_filtro: true, fecha_ultimo_cambio: hoy() });
+      await api.actualizarHogar(idHogar, { tiene_filtro: true, ultimo_cambio: 'menos_de_un_mes', fecha_ultimo_cambio: hoy() });
       setAnotar({ tipo: 'listo' });
     } catch (error) {
       setAnotar({ tipo: 'error', mensaje: mensajeError(error) });

@@ -54,7 +54,7 @@ export function PaginaFiltroManual() {
     };
   }, [hogar]);
 
-  if (!hogar) return <SinHogar />;
+  if (!hogar) return <SinHogar titulo="Mi filtro" />;
 
   async function guardar(evento?: FormEvent) {
     evento?.preventDefault();

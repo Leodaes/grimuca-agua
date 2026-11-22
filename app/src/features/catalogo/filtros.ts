@@ -80,10 +80,18 @@ export function filtrarCatalogo(
 ): Cartucho[] {
   const texto = normalizar(busqueda);
   const claves = GRUPOS_PARA.find((g) => g.valor === para)?.claves ?? [];
-  return productos.filter((p) => {
+  const orden = GRUPOS_TIPO.map((g) => g.valor as string);
+  // Primero lo de uso en casa (cartuchos y filtros), en el mismo orden de los grupos; dentro de cada grupo, por nombre.
+  const peso = (p: Cartucho) => {
+    const i = orden.indexOf(grupoDeCategoria(p.categoria));
+    return i < 0 ? orden.length : i;
+  };
+  return productos
+    .filter((p) => {
     if (tipo !== 'todos' && grupoDeCategoria(p.categoria) !== tipo) return false;
     if (claves.length > 0 && !p.corrige.some((c) => claves.includes(c))) return false;
     if (texto && !normalizar(p.nombre).includes(texto) && !normalizar(p.codigo).includes(texto)) return false;
     return true;
-  });
+    })
+    .sort((a, b) => peso(a) - peso(b) || a.nombre.localeCompare(b.nombre, 'es'));
 }

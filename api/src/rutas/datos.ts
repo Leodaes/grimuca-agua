@@ -1,7 +1,8 @@
 // Consultas y conversión de filas a los tipos del contrato. Lo usan todas las rutas.
 import { aDia, aIso, aIsoONulo, aJson, aNumeroONulo, type Bd } from '../bd';
 import { cartuchosParaFiltro, filaAFiltro } from '../filtro';
-import type { FiltroHogar } from '../tipos';
+import { ULTIMOS_CAMBIOS, type FiltroHogar, type UltimoCambio } from '../tipos';
+import { conMotivos, type HogarParaMotivo } from './motivos';
 import type {
   Cartucho,
   Evaluacion,
@@ -63,6 +64,12 @@ export function aCartuchoPublico(cartucho: CartuchoCatalogo): Cartucho {
   return publico;
 }
 
+function aUltimoCambio(valor: unknown): UltimoCambio | null {
+  return typeof valor === 'string' && (ULTIMOS_CAMBIOS as readonly string[]).includes(valor)
+    ? (valor as UltimoCambio)
+    : null;
+}
+
 export function filaAHogar(fila: Fila): Hogar {
   return {
     id: String(fila.id),
@@ -79,6 +86,7 @@ export function filaAHogar(fila: Fila): Hogar {
     tienda_id: (fila.tienda_id as string | null) ?? null,
     urbanizacion: (fila.urbanizacion as string | null) ?? null,
     mascotas: Boolean(fila.mascotas),
+    ultimo_cambio: aUltimoCambio(fila.ultimo_cambio),
     consentimiento_fecha: aIso(fila.consentimiento_fecha),
     filtro: filaAFiltro(fila),
   };
@@ -284,6 +292,8 @@ export interface ParaArmarMedicion {
   diasParaRecambio?: (perfil: PerfilHogar) => number | null;
   /** Filtro registrado del hogar: los cartuchos compatibles que atienden lo hallado van primero. */
   filtro?: FiltroHogar | null;
+  /** Datos del hogar para la frase de "Por qué te lo recomendamos" (mascotas, último cambio…). */
+  hogar?: Partial<HogarParaMotivo> | null;
 }
 
 export function filaAMedicion(fila: Fila, extra: ParaArmarMedicion): Medicion {
@@ -302,6 +312,19 @@ export function filaAMedicion(fila: Fila, extra: ParaArmarMedicion): Medicion {
       // se conserva el valor guardado
     }
   }
+  const filtro = extra.perfil.tiene_filtro ? (extra.filtro ?? null) : null;
+  const sugeridos = sugerirConFiltro(
+    extra.catalogo,
+    {
+      corrige: evaluacion.corrige,
+      tieneFiltro: extra.perfil.tiene_filtro,
+      marcasExcluidas: extra.marcasExcluidas,
+    },
+    filtro,
+  );
+  const compatibles = filtro
+    ? new Set(cartuchosParaFiltro(filtro, extra.catalogo, evaluacion.corrige).map((c) => c.codigo))
+    : undefined;
   return {
     id: String(fila.id),
     hogar_id: String(fila.hogar_id),
@@ -309,15 +332,13 @@ export function filaAMedicion(fila: Fila, extra: ParaArmarMedicion): Medicion {
     origen: fila.origen as Medicion['origen'],
     valores: aJson<ValoresMedicion | null>(fila.valores) ?? {},
     evaluacion,
-    sugeridos: sugerirConFiltro(
-      extra.catalogo,
-      {
-        corrige: evaluacion.corrige,
-        tieneFiltro: extra.perfil.tiene_filtro,
-        marcasExcluidas: extra.marcasExcluidas,
-      },
-      extra.perfil.tiene_filtro ? extra.filtro : null,
-    ),
+    sugeridos: conMotivos(sugeridos, {
+      porParametro: evaluacion.porParametro,
+      corrige: evaluacion.corrige,
+      diasParaRecambio: evaluacion.diasParaRecambio,
+      hogar: { ...extra.perfil, ...extra.hogar, filtro },
+      compatibles,
+    }),
   };
 }
 

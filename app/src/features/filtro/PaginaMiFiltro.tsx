@@ -57,7 +57,7 @@ export function PaginaMiFiltro() {
     refTitulo.current?.focus();
   }, [estado.fase]);
 
-  if (!hogar) return <SinHogar />;
+  if (!hogar) return <SinHogar titulo="Mi filtro" />;
 
   async function identificar(archivo: File) {
     if (!hogar) return;

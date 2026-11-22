@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { api } from '../../lib/api';
 import { agregarALista, hogarId, lista } from '../../lib/sesion';
-import type { Cartucho, Medicion } from '../../lib/tipos';
+import type { Cartucho, CartuchoSugerido, Medicion } from '../../lib/tipos';
 import {
   Aviso,
   Boton,
@@ -14,7 +14,8 @@ import {
   Insignia,
   Toast,
 } from '../../components/grimuca';
-import { enlaceCotizar, mensajeError, traducirCorrige } from '../resultado/textos';
+import { mensajeCotizarSimple, mensajeError, traducirCorrige } from '../resultado/textos';
+import { ChipsAtiende, CotizarWhatsApp, FotoProducto } from '../resultado/Producto';
 import {
   GRUPOS_PARA,
   GRUPOS_TIPO,
@@ -227,7 +228,7 @@ export function PaginaCatalogo() {
   );
 }
 
-function Recomendados({ medicion, recomendados }: { medicion: Medicion | null; recomendados: Cartucho[] }) {
+function Recomendados({ medicion, recomendados }: { medicion: Medicion | null; recomendados: CartuchoSugerido[] }) {
   if (!medicion) {
     return (
       <Aviso tono="info">
@@ -251,15 +252,24 @@ function Recomendados({ medicion, recomendados }: { medicion: Medicion | null; r
           return (
             <li key={producto.codigo}>
               <article className="g-tarjeta-producto catalogo-compacta">
-                <Foto url={producto.foto_url} />
+                <FotoProducto url={producto.foto_url} compacta />
                 <div className="g-tarjeta-producto__cuerpo">
                   <h3 className="g-tarjeta-producto__nombre">{producto.nombre}</h3>
                   {lineaCodigo && <p className="g-tarjeta-producto__codigo">{lineaCodigo}</p>}
                   <div className="g-tarjeta-producto__etiquetas">
                     <Insignia tono="azul">Recomendado para ti</Insignia>
                   </div>
+                </div>
+                {producto.motivo && (
+                  <div className="producto-porque" style={{ gridColumn: '1 / -1' }}>
+                    <h4 className="producto-porque__titulo">Por qué te lo recomendamos</h4>
+                    <p className="producto-porque__frase">{producto.motivo}</p>
+                    <ChipsAtiende atiende={producto.atiende} />
+                  </div>
+                )}
+                <div className="g-tarjeta-producto__acciones">
                   <Link className="g-enlace catalogo-enlace" to={`/resultado/${medicion.id}`}>
-                    Ver por qué
+                    Ver mi resultado
                   </Link>
                 </div>
               </article>
@@ -268,19 +278,6 @@ function Recomendados({ medicion, recomendados }: { medicion: Medicion | null; r
         })}
       </ul>
     </section>
-  );
-}
-
-function Foto({ url }: { url: string | null }) {
-  const [fallo, setFallo] = useState(false);
-  return (
-    <div className="g-tarjeta-producto__foto">
-      {url && !fallo ? (
-        <img src={url} alt="" loading="lazy" onError={() => setFallo(true)} />
-      ) : (
-        <span className="catalogo-foto-falta">Foto no disponible</span>
-      )}
-    </div>
   );
 }
 
@@ -295,12 +292,11 @@ function TarjetaCatalogo({
   enLista: boolean;
   alAgregar: () => void;
 }) {
-  const cotizar = enlaceCotizar(producto.nombre, producto.codigo);
   const lineaCodigo = [producto.marca, producto.codigo].filter(Boolean).join(' · ');
 
   return (
     <article className={recomendado ? 'g-tarjeta-producto g-tarjeta-producto--destacado' : 'g-tarjeta-producto'}>
-      <Foto url={producto.foto_url} />
+      <FotoProducto url={producto.foto_url} />
       <div className="g-tarjeta-producto__cuerpo">
         <h3 className="g-tarjeta-producto__nombre">{producto.nombre}</h3>
         {producto.categoria === 'lampara_uv' && <p className="catalogo-nota">{LINEA_LAMPARA_UV}</p>}
@@ -318,15 +314,6 @@ function TarjetaCatalogo({
             <Insignia tono="neutro">Consulta disponibilidad</Insignia>
           )}
         </div>
-        {cotizar.interno ? (
-          <Link className="g-enlace catalogo-enlace" to={cotizar.destino}>
-            Cotizar por WhatsApp
-          </Link>
-        ) : (
-          <a className="g-enlace catalogo-enlace" href={cotizar.destino} target="_blank" rel="noopener noreferrer">
-            Cotizar por WhatsApp
-          </a>
-        )}
       </div>
       <div className="g-tarjeta-producto__acciones">
         <Boton
@@ -339,6 +326,7 @@ function TarjetaCatalogo({
         >
           {enLista ? 'Agregado' : 'Agregar a mi lista'}
         </Boton>
+        <CotizarWhatsApp mensaje={mensajeCotizarSimple(producto.nombre, producto.codigo)} conLineaPrecio />
       </div>
     </article>
   );

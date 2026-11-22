@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { api } from '../../lib/api';
 import { cambiarCantidad as fijarCantidad, hogarId, lista, quitarDeLista, vaciarLista } from '../../lib/sesion';
 import type { Hogar, Tienda } from '../../lib/tipos';
@@ -24,6 +24,14 @@ function leerLista(): Articulo[] {
   }
 }
 
+
+function EnlaceSeguirViendo() {
+  return (
+    <Link className="g-enlace" to="/catalogo" style={{ minHeight: 44, display: 'inline-flex', alignItems: 'center' }}>
+      Seguir viendo productos
+    </Link>
+  );
+}
 
 /** /lista: Mi lista → retiro o envío → hacer pedido. */
 export function PaginaLista() {
@@ -120,6 +128,7 @@ export function PaginaLista() {
         <EstadoVacio titulo="Tu lista está vacía" accion={<Boton a="/resultados">Ver mis resultados</Boton>}>
           Mide tu agua y te decimos qué cartucho te sirve.
         </EstadoVacio>
+        <EnlaceSeguirViendo />
       </main>
     );
   }
@@ -136,6 +145,7 @@ export function PaginaLista() {
         alCambiarCantidad={cambiarCantidad}
         alQuitar={quitar}
       />
+      <EnlaceSeguirViendo />
 
       <section className="g-pila" aria-labelledby="titulo-modalidad">
         <h2 className="g-h3" id="titulo-modalidad">

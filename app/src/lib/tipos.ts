@@ -85,6 +85,8 @@ export interface Hogar {
   urbanizacion: string | null;
   /** ¿Hay mascotas en casa? */
   mascotas: boolean;
+  /** Respuesta a "¿Cuándo cambiaste el cartucho por última vez?"; null si no hay filtro o no se preguntó. */
+  ultimo_cambio: UltimoCambio | null;
   consentimiento_fecha: string;
   /** Filtro registrado (por foto o a mano); null si no hay o aún no se identificó. */
   filtro?: FiltroHogar | null;
@@ -105,11 +107,17 @@ export interface EntradaHogar {
   tienda_id?: string | null;
   urbanizacion?: string | null;
   mascotas?: boolean;
+  /** Si viene, el servidor deriva `fecha_ultimo_cambio` (menos de un mes: hoy − 15 días; más de tres meses: hoy − 100; no me acuerdo: null). */
+  ultimo_cambio?: UltimoCambio | null;
   consentimiento: true;
 }
 
 /** Cuerpo de PATCH /api/hogares/:id. */
 export type CambiosHogar = Partial<Omit<EntradaHogar, 'consentimiento'>>;
+
+/** Respuesta cerrada del perfil sobre el último cambio de cartucho. */
+export type UltimoCambio = 'menos_de_un_mes' | 'mas_de_tres_meses' | 'no_me_acuerdo';
+export const ULTIMOS_CAMBIOS: readonly UltimoCambio[] = ['menos_de_un_mes', 'mas_de_tres_meses', 'no_me_acuerdo'];
 
 /** Perfil que usa la evaluación del agua. */
 export type PerfilHogar = Pick<
@@ -158,6 +166,22 @@ export interface Cartucho {
   disponible: boolean;
 }
 
+/** Parámetro (o razón del perfil) que atiende un producto sugerido. */
+export interface MotivoAtendido {
+  /** Clave de parámetro o razón del perfil: 'sedimentos', 'recambio', 'filtro'… */
+  clave: string;
+  /** Nombre visible: "Nitrato", "Agua turbia", "Recambio"… */
+  nombre: string;
+  /** Color del parámetro en esta medición; null en las razones del perfil. */
+  nivel: Nivel | null;
+}
+
+/** Producto sugerido para una medición, con la frase de "Por qué te lo recomendamos". */
+export interface CartuchoSugerido extends Cartucho {
+  motivo: string;
+  atiende: MotivoAtendido[];
+}
+
 export interface Medicion {
   id: string;
   hogar_id: string;
@@ -165,7 +189,7 @@ export interface Medicion {
   origen: 'foto' | 'manual';
   valores: ValoresMedicion;
   evaluacion: Evaluacion;
-  sugeridos: Cartucho[];
+  sugeridos: CartuchoSugerido[];
 }
 
 /** Lo que devuelve la lectura de la tira (módulo de medición). */

@@ -131,7 +131,7 @@ export function Envio() {
           </h2>
           <ul>
             <li>1 tira para medir tu agua</li>
-            <li>1 prueba de bacterias (E. coli y coliformes)</li>
+            <li>1 prueba casera de bacterias coliformes</li>
             <li>La tabla de colores impresa</li>
             <li>Un código QR con el video de cómo se hace</li>
           </ul>

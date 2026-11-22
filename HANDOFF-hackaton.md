@@ -18,6 +18,19 @@ Eres el **orquestador** de este proyecto. Diriges un equipo de agentes que traba
 | Informes | Página de estado actualizada en cada compuerta e informe a las 5:30 a.m. |
 | Catálogo | **Solo marca Oasis** (Aqual queda fuera). Productos reales tomados de la API pública de la tienda de grimuca.com. Ningún precio es público: las tarjetas dicen "Cotizar por WhatsApp". |
 
+## 0.1 Cambio de enfoque: B2B + B2C (sáb 21 nov, ~10:00 p.m.)
+
+Comunicado por la sesión "Hackathon idea B2B logistics pivot", que cita a Leonardo. El encargo completo de construcción lo tiene el orquestador; esto es el resumen y **manda sobre las secciones 2, 3 y 6 donde choquen**.
+
+- **Alcance de construcción: mínimo, solo demo** (precisión de Leonardo: "para el hackathon solo necesitamos un demo"). Un mismo pedido recorre los cuatro módulos con datos sembrados: Grimuca y un comercio aliado inventado en otro estado. **Sin registro real de comercios, sin cuentas y sin cobros.** El resto del modelo va en el deck y el guion, no en el código.
+- **Por qué:** dos asesorías con jurados dijeron que el prototipo es muy B2C. La medición debe ser el punto de entrada y el valor grande debe estar del lado de empresas. El track sigue siendo Logística.
+- **El producto ahora:** una plataforma para ferreterías que Grimuca opera. El cliente mide su agua y se le asigna el comercio más cercano que tenga el producto. La ferretería paga una membresía mensual (1 a 3 meses gratis) y compra los sobres que Grimuca importa. Grimuca es el comercio de Carabobo; en otros estados entran ferreterías aliadas. El B2C no se elimina: se complementa.
+- **Cuatro módulos:** Cliente (ya existe, **no se toca su recorrido**), Comercio (el panel del operador, filtrado por ferretería y con carga de productos), Técnico (lista de servicios, "ya fui", foto) y Superadmin (alta de comercios, membresías, resumen de la red).
+- **Datos:** tabla de comercios, tiendas con dueño, entrada por comercio.
+- **Business y Marketing** rehacen modelo, lámina, deck, guion de demo y respuestas al jurado. **La demo abre del lado empresa.**
+- **Orden de recorte si no entra antes de congelar:** primero el módulo Técnico, luego la carga de productos. Nunca el recorrido del cliente ni el pedido en vivo.
+- **Supuestos marcados, pendientes de Leonardo y Tulio:** precio de la membresía, precio al mayor del sobre, número de ferreterías, y qué costo del sobre usar ($4 dicho en la asesoría contra $2,94 del modelo).
+
 ## 1. Situación y reloj
 
 - Hackatón ValenValley 2026, Linko Cowork, Valencia. Equipos de 2. Track registrado: **Logística**.

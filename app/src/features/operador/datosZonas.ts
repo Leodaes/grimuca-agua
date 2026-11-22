@@ -5,11 +5,11 @@ export const ZONAS_OPERADOR = ['Naguanagua', 'San Diego', 'Valencia norte', 'Val
 const TIENDA_POR_ZONA: Record<string, string> = {
   Naguanagua: 'manongo',
   'San Diego': 'biglow',
-  'Valencia norte': 'cem',
+  'Valencia norte': 'manongo',
 };
 
 export function tiendaDeZona(zona: string): string {
-  return TIENDA_POR_ZONA[zona] ?? 'cem';
+  return TIENDA_POR_ZONA[zona] ?? 'manongo';
 }
 
 const NOMBRES_PARAMETRO: Record<string, string> = {

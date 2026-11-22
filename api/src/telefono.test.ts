@@ -1,5 +1,7 @@
 import { readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
+import path from 'node:path';
+import { describe, expect, it } from 'vitest';
+import { RAIZ_REPO } from './config';
 import {
   ERROR_TELEFONO_OTRO,
   ERROR_TELEFONO_VE,
@@ -52,7 +54,8 @@ describe('formato para mostrar', () => {
 });
 
 it('la copia del front es idéntica', () => {
-  const api = readFileSync(fileURLToPath(new URL('./telefono.ts', import.meta.url)), 'utf8');
-  const app = readFileSync(fileURLToPath(new URL('../../app/src/lib/telefono.ts', import.meta.url)), 'utf8');
+  const normalizar = (texto: string) => texto.replace(/\r\n/g, '\n');
+  const api = normalizar(readFileSync(path.join(RAIZ_REPO, 'api/src/telefono.ts'), 'utf8'));
+  const app = normalizar(readFileSync(path.join(RAIZ_REPO, 'app/src/lib/telefono.ts'), 'utf8'));
   expect(app).toBe(api);
 });

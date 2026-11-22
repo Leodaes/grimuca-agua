@@ -19,6 +19,8 @@ Todo texto de aquí es **provisional**: Marketing y el Asesor legal lo pueden ca
 
 ## 1. Mapa de rutas
 
+> **Los textos validados por Tulio y por la revisión legal mandan sobre esta especificación.** Esta tabla y la de textos de botones reflejan lo vigente en la app al 21 nov 2026 (noche).
+
 | Ruta | Pantalla | Barra inferior |
 |---|---|---|
 | `/` | Bienvenida | No |
@@ -27,14 +29,41 @@ Todo texto de aquí es **provisional**: Marketing y el Asesor legal lo pueden ca
 | `/pago` | Pago del sobre (simulación) y "Ya me llegó el sobre" | No |
 | `/medir` | Cómo medir en 4 pasos + foto | Sí |
 | `/medir/manual` | Carga manual de colores | Sí |
-| `/resultado/:id` | Resultado con semáforo (`:id` acepta `ultimo`) | Sí |
+| `/resultado/:id` | Resultado con semáforo (`:id` acepta `ultimo`) y "Lo que te recomendamos" | Sí |
+| `/resultados` | Historial de mediciones | Sí |
+| `/catalogo` | Productos de la tienda (filtros por tipo y "Pensado para"; "Recomendados para ti") | Sí |
+| `/mi-filtro`, `/mi-filtro/manual` | Foto del filtro del hogar o carga a mano | Sí |
+| `/tutoriales`, `/tutoriales/:id` | Guías para cambiar el cartucho | Sí |
+| `/experto` | Pedir un servicio técnico (cambio de cartucho o instalación) | Sí |
 | `/lista` | Mi lista → retiro o envío → confirmar | Sí |
 | `/pedido/:id` | Pedido confirmado | Sí |
-| `/bacterias` | Reporte de la prueba a las 48 horas | Sí |
+| `/bacterias` | Reporte de la prueba a las 48 horas (antes, solo con "Saltar la espera (demostración)") | Sí |
 | `/tiendas` | Las 3 tiendas | Sí |
 | `/privacidad`, `/terminos` | Textos legales | No |
 | `/operador` | PIN | — |
 | `/operador/resumen`, `/despacho`, `/inventario`, `/zonas` | Pestañas del operador | — |
+
+### Textos vigentes de botones, enlaces y campos (cliente)
+
+| Pantalla | Elemento | Texto visible |
+|---|---|---|
+| `/` | Botones con hogar | "Medir mi agua", "Ver mis resultados", "Pedir el sobre a domicilio ($9)"; enlaces "Tutoriales para cambiar tu cartucho", "Productos de la tienda", "Mi filtro" |
+| `/` | Botones sin hogar | "Ya tengo mi sobre", "Pedir el sobre a domicilio ($9)" |
+| `/perfil` | Pregunta (solo con filtro) | "¿Cuándo cambiaste el cartucho por última vez?": "Hace menos de un mes", "Hace más de tres meses", "No me acuerdo" |
+| `/perfil` | WhatsApp | Lista "Código de país" (por defecto "+58 Venezuela") + campo "Tu WhatsApp" (se muestra "0414 555 01 99"; se guarda "+584145550199") |
+| `/perfil` | Botón | "Continuar" |
+| `/envio` | Botón | "Continuar al pago" |
+| `/pago` | Botones | "Simular pago de $9"; al confirmar, título "Listo. Tu sobre está pedido." y "Ya me llegó el sobre (saltar la espera)" |
+| `/resultado/:id` | Sección de productos | "Lo que te recomendamos" (sin productos: "Lo que sigue"); primer producto: "La mejor opción para tu casa"; bloque "Por qué te lo recomendamos" con chips ("Nitrato · Rojo") |
+| `/resultado/:id` | Tarjeta de producto | "Agregar a mi lista" / "Agregado"; botón secundario "Cotizar por WhatsApp" y debajo "El precio te lo confirma la tienda por WhatsApp, sin compromiso."; "Ver o editar el mensaje" (campo "Tu mensaje para la tienda") |
+| `/resultado/:id` | Sin productos y con filtro | "Cotizar el recambio de mi filtro por WhatsApp", "¿Dudas? Pasa por la tienda y lo vemos contigo." |
+| `/resultado/:id` | Hogar sin filtro | "¿Todavía no tienes filtro?" y "Preguntar por filtros por WhatsApp" |
+| `/resultado/:id` | Tarjeta "Tu cartucho" | "Ver productos sugeridos" (o "Cotizar el recambio" si no hay productos) · "Mira cómo cambiarlo" |
+| `/resultado/:id` | Enlaces | "Ver todos los productos de la tienda", "Aprende a cambiar tu cartucho", "¿No sabes hacerlo? Contrata a un experto", "Reportar mi prueba de bacterias", "Medir otra vez" |
+| `/catalogo` | Recomendados | "Recomendados para ti" con "Por qué te lo recomendamos" y "Ver mi resultado"; tarjetas con "Agregar a mi lista" y "Cotizar por WhatsApp" |
+| `/lista` | Enlace | "Seguir viendo productos"; botón "Hacer pedido" |
+| `/bacterias` | Botones | "Ya llené el frasco"; a las 48 horas "Cambió de color" / "Sigue igual"; antes, "Saltar la espera (demostración)" |
+| `/tutoriales/:id` | Botón | "Ya lo cambié: anotar la fecha de hoy" |
 
 Recorrido completo: `/` → `/perfil` → `/envio` → `/pago` → `/medir` → `/resultado/:id` → `/lista` → `/pedido/:id`. Después: `/bacterias`.
 **Atajo para la demo:** en `/` hay un enlace "Ya tengo mi sobre" que va a `/perfil?ya=1`; al guardar el perfil salta directo a `/medir` (sin envío ni pago).
@@ -48,7 +77,7 @@ Fija abajo, 64px, fondo blanco, borde superior. 5 accesos con icono y palabra:
 | Medir | `/medir` | `/medir*` |
 | Resultados | `/resultado/ultimo` | `/resultado*`, `/bacterias` |
 | Tiendas | `/tiendas` | `/tiendas` |
-| WhatsApp | `https://wa.me/580000000000` (número marcador; abre pestaña nueva; **no hay bot**) | — |
+| WhatsApp | `https://wa.me/584144409396` (número de las tiendas, `WHATSAPP_TIENDA`; abre pestaña nueva; **no hay bot**) | — |
 | Mi lista | `/lista` (con contador) | `/lista`, `/pedido*` |
 
 El acceso activo se marca con `aria-current="page"`, color azul y una línea superior de 3px.

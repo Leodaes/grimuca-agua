@@ -74,6 +74,7 @@ describe('tutoriales', () => {
     await usuario.click(screen.getByRole('button', { name: 'Ya lo cambié: anotar la fecha de hoy' }));
     expect(api.actualizarHogar).toHaveBeenCalledWith('hogar-1', {
       tiene_filtro: true,
+      ultimo_cambio: 'menos_de_un_mes',
       fecha_ultimo_cambio: expect.stringMatching(/^\d{4}-\d{2}-\d{2}$/),
     });
     expect(await screen.findByText('Listo. Te avisamos aquí cuando toque el próximo cambio.')).toBeInTheDocument();

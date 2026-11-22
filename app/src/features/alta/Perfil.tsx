@@ -4,7 +4,14 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Aviso, Boton, Campo, Cargando, Casilla } from '../../components/grimuca';
 import { api } from '../../lib/api';
 import { guardarHogarId, hogarId } from '../../lib/sesion';
-import type { Hogar, OrigenAgua } from '../../lib/tipos';
+import type { Hogar, OrigenAgua, UltimoCambio } from '../../lib/tipos';
+import {
+  CODIGO_PAIS_POR_DEFECTO,
+  CODIGOS_PAIS,
+  formatearNacional,
+  normalizarTelefono,
+  partirTelefono,
+} from '../../lib/telefono';
 import { urbanizacionesDeZona } from '../../lib/urbanizaciones';
 import { ErrorConReintento, mensajeDeError, OpcionesRadio, ORIGENES, PaginaAlta, useCarga, ZONAS } from './comun';
 
@@ -18,8 +25,11 @@ interface Formulario {
   mascotas: string; // 'si' | 'no'
   tiene_filtro: string; // 'si' | 'no' | ''
   etapas_filtro: string;
-  fecha_ultimo_cambio: string;
+  /** Respuesta cerrada sobre el último cambio de cartucho ('' = sin responder). */
+  ultimo_cambio: UltimoCambio | '';
   agua_turbia: string; // 'si' | 'no' | ''
+  /** Código de país del WhatsApp, solo dígitos ("58"). */
+  codigo_pais: string;
   whatsapp: string;
   consentimiento: boolean;
 }
@@ -35,8 +45,9 @@ const VACIO: Formulario = {
   mascotas: 'no',
   tiene_filtro: '',
   etapas_filtro: '',
-  fecha_ultimo_cambio: '',
+  ultimo_cambio: '',
   agua_turbia: '',
+  codigo_pais: CODIGO_PAIS_POR_DEFECTO,
   whatsapp: '',
   consentimiento: false,
 };
@@ -47,6 +58,15 @@ const SI_NO = [
 ];
 
 const FALTA = 'Este dato hace falta.';
+
+/** "¿Cuándo cambiaste el cartucho por última vez?": exactamente tres opciones (Tulio). */
+export const OPCIONES_ULTIMO_CAMBIO: Array<{ valor: UltimoCambio; etiqueta: string }> = [
+  { valor: 'menos_de_un_mes', etiqueta: 'Hace menos de un mes' },
+  { valor: 'mas_de_tres_meses', etiqueta: 'Hace más de tres meses' },
+  { valor: 'no_me_acuerdo', etiqueta: 'No me acuerdo' },
+];
+
+const OPCIONES_CODIGO_PAIS = CODIGOS_PAIS.map((c) => ({ valor: c.codigo, etiqueta: c.etiqueta }));
 const OTRA = 'Otra';
 
 /** Opciones del campo Urbanización: las de la zona en orden alfabético, más "Otra". */
@@ -55,6 +75,8 @@ export function opcionesUrbanizacion(zona: string): Array<{ valor: string; etiqu
 }
 
 function desdeHogar(h: Hogar): Formulario {
+  // Números guardados con otro formato se muestran tal cual (no rompen la lectura).
+  const telefono = partirTelefono(h.whatsapp);
   return {
     nombre: h.nombre ?? '',
     zona: h.zona ?? '',
@@ -64,9 +86,10 @@ function desdeHogar(h: Hogar): Formulario {
     mascotas: h.mascotas ? 'si' : 'no',
     tiene_filtro: h.tiene_filtro ? 'si' : 'no',
     etapas_filtro: h.etapas_filtro ? String(h.etapas_filtro) : '',
-    fecha_ultimo_cambio: h.fecha_ultimo_cambio ? h.fecha_ultimo_cambio.slice(0, 10) : '',
+    ultimo_cambio: h.ultimo_cambio ?? '',
     agua_turbia: h.agua_turbia ? 'si' : 'no',
-    whatsapp: h.whatsapp ?? '',
+    codigo_pais: telefono.codigo,
+    whatsapp: telefono.nacional,
     // Ya lo aceptó al crear el hogar.
     consentimiento: true,
   };
@@ -82,11 +105,18 @@ export function validarPerfil(f: Formulario): Errores {
     e.personas = 'Escribe un número del 1 al 20.';
   }
   if (!f.tiene_filtro) e.tiene_filtro = FALTA;
+  if (f.tiene_filtro === 'si' && !f.ultimo_cambio) e.ultimo_cambio = 'Elige una opción.';
   if (!f.agua_turbia) e.agua_turbia = FALTA;
-  const digitos = f.whatsapp.replace(/\D/g, '');
-  if (!/^04\d{9}$/.test(digitos)) e.whatsapp = 'Revisa el número: deben ser 11 dígitos, empezando por 04.';
+  const telefono = normalizarTelefono(f.whatsapp, f.codigo_pais);
+  if (!telefono.ok) e.whatsapp = telefono.error;
   if (!f.consentimiento) e.consentimiento = 'Marca la casilla para poder seguir.';
   return e;
+}
+
+/** "+584145550199": la misma normalización que aplica la API. */
+function telefonoNormalizado(f: Formulario): string {
+  const resultado = normalizarTelefono(f.whatsapp, f.codigo_pais);
+  return resultado.ok ? resultado.numero : f.whatsapp.trim();
 }
 
 export function Perfil() {
@@ -127,9 +157,10 @@ export function Perfil() {
       tiene_filtro: tieneFiltro,
       // Las etapas ya no se preguntan aquí: salen de la foto del filtro (o de la carga a mano en /mi-filtro).
       etapas_filtro: tieneFiltro ? (f.etapas_filtro ? Number(f.etapas_filtro) : undefined) : null,
-      fecha_ultimo_cambio: tieneFiltro && f.fecha_ultimo_cambio ? f.fecha_ultimo_cambio : null,
+      // La API deriva la fecha del último cambio de esta respuesta (para el recordatorio y la logística).
+      ultimo_cambio: tieneFiltro && f.ultimo_cambio ? f.ultimo_cambio : null,
       agua_turbia: f.agua_turbia === 'si',
-      whatsapp: f.whatsapp.replace(/\D/g, ''),
+      whatsapp: telefonoNormalizado(f),
     };
 
     setEnviando(true);
@@ -263,14 +294,13 @@ export function Perfil() {
             {!carga.datos?.filtro && (
               <p className="g-apagado">En el siguiente paso le tomas una foto a tu filtro y lo identificamos.</p>
             )}
-            <Campo
-              etiqueta="¿Cuándo cambiaron el cartucho la última vez?"
-              ayuda="Una fecha aproximada sirve. Si no te acuerdas, déjalo vacío."
-              opcional
-              name="fecha_ultimo_cambio"
-              type="date"
-              value={f.fecha_ultimo_cambio}
-              onChange={(e) => poner('fecha_ultimo_cambio', e.target.value)}
+            <OpcionesRadio
+              pregunta="¿Cuándo cambiaste el cartucho por última vez?"
+              nombre="ultimo_cambio"
+              opciones={OPCIONES_ULTIMO_CAMBIO}
+              valor={f.ultimo_cambio}
+              onCambio={(v) => poner('ultimo_cambio', v as UltimoCambio)}
+              error={errores.ultimo_cambio}
             />
           </>
         )}
@@ -285,14 +315,37 @@ export function Perfil() {
         />
 
         <Campo
+          como="select"
+          etiqueta="Código de país"
+          name="codigo_pais"
+          opciones={OPCIONES_CODIGO_PAIS}
+          value={f.codigo_pais}
+          onChange={(e) => poner('codigo_pais', e.target.value)}
+        />
+
+        <Campo
           etiqueta="Tu WhatsApp"
-          ayuda="Para que la tienda te ubique si hace falta por tu pedido. Ejemplo: 0414 123 4567"
+          ayuda="Para que la tienda te ubique si hace falta por tu pedido. Ejemplo: 0414 555 01 99"
           name="whatsapp"
           type="tel"
           inputMode="tel"
-          autoComplete="tel"
+          autoComplete="tel-national"
           value={f.whatsapp}
           onChange={(e) => poner('whatsapp', e.target.value)}
+          onBlur={() => {
+            if (!f.whatsapp.trim()) return;
+            const telefono = normalizarTelefono(f.whatsapp, f.codigo_pais);
+            if (!telefono.ok) {
+              setErrores((previo) => ({ ...previo, whatsapp: telefono.error }));
+              return;
+            }
+            // Si pegó un número con otro código (+57…), el selector se ajusta solo.
+            setF((previo) => ({
+              ...previo,
+              codigo_pais: telefono.codigo,
+              whatsapp: formatearNacional(telefono.codigo, telefono.nacional),
+            }));
+          }}
           error={errores.whatsapp}
         />
 

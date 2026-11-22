@@ -46,7 +46,13 @@ const medicion: Medicion = {
   origen: 'foto',
   valores: {},
   evaluacion: { semaforo: 'amarillo', porParametro: [], hallazgos: [], corrige: ['cloro_libre'], diasParaRecambio: null },
-  sugeridos: [catalogo[0]],
+  sugeridos: [
+    {
+      ...catalogo[0],
+      motivo: 'Te recomendamos este cartucho de carbón porque tu medición dio Cloro libre en Amarillo. Está pensado para esa casilla.',
+      atiende: [{ clave: 'cloro_libre', nombre: 'Cloro libre', nivel: 'amarillo' }],
+    },
+  ],
 };
 
 function montar(ruta = '/catalogo') {
@@ -126,13 +132,16 @@ describe('PaginaCatalogo', () => {
     expect(screen.getByRole('link', { name: 'Medir mi agua' })).toHaveAttribute('href', '/medir');
   });
 
-  it('con medición muestra "Recomendados para ti" con enlace al resultado', async () => {
+  it('con medición muestra "Recomendados para ti" con el motivo y enlace al resultado', async () => {
     sesion.hogarId.mockReturnValue('hogar-1');
     api.medicionesDeHogar.mockResolvedValue([medicion]);
     montar();
     const seccion = (await screen.findByRole('heading', { name: 'Recomendados para ti' })).closest('section')!;
     expect(within(seccion).getByText('Cartucho de carbón')).toBeInTheDocument();
-    expect(within(seccion).getByRole('link', { name: 'Ver por qué' })).toHaveAttribute('href', '/resultado/m9');
+    expect(within(seccion).getByRole('heading', { name: 'Por qué te lo recomendamos' })).toBeInTheDocument();
+    expect(within(seccion).getByText(/porque tu medición dio Cloro libre en Amarillo/)).toBeInTheDocument();
+    expect(within(seccion).getByText('Cloro libre · Amarillo')).toBeInTheDocument();
+    expect(within(seccion).getByRole('link', { name: 'Ver mi resultado' })).toHaveAttribute('href', '/resultado/m9');
     await screen.findByText('6 productos');
     expect(screen.getAllByText('Recomendado para ti')).toHaveLength(2);
   });
