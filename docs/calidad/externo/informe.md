@@ -4,6 +4,34 @@ Pruebas de navegador contra https://agua.oydo.app, hechas desde una máquina dis
 
 Cómo correrlas: `cd pruebas/externas && npm install && npx playwright install chromium && npx playwright test`. Revisión del repositorio: `node pruebas/externas/revisar-repo.js` desde la raíz.
 
+## Pasada 10 · dom 22 nov, 12:20 a.m. (solo lectura)
+
+**Resumen:** hay un despliegue nuevo publicado: mapa real con rutas de despacho, catálogo por comercio, filtro que se guarda al confirmar, correcciones de Calidad y encabezado del panel sin desborde en teléfono (`ea4d452`, `3faa413`). Por el acuerdo con el orquestador, desde la medianoche esta revisión no crea pedidos. **Por eso el recorrido completo del cliente no se volvió a probar después de estos cambios.** La última prueba completa (pasada 8, 11:25 p.m.) funcionó. Pasan 23 revisiones, falla 1 (tamaño) y se saltan 2.
+
+| Revisión | Teléfono (375 px) | Escritorio |
+|---|---|---|
+| Portada y 7 páginas públicas | Cargan y cumplen, salvo `/catalogo` (tamaño) | Cargan y cumplen |
+| Paneles `/operador`, `/comercio`, `/tecnico`, `/red` piden PIN | Sí | Sí |
+| No dice «potable» | Cumple | Cumple |
+| Recorrido completo del cliente | **Sin probar tras el despliegue de las 11:51 p.m.** | **Sin probar** |
+| Pedido en vivo en Despacho sin recargar | Certificado por la Calidad interna (11:42 p.m.) | Certificado por la Calidad interna |
+
+**Repositorio:** 404 archivos revisados, sin hallazgos.
+
+**Señales de vida del orquestador:** último commit a las 11:57 p.m. (`3faa413`). El sitio responde. No hay alerta.
+
+### Fallas abiertas
+
+**Rompe la demo**
+- Ninguna encontrada. El recorrido con los cambios de las 11:51 p.m. queda para la Calidad interna o para la prueba de Leonardo en la mañana.
+
+**Confunde**
+- «Medir mi agua» mide menos de 44 px en `/catalogo` (teléfono).
+- «Cotizar por WhatsApp» (filtro guardado) y «Mira cómo cambiarlo» (resultado): sin poder revisarlas porque están dentro del recorrido. Siguen abiertas hasta que alguien lo confirme.
+
+**Cosmético**
+- Ninguna.
+
 ## Pasada 9 · sáb 21 nov, 11:50 p.m. (solo lectura)
 
 **Resumen:** la app no cambió desde la pasada 8 (mismo código y misma versión publicada). Corrió en modo solo lectura: 23 revisiones pasan, 1 falla (tamaño) y 2 se saltan (el recorrido que crea pedidos). La Calidad interna certificó a las 11:42 p.m. las compuertas 1 a 3 y el recorrido de la red (`2471b84`). **El último recorrido completo del cliente que probó esta revisión (pasada 8, 11:25 p.m.) funciona en teléfono y escritorio.**
