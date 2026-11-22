@@ -5,7 +5,7 @@ import { tiendaSugerida } from '../tipos';
 import type { ResumenTienda } from '../tipos';
 
 /** Vida útil por defecto de un cartucho cuando no hay dato del cartucho del hogar. */
-export const VIDA_UTIL_POR_DEFECTO_DIAS = 180;
+export const VIDA_UTIL_POR_DEFECTO_DIAS = 90;
 const MS_DIA = 24 * 60 * 60 * 1000;
 
 export interface FilaTienda {

@@ -16,7 +16,7 @@ export const ORIGENES = [
 export function tiendaSugerida(zona: string | null | undefined): string {
   if (zona === 'Naguanagua') return 'manongo';
   if (zona === 'San Diego') return 'biglow';
-  return 'cem';
+  return 'manongo';
 }
 
 /** Mensaje legible de cualquier error (ErrorApi trae `mensaje`). */

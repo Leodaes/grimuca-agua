@@ -15,7 +15,7 @@ describe('tipos compartidos', () => {
   it('cada zona tiene una tienda sugerida que existe', () => {
     expect(tiendaSugerida('Naguanagua')).toBe('manongo');
     expect(tiendaSugerida('San Diego')).toBe('biglow');
-    expect(tiendaSugerida('Valencia norte')).toBe('cem');
+    expect(tiendaSugerida('Valencia norte')).toBe('manongo');
     for (const zona of [...ZONAS, 'Zona que no existe']) {
       expect(IDS_TIENDA).toContain(tiendaSugerida(zona));
     }

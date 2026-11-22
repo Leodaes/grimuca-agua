@@ -106,6 +106,27 @@ describe('alta', () => {
     expect(await screen.findByText('Pantalla de envío')).toBeInTheDocument();
   });
 
+  it('con ?ya=1 el perfil va directo a medir', async () => {
+    simulada.crearHogar.mockResolvedValue(hogar);
+    const usuario = userEvent.setup();
+    enRuta('/perfil?ya=1', <Perfil />);
+    await llenarPerfil(usuario);
+    await usuario.click(screen.getByRole('checkbox'));
+    await usuario.click(screen.getByRole('button', { name: 'Continuar' }));
+    expect(await screen.findByText('Pantalla de medir')).toBeInTheDocument();
+  });
+
+  it('si falla el guardado, el botón conserva su nombre', async () => {
+    simulada.crearHogar.mockRejectedValue({ mensaje: 'No se pudo guardar.' });
+    const usuario = userEvent.setup();
+    enRuta('/perfil', <Perfil />);
+    await llenarPerfil(usuario);
+    await usuario.click(screen.getByRole('checkbox'));
+    await usuario.click(screen.getByRole('button', { name: 'Continuar' }));
+    expect(await screen.findByText('No se pudo guardar.')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Continuar' })).toBeInTheDocument();
+  });
+
   it('el pago crea un pedido de tipo sobre', async () => {
     vi.mocked(hogarId).mockReturnValue('h-1');
     simulada.obtenerHogar.mockResolvedValue(hogar);

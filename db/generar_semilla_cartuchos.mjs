@@ -34,7 +34,7 @@ const equivalencias = {
 // Categorías que se pueden sugerir al cliente; las demás son repuestos o piezas de soporte.
 const recomendables = new Set(['cartucho', 'filtro', 'filtro_desbarrador', 'sistema_osmosis_inversa', 'suavizador']);
 // Vida útil orientativa en meses (docs/negocio/agua.md); por confirmar con la ficha del fabricante.
-const vidaUtil = { cartucho: 6, filtro: 6, filtro_desbarrador: 12, sistema_osmosis_inversa: 12, membrana_osmosis: 24, membrana_ultrafiltracion: 12, suavizador: 12 };
+const vidaUtil = { cartucho: 3, filtro: 3, filtro_desbarrador: 12, sistema_osmosis_inversa: 12, membrana_osmosis: 24, membrana_ultrafiltracion: 12, suavizador: 12 };
 
 const sql = (v) => (v === null || v === undefined || v === '' ? 'NULL' : `'${String(v).replace(/'/g, "''")}'`);
 

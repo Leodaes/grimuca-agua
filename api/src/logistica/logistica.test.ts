@@ -28,11 +28,11 @@ function haceDias(dias: number): string {
 }
 
 describe('recambios en ventana', () => {
-  it('usa 180 días por defecto y cuenta vencidos en ambas ventanas', () => {
-    const vencido = hogar('a', { fecha_ultimo_cambio: haceDias(200) });
-    const en5 = hogar('b', { fecha_ultimo_cambio: haceDias(175) });
-    const en20 = hogar('c', { fecha_ultimo_cambio: haceDias(160) });
-    const en60 = hogar('d', { fecha_ultimo_cambio: haceDias(120) });
+  it('usa 90 días por defecto y cuenta vencidos en ambas ventanas', () => {
+    const vencido = hogar('a', { fecha_ultimo_cambio: haceDias(110) });
+    const en5 = hogar('b', { fecha_ultimo_cambio: haceDias(85) });
+    const en20 = hogar('c', { fecha_ultimo_cambio: haceDias(70) });
+    const en60 = hogar('d', { fecha_ultimo_cambio: haceDias(30) });
     expect([vencido, en5, en20, en60].map((h) => recambioEnVentana(h, 7, HOY))).toEqual([true, true, false, false]);
     expect([vencido, en5, en20, en60].map((h) => recambioEnVentana(h, 30, HOY))).toEqual([true, true, true, false]);
   });
@@ -45,8 +45,8 @@ describe('recambios en ventana', () => {
 
   it('resume por tienda, con la tienda sugerida por zona si el hogar no eligió', () => {
     const hogares = [
-      hogar('a', { fecha_ultimo_cambio: haceDias(178) }),
-      hogar('b', { tienda_id: null, zona: 'San Diego', fecha_ultimo_cambio: haceDias(160) }),
+      hogar('a', { fecha_ultimo_cambio: haceDias(88) }),
+      hogar('b', { tienda_id: null, zona: 'San Diego', fecha_ultimo_cambio: haceDias(70) }),
     ];
     const pedidos: FilaPedidoDemanda[] = [
       { tienda_id: 'manongo', tipo: 'sobre', estado: 'pendiente', cartucho_codigo: null, cantidad: 1 },

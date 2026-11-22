@@ -78,6 +78,9 @@ export function cargarConfig(entorno: Record<string, string | undefined> = proce
   }
 
   const lectorSimulado = v.LECTOR_SIMULADO === '1' || !v.VISION_API_KEY;
+  if (!lectorSimulado && (!v.VISION_API_URL || !v.VISION_MODELO)) {
+    avisos.push('Faltan VISION_API_URL o VISION_MODELO: las fotos no se podrán leer (queda la carga manual).');
+  }
 
   const marcasExcluidas = (v.MARCAS_EXCLUIDAS ?? '')
     .split(',')

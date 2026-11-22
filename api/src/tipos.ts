@@ -38,15 +38,15 @@ export const ZONAS: readonly string[] = ['Naguanagua', 'San Diego', 'Valencia no
 
 export const IDS_TIENDA: readonly string[] = ['manongo', 'biglow', 'cem'];
 
-/** Tienda sugerida por zona (supuesto hasta que Grimuca confirme). El resto de las zonas va a `cem`. */
+/** Tienda sugerida por zona (supuesto hasta que Grimuca confirme). El resto de las zonas va a `manongo`. */
 export const TIENDA_POR_ZONA: Readonly<Record<string, string>> = {
   Naguanagua: 'manongo',
   'San Diego': 'biglow',
-  'Valencia norte': 'cem',
+  'Valencia norte': 'manongo',
 };
 
 export function tiendaSugerida(zona: string): string {
-  return TIENDA_POR_ZONA[zona] ?? 'cem';
+  return TIENDA_POR_ZONA[zona] ?? 'manongo';
 }
 
 export interface Tienda {

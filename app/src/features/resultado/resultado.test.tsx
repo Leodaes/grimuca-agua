@@ -66,6 +66,18 @@ describe('PaginaResultado', () => {
     expect(document.body.textContent?.toLowerCase()).not.toContain('segura');
   });
 
+  it('muestra colores, qué mide cada casilla, el pie, el recambio y el WhatsApp de la tienda', async () => {
+    montar();
+    expect(await screen.findByText('Esta prueba es una orientación, no un análisis de laboratorio, y no certifica que el agua sea apta para tomar.')).toBeInTheDocument();
+    expect(screen.getAllByText('Verde').length).toBeGreaterThan(0);
+    expect(screen.queryByText('En rango')).not.toBeInTheDocument();
+    expect(screen.getByText('Es lo que se usa para desinfectar el agua. Si hay mucho, cambia el sabor y el olor.')).toBeInTheDocument();
+    expect(screen.getByText('Vienen de las tuberías viejas. Con esto no se juega.')).toBeInTheDocument();
+    expect(screen.getByText(/Te toca cambiar el cartucho en 30 días/)).toBeInTheDocument();
+    const cotizar = screen.getByRole('link', { name: 'Cotizar por WhatsApp' });
+    expect(cotizar.getAttribute('href')).toMatch(/^https:\/\/wa\.me\/584144409396\?text=.*OA-01/);
+  });
+
   it('agrega el sugerido a la lista', async () => {
     montar();
     const boton = await screen.findByRole('button', { name: 'Agregar a mi lista' });

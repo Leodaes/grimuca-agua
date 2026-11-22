@@ -8,7 +8,9 @@ describe('cargarConfig', () => {
       DATABASE_URL: 'postgres://usuario:clave@bd:5432/agua',
       PIN_OPERADOR: ' 2468 ',
       SECRETO_SESION: 'un-secreto-largo-de-prueba-123',
+      VISION_API_URL: 'https://vision.example/v1/leer',
       VISION_API_KEY: 'clave-de-prueba',
+      VISION_MODELO: 'modelo-de-prueba',
       MARCAS_EXCLUIDAS: ' Marca Uno, marca dos ,,',
     });
     expect(config).toMatchObject({
@@ -40,7 +42,10 @@ describe('cargarConfig', () => {
   it('el lector va simulado si se pide o si falta la clave del servicio de visión', () => {
     expect(cargarConfig({}).lectorSimulado).toBe(true);
     expect(cargarConfig({ VISION_API_KEY: 'x', LECTOR_SIMULADO: '1' }).lectorSimulado).toBe(true);
-    expect(cargarConfig({ VISION_API_KEY: 'x', LECTOR_SIMULADO: '0' }).lectorSimulado).toBe(false);
+    const sinDireccion = cargarConfig({ VISION_API_KEY: 'x', LECTOR_SIMULADO: '0' });
+    expect(sinDireccion.lectorSimulado).toBe(false);
+    // Con clave pero sin dirección o modelo, avisa: las fotos no se podrían leer.
+    expect(sinDireccion.avisos.join(' ')).toMatch(/VISION_API_URL/);
   });
 
   it('acepta otro puerto y otra carpeta del front, y rechaza un puerto inválido', () => {
