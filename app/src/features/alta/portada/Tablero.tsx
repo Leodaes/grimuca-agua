@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Boton, Cargando, Icono, Semaforo, TEXTO_AVISO_TIRA } from '../../../components/grimuca';
 import type { NombreIcono } from '../../../components/grimuca';
 import { api } from '../../../lib/api';
+import { guardarHogarId, vaciarLista } from '../../../lib/sesion';
 import type { Hogar, Medicion } from '../../../lib/tipos';
 import { AvisoRecambio } from '../../resultado/PaginaResultado';
 import { PALABRA_NIVEL, formatearFecha } from '../../resultado/textos';
@@ -60,6 +61,43 @@ const ACCESOS: { etiqueta: string; a: string; icono: NombreIcono }[] = [
 ];
 
 /** Portada para quien ya tiene hogar en este teléfono: su último resultado y accesos grandes. */
+/** Olvida el perfil en este teléfono. Las mediciones y pedidos siguen en el servidor. */
+function CerrarSesion() {
+  const [confirmando, setConfirmando] = useState(false);
+
+  function cerrar() {
+    guardarHogarId(null);
+    vaciarLista();
+    window.location.assign('/');
+  }
+
+  return (
+    <section className="g-pila" aria-labelledby="p-cerrar-titulo">
+      <h2 className="g-h4" id="p-cerrar-titulo">
+        ¿No eres tú o quieres empezar de nuevo?
+      </h2>
+      {confirmando ? (
+        <>
+          <p>
+            Se borra tu perfil de este teléfono y se vacía tu lista. Tus mediciones y pedidos no se pierden, pero para
+            volver a verlos aquí tendrás que llenar el perfil otra vez.
+          </p>
+          <Boton variante="secundario" anchoCompleto onClick={cerrar}>
+            Sí, cerrar sesión
+          </Boton>
+          <Boton variante="secundario" anchoCompleto onClick={() => setConfirmando(false)}>
+            Cancelar
+          </Boton>
+        </>
+      ) : (
+        <Boton variante="secundario" anchoCompleto onClick={() => setConfirmando(true)}>
+          Cerrar sesión
+        </Boton>
+      )}
+    </section>
+  );
+}
+
 export function Tablero({ id }: { id: string }) {
   const { cargando, hogar, ultima, errorMediciones } = useTablero(id);
   const nombre = hogar?.nombre?.trim();
@@ -120,6 +158,8 @@ export function Tablero({ id }: { id: string }) {
           ))}
         </ul>
       </nav>
+
+      <CerrarSesion />
 
       <p className="g-apagado p-pie-tablero">
         {LEMA}. Medición orientativa con tira. No es un análisis de laboratorio.

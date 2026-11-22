@@ -1,8 +1,8 @@
 # Deck · Grimuca Agua · 6 láminas
 
-**Supuesto de costo del sobre: $4,00 (variante $2,94: ver nota)** · para cambiarlo basta tocar esta cifra y la nota de la lámina 5.
+**Costo del sobre puesto en Venezuela: $2,94 (decisión del equipo; incluye fábrica y un supuesto de $1,00 de flete, aduana y empaque)** · el $4,00 queda como sensibilidad en la nota de la lámina 5.
 
-Versión 4.1 (22 nov): costo del sobre en $4,00 como base, rutas en la lámina de logística y revisión legal. Versión 4 (21 nov, noche), enfoque B2B2C por decisión de Leonardo: Grimuca opera una **plataforma para ferreterías**. La familia mide su agua (entrada y señal) y la ferretería es el cliente que paga. Deck final: domingo 1:30 p.m.
+Versión 4.1 (22 nov): costo del sobre en $2,94 como base (decisión de Leonardo; $4,00 como sensibilidad), rutas en la lámina de logística y revisión legal. Versión 4 (21 nov, noche), enfoque B2B2C por decisión de Leonardo: Grimuca opera una **plataforma para ferreterías**. La familia mide su agua (entrada y señal) y la ferretería es el cliente que paga. Deck final: domingo 1:30 p.m.
 
 **Lema del cliente final:** Saber qué tomas empieza en casa
 **Frase para el lado empresa (propuesta):** Clientes que llegan sabiendo qué necesitan
@@ -92,17 +92,17 @@ Versión 4.1 (22 nov): costo del sobre en $4,00 como base, rutas en la lámina d
 
 ## Lámina 5 · Modelo de negocio
 
-**Supuesto de costo del sobre: $4,00 (variante $2,94: ver nota)**
+**Costo del sobre puesto en Venezuela: $2,94 (decisión del equipo; incluye fábrica y un supuesto de $1,00 de flete, aduana y empaque)**
 
 **Título:** Tres líneas de ingreso, y la ferretería es la que paga
 
 - **Sobre de $9** al cliente final (Tulio). **Membresía de la ferretería: $30 al mes con 1 a 3 meses gratis (SUPUESTO).** **Sobres al mayor a $5,50 (SUPUESTO).**
 - La ferretería recibe unos $140 al mes en margen de las familias asignadas (cálculo con márgenes de Tulio y 20 familias, supuesto; $280 con las 40 de la meta) y recupera la membresía con 5 familias.
-- Cada ferretería deja a la red unos $66 al mes (cálculo con 20 familias y el sobre a $4,00); 7 ferreterías pagando cubren los fijos de la red. Siguiente paso: comisión por transacción y plan premium.
+- Cada ferretería deja a la red unos $87 al mes (cálculo con 20 familias y el sobre a $2,94); 6 ferreterías pagando cubren los fijos de la red. Siguiente paso: comisión por transacción y plan premium.
 
-**Nota al pie de la lámina (variante del costo del sobre).** Base de la lámina: sobre a $4,00 puesto en Venezuela (asesoría, sin desglose). Variante: $2,94 (fábrica $1,94 de Tulio más $1,00 de importación y empaque, supuesto). Lo que cambia si se usa $2,94: aporte por ferretería $87 en vez de $66; ferreterías que cubren los fijos 6 en vez de 7; margen del sobre a domicilio $3,38 en vez de $2,38; caja de la red al cierre del año 1, base −$3.105 en vez de −$4.669, conservador −$8.909 en vez de −$9.969, meta de 40 familias +$1.094 en vez de −$2.035; familias por ferretería para cerrar el año 1 en cero, 35 en vez de 56. Lo demás no cambia. Fuente: `docs/negocio/modelo.md`, sección 0.
+**Nota al pie de la lámina (sensibilidad del costo del sobre).** Base de la lámina: sobre a $2,94 puesto en Venezuela (decisión del equipo: fábrica $1,94 de Tulio más un supuesto de $1,00 de flete, aduana y empaque). Sensibilidad: si el costo sube a $4,00, cifra que se mencionó en la asesoría, el aporte por ferretería baja a $66 en vez de $87; las ferreterías que cubren los fijos pasan de 6 a 7; el margen del sobre a domicilio baja de $3,38 a $2,38; la caja de la red al cierre del año 1 baja a −$4.669 en vez de −$3.105 en el base, −$9.969 en vez de −$8.909 en el conservador y −$2.035 en vez de +$1.094 en la meta de 40 familias; las familias por ferretería para cerrar el año 1 en cero suben de 35 a 56. Lo demás no cambia. Fuente: `docs/negocio/modelo.md`, sección 0.
 
-**Nota del orador (Tulio):** "El que paga todos los meses es la ferretería. La familia entra por la medición y paga $9." Honestidad en tarima: "No hay todavía ninguna ferretería aliada; la membresía, el precio al mayor y el número de ferreterías son supuestos que el piloto confirma." Si preguntan por caja: el primer año de la red es de inversión (base de 20 familias: −$4.669 con el sobre a $4,00; con las 40 de la meta, −$2.035); la operación mensual es positiva desde el mes 6. Grimuca vende hoy del orden de un centenar de cartuchos al mes, así que 40 familias por ferretería es meta de crecimiento y no continuidad. La variable que lo tumba es cuántas familias medidas le llegan a cada ferretería al mes: con 56 el año 1 cierra en cero. Las tres tiendas propias de Carabobo siguen con su economía (hipótesis de Tulio, sin venta real).
+**Nota del orador (Tulio):** "El que paga todos los meses es la ferretería. La familia entra por la medición y paga $9." Honestidad en tarima: "No hay todavía ninguna ferretería aliada; la membresía, el precio al mayor y el número de ferreterías son supuestos que el piloto confirma." Si preguntan por caja: el primer año de la red es de inversión (base de 20 familias: −$3.105 con el sobre a $2,94; con las 40 de la meta, +$1.094); la operación mensual es positiva desde el mes 6. Grimuca vende hoy del orden de un centenar de cartuchos al mes, así que 40 familias por ferretería es meta de crecimiento y no continuidad. La variable que lo tumba es cuántas familias medidas le llegan a cada ferretería al mes: con 35 el año 1 cierra en cero. Las tres tiendas propias de Carabobo siguen con su economía (hipótesis de Tulio, sin venta real).
 
 ---
 
@@ -127,7 +127,7 @@ Las 21 respuestas con su número están en `docs/negocio/preguntas-jurado.md`. L
 
 | Pregunta | Respuesta |
 |---|---|
-| ¿Por qué pagaría una ferretería? | Recibe familias ya medidas y inventario contra demanda; con 20 familias al mes gana unos $140 y paga $30 (cálculo, supuestos); a la red le deja unos $66 con el sobre a $4,00. |
+| ¿Por qué pagaría una ferretería? | Recibe familias ya medidas y inventario contra demanda; con 20 familias al mes gana unos $140 y paga $30 (cálculo, supuestos); a la red le deja unos $87 con el sobre a $2,94. |
 | ¿Cuál es el problema logístico? | Surtido disperso y venta concentrada: una de cada tres referencias casi no se mueve y una hace la mitad de la venta de cartuchos; con la fecha de cada cartucho se compra lo que se vende, se ven los quiebres antes y las entregas se agrupan (15 entregas en 3 rutas: 51,9 km contra 110,9 km, datos de demostración). |
 | ¿Quién es el cliente? | La familia entra por la medición y paga $9; la ferretería paga cada mes. |
 | ¿Certifican el agua? | No. Es una medición casera orientativa; la prueba de bacterias tampoco certifica. Con plomo o cobre decimos "posible presencia, confirma con un laboratorio". |
@@ -138,7 +138,7 @@ Las 21 respuestas con su número están en `docs/negocio/preguntas-jurado.md`. L
 |---|---|---|
 | 4 | Dinero en inventario, días de rotación, faltantes y entregas por semana de Grimuca | Tulio |
 | 5 | Precio de membresía, precio al mayor, cuántas ferreterías entran y cuántas pagan | Tulio |
-| 5 | Costo del sobre puesto en Venezuela: la lámina usa $4,00; $2,94 queda como variante en la nota | Leonardo |
+| 5 | Costo del sobre puesto en Venezuela: la lámina usa $2,94 (decisión de Leonardo); $4,00 queda como sensibilidad en la nota | Leonardo (resuelto) |
 | 3 | Capturas de `/red`, `/tecnico` y Productos | Calidad o Leonardo, tras desplegar la migración 008 |
 
 ## Criterios del jurado → lámina, minuto y evidencia
@@ -147,7 +147,7 @@ Cada criterio vale 25%. Los minutos son los de `guion-demo.md` (versión 4).
 
 | Criterio del jurado | Lámina y minuto del guion que lo responde | Evidencia en la demo |
 |---|---|---|
-| Modelo de negocio | Lámina 5 y bloque 7 (2:40 a 3:00); la Red en el bloque 1 (0:00 a 0:25) | Tres líneas de ingreso con supuestos rotulados (sobre $9, membresía $30, mayor $5,50), costo del sobre en $4,00 con la variante en nota; `/red` muestra comercios con plan y periodo gratis |
+| Modelo de negocio | Lámina 5 y bloque 7 (2:40 a 3:00); la Red en el bloque 1 (0:00 a 0:25) | Tres líneas de ingreso con supuestos rotulados (sobre $9, membresía $30, mayor $5,50), costo del sobre en $2,94 con la sensibilidad de $4,00 en nota; `/red` muestra comercios con plan y periodo gratis |
 | Producto: problema claro | Lámina 1 y bloque 1 (0:00 a 0:25); lámina 4 y bloque 2 (0:25 a 0:50) | Ferretería que compra a ciegas y hogar que no mide; inventario con faltantes en rojo y dato real de Grimuca (una de cada tres referencias casi no se mueve) |
 | Producto: caso de uso demostrado | Láminas 2 y 3; bloques 3 a 5 (0:50 a 2:25) | Un solo pedido recorre cliente, comercio, técnico y red; "Ya fui" con foto; aviso fijo en el resultado |
 | Calidad técnica | Lámina 3; bloque 4 (1:35 a 1:55, momento clave) | El pedido aparece solo en el despacho del comercio, en vivo, sin recargar; mapa real con rutas; aviso legal literal en resultado y bacterias |

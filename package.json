@@ -2,7 +2,7 @@
   "name": "grimuca-agua",
   "private": true,
   "version": "0.1.0",
-  "license": "MIT",
+  "license": "UNLICENSED",
   "workspaces": [
     "api",
     "app"

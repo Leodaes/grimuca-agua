@@ -17,10 +17,11 @@ vi.mock('../../lib/api', () => ({
 vi.mock('../../lib/sesion', () => ({
   hogarId: vi.fn(() => null),
   guardarHogarId: vi.fn(),
+  vaciarLista: vi.fn(),
 }));
 
 import { api } from '../../lib/api';
-import { guardarHogarId, hogarId } from '../../lib/sesion';
+import { guardarHogarId, hogarId, vaciarLista } from '../../lib/sesion';
 import { Marco } from '../../Marco';
 import { Bienvenida } from './Bienvenida';
 import { Envio } from './Envio';
@@ -395,6 +396,23 @@ describe('portada', () => {
     }
     expect(screen.getByRole('navigation', { name: 'Navegación principal' })).toBeInTheDocument();
     expect(screen.queryByRole('complementary', { name: 'Comprar el sobre' })).not.toBeInTheDocument();
+  });
+
+  it('con hogar: "Cerrar sesión" pide confirmar, olvida el perfil y vuelve a la portada', async () => {
+    vi.mocked(hogarId).mockReturnValue('h-1');
+    simulada.obtenerHogar.mockResolvedValue(hogar);
+    simulada.medicionesDeHogar.mockResolvedValue([]);
+    const ir = vi.fn();
+    vi.stubGlobal('location', { ...window.location, assign: ir });
+    const usuario = userEvent.setup();
+    portada();
+    await usuario.click(await screen.findByRole('button', { name: 'Cerrar sesión' }));
+    expect(guardarHogarId).not.toHaveBeenCalledWith(null);
+    await usuario.click(screen.getByRole('button', { name: 'Sí, cerrar sesión' }));
+    expect(guardarHogarId).toHaveBeenCalledWith(null);
+    expect(vaciarLista).toHaveBeenCalled();
+    expect(ir).toHaveBeenCalledWith('/');
+    vi.unstubAllGlobals();
   });
 
   it('con hogar y sin mediciones: "Aún no has medido"', async () => {

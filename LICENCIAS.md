@@ -1,8 +1,7 @@
 # Licencias
 
-Grimuca Agua se publica bajo licencia **MIT** (campo `license` del `package.json` de la raíz).
+El código de Grimuca Agua es de sus autores, con **todos los derechos reservados** (archivo `LICENSE` en la raíz). Este documento lista las licencias de las librerías, fuentes y datos de terceros que usa, que no cambian.
 
-> **Pendiente:** el repositorio todavía no trae el archivo `LICENSE` con el texto de la licencia MIT y el titular. Sin ese archivo la declaración queda incompleta.
 
 Las licencias de esta página se leyeron del `package.json` de cada paquete instalado en `node_modules/`, el sáb 21 nov 2026. Solo se listan las **dependencias directas**; las indirectas se revisaron en bloque (ver "Dependencias indirectas").
 

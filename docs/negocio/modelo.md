@@ -1,6 +1,7 @@
 # Modelo de negocio · Grimuca Agua · red de ferreterías
 
 **Versión 3.1 · sábado 21 nov 2026, noche · hackatón ValenValley, track Logística**
+**Decisión del 22 nov:** el costo del sobre puesto en Venezuela es $2,94 (Leonardo); el $4,00 pasa a sensibilidad.
 **Cambio de la 3.1 (cifras reales de Grimuca):** llegaron datos de ventas e inventario de Grimuca (90 días al 21 nov 2026). Dos cosas cambian: (1) el ejemplo supuesto de inventario de la sección 3 se reemplaza por el argumento real, en proporciones; (2) el volumen de familias por ferretería se baja de 40 a 20 en el escenario base, porque 40 era una meta y no continuidad de lo que Grimuca vende hoy (sección 0b). El escenario de 40 se conserva como **escenario meta**. Los montos exactos de Grimuca no están en este documento por ser público.
 **Rehecho tras la decisión de Leonardo (10:00 p.m.) y dos asesorías con jurados.** Grimuca pasa de "la app de Grimuca" a una plataforma para ferreterías que Grimuca opera. La versión anterior, con las tres tiendas propias, quedó guardada en `modelo-v2-tres-tiendas.md` (cuentas de Tulio verificadas, KPI y experimentos del piloto, flujo de caja de las tres tiendas). Lo que sigue valiendo se conserva aquí de forma resumida.
 
@@ -23,9 +24,11 @@ Montos en dólares. Las cuentas se hicieron con todos los decimales. Nada de est
 
 ---
 
-## 0. La cifra que no cuadra: el sobre, $2,94 contra $4,00
+## 0. El costo del sobre: $2,94 de base y $4,00 como sensibilidad
 
-| | Versión A: modelo anterior | Versión B: dicho en la asesoría |
+**Decisión (dom 22 nov):** Leonardo, el dueño, decidió que el costo del sobre puesto en Venezuela es **$2,94** (decisión del equipo; incluye fábrica y un supuesto de $1,00 de flete, aduana y empaque). Es la base de este documento y de los materiales públicos. El $4,00 queda como **escenario de sensibilidad**: en las tablas, la versión A es la base ($2,94) y la B es la sensibilidad ($4,00).
+
+| | **Base (A): $2,94, decisión del equipo** | Sensibilidad (B): $4,00, cifra de la asesoría |
 |---|---|---|
 | Costo del sobre puesto en Venezuela | **$2,94** | **$4,00** |
 | De dónde sale | Fábrica $1,94 (frasco $1,90 en el escalón de 500 a 1.999, más tira de $0,04; Tulio) + $1,00 de importación y empaque (SUPUESTO de Business) | Asesoría. No hay desglose |
@@ -47,7 +50,7 @@ Montos en dólares. Las cuentas se hicieron con todos los decimales. Nada de est
 | Caja de la red al cierre del año 1, **meta (40 familias, el antiguo base)** | **+$1.094** | **−$2.035** |
 | Hogares al mes por ferretería para que el año 1 cierre en cero | **35** | **56** |
 
-**Pregunta para Leonardo:** ¿quién dio el $4,00, qué incluye (flete, aduana, empaque, envío nacional, IVA) y cuál de las dos cifras va en la lámina? Mientras no se decida, todo material público muestra el rango y el modelo se lee con las dos columnas.
+**Nota de sensibilidad:** si el costo sube a $4,00, cifra que se mencionó en la asesoría (sin desglose), la caja del año 1 base baja de −$3.105 a −$4.669.
 
 ---
 
@@ -184,7 +187,7 @@ Reducción de kilos: **99,8%**. Reducción de viajes: **79%** el primer año y *
 | Tira HORYZON | ~$0,04 |
 | **Sobre en fábrica** | **$2,04 / $1,94 / $1,54** según volumen |
 
-Lo que se suma hasta la puerta (SUPUESTO, pendiente de Tulio): importación y empaque $1,00 por sobre en la versión A; envío a domicilio $2,50 por entrega (SAMA Logística 3 por cotizar); pasarela 2% de lo que se paga en la app (Cobrix por cotizar). La versión B reemplaza todo el costo puesto en Venezuela por $4,00 (sección 0).
+Lo que se suma hasta la puerta (SUPUESTO, pendiente de Tulio): importación y empaque $1,00 por sobre en la versión A; envío a domicilio $2,50 por entrega (SAMA Logística 3 por cotizar); pasarela 2% de lo que se paga en la app (Cobrix por cotizar). La sensibilidad (B) reemplaza todo el costo puesto en Venezuela por $4,00 (sección 0).
 
 **El sobre se paga solo en ambas versiones:** deja $3,38 (A) o $2,38 (B) a domicilio, y $6,06 o $5,00 con retiro.
 
@@ -233,7 +236,7 @@ Quien más gana de estas palancas es la ferretería: el sobre en mostrador le de
 | **Sobres al mayor por ferretería al mes, a volumen completo** | **10** (la mitad de las familias) | **5** | SUPUESTO |
 | Precio al mayor del sobre | $5,50 | $5,50 | SUPUESTO |
 | Sobres a domicilio | 50% | 50% | SUPUESTO |
-| Costo del sobre puesto en Venezuela | $2,94 o $4,00 | $2,94 o $4,00 | Modelo anterior o asesoría (sección 0) |
+| Costo del sobre puesto en Venezuela | **$2,94** (sensibilidad: $4,00) | **$2,94** (sensibilidad: $4,00) | Decisión de Leonardo, 22 nov (sección 0); incluye fábrica y $1,00 de flete, aduana y empaque (SUPUESTO) |
 | Envío $2,50 · pasarela 2% · flete al comercio $0,25 por sobre | igual | igual | SUPUESTO |
 | Fijos de la red: responsable de la red $400 + plataforma $50 al mes | $450 | $450 | SUPUESTO ($400 viene del responsable de logística del modelo anterior) |
 | Costo de dar de alta una ferretería (visita, material, muestras) | $100 | $100 | SUPUESTO |
@@ -425,12 +428,12 @@ Con delivery, la ultrafiltración se paga en 4 a 5 meses; con recarga a $2, en 1
 2. **Precio al mayor del sobre** (supuesto $5,50).
 3. **Cuántas ferreterías entrarían** en los primeros 12 meses y cuáles conoce por nombre (supuesto 20 base, 10 conservador).
 4. **Cuántas pagarían al terminar el periodo gratis** (supuesto 70% y 40%).
-5. Costo real del sobre puesto en Venezuela ($2,94 o $4,00; la pregunta de fondo va a Leonardo).
+5. Costo del sobre puesto en Venezuela: la base es $2,94 por decisión de Leonardo; que Tulio confirme el desglose (fábrica $1,94 y $1,00 de flete, aduana y empaque). El $4,00 queda como sensibilidad.
 6. De los datos de Grimuca para logística ya llegaron inventario, ventas y rotación (sección 3). Siguen faltando: veces al mes que se pide una pieza que no hay, y entregas por semana con su costo. Además, la correspondencia entre las tiendas del sistema interno y las de la app, y qué marcas entran (hoy Grimuca vende otras marcas de agua además del catálogo de la app).
 7. Si las ferreterías aliadas comprarían también filtros y cartuchos a Grimuca u Oasis (sería una cuarta línea de ingreso, fuera del cálculo).
 8. Tarifa de SAMA y cobertura, costos de Cobrix, precios internos de Grimuca, catálogo completo y comisión de farmacias y supermercados (de la versión anterior; siguen pendientes).
 
-**Para Leonardo:** el $4,00 contra el $2,94 (sección 0), y si se prefiere llevar más sobres al mostrador de la ferretería aunque baje la caja del operador.
+**Para Leonardo:** si se prefiere llevar más sobres al mostrador de la ferretería aunque baje la caja del operador.
 
 ---
 
@@ -446,7 +449,7 @@ Con delivery, la ultrafiltración se paga en 4 a 5 meses; con recarga a $2, en 1
 | La tira falla o se lee mal | Reposición del sobre | La app no adivina: pide repetir la foto o cargar los colores a mano |
 | Afirmaciones sobre salud | Riesgo legal y de confianza | Medición orientativa; aviso fijo; plomo y cobre "posible presencia, confirma con un laboratorio" |
 | Permisos para importar y vender pruebas de agua | Sin fuente verificada | Confirmar con el abogado antes de vender sobres al mayor |
-| Costo del sobre a $4,00 | La caja del año 1 base baja de −$3.105 a −$4.669 y la meta de 40 familias pasa de +$1.094 a −$2.035 | Decidir la cifra (sección 0); subir el precio al mayor o la membresía |
+| Costo del sobre sube a $4,00 (sensibilidad) | La caja del año 1 base baja de −$3.105 a −$4.669 y la meta de 40 familias pasa de +$1.094 a −$2.035 | Confirmar el desglose con Tulio; subir el precio al mayor o la membresía |
 
 ---
 

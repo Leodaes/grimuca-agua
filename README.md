@@ -122,7 +122,7 @@ Los hogares, teléfonos, direcciones, mediciones y pedidos de demostración son 
 
 ## Licencias
 
-El código se publica bajo la licencia MIT ([`LICENSE`](LICENSE)). Las dependencias y sus licencias están en [`LICENCIAS.md`](LICENCIAS.md). La marca Grimuca, sus logos y las fotos de productos pertenecen a sus dueños y no quedan cubiertos por la licencia del código.
+Todos los derechos reservados ([`LICENSE`](LICENSE)). El acceso a este repositorio para la evaluación del hackatón no concede derechos de uso. Las dependencias de terceros conservan sus propias licencias, listadas en [`LICENCIAS.md`](LICENCIAS.md). La marca Grimuca, sus logos y las fotos de productos pertenecen a sus dueños.
 
 ## Equipo
 
