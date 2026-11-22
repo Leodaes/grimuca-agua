@@ -51,7 +51,7 @@ Versión 5 (22 nov, madrugada), corregida tras el ensayo cronometrado de Calidad
 
 **Alerta por zona (unos 10 s, Tulio; va justo cuando Leonardo está en Zonas, antes de pasar a Rutas).** Laptop: en Zonas, bajar a "Alertas por zona" y tocar "Avisar a los vecinos de la zona"; aparece el WhatsApp simulado y "Enviado (simulado)".
 
-> **Tulio:** "Cuando varios hogares de una zona salen fuera de rango en la misma semana, la red lo detecta y avisa a los vecinos que aceptaron recibir avisos, para que midan su agua. Esos datos, agregados y sin nombres, también sirven para estudios por zona con universidades e instituciones públicas. Son mediciones caseras orientativas."
+> **Tulio:** "Cuando varios hogares de una zona salen fuera de rango en la misma semana, la red lo detecta y avisa a los vecinos que aceptaron recibir avisos, para que midan su agua. Esos datos, agregados y sin nombres, también sirven para estudios por zona con universidades e instituciones públicas. Son mediciones caseras orientativas. Cada vecino que responde SÍ es un sobre vendido para la ferretería de su zona."
 
 Si el bloque va largo, esta frase se corta y queda para la ronda de preguntas (`preguntas-jurado.md`, privacidad de los datos).
 

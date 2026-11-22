@@ -66,6 +66,7 @@ Asesor legal · primera corrida (antes del código) · sáb 21 nov 2026
 - La vista de zonas vive solo en el panel del operador, con PIN.
 - Texto: "3 o más hogares con resultados fuera de rango en 7 días", nunca "agua contaminada".
 - Si se hace el aviso a vecinos: "Varios hogares de tu zona reportaron resultados fuera de rango. Te sugerimos medir tu agua." Solo a quien dio su consentimiento, sin nombrar hogares.
+- Versión de la demo (22 nov, aprobada por Leonardo y revisada contra esta sección): dos burbujas. 1) "Hola, vecina o vecino de {zona}. Te escribe Grimuca {tienda}, la ferretería de tu zona. Esta semana varios hogares de {zona} midieron su agua con nosotros y en algunos salió fuera de rango, sobre todo en {parámetros}." 2) "Eso no dice nada de tu casa: para saberlo hay que medir. El sobre cuesta $9 con envío y tienes el resultado de la tira en 5 minutos. ¿Te apartamos uno esta semana? Responde SÍ. (Para no recibir más avisos, responde BAJA.)" Revisión: no nombra hogares ni a Hidrocentro, no dice "contaminada" ni "potable", no promete nada sobre la casa de quien lo recibe y trae la baja. Único ajuste: "el resultado de la tira en 5 minutos", porque la prueba de bacterias del sobre tarda 48 horas. Nombrar parámetros de la zona (por ejemplo plomo) puede alarmar: confirmar con abogado antes de enviar avisos reales.
 - No nombrar a Hidrocentro ni a marcas de botellón.
 
 ### M4. La promesa comercial
