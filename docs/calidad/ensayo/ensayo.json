@@ -1,0 +1,400 @@
+{
+  "fecha": "2026-11-22T07:59:50.291Z",
+  "sitio": "https://agua.oydo.app",
+  "marca": "MWRJQ12HZN",
+  "hogar": "Prueba Calidad MWRJQ12HZN ensayo",
+  "pedidoId": "102",
+  "servicioId": "103",
+  "tramos": [
+    {
+      "n": "00",
+      "bloque": "Antes de subir",
+      "titulo": "/modulos: las cuatro tarjetas",
+      "ms": 878,
+      "estado": "PASA",
+      "detalle": "ok",
+      "vio": {
+        "tarjetas": [
+          "Cliente El hogar mide su agua con la tira, ve qué le conviene y pide en su ferre",
+          "Comercio La ferretería despacha pedidos, revisa su inventario y carga sus propio",
+          "Técnico El técnico ve sus servicios asignados y deja la foto de cómo quedó el tr",
+          "Red Grimuca ve todos los comercios de la red, sus cifras por estado y da de alta"
+        ]
+      }
+    },
+    {
+      "n": "00b",
+      "bloque": "Antes de subir",
+      "titulo": "Entrar con PIN en /red, /comercio y /tecnico (se hace antes de subir)",
+      "ms": 3182,
+      "estado": "PASA",
+      "detalle": "ok",
+      "vio": {
+        "redMs": 597,
+        "comercioMs": 1351,
+        "tecnicoMs": 1234
+      }
+    },
+    {
+      "n": "01",
+      "bloque": "Bloque 1 · La Red",
+      "titulo": "/red: comercios con plan y membresía, cifras de la red",
+      "ms": 436,
+      "estado": "PASA",
+      "detalle": "ok",
+      "vio": {
+        "cifras": {
+          "Comercios en la red": "3",
+          "Estados cubiertos": "3",
+          "Tiendas": "5",
+          "Hogares": "72",
+          "Mediciones del mes": "80",
+          "Pedidos del mes": "69"
+        },
+        "comercios": [
+          "Grimuca Valencia, Carabobo Premium Activa 3 62 19 58 0 18 de octubre de 2025",
+          "Aliado Aragua (comercio de demostración) Demostración Maracay, Aragua Básico Vencida 1 4 0 2 0 14 de agosto de 2026",
+          "Aliado Lara (comercio de demostración) Demostración Barquisimeto, Lara Básico Periodo gratis: quedan 70 días 1 6 3 9 1 2 de noviembre de 2026"
+        ],
+        "enVivo": true,
+        "conPeriodoGratis": 1
+      }
+    },
+    {
+      "n": "02a",
+      "bloque": "Bloque 2 · Comercio",
+      "titulo": "Despacho de Grimuca, filtro en Mañongo",
+      "ms": 112,
+      "estado": "PASA",
+      "detalle": "ok",
+      "vio": {
+        "filasPendientesManongo": 11,
+        "porDespachar": "11 por despachar"
+      }
+    },
+    {
+      "n": "02b",
+      "bloque": "Bloque 2 · Comercio",
+      "titulo": "Inventario: faltantes de los próximos 30 días en rojo",
+      "ms": 171,
+      "estado": "PASA",
+      "detalle": "ok",
+      "vio": {
+        "insigniasFaltan": 5,
+        "avisos": [
+          "Faltan 2 cartuchos en Big Low para cubrir los próximos 30 días.",
+          "Faltan 10 cartuchos en Mañongo para cubrir los próximos 30 días."
+        ]
+      }
+    },
+    {
+      "n": "02c",
+      "bloque": "Bloque 2 · Comercio",
+      "titulo": "Zonas: mapa por urbanización (calidad del agua)",
+      "ms": 681,
+      "estado": "PASA",
+      "detalle": "ok",
+      "vio": {
+        "cifras": {
+          "Urbanizaciones con clientes": "31",
+          "Urbanizaciones en alerta": "2",
+          "Urbanizaciones por captar": "39"
+        },
+        "teselas": 15,
+        "sinFondo": false,
+        "msTeselas": 395
+      }
+    },
+    {
+      "n": "02d",
+      "bloque": "Bloque 2 · Comercio",
+      "titulo": "Productos: un segundo en la tabla",
+      "ms": 187,
+      "estado": "PASA",
+      "detalle": "ok",
+      "vio": {
+        "productos": 80
+      }
+    },
+    {
+      "n": "02e",
+      "bloque": "Bloque 2 · Comercio (fuera del guion)",
+      "titulo": "Rutas: una ruta por tienda (pestaña aparte, queda abierta)",
+      "ms": 671,
+      "estado": "PASA",
+      "detalle": "ok",
+      "vio": {
+        "cifras": {
+          "Entregas con envíoincluye servicios técnicos": "15",
+          "Paradas": "11",
+          "1 ruta por tienda contra 15 viajes sueltos": "3",
+          "Km de la ruta": "51,9 km",
+          "Km de viajes sueltosida y vuelta por pedido": "110,9 km",
+          "Ahorro (53 %)": "59,0 km"
+        }
+      }
+    },
+    {
+      "n": "03a",
+      "bloque": "Bloque 3 · Cliente",
+      "titulo": "Portada → \"Ya tengo mi sobre\"",
+      "ms": 1091,
+      "estado": "PASA",
+      "detalle": "ok",
+      "vio": {
+        "botones": [
+          "Pedir el sobre a domicilio ($9)",
+          "Ya tengo mi sobre"
+        ]
+      }
+    },
+    {
+      "n": "03b",
+      "bloque": "Bloque 3 · Cliente (antes de subir)",
+      "titulo": "Perfil: familia de 4 en Naguanagua, filtro de 3 etapas",
+      "ms": 1327,
+      "estado": "PASA",
+      "detalle": "ok",
+      "vio": {
+        "hogarId": "469fa176-06aa-4698-a0f6-204f7ea2d7b5"
+      }
+    },
+    {
+      "n": "03c",
+      "bloque": "Bloque 3 · Cliente",
+      "titulo": "Medir con foto: \"Elegir una foto del teléfono\" → \"Leer mi tira\" → resultado",
+      "ms": 7153,
+      "estado": "PASA",
+      "detalle": "ok",
+      "vio": {
+        "lectura": "resultado",
+        "msLectura": 7153
+      }
+    },
+    {
+      "n": "03e",
+      "bloque": "Bloque 3 · Cliente",
+      "titulo": "Resultado: semáforo por casilla, aviso fijo y \"Por qué te lo recomendamos\"",
+      "ms": 11,
+      "estado": "PASA",
+      "detalle": "ok",
+      "vio": {
+        "verde": 7,
+        "amarillo": 8,
+        "rojo": 5,
+        "avisoFijo": true,
+        "primerSugerido": "Cartucho Rellenable en Línea 10\" x 2\"",
+        "porque": "Te recomendamos este cartucho de sedimentos porque tu medición dio Dureza en Amarillo: es el sarro que mancha la grifería. Está pensado para esa casilla. Ya te toca el cambio: el último fue hace más de tres meses. Es para tu filtro de 3 vasos."
+      }
+    },
+    {
+      "n": "03i",
+      "bloque": "Bloque 3 · Cliente",
+      "titulo": "\"Agregar a mi lista\" → Mi lista → \"Envío a mi dirección\" → \"Hacer pedido\"",
+      "ms": 523,
+      "estado": "PASA",
+      "detalle": "ok",
+      "vio": {
+        "accesoMiListaVisible": true,
+        "direccionPrellenada": "",
+        "pedidoId": "102",
+        "titulo": "Tu pedido",
+        "pedido": {
+          "tienda": "manongo",
+          "modalidad": "envio",
+          "cartucho": "OPW-102INFC"
+        }
+      }
+    },
+    {
+      "n": "04a",
+      "bloque": "Bloque 4 · MOMENTO CLAVE",
+      "titulo": "El pedido aparece en Despacho sin recargar, con \"Nuevo\"",
+      "ms": 956,
+      "estado": "PASA",
+      "detalle": "ok",
+      "vio": {
+        "sinRecargar": true,
+        "conNuevo": true,
+        "posicion": 1,
+        "fila": "Nuevo Cartucho Cartucho Rellenable en Línea 10\" x 2\" · Prueba Calidad MWRJQ12HZN ensayo 3:59 a. m. Naguanagua Envío: Calle Inventada MWRJQ12HZN, casa 00, El Naranjal Despachado",
+        "pestana": "Despacho (1 nuevos)"
+      }
+    },
+    {
+      "n": "04b",
+      "bloque": "Bloque 4 · (fuera del guion)",
+      "titulo": "La ruta se recalcula sola en la pestaña Rutas",
+      "ms": 28,
+      "estado": "PASA",
+      "detalle": "ok",
+      "vio": {
+        "antes": {
+          "Entregas con envíoincluye servicios técnicos": "15",
+          "Paradas": "11",
+          "1 ruta por tienda contra 15 viajes sueltos": "3",
+          "Km de la ruta": "51,9 km",
+          "Km de viajes sueltosida y vuelta por pedido": "110,9 km",
+          "Ahorro (53 %)": "59,0 km"
+        },
+        "despues": {
+          "Entregas con envíoincluye servicios técnicos": "16",
+          "Paradas": "11",
+          "1 ruta por tienda contra 16 viajes sueltos": "3",
+          "Km de la ruta": "52,0 km",
+          "Km de viajes sueltosida y vuelta por pedido": "123,6 km",
+          "Ahorro (58 %)": "71,6 km"
+        },
+        "msDesdeHacerPedido": 2471
+      }
+    },
+    {
+      "n": "04c",
+      "bloque": "Bloque 4 · MOMENTO CLAVE",
+      "titulo": "Toca \"Despachado\"",
+      "ms": 110,
+      "estado": "PASA",
+      "detalle": "ok",
+      "vio": {
+        "estado": "despachado"
+      }
+    },
+    {
+      "n": "05a",
+      "bloque": "Bloque 5 · Técnico",
+      "titulo": "El cliente pide un técnico (\"¿No sabes hacerlo? Contrata a un experto\" → \"Pedir el servicio\")",
+      "ms": 689,
+      "estado": "PASA",
+      "detalle": "ok",
+      "vio": {
+        "enlaceEnPedido": true,
+        "direccionPrellenada": true,
+        "servicioElegido": "Cambiar el cartucho\nDesde $30",
+        "msHastaDespacho": 434
+      }
+    },
+    {
+      "n": "05c",
+      "bloque": "Bloque 5 · Técnico",
+      "titulo": "El servicio aparece en /tecnico (sin recargar)",
+      "ms": 260,
+      "estado": "PASA",
+      "detalle": "ok",
+      "vio": {
+        "sinRecargar": true,
+        "msDesdeElPedido": 447,
+        "tarjeta": "Pendiente N.º 103 Cambio de cartucho Hogar Prueba Calidad MWRJQ12HZN ensayo Dónde Naguanagua · Calle Inventada MWRJQ12HZN, casa 00, El Naranjal Cuándo lunes, 23 de noviembre · En la mañana Coordina Ma"
+      }
+    },
+    {
+      "n": "05d",
+      "bloque": "Bloque 5 · Técnico",
+      "titulo": "\"Ya fui\" → foto → \"Guardar reporte\" → Atendidos",
+      "ms": 1099,
+      "estado": "PASA",
+      "detalle": "ok",
+      "vio": {}
+    },
+    {
+      "n": "05f",
+      "bloque": "Bloque 5 · Técnico",
+      "titulo": "El comercio ve el reporte con la foto (\"Reportes del técnico\")",
+      "ms": 646,
+      "estado": "PASA",
+      "detalle": "ok",
+      "vio": {
+        "sinRecargar": true,
+        "resumen": "Reportes del técnico\n3"
+      }
+    },
+    {
+      "n": "06",
+      "bloque": "Bloque 6 · La Red refleja",
+      "titulo": "/red: pedidos y mediciones del mes actualizados",
+      "ms": 25,
+      "estado": "PASA",
+      "detalle": "ok",
+      "vio": {
+        "sinRecargar": true,
+        "antes": {
+          "Comercios en la red": "3",
+          "Estados cubiertos": "3",
+          "Tiendas": "5",
+          "Hogares": "72",
+          "Mediciones del mes": "80",
+          "Pedidos del mes": "69"
+        },
+        "despues": {
+          "Comercios en la red": "3",
+          "Estados cubiertos": "3",
+          "Tiendas": "5",
+          "Hogares": "72",
+          "Mediciones del mes": "81",
+          "Pedidos del mes": "71"
+        },
+        "subenPedidos": 2,
+        "subenMediciones": 1,
+        "filaGrimuca": "Grimuca Valencia, Carabobo Premium Activa 3 62 19 60 0 18 de octubre de 2025",
+        "actividad": [
+          "3:59 a. m. Servicio atendido en Grimuca Mañongo · Cambio de cartucho",
+          "3:59 a. m. Pedido nuevo en Grimuca Mañongo · Cambio de cartucho",
+          "3:59 a. m. Pedido despachado en Grimuca Mañongo · Cartucho Rellenable en Línea 10\" x 2\"",
+          "3:59 a. m. Pedido nuevo en Grimuca Mañongo · Cartucho Rellenable en Línea 10\" x 2\"",
+          "3:59 a. m. Medición nueva en Naguanagua"
+        ]
+      }
+    }
+  ],
+  "totalAppEnTarimaMs": 14150,
+  "totalAppConTodoMs": 20236,
+  "diferencias": [
+    "Bloque 1: el guion dice \"cada uno con su plan y su periodo gratis\", pero solo 1 de 3 comercios está en periodo gratis (Grimuca sale \"Activa\" y Aliado Aragua \"Vencida\").",
+    "Bloque 2: el guion dice \"El despacho está vacío\", pero Despacho de Grimuca (Mañongo) muestra 11 pedidos pendientes de la semilla."
+  ],
+  "datosCreados": [
+    "hogar \"Prueba Calidad MWRJQ12HZN ensayo\"",
+    "su filtro \"Tres vasos\"",
+    "1 medición por foto",
+    "1 pedido de cartucho con envío (N.º 102)",
+    "1 servicio técnico (N.º 103)"
+  ],
+  "capturas": [
+    "00-modulos.png",
+    "01-red.png",
+    "02a-comercio-despacho.png",
+    "02b-comercio-inventario.png",
+    "02c-comercio-zonas-mapa.png",
+    "02d-comercio-productos.png",
+    "02e-comercio-rutas.png",
+    "03a-cliente-portada.png",
+    "03b-cliente-perfil.png",
+    "03c-cliente-medir.png",
+    "03d-cliente-foto-se-ve-bien.png",
+    "03f-cliente-resultado-semaforo.png",
+    "03g-cliente-casilla-por-casilla.png",
+    "03h-cliente-por-que-te-lo-recomendamos.png",
+    "03-resultado-completo.png",
+    "03i-cliente-mi-lista.png",
+    "03j-cliente-pedido-confirmado.png",
+    "04a-comercio-pedido-en-vivo.png",
+    "04b-comercio-rutas-recalculada.png",
+    "04c-comercio-despachado.png",
+    "05a-cliente-pide-tecnico.png",
+    "05b-cliente-servicio-pedido.png",
+    "05c-tecnico-servicio-asignado.png",
+    "05d-tecnico-ya-fui-con-foto.png",
+    "05e-tecnico-atendido.png",
+    "05f-comercio-reporte-del-tecnico.png",
+    "06-red-refleja.png",
+    "06b-red-actividad.png"
+  ],
+  "videos": [
+    "video-red.webm",
+    "video-comercio.webm",
+    "video-comercio-rutas.webm",
+    "video-cliente.webm",
+    "video-tecnico.webm"
+  ],
+  "erroresDeLaPagina": [],
+  "rutasDespues": "{\"Entregas con envíoincluye servicios técnicos\":\"16\",\"Paradas\":\"11\",\"1 ruta por tienda contra 16 viajes sueltos\":\"3\",\"Km de la ruta\":\"52,0 km\",\"Km de viajes sueltosida y vuelta por pedido\":\"123,6 km\",\"Ahorro (58 %)\":\"71,6 km\"}"
+}

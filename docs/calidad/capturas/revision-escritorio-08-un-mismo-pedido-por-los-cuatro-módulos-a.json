@@ -9,14 +9,14 @@
     }
   ],
   "tiempos": {
-    "desdeHacerPedido": 1795319595086,
-    "pedidoEnGrimucaSegundos": 0.656,
-    "servicioEnGrimucaSegundos": 0.286,
-    "guardarReporteSegundos": 0.367
+    "desdeHacerPedido": 1795327054969,
+    "pedidoEnGrimucaSegundos": 0.659,
+    "servicioEnGrimucaSegundos": 0.287,
+    "guardarReporteSegundos": 0.364
   },
   "notas": {
-    "marca": "MWRAX3H6O1",
-    "hogar": "Prueba Calidad MWRAX3H6O1 red",
+    "marca": "MWRFCZU81P",
+    "hogar": "Prueba Calidad MWRFCZU81P red",
     "modulos": [
       "/ · Cliente El hogar mide su agua con la tira, ve qué le conviene y pide en su ferretería. / Abrir cliente",
       "/comercio · Comercio La ferretería despacha pedidos, revisa su inventario y carga sus propios productos. /comercio Abrir comercio",
@@ -27,23 +27,23 @@
       "Comercios en la red": 3,
       "Estados cubiertos": 3,
       "Tiendas": 5,
-      "Hogares": 72,
-      "Mediciones del mes": 71,
-      "Pedidos del mes": 68
+      "Hogares": 74,
+      "Mediciones del mes": 73,
+      "Pedidos del mes": 71
     },
     "comerciosRed": [
-      "Grimuca Valencia, Carabobo Premium Activa 3 62 19 57 0 17 de octubre de 2025",
+      "Grimuca Valencia, Carabobo Premium Activa 3 64 21 60 0 17 de octubre de 2025",
       "Aliado Aragua (comercio de demostración) Demostración Maracay, Aragua Básico Vencida 1 4 0 2 0 13 de agosto de 2026",
-      "Aliado Lara (comercio de demostración) Demostración Barquisimeto, Lara Básico Periodo gratis: quedan 71 días 1 6 3 9 1 1 de noviembre de 2026"
+      "Aliado Lara (comercio de demostración) Demostración Barquisimeto, Lara Básico Periodo gratis: quedan 70 días 1 6 3 9 1 1 de noviembre de 2026"
     ],
     "totalesApiAntes": {
       "comercios": 3,
       "estados_cubiertos": 3,
       "tiendas": 5,
-      "hogares": 72,
-      "mediciones_mes": 71,
-      "pedidos_mes": 68,
-      "pedidos_pendientes": 22
+      "hogares": 74,
+      "mediciones_mes": 73,
+      "pedidos_mes": 71,
+      "pedidos_pendientes": 24
     },
     "tiendasLara": "Aliado Lara · Centro\n3 pendientes\nCartucho\nCartucho de sedimentos 10 pulgadas (producto de demostración) × 2 · Norelys C.\n8:52 p. m.\nBarquisimeto\nRetiro en tienda\nDespachado\nSobre\nSobre de medición · Yelitza R.\n5:52 p. m.\nBarquisimeto\nEnvío: Calle 2, casa 65 (dato de prueba)\nDespachado\nCartucho\nCart",
     "hogarApi": {
@@ -76,66 +76,66 @@
       "pendientes": []
     },
     "pedidoApi": {
-      "id": 102,
+      "id": 108,
       "tipo": "cartucho",
       "modalidad": "envio",
       "tienda_id": "manongo",
       "estado": "pendiente",
       "cartucho": "OPW-100GPD-8TN"
     },
-    "filaPedidoGrimuca": "Nuevo Cartucho Filtro de Agua por Ósmosis Inversa de 8 Etapas - 110 GPD · Prueba Calidad MWRAX3H6O1 red 11:53 p. m. Naguanagua Envío: Calle Inventada MWRAX3H6O1, casa 00, sector de prueba Despachado",
+    "filaPedidoGrimuca": "Nuevo Cartucho Filtro de Agua por Ósmosis Inversa de 8 Etapas - 110 GPD · Prueba Calidad MWRFCZU81P red 1:57 a. m. Naguanagua Envío: Calle Inventada MWRFCZU81P, casa 00, sector de prueba Despachado",
     "contadorNuevosLara": "Nuevos: 0",
-    "direccionPrellenadaExperto": "Calle Inventada MWRAX3H6O1, casa 00, sector de prueba",
+    "direccionPrellenadaExperto": "Calle Inventada MWRFCZU81P, casa 00, sector de prueba",
     "tiendaExperto": "manongo",
-    "filaServicioGrimuca": "Nuevo Servicio técnico Cambio de cartucho · Prueba Calidad MWRAX3H6O1 red 11:53 p. m. Naguanagua Visita: Calle Inventada MWRAX3H6O1, casa 00, sector de prueba Fecha preferida: domingo, 22 de noviembre · En la mañana Atendido",
+    "filaServicioGrimuca": "Nuevo Servicio técnico Cambio de cartucho · Prueba Calidad MWRFCZU81P red 1:57 a. m. Naguanagua Visita: Calle Inventada MWRFCZU81P, casa 00, sector de prueba Fecha preferida: lunes, 23 de noviembre · En la mañana Atendido",
     "tecnicoAntes": {
       "pendientes": 4,
       "atendidos": 1,
       "comercio": "Servicio técnico de Grimuca"
     },
     "servicioApi": {
-      "id": 103,
+      "id": 109,
       "tipo": "servicio",
       "estado": "despachado",
       "tienda_id": "manongo"
     },
     "reportesResumenAntes": "Reportes del técnico\n2",
     "reporteAparecioSinRecargar": true,
-    "reporteGrimuca": "Atendido Cambio de cartucho · Prueba Calidad MWRAX3H6O1 red Naguanagua · Mañongo Ocultar reporte Visita: 21 de noviembre a las 11:53 p. m. Nota del técnico: Prueba Calidad MWRAX3H6O1: cambié el cartucho de sedimentos.",
+    "reporteGrimuca": "Atendido Cambio de cartucho · Prueba Calidad MWRFCZU81P red Naguanagua · Mañongo Ocultar reporte Visita: 22 de noviembre a las 1:57 a. m. Nota del técnico: Prueba Calidad MWRFCZU81P: cambié el cartucho de sedimentos.",
     "cifrasRedEnVivo": {
       "Comercios en la red": 3,
       "Estados cubiertos": 3,
       "Tiendas": 5,
-      "Hogares": 73,
-      "Mediciones del mes": 72,
-      "Pedidos del mes": 71
+      "Hogares": 75,
+      "Mediciones del mes": 74,
+      "Pedidos del mes": 73
     },
-    "actividadRed": "11:53 p. m. Servicio atendido en Grimuca Mañongo · Cambio de cartucho\n11:53 p. m. Pedido nuevo en Grimuca Mañongo · Cambio de cartucho\n11:53 p. m. Pedido nuevo en Grimuca Mañongo · Filtro de Agua por Ósmosis Inversa de 8 Etapas - 110 GPD\n11:53 p. m. Medición nueva en Naguanagua\n11:52 p. m. Pedido despachado en Grimuca Mañongo · Cartucho Rellenable en Línea 10\" x 2\"\n11:52 p. m. Pedido nuevo en Grimuca Mañongo · Cartucho Rellenable en Línea 10\" x 2\"",
-    "subidaEnVivo": 3,
+    "actividadRed": "1:57 a. m. Servicio atendido en Grimuca Mañongo · Cambio de cartucho\n1:57 a. m. Pedido nuevo en Grimuca Mañongo · Cambio de cartucho\n1:57 a. m. Pedido nuevo en Grimuca Mañongo · Filtro de Agua por Ósmosis Inversa de 8 Etapas - 110 GPD\n1:57 a. m. Medición nueva en Naguanagua",
+    "subidaEnVivo": 2,
     "cifrasRedRecargada": {
       "Comercios en la red": 3,
       "Estados cubiertos": 3,
       "Tiendas": 5,
-      "Hogares": 73,
-      "Mediciones del mes": 72,
-      "Pedidos del mes": 71
+      "Hogares": 75,
+      "Mediciones del mes": 74,
+      "Pedidos del mes": 73
     },
-    "filaGrimucaRed": "Grimuca Valencia, Carabobo Premium Activa 3 63 20 60 0 17 de octubre de 2025",
+    "filaGrimucaRed": "Grimuca Valencia, Carabobo Premium Activa 3 65 22 62 0 17 de octubre de 2025",
     "productosAntes": 80,
     "camposExistencias": [
       "Existencias en Big Low",
       "Existencias en CC CEM",
       "Existencias en Mañongo"
     ],
-    "filaProducto": "Prueba Calidad producto MWRAX3H6O1 PC-PRUEBA-MWRAX3H6O1 Cargado por ti Repuesto Bacterias 0 0 0",
-    "avisoAlta": "Comercio dado de alta. Periodo gratis hasta el 21 de febrero de 2027.",
+    "filaProducto": "Prueba Calidad producto MWRFCZU81P PC-PRUEBA-MWRFCZU81P Cargado por ti Repuesto Bacterias 0 0 0",
+    "avisoAlta": "Comercio dado de alta. Periodo gratis hasta el 22 de febrero de 2027.",
     "cifrasTrasAlta": {
       "Comercios en la red": 4,
       "Estados cubiertos": 4,
       "Tiendas": 6,
-      "Hogares": 73,
-      "Mediciones del mes": 72,
-      "Pedidos del mes": 71
+      "Hogares": 75,
+      "Mediciones del mes": 74,
+      "Pedidos del mes": 73
     },
     "pinEquivocado": {
       "comercioUi": "PIN incorrecto",
@@ -155,8 +155,8 @@
       "GET /api/red/resumen": 401,
       "POST /api/red/comercios": 401,
       "GET /api/tecnico/servicios": 401,
-      "POST /api/tecnico/servicios/103/atender": 401,
-      "GET /api/servicios/103/foto": 401,
+      "POST /api/tecnico/servicios/109/atender": 401,
+      "GET /api/servicios/109/foto": 401,
       "GET /api/operador/productos": 401,
       "GET /api/operador/reportes": 401,
       "GET /api/red/resumen con token de comercio": 403,
@@ -212,7 +212,7 @@
         "detalle": "ok"
       },
       "j": {
-        "titulo": "Grimuca → Productos → \"Guardar producto\" PC-PRUEBA-MWRAX3H6O1; aparece en la tabla",
+        "titulo": "Grimuca → Productos → \"Guardar producto\" PC-PRUEBA-MWRFCZU81P; aparece en la tabla",
         "estado": "PASA",
         "detalle": "ok"
       },
