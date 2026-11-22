@@ -39,7 +39,14 @@ test('recorrido completo y el pedido aparece en vivo en el panel', async ({ brow
   const opCtx = await browser.newContext();
   const panel = await opCtx.newPage();
   await panel.goto(baseURL + PANEL_PATH);
-  await expect(panel.locator('body'), `El panel del operador (${PANEL_PATH}) no carga`).not.toContainText('404');
+  await expect(panel.locator('body'), `El panel del operador (${PANEL_PATH}) no carga`).not.toContainText(/404|no encontrada/i);
+  // HANDOFF §3: the panel is protected by a simple PIN. Pass it via env, never commit it.
+  const pin = panel.locator('input[type=password], input[inputmode=numeric], input[name*=pin i]').first();
+  if (await pin.isVisible().catch(() => false)) {
+    expect(process.env.PANEL_PIN, 'El panel pide PIN: corre con PANEL_PIN=...').toBeTruthy();
+    await pin.fill(process.env.PANEL_PIN);
+    await pin.press('Enter');
+  }
 
   const page = await browser.newPage();
   await page.goto('/');
