@@ -1458,7 +1458,7 @@ button.g-toast__accion {
     top: calc(56px + var(--g-alto-menu, 0px) + var(--s5));
   }
   .g-rejilla {
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
     gap: var(--s5);
   }
   .g-marco__aviso {
