@@ -84,6 +84,12 @@ body {
   text-decoration: underline;
   text-underline-offset: 3px;
 }
+/* Enlace dentro de un texto que también es un objetivo táctil de 44 px. */
+.g-enlace--tactil {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
 .g-apagado {
   color: var(--apagado);
   font-size: var(--t-1);

@@ -278,16 +278,16 @@ export function AvisoRecambio({
     <Aviso titulo="Tu cartucho" tono={aviso.atencion ? 'atencion' : 'info'}>
       {aviso.texto}{' '}
       {destino.startsWith('#') ? (
-        <a className="g-enlace" href={destino}>
+        <a className="g-enlace g-enlace--tactil" href={destino}>
           {etiqueta}
         </a>
       ) : (
-        <Link className="g-enlace" to={destino}>
+        <Link className="g-enlace g-enlace--tactil" to={destino}>
           {etiqueta}
         </Link>
       )}{' '}
       ·{' '}
-      <Link className="g-enlace" to="/tutoriales">
+      <Link className="g-enlace g-enlace--tactil" to="/tutoriales">
         Mira cómo cambiarlo
       </Link>
     </Aviso>

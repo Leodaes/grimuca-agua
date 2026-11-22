@@ -2,12 +2,21 @@
 
 **Saber qué tomas empieza en casa.**
 
-Grimuca Agua le permite a una familia medir el agua de su casa con una tira reactiva y una foto. La aplicación lee la tira, explica cada indicador con un semáforo y recomienda el filtro o el cartucho que corresponde a ese hogar, diciendo por qué. El pedido sale de la tienda Grimuca más cercana y aparece en vivo en el panel del operador, junto con el inventario que hace falta y un mapa de la calidad del agua por urbanización.
+Grimuca Agua es una plataforma para ferreterías que Grimuca opera. Una familia mide el agua de su casa con una tira reactiva y una foto; la aplicación lee la tira, explica cada indicador con un semáforo y recomienda el filtro o el cartucho que corresponde a ese hogar, diciendo por qué. Ese hogar queda asignado a la ferretería de su zona, que recibe el pedido en vivo, ve su inventario contra la demanda prevista, sus rutas de despacho agrupadas por urbanización y las visitas de su técnico. La medición es la puerta de entrada; el valor grande está del lado del comercio.
 
 Proyecto del Hackatón ValenValley 2026 (Valencia, Venezuela), track **Logística**.
 
 - **Demo:** https://agua.oydo.app
-- **Panel del operador:** https://agua.oydo.app/operador (pide un PIN)
+- **Los cuatro módulos:** https://agua.oydo.app/modulos (los paneles de comercio, técnico y red piden un PIN, que no está en este repositorio)
+
+## Los cuatro módulos
+
+| Módulo | Dirección | Quién lo usa | Qué hace |
+|---|---|---|---|
+| Cliente | `/` | La familia | Pide o escanea el sobre, mide, ve su resultado y por qué se le recomienda cada producto, pide con retiro o envío, sigue tutoriales o pide un técnico |
+| Comercio | `/comercio` | La ferretería | Despacho en vivo, resumen, inventario contra demanda, productos propios, rutas de despacho y mapa de la calidad del agua por urbanización. Cada comercio ve solo lo suyo |
+| Técnico | `/tecnico` | El técnico de la ferretería | Servicios asignados en el orden de la ruta, "Ya fui" y foto de cómo quedó, que queda como reporte para el comercio |
+| Red | `/red` | Grimuca, como operador de la red | Comercios por estado, plan y periodo gratis, cifras de toda la red y alta de un comercio nuevo |
 
 ## El problema
 
@@ -23,12 +32,13 @@ En Valencia muchas familias dependen del botellón o de filtros que nadie sabe c
 
 ### Por qué es logística
 
-Las tres tiendas de Grimuca (Mañongo, Big Low y CC CEM) funcionan como almacenes de despacho. El operador ve:
+Hoy la ferretería compra, guarda y despacha repuestos sin saber cuándo le toca el cambio a cada cartucho. Con la medición y la fecha del último cambio, cada recambio tiene fecha y referencia conocidas con semanas de anticipación. Grimuca es el comercio de Carabobo, con tres tiendas (Mañongo, Big Low y CC CEM) que funcionan como almacenes de despacho; en otros estados entran ferreterías aliadas. Cada comercio ve:
 
 - **Despacho en vivo:** sobres por enviar, cartuchos y servicios técnicos, por tienda y zona. El pedido hecho en el teléfono aparece sin recargar la página.
 - **Resumen por tienda:** hogares, pedidos pendientes y recambios previstos a 7 y 30 días.
 - **Inventario contra demanda:** existencias frente a la demanda de los próximos 30 días, con los faltantes en rojo.
-- **Mapa por urbanización:** hexágonos con el estado del agua y con las zonas donde hay o no hay clientes; alerta cuando tres o más hogares de una urbanización miden en rojo en una semana.
+- **Rutas de despacho:** las entregas con envío y las visitas técnicas pendientes se agrupan por urbanización y se ordenan en una ruta por tienda sobre un mapa real, con la distancia de la ruta contra la de los viajes sueltos. Con los datos de demostración: 15 entregas en 3 rutas, 51,9 km contra 110,9 km.
+- **Mapa por urbanización:** el estado del agua y las zonas donde hay o no hay clientes, sobre un mapa real o un tablero de hexágonos; alerta cuando tres o más hogares de una urbanización miden en rojo en una semana.
 
 Se reemplaza el reparto semanal de botellones por envíos pequeños de cartuchos, solo cuando la medición o el calendario de recambio lo piden.
 
@@ -45,6 +55,7 @@ La medición con tira es orientativa. La aplicación nunca afirma que el agua se
 | Base de datos | PostgreSQL, con migraciones SQL numeradas |
 | Tiempo real | Eventos enviados por el servidor (SSE) alimentados por `LISTEN/NOTIFY` de PostgreSQL, con sondeo de respaldo |
 | Lectura de fotos | Servicio de visión llamado solo desde el servidor; devuelve "no legible" en lugar de adivinar |
+| Mapa | Leaflet con teselas de OpenStreetMap; si no hay conexión, el mapa sigue con fondo liso y las rutas se dibujan igual |
 | Despliegue | Contenedores con Docker Compose y un guion de despliegue por SSH |
 | Pruebas | Vitest (unidad y componentes) y Playwright (recorrido de la demo en teléfono y escritorio) |
 
@@ -54,14 +65,14 @@ La tira en uso se define como una lista de parámetros en [`api/src/medicion/con
 
 ```
 app/                  front
-  src/features/       alta, medicion, resultado, pedido, catalogo, filtro, tutoriales, operador
+  src/features/       alta, medicion, resultado, pedido, catalogo, filtro, tutoriales (cliente); operador (comercio); tecnico; red
   src/components/grimuca/   componentes del sistema de diseño
   src/lib/            cliente de la API, sesión y tipos
 api/                  API
   src/rutas/          rutas HTTP
   src/medicion/       tira, umbrales, lectura de la foto y evaluación del agua
   src/filtro/         identificación del filtro del hogar y cartuchos compatibles
-  src/logistica/      demanda, inventario, alertas y mapa por urbanización
+  src/logistica/      demanda, inventario, alertas, mapa por urbanización y rutas de despacho
 db/                   migraciones, catálogo y datos de demostración
 pruebas/e2e/          recorrido de la demo con Playwright
 infra/                contenedores y guion de despliegue
@@ -76,7 +87,7 @@ Requisitos: Node 22 o superior y PostgreSQL 16 (o Docker).
 
 ```bash
 npm install
-cp .env.example .env          # completa DATABASE_URL, PIN_OPERADOR y SECRETO_SESION
+cp .env.example .env          # completa DATABASE_URL, SECRETO_SESION y los PIN de cada rol
 npm run migrar -w api -- --semilla   # crea las tablas y carga el catálogo y los datos de demostración
 npm run build                 # compila el front
 npm run start -w api          # sirve la API y el front en http://localhost:3070

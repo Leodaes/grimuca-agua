@@ -18,7 +18,7 @@ npm run e2e -- --list                  # lista las pruebas sin correrlas
 **Comando vigente (pasada 2, Git Bash en Windows, sin Node en el PATH):**
 
 ```bash
-export PATH="/c/Users/lede4/Valenhack/herramientas/node:$PATH"
+export PATH="<carpeta de Node>:$PATH"   # solo si Node no está en el PATH
 set -a; . ./.env.pruebas; set +a          # carga los PIN sin imprimirlos
 # Siempre por archivo, con salida de línea y dos procesos (una corrida de todo junto se colgó):
 npx playwright test -c pruebas/playwright.config.ts --reporter=line --workers=2 01-salud

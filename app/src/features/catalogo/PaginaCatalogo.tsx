@@ -234,7 +234,7 @@ function Recomendados({ medicion, recomendados }: { medicion: Medicion | null; r
     return (
       <Aviso tono="info">
         Mide tu agua y te decimos cuáles van con tu casa.{' '}
-        <Link className="g-enlace" to="/medir">
+        <Link className="g-enlace g-enlace--tactil" to="/medir">
           Medir mi agua
         </Link>
       </Aviso>
