@@ -1,10 +1,13 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import { Aviso, Boton, Campo } from '../../components/grimuca';
+import { ListaModelos } from './ListaModelos';
+import { modelosDelTipo } from './modelos';
 import { api, ErrorApi } from '../../lib/api';
 import { hogarId } from '../../lib/sesion';
 import type { FiltroHogar, MedidaCartucho, ModeloFiltro, RespuestaFiltro, TipoFiltro } from '../../lib/tipos';
-import { OpcionesRadio } from '../alta/comun';
+import { Atras, OpcionesRadio } from '../alta/comun';
+import { IndicadorPasos } from '../alta/portada/IndicadorPasos';
 import { SinHogar } from '../medicion/SinHogar';
 import { CartuchosQueNecesita, FichaFiltro } from './Piezas';
 import { destinoSeguro, OPCIONES_MEDIDA, OPCIONES_TIPO } from './textos';
@@ -20,6 +23,8 @@ function filtroDelEstado(estado: unknown): FiltroHogar | null {
 export function PaginaFiltroManual() {
   const [parametros] = useSearchParams();
   const destino = destinoSeguro(parametros.get('sigue'));
+  // Con `?sigue=/envio` o `?sigue=/medir`, esta pantalla es parte del alta.
+  const enAlta = destino === '/envio' || destino === '/medir';
   const hogar = hogarId();
   // "Corregir" desde la foto trae el filtro identificado en el estado de la navegación.
   const ubicacion = useLocation();
@@ -69,6 +74,8 @@ export function PaginaFiltroManual() {
 
   if (!hogar) return <SinHogar titulo="Mi filtro" />;
 
+  const delTipo = modelosDelTipo(modelos, tipo);
+
   async function guardar(evento?: FormEvent) {
     evento?.preventDefault();
     if (!hogar) return;
@@ -85,7 +92,8 @@ export function PaginaFiltroManual() {
         tipo: tipo as TipoFiltro,
         etapas: numero,
         medida: (medida || null) as MedidaCartucho | null,
-        modelo_codigo: modelo || null,
+        // Solo un modelo del tipo elegido (si el catálogo no cargó, se respeta lo que venía de la foto).
+        modelo_codigo: modelo && (modelos.length === 0 || delTipo.some((m) => m.codigo === modelo)) ? modelo : null,
       });
       setGuardado(respuesta);
     } catch (error) {
@@ -113,6 +121,12 @@ export function PaginaFiltroManual() {
   return (
     <main id="contenido" className="g-pantalla__contenido">
       <div className="g-pila">
+        {enAlta && (
+          <>
+            <Atras a={`/mi-filtro?sigue=${encodeURIComponent(destino)}`} />
+            <IndicadorPasos actual={1} total={destino === '/medir' ? 2 : 3} nombre="tu filtro" />
+          </>
+        )}
         <h1 className="g-h1">Carga tu filtro a mano</h1>
         <p>Marca lo que más se parezca. Si no sabes algo, déjalo en "No sé".</p>
         <form className="g-pila" noValidate onSubmit={guardar}>
@@ -124,6 +138,8 @@ export function PaginaFiltroManual() {
             onCambio={(v) => {
               setTipo(v);
               setErrorTipo(undefined);
+              // Un modelo de otro tipo no tiene sentido: vuelve a "No sé el modelo".
+              if (!modelosDelTipo(modelos, v).some((m) => m.codigo === modelo)) setModelo('');
             }}
             error={errorTipo}
           />
@@ -151,19 +167,8 @@ export function PaginaFiltroManual() {
             valor={medida}
             onCambio={setMedida}
           />
-          {modelos.length > 0 && (
-            <Campo
-              como="select"
-              etiqueta="Modelo"
-              ayuda="Si lo compraste en Grimuca y sabes cuál es."
-              opcional
-              name="modelo"
-              marcador="No sé el modelo"
-              opciones={modelos.map((m) => ({ valor: m.codigo, etiqueta: m.nombre }))}
-              value={modelo}
-              onChange={(e) => setModelo(e.target.value)}
-            />
-          )}
+          {/* El modelo es opcional y va al final: solo los modelos de casa del tipo elegido. */}
+          {delTipo.length > 0 && <ListaModelos key={tipo} modelos={delTipo} valor={modelo} onCambio={setModelo} />}
           {errorEnvio && (
             <Aviso tono="error" rol="alert">
               {errorEnvio}

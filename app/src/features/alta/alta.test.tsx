@@ -59,20 +59,24 @@ function enRuta(ruta: string, elemento: JSX.Element) {
 }
 
 async function llenarPerfil(usuario: ReturnType<typeof userEvent.setup>) {
-  await usuario.type(screen.getByLabelText('¿Cómo te llamas?'), 'Ana');
   await usuario.selectOptions(screen.getByLabelText('¿En qué zona vives?'), 'Naguanagua');
+  // Personas con el botón + (cuatro toques), sin teclear.
+  for (let i = 0; i < 4; i++) await usuario.click(screen.getByRole('button', { name: 'Una persona más' }));
   await usuario.click(screen.getByLabelText(/^Chorro/));
-  await usuario.type(screen.getByLabelText('¿Cuántos viven en la casa?'), '4');
-  const filtro = screen.getByRole('group', { name: '¿Tienen filtro en casa?' });
-  await usuario.click(within(filtro).getByLabelText('No'));
   const turbia = screen.getByRole('group', { name: '¿El agua a veces sale turbia o amarilla?' });
   await usuario.click(within(turbia).getByLabelText('No'));
-  await usuario.type(screen.getByLabelText('Tu WhatsApp'), '0414 123 4567');
+  const filtro = screen.getByRole('group', { name: '¿Tienen filtro en casa?' });
+  await usuario.click(within(filtro).getByLabelText('No'));
+  await usuario.type(screen.getByLabelText('Nombre'), 'Ana');
+  await usuario.type(screen.getByLabelText(/^Apellido/), 'Pérez');
+  await usuario.selectOptions(screen.getByLabelText('Operadora'), '0414');
+  await usuario.type(screen.getByLabelText(/^Número/), '123 4567');
 }
 
 describe('alta', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    window.sessionStorage.clear();
     vi.mocked(hogarId).mockReturnValue(null);
   });
 
@@ -98,7 +102,7 @@ describe('alta', () => {
 
     expect(simulada.crearHogar).toHaveBeenCalledWith(
       expect.objectContaining({
-        nombre: 'Ana',
+        nombre: 'Ana Pérez',
         zona: 'Naguanagua',
         origen_agua: 'chorro',
         personas: 4,
@@ -173,31 +177,155 @@ describe('alta', () => {
     expect(simulada.crearHogar.mock.calls[0][0]).not.toHaveProperty('fecha_ultimo_cambio');
   });
 
-  it('WhatsApp: código de país, formato al salir del campo y error claro', async () => {
+  it('WhatsApp de Venezuela: operadora + 7 dígitos, sin espacios ni guiones, y error claro', async () => {
+    simulada.crearHogar.mockResolvedValue(hogar);
     const usuario = userEvent.setup();
     enRuta('/perfil', <Perfil />);
     const codigo = screen.getByLabelText('Código de país') as HTMLSelectElement;
     expect(codigo.value).toBe('58');
     expect([...codigo.options].map((o) => o.textContent)).toContain('+58 Venezuela');
     expect([...codigo.options]).toHaveLength(10);
-    const campo = screen.getByLabelText('Tu WhatsApp') as HTMLInputElement;
+    expect(screen.getByRole('group', { name: 'Tu WhatsApp' })).toHaveTextContent('Solo para coordinar tu pedido.');
+
+    const operadora = screen.getByLabelText('Operadora') as HTMLSelectElement;
+    expect(operadora.value).toBe('');
+    expect([...operadora.options].map((o) => o.value).filter(Boolean)).toEqual(['0412', '0414', '0416', '0422', '0424', '0426']);
+    const numero = screen.getByLabelText(/^Número/) as HTMLInputElement;
+    expect(numero).toHaveAttribute('inputmode', 'numeric');
+
+    await usuario.type(numero, '555-01 99');
+    await usuario.tab();
+    expect(numero.value).toBe('5550199');
+
+    // Sin operadora no se guarda.
+    await usuario.click(screen.getByRole('button', { name: 'Continuar' }));
+    expect(
+      screen.getByText('Elige la operadora y escribe los 7 dígitos del número, por ejemplo 0414 y 555 01 99'),
+    ).toBeInTheDocument();
+    expect(simulada.crearHogar).not.toHaveBeenCalled();
+
+    // Con 6 dígitos, al salir del campo avisa.
+    await usuario.selectOptions(operadora, '0424');
+    await usuario.clear(numero);
+    await usuario.type(numero, '555019');
+    await usuario.tab();
+    expect(numero).toHaveAttribute('aria-invalid', 'true');
+
+    // Si pega el número completo, se reparte solo.
+    await usuario.clear(numero);
+    await usuario.type(numero, '+58 414-555.01(99)');
+    await usuario.tab();
+    expect(operadora.value).toBe('0414');
+    expect(numero.value).toBe('5550199');
+  });
+
+  it('WhatsApp de otro país: un solo campo; un número +57 cambia el código solo', async () => {
+    const usuario = userEvent.setup();
+    enRuta('/perfil', <Perfil />);
+    await usuario.type(screen.getByLabelText(/^Número/), '+57 300 123 4567');
+    await usuario.tab();
+    expect((screen.getByLabelText('Código de país') as HTMLSelectElement).value).toBe('57');
+    expect(screen.queryByLabelText('Operadora')).not.toBeInTheDocument();
+    const campo = screen.getByLabelText(/^Número/) as HTMLInputElement;
+    expect(campo.value).toBe('3001234567');
     expect(campo).toHaveAttribute('inputmode', 'tel');
     expect(campo).toHaveAttribute('autocomplete', 'tel-national');
+  });
 
-    await usuario.type(campo, '+58 414-555.01(99)');
-    await usuario.tab();
-    expect(campo.value).toBe('0414 555 01 99');
+  it('nombre y apellido separados: se guardan como un solo nombre y el teléfono queda +58', async () => {
+    simulada.crearHogar.mockResolvedValue(hogar);
+    const usuario = userEvent.setup();
+    enRuta('/perfil', <Perfil />);
+    expect(screen.getByLabelText('Nombre')).toHaveAttribute('autocomplete', 'given-name');
+    expect(screen.getByLabelText(/^Apellido/)).toHaveAttribute('autocomplete', 'family-name');
+    await llenarPerfil(usuario);
+    await usuario.clear(screen.getByLabelText('Nombre'));
+    await usuario.type(screen.getByLabelText('Nombre'), '  Ana  ');
+    await usuario.clear(screen.getByLabelText(/^Apellido/));
+    await usuario.type(screen.getByLabelText(/^Apellido/), ' Pérez  Gómez ');
+    await usuario.click(screen.getByRole('checkbox'));
+    await usuario.click(screen.getByRole('button', { name: 'Continuar' }));
+    expect(simulada.crearHogar).toHaveBeenCalledWith(
+      expect.objectContaining({ nombre: 'Ana Pérez Gómez', whatsapp: '+584141234567' }),
+    );
+  });
 
-    await usuario.clear(campo);
-    await usuario.type(campo, '0212 555 0199');
-    await usuario.tab();
-    expect(screen.getByText('Revisa el número: debe ser un celular, por ejemplo 0414 555 01 99')).toBeInTheDocument();
+  it('el apellido es obligatorio', async () => {
+    const usuario = userEvent.setup();
+    enRuta('/perfil', <Perfil />);
+    await llenarPerfil(usuario);
+    await usuario.clear(screen.getByLabelText(/^Apellido/));
+    await usuario.click(screen.getByRole('checkbox'));
+    await usuario.click(screen.getByRole('button', { name: 'Continuar' }));
+    expect(screen.getByText('Escribe tu apellido. Con uno basta.')).toBeInTheDocument();
+    expect(simulada.crearHogar).not.toHaveBeenCalled();
+  });
 
-    await usuario.clear(campo);
-    await usuario.type(campo, '+57 300 123 4567');
-    await usuario.tab();
-    expect(codigo.value).toBe('57');
-    expect(campo.value).toBe('3001234567');
+  it('perfil existente: separa nombre y apellido y la operadora del número', async () => {
+    vi.mocked(hogarId).mockReturnValue('h-1');
+    simulada.obtenerHogar.mockResolvedValue({ ...hogar, nombre: 'Ana María Pérez', whatsapp: '+584145550199' });
+    simulada.actualizarHogar.mockResolvedValue(hogar);
+    const usuario = userEvent.setup();
+    enRuta('/perfil', <Perfil />);
+    expect(await screen.findByDisplayValue('Ana')).toHaveAttribute('id', 'perfil-nombre');
+    expect(screen.getByLabelText(/^Apellido/)).toHaveValue('María Pérez');
+    expect(screen.getByLabelText('Operadora')).toHaveValue('0414');
+    expect(screen.getByLabelText(/^Número/)).toHaveValue('5550199');
+    // Ya aceptó al crear el hogar: no se vuelve a pedir.
+    expect(screen.queryByRole('checkbox')).not.toBeInTheDocument();
+    await usuario.click(screen.getByRole('button', { name: 'Continuar' }));
+    expect(simulada.actualizarHogar).toHaveBeenCalledWith(
+      'h-1',
+      expect.objectContaining({ nombre: 'Ana María Pérez', whatsapp: '+584145550199' }),
+    );
+  });
+
+  it('al enviar con errores: resumen arriba con enlaces y foco en el primer error', async () => {
+    const usuario = userEvent.setup();
+    enRuta('/perfil', <Perfil />);
+    await usuario.click(screen.getByRole('button', { name: 'Continuar' }));
+    const resumen = screen.getAllByRole('alert').find((a) => a.classList.contains('alta-resumen'))!;
+    expect(resumen).toHaveTextContent('Faltan 9 datos para seguir:');
+    const enlaces = within(resumen).getAllByRole('link').map((a) => a.textContent);
+    expect(enlaces[0]).toBe('Elige tu zona');
+    expect(enlaces).toContain('Marca la casilla de aceptación');
+    expect(screen.getByLabelText('¿En qué zona vives?')).toHaveFocus();
+    await usuario.click(within(resumen).getByRole('link', { name: 'Escribe tu apellido' }));
+    expect(screen.getByLabelText(/^Apellido/)).toHaveFocus();
+    // El botón no se deshabilita: sigue disponible para intentar otra vez.
+    expect(screen.getByRole('button', { name: 'Continuar' })).toBeEnabled();
+  });
+
+  it('urbanización deshabilitada hasta elegir la zona; con filtro aparece su pregunta', async () => {
+    const usuario = userEvent.setup();
+    enRuta('/perfil', <Perfil />);
+    expect(screen.getByLabelText(/^Urbanización/)).toBeDisabled();
+    expect(screen.getByText('Primero elige tu zona.')).toBeInTheDocument();
+    await usuario.selectOptions(screen.getByLabelText('¿En qué zona vives?'), 'San Diego');
+    expect(screen.getByLabelText(/^Urbanización/)).toBeEnabled();
+    expect(screen.queryByText('En el siguiente paso le tomas una foto a tu filtro y lo identificamos.')).not.toBeInTheDocument();
+  });
+
+  it('personas con − y +: sin valor por defecto, entre 1 y 20', async () => {
+    const usuario = userEvent.setup();
+    enRuta('/perfil', <Perfil />);
+    const personas = screen.getByLabelText('¿Cuántos viven en la casa?') as HTMLInputElement;
+    expect(personas.value).toBe('');
+    await usuario.click(screen.getByRole('button', { name: 'Una persona menos' }));
+    expect(personas.value).toBe('1');
+    await usuario.click(screen.getByRole('button', { name: 'Una persona más' }));
+    expect(personas.value).toBe('2');
+  });
+
+  it('lo escrito no se pierde al salir y volver (borrador de la sesión, sin el consentimiento)', async () => {
+    const usuario = userEvent.setup();
+    const { unmount } = enRuta('/perfil', <Perfil />);
+    await usuario.type(screen.getByLabelText('Nombre'), 'Ana');
+    await usuario.click(screen.getByRole('checkbox'));
+    unmount();
+    enRuta('/perfil', <Perfil />);
+    expect(screen.getByLabelText('Nombre')).toHaveValue('Ana');
+    expect(screen.getByRole('checkbox')).not.toBeChecked();
   });
 
   it('urbanización según la zona y mascotas: se guardan con el perfil', async () => {
@@ -241,6 +369,55 @@ describe('alta', () => {
     await usuario.click(screen.getByRole('button', { name: 'Continuar' }));
     expect(await screen.findByText('No se pudo guardar.')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Continuar' })).toBeInTheDocument();
+  });
+
+  it('envío: dirección con punto de referencia opcional, tienda explicada en una línea y "Atrás"', async () => {
+    vi.mocked(hogarId).mockReturnValue('h-1');
+    simulada.obtenerHogar.mockResolvedValue({ ...hogar, direccion: null, tienda_id: null });
+    simulada.tiendas.mockResolvedValue([
+      { id: 'manongo', nombre: 'Mañongo', horario: '8 a 5', direccion: 'Naguanagua' },
+      { id: 'biglow', nombre: 'Big Low', horario: '8 a 5', direccion: 'San Diego' },
+    ]);
+    simulada.actualizarHogar.mockResolvedValue(hogar);
+    const usuario = userEvent.setup();
+    render(
+      <MemoryRouter initialEntries={['/envio']}>
+        <Routes>
+          <Route path="/envio" element={<Envio />} />
+          <Route path="/pago" element={<p>Pantalla de pago</p>} />
+        </Routes>
+      </MemoryRouter>,
+    );
+    expect(
+      await screen.findByText('Lo enviamos desde Grimuca Mañongo, la más cercana a tu zona; puedes cambiarla.'),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Atrás' })).toHaveAttribute('href', '/perfil');
+    const direccion = screen.getByLabelText('Dirección de entrega');
+    expect(direccion).toHaveAttribute('autocomplete', 'street-address');
+
+    await usuario.click(screen.getByRole('button', { name: 'Continuar al pago' }));
+    expect(screen.getByText('Este dato hace falta.')).toBeInTheDocument();
+    expect(direccion).toHaveFocus();
+
+    await usuario.type(direccion, 'Urb. El Retobo, calle 3, casa 12.');
+    await usuario.type(screen.getByLabelText(/^Punto de referencia/), 'frente a la panadería');
+    await usuario.click(screen.getByRole('button', { name: 'Cambiar tienda' }));
+    await usuario.click(screen.getByLabelText(/^Big Low/));
+    await usuario.click(screen.getByRole('button', { name: 'Continuar al pago' }));
+    expect(simulada.actualizarHogar).toHaveBeenCalledWith('h-1', {
+      direccion: 'Urb. El Retobo, calle 3, casa 12. Referencia: frente a la panadería',
+      tienda_id: 'biglow',
+    });
+    expect(await screen.findByText('Pantalla de pago')).toBeInTheDocument();
+  });
+
+  it('envío: precarga la dirección y el punto de referencia guardados', async () => {
+    vi.mocked(hogarId).mockReturnValue('h-1');
+    simulada.obtenerHogar.mockResolvedValue({ ...hogar, direccion: 'Calle 3, casa 12. Referencia: portón negro' });
+    simulada.tiendas.mockResolvedValue([]);
+    enRuta('/envio', <Envio />);
+    expect(await screen.findByLabelText('Dirección de entrega')).toHaveValue('Calle 3, casa 12');
+    expect(screen.getByLabelText(/^Punto de referencia/)).toHaveValue('portón negro');
   });
 
   it('el pago crea un pedido de tipo sobre', async () => {

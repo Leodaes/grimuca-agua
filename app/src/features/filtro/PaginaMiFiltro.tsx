@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState, type ChangeEvent } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Atras } from '../alta/comun';
+import { IndicadorPasos } from '../alta/portada/IndicadorPasos';
+import { EjemploFoto } from './EjemploFoto';
 import { Aviso, Boton, Cargando, Icono } from '../../components/grimuca';
 import { api, ErrorApi } from '../../lib/api';
 import { hogarId } from '../../lib/sesion';
@@ -25,6 +28,8 @@ export function PaginaMiFiltro() {
   const destino = destinoSeguro(sigueCrudo);
   const rutaManual = `/mi-filtro/manual${sigueCrudo ? `?sigue=${encodeURIComponent(destino)}` : ''}`;
   const hogar = hogarId();
+  // Con `?sigue=/envio` o `?sigue=/medir`, esta pantalla es parte del alta: lleva "Atrás" y el indicador de pasos.
+  const enAlta = destino === '/envio' || destino === '/medir';
 
   const [estado, setEstado] = useState<Estado>({ fase: 'inicio' });
   const [registrado, setRegistrado] = useState<FiltroHogar | null>(null);
@@ -205,24 +210,34 @@ export function PaginaMiFiltro() {
   return (
     <main id="contenido" className="g-pantalla__contenido">
       <div className="g-pila">
+        {enAlta && (
+          <>
+            <Atras a={destino === '/medir' ? '/perfil?ya=1' : '/perfil'} />
+            <IndicadorPasos actual={1} total={destino === '/medir' ? 2 : 3} nombre="tu filtro" />
+          </>
+        )}
         <h1 className="g-h1" tabIndex={-1} ref={refTitulo}>
           Cuéntanos qué filtro tienes
         </h1>
         <p>Con una foto lo identificamos y te decimos qué cartuchos necesita.</p>
         {registrado && <Aviso tono="info">Tienes registrado: {resumenFiltro(registrado)}.</Aviso>}
+        <EjemploFoto />
         {entradas}
         <Boton anchoCompleto icono={<Icono nombre="camara" tamano={20} />} onClick={tomarFoto}>
           Tomar una foto de mi filtro
         </Boton>
-        <p className="g-apagado">{AYUDA_FOTO}</p>
         <Boton variante="secundario" anchoCompleto onClick={elegirFoto}>
           Elegir una foto del teléfono
         </Boton>
-        <p>
-          <Link className="g-enlace" to={rutaManual}>
-            ¿No puedes tomar la foto? Cárgalo a mano
-          </Link>
-        </p>
+        <section className="alta-alternativa" aria-labelledby="sin-foto">
+          <h2 className="alta-bloque__titulo" id="sin-foto">
+            ¿No puedes tomar la foto?
+          </h2>
+          <p style={{ margin: 0 }}>Elige cómo es tu filtro en una lista. Toma menos de un minuto.</p>
+          <Boton variante="secundario" anchoCompleto a={rutaManual}>
+            Cargarlo a mano
+          </Boton>
+        </section>
       </div>
     </main>
   );

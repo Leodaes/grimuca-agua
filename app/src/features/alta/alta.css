@@ -1,0 +1,279 @@
+/* Alta del cliente: perfil, envío, pago (y las piezas que comparten /mi-filtro y la carga manual).
+   Reglas de Grimuca: azul para estructura, --accion solo en el botón principal, esquinas rectas, sin sombras. */
+
+/* ── "Atrás" arriba del indicador de pasos ── */
+.alta-atras {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s1);
+  align-self: flex-start;
+  min-height: 44px;
+  color: var(--azul);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ── Bloques con título dentro del formulario ── */
+.alta-bloque {
+  display: grid;
+  gap: var(--s5);
+  min-width: 0;
+  padding-top: var(--s5);
+  border-top: 1px solid var(--linea);
+}
+.alta-bloque__titulo {
+  margin: 0;
+  color: var(--azul);
+  font-family: var(--f-titulo);
+  font-size: var(--t2);
+  font-weight: 700;
+  line-height: 1.25;
+}
+.alta-nota {
+  margin: 0;
+  color: var(--tinta-2);
+  font-size: var(--t-1);
+}
+
+/* ── Opciones de una sola elección como tarjetas (radios accesibles) ── */
+.alta-grupo > legend {
+  margin-bottom: var(--s2);
+  padding: 0;
+  color: var(--tinta);
+  font-weight: 600;
+}
+.alta-grupo > .g-campo__ayuda {
+  margin: 0 0 var(--s2);
+}
+.alta-opciones {
+  display: grid;
+  gap: var(--s2);
+}
+.alta-opciones--2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.alta-opcion {
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+  min-height: 48px;
+  padding: var(--s2) var(--s3);
+  border: 1px solid var(--borde-control);
+  border-radius: var(--radio-control);
+  background: var(--fondo);
+  cursor: pointer;
+}
+.alta-opcion:hover {
+  border-color: var(--azul);
+  background: var(--azul-50);
+}
+.alta-opcion--elegida {
+  border-color: var(--azul);
+  /* Borde de 2px sin mover el contenido (no es una sombra). */
+  box-shadow: inset 0 0 0 1px var(--azul);
+  background: var(--azul-50);
+}
+.alta-opcion--error {
+  border-color: var(--error);
+}
+.alta-opcion input {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  margin: 0;
+  accent-color: var(--azul);
+}
+/* El foco se dibuja en la tarjeta entera, no solo en el circulito. */
+.alta-opcion input:focus-visible {
+  outline: none;
+}
+.alta-opcion:has(input:focus-visible) {
+  outline: 2px solid var(--foco);
+  outline-offset: 2px;
+}
+.alta-opcion__icono {
+  display: flex;
+  flex-shrink: 0;
+  color: var(--azul);
+}
+.alta-opcion__texto {
+  min-width: 0;
+}
+.alta-opcion__foto {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  background: var(--papel);
+  mix-blend-mode: multiply;
+}
+.alta-ver-mas {
+  margin-top: var(--s2);
+}
+.alta-opcion__ayuda {
+  display: block;
+  color: var(--apagado);
+  font-size: var(--t-1);
+  line-height: 1.4;
+}
+
+/* ── Selector de cantidad: − número + ── */
+.alta-contador {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+}
+.alta-contador__boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid var(--borde-control);
+  border-radius: var(--radio-control);
+  background: var(--fondo);
+  color: var(--azul);
+  cursor: pointer;
+}
+.alta-contador__boton:hover {
+  border-color: var(--azul);
+  background: var(--azul-50);
+}
+.alta-contador__boton:active {
+  background: var(--azul-100);
+}
+.alta-contador .g-control {
+  width: 72px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  text-align: center;
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+.alta-contador .g-control::-webkit-outer-spin-button,
+.alta-contador .g-control::-webkit-inner-spin-button {
+  margin: 0;
+  -webkit-appearance: none;
+}
+
+/* ── Código de país + WhatsApp en una fila ── */
+.alta-telefono {
+  display: grid;
+  grid-template-columns: minmax(0, 9rem) minmax(0, 1fr);
+  gap: var(--s3);
+  align-items: start;
+}
+
+/* ── Resumen de errores arriba del formulario ── */
+.alta-resumen {
+  display: grid;
+  gap: var(--s2);
+  padding: var(--s3) var(--s4);
+  border-left: 3px solid var(--error);
+  background: var(--error-bg);
+}
+.alta-resumen__titulo {
+  margin: 0;
+  color: var(--error);
+  font-weight: 700;
+}
+.alta-resumen ul {
+  display: grid;
+  gap: var(--s1);
+  margin: 0;
+  padding-left: var(--s5);
+}
+.alta-resumen a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  color: var(--error);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ── Consentimiento junto al botón ── */
+.alta-cierre {
+  display: grid;
+  gap: var(--s4);
+  padding-top: var(--s5);
+  border-top: 1px solid var(--linea);
+}
+
+/* ── Resumen del pedido (pago) ── */
+.alta-resumen-pedido {
+  display: grid;
+  gap: var(--s4);
+  padding: var(--s4);
+  border: 1px solid var(--linea);
+  border-top: 3px solid var(--azul);
+  background: var(--fondo);
+}
+.alta-resumen-pedido dl {
+  display: grid;
+  gap: var(--s3);
+  margin: 0;
+}
+.alta-resumen-pedido dt {
+  color: var(--apagado);
+  font-size: var(--t-1);
+  font-weight: 600;
+}
+.alta-resumen-pedido dd {
+  margin: 0;
+}
+.alta-resumen-pedido ul {
+  margin: 0;
+  padding-left: var(--s5);
+}
+.alta-total {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding-top: var(--s3);
+  border-top: 1px solid var(--linea);
+}
+.alta-total strong {
+  color: var(--azul);
+  font-family: var(--f-titulo);
+  font-size: 2rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+}
+
+/* ── Tienda que despacha ── */
+.alta-tienda {
+  display: grid;
+  gap: var(--s3);
+}
+
+/* ── Ejemplo de foto del filtro ── */
+.alta-ejemplo {
+  display: grid;
+  gap: var(--s2);
+  margin: 0;
+  padding: var(--s4);
+  border: 1px solid var(--linea);
+  background: var(--papel);
+}
+.alta-ejemplo svg {
+  display: block;
+  width: 100%;
+  max-width: 280px;
+  height: auto;
+  margin: 0 auto;
+}
+.alta-ejemplo figcaption {
+  color: var(--tinta);
+  font-weight: 600;
+  text-align: center;
+}
+.alta-alternativa {
+  display: grid;
+  gap: var(--s3);
+  padding-top: var(--s5);
+  border-top: 1px solid var(--linea);
+}

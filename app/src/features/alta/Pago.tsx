@@ -4,7 +4,7 @@ import { Aviso, Boton, Cargando, Insignia } from '../../components/grimuca';
 import { api } from '../../lib/api';
 import { hogarId } from '../../lib/sesion';
 import type { Hogar, Pedido, Tienda } from '../../lib/tipos';
-import { ErrorConReintento, mensajeDeError, PaginaAlta, tiendaSugerida, useCarga } from './comun';
+import { Atras, ErrorConReintento, mensajeDeError, nombreConMarca, PaginaAlta, tiendaSugerida, useCarga } from './comun';
 import { BannerSobre } from './portada/Banners';
 import { IndicadorPasos } from './portada/IndicadorPasos';
 
@@ -25,11 +25,19 @@ export function Pago() {
 
   if (!id) return <Navigate to="/perfil" replace />;
 
+  const cabecera = (
+    <>
+      <Insignia tono="aviso">Simulación</Insignia>
+      <Atras a="/envio" />
+      <IndicadorPasos actual={3} total={3} nombre="tu sobre" />
+      <h1 className="g-h1">Paga tu sobre</h1>
+    </>
+  );
+
   if (carga.cargando || (!carga.datos && !carga.error)) {
     return (
       <PaginaAlta>
-        <IndicadorPasos actual={3} total={3} nombre="tu sobre" />
-        <h1 className="g-h1">Paga tu sobre</h1>
+        {cabecera}
         <Cargando texto="Un momento…" />
       </PaginaAlta>
     );
@@ -38,8 +46,7 @@ export function Pago() {
   if (carga.error || !carga.datos) {
     return (
       <PaginaAlta>
-        <IndicadorPasos actual={3} total={3} nombre="tu sobre" />
-        <h1 className="g-h1">Paga tu sobre</h1>
+        {cabecera}
         <ErrorConReintento mensaje={carga.error ?? 'No se pudo cargar.'} onReintentar={carga.reintentar} />
       </PaginaAlta>
     );
@@ -47,13 +54,12 @@ export function Pago() {
 
   const { hogar, tiendas } = carga.datos;
   const tiendaId = hogar.tienda_id ?? tiendaSugerida(hogar.zona);
-  const nombreTienda = tiendas.find((t) => t.id === tiendaId)?.nombre ?? `Grimuca ${tiendaId}`;
+  const nombreTienda = nombreConMarca(tiendas.find((t) => t.id === tiendaId)?.nombre ?? tiendaId);
 
   if (!hogar.direccion) {
     return (
       <PaginaAlta>
-        <IndicadorPasos actual={3} total={3} nombre="tu sobre" />
-        <h1 className="g-h1">Paga tu sobre</h1>
+        {cabecera}
         <Aviso tono="atencion">Antes de pagar, dinos a dónde te mandamos el sobre.</Aviso>
         <Boton a="/envio" anchoCompleto>
           Continuar
@@ -109,27 +115,45 @@ export function Pago() {
 
   return (
     <PaginaAlta>
-      <Insignia tono="aviso">Simulación</Insignia>
-      <IndicadorPasos actual={3} total={3} nombre="tu sobre" />
-      <h1 className="g-h1">Paga tu sobre</h1>
+      {cabecera}
+      <p>Revisa tu pedido. Si algo no está bien, puedes cambiarlo antes de pagar.</p>
 
-      <section className="g-pila" aria-labelledby="resumen-sobre">
-        <h2 className="g-h2" id="resumen-sobre">
+      <section className="alta-resumen-pedido" aria-labelledby="resumen-sobre">
+        <h2 className="alta-bloque__titulo" id="resumen-sobre">
           Sobre de medición Grimuca Agua
         </h2>
         <BannerSobre compacto />
-        <ul>
-          <li>1 tira para medir tu agua</li>
-          <li>1 prueba casera de bacterias coliformes</li>
-          <li>La tabla de colores impresa</li>
-          <li>Un código QR con el video de cómo se hace</li>
-        </ul>
-        <p>Envío a: {hogar.direccion}</p>
-        <p>
-          A {hogar.zona}, desde {nombreTienda}
+        <dl>
+          <div>
+            <dt>Qué trae</dt>
+            <dd>
+              <ul>
+                <li>1 tira para medir tu agua</li>
+                <li>1 prueba casera de bacterias coliformes</li>
+                <li>La tabla de colores impresa</li>
+                <li>Un código QR con el video de cómo se hace</li>
+              </ul>
+            </dd>
+          </div>
+          <div>
+            <dt>Envío a</dt>
+            <dd>{hogar.direccion}</dd>
+          </div>
+          <div>
+            <dt>Sale de</dt>
+            <dd>
+              {nombreTienda}, para {hogar.zona}
+            </dd>
+          </div>
+        </dl>
+        <p style={{ margin: 0 }}>
+          <Link className="g-enlace g-enlace--tactil" to="/envio">
+            Cambiar dirección o tienda
+          </Link>
         </p>
-        <p className="g-cifra" style={{ fontSize: '2rem', fontWeight: 700 }}>
-          Total: $9
+        <p className="alta-total">
+          <span>Total</span>
+          <strong>$9</strong>
         </p>
       </section>
 
@@ -146,12 +170,6 @@ export function Pago() {
       <Boton anchoCompleto cargando={enviando} textoCargando="Registrando tu pedido…" onClick={pagar}>
         Simular pago de $9
       </Boton>
-
-      <p style={{ fontSize: '0.9em' }}>
-        <Link className="g-enlace" to="/envio">
-          Cambiar dirección o tienda
-        </Link>
-      </p>
     </PaginaAlta>
   );
 }
