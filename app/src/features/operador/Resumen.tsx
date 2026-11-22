@@ -21,9 +21,11 @@ export function Resumen({ token, version, alNoAutorizado }: Props) {
 
   return (
     <div className="g-pila g-pila--amplia">
-      <div>
-        <h1 className="g-h1">Resumen por tienda</h1>
-        <p>Cómo va cada tienda hoy.</p>
+      <div className="op-cabecera">
+        <div className="op-cabecera__texto">
+          <h1 className="g-h1">Resumen por tienda</h1>
+          <p>Cómo va cada tienda hoy.</p>
+        </div>
       </div>
       {estado === 'cargando' && !datos && <Cargando variante="esqueleto" lineas={4} texto="Cargando resumen…" />}
       {estado === 'error' && !datos && (

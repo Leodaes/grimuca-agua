@@ -242,9 +242,11 @@ export function RutasDespacho({ token, version, alNoAutorizado }: Props) {
 
   return (
     <div className="g-pila g-pila--amplia">
-      <div>
-        <h1 className="g-h1 rutas-titulo">Rutas de despacho</h1>
-        <p className="rutas-bajada">Una ruta por tienda que agrupa por urbanización los pedidos pendientes con envío y los servicios técnicos.</p>
+      <div className="op-cabecera">
+        <div className="op-cabecera__texto">
+          <h1 className="g-h1 rutas-titulo">Rutas de despacho</h1>
+          <p className="rutas-bajada">Una ruta por tienda que agrupa por urbanización los pedidos pendientes con envío y los servicios técnicos.</p>
+        </div>
       </div>
 
       {estado === 'cargando' && !datos && <Cargando variante="esqueleto" lineas={4} texto="Calculando las rutas…" />}
