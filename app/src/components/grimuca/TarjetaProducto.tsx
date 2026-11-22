@@ -10,7 +10,7 @@ export interface PropsTarjetaProducto {
   codigo?: string;
   /** Marca del producto. */
   marca?: string;
-  /** Precio en dólares; si falta se muestra "Precio en tienda". */
+  /** Precio en dólares; si falta se muestra "Cotizar por WhatsApp". */
   precioUsd?: number | null;
   /** Por qué se sugiere, en una frase: "Para bajar el cloro". */
   motivo?: string;
@@ -52,7 +52,7 @@ export function TarjetaProducto({
   className,
 }: PropsTarjetaProducto) {
   const lineaCodigo = [marca, codigo].filter(Boolean).join(' · ');
-  const textoPrecio = typeof precioUsd === 'number' ? formatoUsd(precioUsd) : 'Precio en tienda';
+  const textoPrecio = typeof precioUsd === 'number' ? formatoUsd(precioUsd) : 'Cotizar por WhatsApp';
 
   return (
     <article

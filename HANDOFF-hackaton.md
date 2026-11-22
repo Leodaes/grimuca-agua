@@ -19,6 +19,7 @@ Eres el **orquestador** de este proyecto. Diriges un equipo de agentes que traba
 | Si una compuerta falla dos veces | **Recortar y seguir**, en este orden: voz → aviso a vecinos → pago simulado → vista por zonas → reporte de bacterias. **Nunca** se recorta el recorrido foto → resultado → pedido → despacho en vivo. Cada recorte va al informe. |
 | Cambios de Tulio de madrugada | **Tulio decide producto.** Lo que pida sobre producto, textos, precios, catálogo o tiras se construye, siempre que no rompa el recorrido principal ni la hora de congelar. No decide sobre servidor, credenciales, dinero ni track. |
 | Informes | Página de estado (artifact aparte, actualizado en cada compuerta) + correo a Leonardo con el informe de las 5:30 a.m. |
+| Catálogo | **Solo marca Oasis** (Aqual queda fuera). Productos reales tomados de la API pública de la tienda de grimuca.com. Ningún precio es público: las tarjetas dicen "Cotizar por WhatsApp". |
 | Correo de Tulio | Revisar cada 20 minutos, actuar y responderle de forma autónoma (sección 11). |
 
 ## 1. Situación y reloj
