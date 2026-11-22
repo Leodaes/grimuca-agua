@@ -45,6 +45,8 @@ export function PaginaLista() {
   const [enviando, setEnviando] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const idHogar = hogarId();
+  // Hasta que llega el hogar no sabemos su tienda: pedir antes mandaría el pedido a la tienda por defecto.
+  const [hogarListo, setHogarListo] = useState(!idHogar);
 
   useEffect(() => {
     let vigente = true;
@@ -64,8 +66,11 @@ export function PaginaLista() {
           setHogar(datos);
           if (datos.tienda_id) setTiendaId(datos.tienda_id);
           if (datos.direccion) setDireccion((actual) => actual || datos.direccion || '');
+          setHogarListo(true);
         })
-        .catch(() => undefined);
+        .catch(() => {
+          if (vigente) setHogarListo(true);
+        });
     }
     return () => {
       vigente = false;
@@ -94,6 +99,7 @@ export function PaginaLista() {
       setError('Falta detalle en la dirección. Agrega calle y número de casa o edificio.');
       return;
     }
+    if (!hogarListo) return;
     const tienda = (modalidad === 'retiro' ? tiendaId : hogar?.tienda_id || tiendaId) || TIENDA_POR_DEFECTO;
     setEnviando(true);
     try {
@@ -191,7 +197,12 @@ export function PaginaLista() {
         </Aviso>
       )}
 
-      <Boton anchoCompleto cargando={enviando} textoCargando="Enviando tu pedido…" onClick={hacerPedido}>
+      <Boton
+        anchoCompleto
+        cargando={enviando || !hogarListo}
+        textoCargando={enviando ? 'Enviando tu pedido…' : 'Cargando tu perfil…'}
+        onClick={hacerPedido}
+      >
         Hacer pedido
       </Boton>
     </main>
