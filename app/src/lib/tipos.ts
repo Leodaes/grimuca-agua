@@ -89,6 +89,8 @@ export interface Hogar {
   mascotas: boolean;
   /** Respuesta a "¿Cuándo cambiaste el cartucho por última vez?"; null si no hay filtro o no se preguntó. */
   ultimo_cambio: UltimoCambio | null;
+  /** Cartucho que se cambió la última vez ("Registrar cambio de cartucho"); null o ausente si no se anotó. */
+  ultimo_cartucho?: string | null;
   consentimiento_fecha: string;
   /** Filtro registrado (por foto o a mano); null si no hay o aún no se identificó. */
   filtro?: FiltroHogar | null;
@@ -115,7 +117,8 @@ export interface EntradaHogar {
 }
 
 /** Cuerpo de PATCH /api/hogares/:id. */
-export type CambiosHogar = Partial<Omit<EntradaHogar, 'consentimiento'>>;
+/** `ultimo_cartucho`: texto libre o nombre del catálogo (máx. 120). */
+export type CambiosHogar = Partial<Omit<EntradaHogar, 'consentimiento'>> & { ultimo_cartucho?: string | null };
 
 /** Respuesta cerrada del perfil sobre el último cambio de cartucho. */
 export type UltimoCambio = 'menos_de_un_mes' | 'mas_de_tres_meses' | 'no_me_acuerdo';
@@ -274,6 +277,11 @@ export interface CartuchoDelFiltro extends Cartucho {
   para_que: string;
   /** true si atiende algo de lo que midió la tira del hogar. */
   atiende_medicion: boolean;
+  /**
+   * true si no se puede asegurar que encaje: el filtro tiene medida y la del cartucho no es la misma (o no la trae),
+   * o es de otro tipo de equipo. La pantalla dice "Confirma la medida en la tienda".
+   */
+  confirmar_medida: boolean;
 }
 
 /** GET /api/hogares/:id/filtro y PUT /api/hogares/:id/filtro. */

@@ -147,9 +147,16 @@ function publico(producto: ProductoCatalogo): Cartucho {
   return resto;
 }
 
+/** Largo de una medida "largo x diámetro" (`10x2.5` → `10`). */
+function largoDe(medida: string): string {
+  return medida.split('x')[0];
+}
+
 /**
- * Cartuchos del catálogo para ese filtro: misma medida cuando el nombre la trae, agrupados por función
- * (sedimentos, carbón, resina, membrana, minerales), hasta dos por función y seis en total.
+ * Cartuchos del catálogo para ese filtro, agrupados por función (sedimentos, carbón, resina, membrana, minerales),
+ * hasta dos por función y seis en total. La medida ordena, no excluye: primero la misma medida, después el mismo
+ * largo (10" o 20") y después los demás de esa función, marcados con `confirmar_medida`.
+ * Un cartucho "para ultrafiltración" u "ósmosis" en otro tipo de equipo solo entra si no hay otro de esa función.
  * Con un modelo exacto de N etapas se prefieren (y se exigen, si traen familia) los cartuchos de esa familia.
  * Con `corrige` (de la última medición) van primero los que atienden esos hallazgos.
  */
@@ -175,38 +182,36 @@ export function cartuchosParaFiltro(
       par.funcion !== null && funciones.includes(par.funcion),
     )
     .filter((par) => par.funcion !== 'membrana' || membranaSirve(par.producto, filtro.tipo))
-    // Un cartucho "para ultrafiltración" o "para ósmosis" no va en otro tipo de filtro (misma regla que la frase del porqué).
-    .filter((par) => {
-      const nombre = sinAcentos(par.producto.nombre);
-      if (/ultrafiltracion/.test(nombre) && filtro.tipo !== 'ultrafiltracion') return false;
-      if (/osmosis/.test(nombre) && filtro.tipo !== 'osmosis_inversa') return false;
-      return true;
-    })
-    .filter((par) => {
-      const suya = medidaDelNombre(par.producto.nombre);
-      return !medida || !suya || suya === medida;
-    })
     .filter((par) => {
       const suya = etapasDelNombre(par.producto.nombre);
       return familia === null || suya === null || suya === familia;
     })
     .map((par) => {
+      const nombre = sinAcentos(par.producto.nombre);
       const aciertos = par.producto.corrige.filter((clave) => pedidas.has(clave)).length;
       const suFamilia = etapasDelNombre(par.producto.nombre);
+      const suMedida = medidaDelNombre(par.producto.nombre);
+      // Un cartucho "para ultrafiltración" o "para ósmosis" es de otro tipo de equipo (misma regla que la frase del porqué).
+      const otroEquipo =
+        (/ultrafiltracion/.test(nombre) && filtro.tipo !== 'ultrafiltracion') ||
+        (/osmosis/.test(nombre) && filtro.tipo !== 'osmosis_inversa');
+      // Menor es mejor: misma medida, mismo largo, los demás.
+      const porMedida = !medida ? 0 : suMedida === medida ? 0 : suMedida && largoDe(suMedida) === largoDe(medida) ? 1 : 2;
       return {
         ...par,
         aciertos,
-        // Menor es mejor.
+        otroEquipo,
+        porMedida,
+        confirmar: otroEquipo || porMedida > 0,
         porFamilia: familia !== null && suFamilia === familia ? 0 : suFamilia === null ? 1 : 2,
-        porMedida: medida && medidaDelNombre(par.producto.nombre) === medida ? 0 : 1,
         porGpd: gpd !== null && gpdDelNombre(par.producto.nombre) === gpd ? 0 : 1,
       };
     })
     .sort(
       (a, b) =>
+        a.porMedida - b.porMedida ||
         Number(b.aciertos > 0) - Number(a.aciertos > 0) ||
         a.porFamilia - b.porFamilia ||
-        a.porMedida - b.porMedida ||
         a.porGpd - b.porGpd ||
         b.aciertos - a.aciertos ||
         // A igualdad de criterio, primero los que tienen foto.
@@ -218,7 +223,10 @@ export function cartuchosParaFiltro(
   const elegidos: typeof candidatos = [];
   for (let vuelta = 0; vuelta < POR_FUNCION; vuelta += 1) {
     for (const funcion of funciones) {
-      const deEsta = candidatos.filter((par) => par.funcion === funcion);
+      const todos = candidatos.filter((par) => par.funcion === funcion);
+      const propios = todos.filter((par) => !par.otroEquipo);
+      // Los de otro tipo de equipo, solo si no hay otro de esta función: nunca se deja una función vacía.
+      const deEsta = propios.length > 0 ? propios : todos;
       if (deEsta[vuelta]) elegidos.push(deEsta[vuelta]);
     }
   }
@@ -232,5 +240,6 @@ export function cartuchosParaFiltro(
     funcion: par.funcion,
     para_que: PARA_QUE[par.funcion],
     atiende_medicion: par.aciertos > 0,
+    confirmar_medida: par.confirmar,
   }));
 }

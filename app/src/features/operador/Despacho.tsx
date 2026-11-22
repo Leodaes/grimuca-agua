@@ -10,6 +10,7 @@ import {
   Insignia,
   ListaPedidos,
   TarjetaTienda,
+  WhatsAppSimulado,
 } from '../../components/grimuca';
 import type { Pedido } from '../../lib/tipos';
 import { horaDe } from './estadoPedidos';
@@ -18,6 +19,14 @@ import { ReportesTecnico } from './Reportes';
 import { ZONAS_OPERADOR } from './datosZonas';
 import type { PedidosEnVivo } from './usePedidosEnVivo';
 import { nombreServicio, textoFechaPreferida } from '../tutoriales/contenido';
+import { mensajeDespachoComercio } from '../pedido/mensajesWhatsApp';
+
+interface AvisoWhatsApp {
+  pedido: Pedido;
+  tienda: string;
+  /** Cambia en cada despacho para reiniciar los 6 segundos. */
+  vez: number;
+}
 
 function queLleva(p: Pedido): string {
   if (p.tipo === 'sobre') return 'Sobre de medición';
@@ -32,6 +41,14 @@ export function Despacho({ envivo }: { envivo: PedidosEnVivo }) {
   const [zona, setZona] = useState<string>('todas');
   const { pendientes, nuevos, carga, conexion } = envivo;
   const { tiendas } = usePanel();
+  const [avisoWa, setAvisoWa] = useState<AvisoWhatsApp | null>(null);
+
+  const despacharYAvisar = async (p: Pedido) => {
+    const listo = await envivo.marcarDespachado(p);
+    if (!listo) return;
+    const tiendaPedido = p.tienda_nombre ?? tiendas.find((t) => t.id === p.tienda_id)?.nombre ?? p.tienda_id;
+    setAvisoWa((previo) => ({ pedido: p, tienda: tiendaPedido, vez: (previo?.vez ?? 0) + 1 }));
+  };
 
   const tiendasVisibles = tiendas.filter((t) => tienda === 'todas' || t.id === tienda);
   const filtrados = pendientes.filter((p) => zona === 'todas' || p.zona === zona);
@@ -121,7 +138,7 @@ export function Despacho({ envivo }: { envivo: PedidosEnVivo }) {
                         direccion={p.direccion ?? undefined}
                         hora={horaDe(p.fecha)}
                         nuevo={Boolean(nuevos[p.id])}
-                        alDespachar={() => void envivo.marcarDespachado(p)}
+                        alDespachar={() => void despacharYAvisar(p)}
                       />
                     ))}
                   </ListaPedidos>
@@ -133,6 +150,18 @@ export function Despacho({ envivo }: { envivo: PedidosEnVivo }) {
       )}
 
       <ReportesTecnico version={envivo.version} />
+
+      {avisoWa && (
+        <WhatsAppSimulado
+          key={avisoWa.vez}
+          variante="toast"
+          titulo={`WhatsApp simulado enviado a ${avisoWa.pedido.hogar_nombre ?? 'el hogar'}`}
+          de={`Grimuca ${avisoWa.tienda}`}
+          para={avisoWa.pedido.hogar_nombre ?? 'Hogar'}
+          mensaje={mensajeDespachoComercio(avisoWa.pedido, avisoWa.tienda)}
+          alCerrar={() => setAvisoWa(null)}
+        />
+      )}
     </div>
   );
 }

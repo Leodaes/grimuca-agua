@@ -100,3 +100,19 @@ describe('sugeridos con motivo', () => {
     expect(new Set(medicion.sugeridos.map((s: { motivo: string }) => s.motivo)).size).toBe(medicion.sugeridos.length);
   });
 });
+
+describe('registrar cambio de cartucho (ultimo_cartucho)', () => {
+  it('PATCH guarda la fecha y cuál cartucho se cambió; nulo por defecto', async () => {
+    const hogar = (await crear({ tiene_filtro: true })).json();
+    expect(hogar.ultimo_cartucho).toBeNull();
+    const cambiado = await e.app.inject({
+      method: 'PATCH',
+      url: `/api/hogares/${hogar.id}`,
+      payload: { tiene_filtro: true, fecha_ultimo_cambio: '2026-09-10', ultimo_cambio: null, ultimo_cartucho: '  Sedimentos 10"  ' },
+    });
+    expect(cambiado.statusCode).toBe(200);
+    expect(cambiado.json()).toMatchObject({ fecha_ultimo_cambio: '2026-09-10', ultimo_cartucho: 'Sedimentos 10"' });
+    const largo = await e.app.inject({ method: 'PATCH', url: `/api/hogares/${hogar.id}`, payload: { ultimo_cartucho: 'x'.repeat(121) } });
+    expect(largo.statusCode).toBe(400);
+  });
+});

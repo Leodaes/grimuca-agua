@@ -79,7 +79,9 @@ describe('tutoriales', () => {
       ultimo_cambio: 'menos_de_un_mes',
       fecha_ultimo_cambio: expect.stringMatching(/^\d{4}-\d{2}-\d{2}$/),
     });
-    expect(await screen.findByText('Listo. Te avisamos aquí cuando toque el próximo cambio.')).toBeInTheDocument();
+    expect(await screen.findByText(/^Listo\. Registramos el cambio del \d+ de \S+ de \d{4}\.$/)).toBeInTheDocument();
+    expect(screen.getByText(/Registramos el cambio de cartucho del/)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Crear recordatorio de cambio de cartucho' })).toBeInTheDocument();
   });
 
   it('sin hogar en sesión no ofrece anotar la fecha', () => {

@@ -51,6 +51,7 @@ const cartucho: CartuchoDelFiltro = {
   funcion: 'sedimentos',
   para_que: 'Pensado para retener tierra, óxido y partículas.',
   atiende_medicion: true,
+  confirmar_medida: false,
 };
 
 function Donde() {
@@ -131,11 +132,14 @@ describe('/mi-filtro', () => {
   });
 
   it('"Corregir" abre la carga manual precargada con lo identificado, sin guardarlo', async () => {
-    apiSimulada.identificarFiltro.mockResolvedValue({ estado: 'ok', filtro, cartuchos: [cartucho] });
+    const otraMedida = { ...cartucho, codigo: 'RL-10', nombre: 'Cartucho Rellenable en Línea 10" x 2"', confirmar_medida: true };
+    apiSimulada.identificarFiltro.mockResolvedValue({ estado: 'ok', filtro, cartuchos: [cartucho, otraMedida] });
     const { container } = abrir('/mi-filtro');
     const entrada = container.querySelector<HTMLInputElement>('input[type="file"][capture]')!;
     fireEvent.change(entrada, { target: { files: [new File(['x'], 'filtro.jpg', { type: 'image/jpeg' })] } });
     await screen.findByRole('heading', { level: 1, name: '¿Es este tu filtro?' });
+    // Solo el que no es de la misma medida pide confirmarla.
+    expect(screen.getAllByText('Confirma la medida en la tienda.')).toHaveLength(1);
 
     await userEvent.click(screen.getByRole('link', { name: 'Corregir' }));
     expect(await screen.findByRole('heading', { level: 1, name: 'Carga tu filtro a mano' })).toBeInTheDocument();

@@ -68,7 +68,11 @@ describe('rutas del filtro del hogar', () => {
     });
     const codigos = cuerpo.cartuchos.map((c: { codigo: string }) => c.codigo);
     expect(codigos).toEqual(expect.arrayContaining(['SED-10', 'CTO-10', 'RES-10']));
-    expect(codigos).not.toContain('SED-20G');
+    // Otra medida no se excluye: va después de la exacta y pide confirmarla en la tienda.
+    expect(codigos.indexOf('SED-20G')).toBeGreaterThan(codigos.indexOf('SED-10'));
+    const porCodigo = new Map(cuerpo.cartuchos.map((c: { codigo: string; confirmar_medida: boolean }) => [c.codigo, c.confirmar_medida]));
+    expect(porCodigo.get('SED-10')).toBe(false);
+    expect(porCodigo.get('SED-20G')).toBe(true);
 
     // Antes de confirmar, el hogar sigue sin filtro registrado.
     const antes = await entorno.app.inject({ method: 'GET', url: `/api/hogares/${hogarId}/filtro` });

@@ -102,6 +102,7 @@ export const esquemaCambiarHogar = z
     urbanizacion: camposHogar.urbanizacion,
     mascotas: camposHogar.mascotas,
     ultimo_cambio: camposHogar.ultimo_cambio,
+    ultimo_cartucho: textoONulo(120),
   })
   .partial();
 

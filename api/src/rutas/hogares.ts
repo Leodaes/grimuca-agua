@@ -23,6 +23,7 @@ const COLUMNAS_EDITABLES = [
   'urbanizacion',
   'mascotas',
   'ultimo_cambio',
+  'ultimo_cartucho',
 ] as const;
 
 /** Días hacia atrás que se anotan como fecha del último cambio según la respuesta cerrada del perfil. */

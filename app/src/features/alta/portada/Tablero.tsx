@@ -7,6 +7,7 @@ import { guardarHogarId, vaciarLista } from '../../../lib/sesion';
 import type { Hogar, Medicion } from '../../../lib/tipos';
 import { AvisoRecambio } from '../../resultado/PaginaResultado';
 import { PALABRA_NIVEL, formatearFecha } from '../../resultado/textos';
+import { RecordatorioMedicion, SeccionCartucho } from '../../tutoriales/CambioCartucho';
 import { PaginaAlta } from '../comun';
 import { BOTON_PEDIR, LEMA } from './Banners';
 import './portada.css';
@@ -14,6 +15,7 @@ import './portada.css';
 interface DatosTablero {
   cargando: boolean;
   hogar: Hogar | null;
+  setHogar: (hogar: Hogar) => void;
   ultima: Medicion | null;
   errorMediciones: boolean;
 }
@@ -49,7 +51,7 @@ function useTablero(id: string): DatosTablero {
     };
   }, [id]);
 
-  return { cargando, hogar, ultima, errorMediciones };
+  return { cargando, hogar, setHogar, ultima, errorMediciones };
 }
 
 const ACCESOS: { etiqueta: string; a: string; icono: NombreIcono }[] = [
@@ -99,7 +101,7 @@ function CerrarSesion() {
 }
 
 export function Tablero({ id }: { id: string }) {
-  const { cargando, hogar, ultima, errorMediciones } = useTablero(id);
+  const { cargando, hogar, setHogar, ultima, errorMediciones } = useTablero(id);
   const nombre = hogar?.nombre?.trim();
   const dias = ultima?.evaluacion?.diasParaRecambio ?? null;
   const ultimoCambio = hogar?.ultimo_cambio ?? null;
@@ -136,11 +138,14 @@ export function Tablero({ id }: { id: string }) {
             <p className="g-apagado">Cuando tengas el sobre, mide en unos minutos y tu resultado queda aquí.</p>
           </>
         )}
+        {!cargando && !errorMediciones && <RecordatorioMedicion hogar={hogar} ultimaMedicion={ultima?.fecha ?? null} />}
       </section>
 
       {hayAvisoRecambio && (
         <AvisoRecambio dias={dias} ultimoCambio={ultimoCambio} destino="/resultado/ultimo" etiqueta="Ver productos sugeridos" />
       )}
+
+      {hogar?.tiene_filtro && <SeccionCartucho hogar={hogar} alCambiar={setHogar} />}
 
       <Boton a="/medir" anchoCompleto icono={<Icono nombre="gota" />}>
         Medir mi agua

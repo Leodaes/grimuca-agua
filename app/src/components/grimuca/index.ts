@@ -13,6 +13,22 @@ export type { PropsBarraInferior } from './BarraInferior';
 export { Boton } from './Boton';
 export type { PropsBoton, VarianteBoton } from './Boton';
 
+export { BotonRecordatorio } from './BotonRecordatorio';
+export type { PropsBotonRecordatorio } from './BotonRecordatorio';
+export {
+  TEXTO_PRUDENCIA_RECORDATORIO,
+  TITULO_CAMBIO,
+  TITULO_MEDICION,
+  eventoCambioCartucho,
+  eventoProximaMedicion,
+  fechaEnPalabras,
+  mensajeCambioRegistrado,
+  mensajeRecordatorioCambio,
+  mensajeRecordatorioMedicion,
+  remitenteTienda,
+} from '../../lib/recordatorios';
+export type { EventoRecordatorio } from '../../lib/recordatorios';
+
 export { CajonLista, ListaArticulos } from './CajonLista';
 export type { ArticuloLista, PropsCajonLista, PropsListaArticulos } from './CajonLista';
 
@@ -72,5 +88,6 @@ export type { FaseTemporizador, PropsTemporizador } from './Temporizador';
 
 export { Toast } from './Toast';
 export type { AccionToast, PropsToast } from './Toast';
+export { TEXTO_SIMULACION_WA, WhatsAppSimulado, horaWhatsApp, type PropsWhatsAppSimulado } from './WhatsAppSimulado';
 
 export { formatoUsd, unir } from './utilidades';

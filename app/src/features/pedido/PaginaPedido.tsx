@@ -3,16 +3,17 @@ import { Link, useLocation, useParams, useSearchParams } from 'react-router-dom'
 import { api } from '../../lib/api';
 import { hogarId } from '../../lib/sesion';
 import type { Cartucho, Pedido, Tienda } from '../../lib/tipos';
-import { Aviso, Boton, Cargando, EstadoVacio, Insignia } from '../../components/grimuca';
+import { Aviso, Boton, Cargando, EstadoVacio, Insignia, WhatsAppSimulado } from '../../components/grimuca';
 import { TEXTO_SIN_COBRO, mensajeError } from '../resultado/textos';
 import { nombreServicio, textoFechaPreferida } from '../tutoriales/contenido';
+import { mensajeDespachadoCliente, mensajeRecibido } from './mensajesWhatsApp';
 
 const ESTILO_ENLACE = { minHeight: 44, display: 'inline-flex', alignItems: 'center' } as const;
 
 type Estado =
   | { tipo: 'cargando' }
   | { tipo: 'error'; mensaje: string }
-  | { tipo: 'listo'; pedidos: Pedido[]; tiendas: Tienda[]; cartuchos: Cartucho[] };
+  | { tipo: 'listo'; pedidos: Pedido[]; tiendas: Tienda[]; cartuchos: Cartucho[]; nombre: string | null };
 
 function idsDelPedido(id: string, estado: unknown, otros: string | null): string[] {
   const deEstado = (estado as { ids?: Array<string | number> } | null)?.ids;
@@ -32,12 +33,17 @@ export function PaginaPedido() {
     let vigente = true;
     setEstado({ tipo: 'cargando' });
     const ids = clave.split(',');
+    const hogar = hogarId();
     Promise.all([
       Promise.all(ids.map((uno) => api.pedido(uno))),
       api.tiendas().catch(() => [] as Tienda[]),
-      api.cartuchos(hogarId()).catch(() => [] as Cartucho[]),
+      api.cartuchos(hogar).catch(() => [] as Cartucho[]),
+      hogar ? api.obtenerHogar(hogar).then((h) => h.nombre, () => null) : Promise.resolve(null),
     ])
-      .then(([pedidos, tiendas, cartuchos]) => vigente && setEstado({ tipo: 'listo', pedidos, tiendas, cartuchos }))
+      .then(
+        ([pedidos, tiendas, cartuchos, nombre]) =>
+          vigente && setEstado({ tipo: 'listo', pedidos, tiendas, cartuchos, nombre }),
+      )
       .catch((error: unknown) => vigente && setEstado({ tipo: 'error', mensaje: mensajeError(error) }));
     return () => {
       vigente = false;
@@ -74,6 +80,12 @@ export function PaginaPedido() {
   const primero = estado.pedidos[0];
   const tiendaPrimero = primero ? nombreTienda(primero.tienda_id) : '';
   const horario = estado.tiendas.find((t) => t.id === primero?.tienda_id)?.horario;
+  const mensajesWa = [
+    ...estado.pedidos.map((p) => mensajeRecibido(p, estado.nombre, nombreTienda(p.tienda_id), nombreProducto(p))),
+    ...estado.pedidos
+      .filter((p) => p.estado === 'despachado')
+      .map((p) => mensajeDespachadoCliente(p, nombreTienda(p.tienda_id))),
+  ];
 
   return (
     <main id="contenido" className="g-pantalla__contenido g-pila" tabIndex={-1}>
@@ -131,6 +143,15 @@ export function PaginaPedido() {
           </li>
         ))}
       </ul>
+
+      {primero && (
+        <section className="g-pila" aria-labelledby="titulo-whatsapp" style={{ gap: 'var(--s3)' }}>
+          <h2 id="titulo-whatsapp" className="g-h3">
+            Te escribimos por WhatsApp
+          </h2>
+          <WhatsAppSimulado de={`Grimuca ${tiendaPrimero}`} mensaje={mensajesWa} hora={new Date(primero.fecha)} />
+        </section>
+      )}
 
       <Aviso>{TEXTO_SIN_COBRO}</Aviso>
 

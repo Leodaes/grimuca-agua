@@ -1,0 +1,17 @@
+/* ── Botón de recordatorio (calendario) ── */
+.g-recordatorio {
+  display: grid;
+  gap: var(--s2);
+}
+.g-recordatorio__panel {
+  display: grid;
+  gap: var(--s3);
+  padding: var(--s3);
+  border: 1px solid var(--linea);
+  border-radius: var(--radio-control);
+  background: var(--azul-50);
+}
+.g-recordatorio__panel a.g-boton:not([href]) {
+  opacity: 0.6;
+  pointer-events: none;
+}

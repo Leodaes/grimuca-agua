@@ -88,6 +88,7 @@ export function filaAHogar(fila: Fila): Hogar {
     urbanizacion: (fila.urbanizacion as string | null) ?? null,
     mascotas: Boolean(fila.mascotas),
     ultimo_cambio: aUltimoCambio(fila.ultimo_cambio),
+    ultimo_cartucho: typeof fila.ultimo_cartucho === 'string' ? fila.ultimo_cartucho : null,
     consentimiento_fecha: aIso(fila.consentimiento_fecha),
     filtro: filaAFiltro(fila),
   };
@@ -427,8 +428,9 @@ export function sugerirConFiltro(
   if (!filtro) return base;
   const excluidas = new Set((criterio.marcasExcluidas ?? []).map((marca) => marca.trim().toLowerCase()));
   const preferidos: Cartucho[] = cartuchosParaFiltro(filtro, catalogo, criterio.corrige)
-    .filter((c) => c.atiende_medicion && !excluidas.has(c.marca.trim().toLowerCase()))
-    .map(({ funcion: _f, para_que: _p, atiende_medicion: _a, ...cartucho }) => cartucho);
+    // Solo se adelantan los que encajan seguro; los de "confirma la medida" no se recomiendan por delante.
+    .filter((c) => c.atiende_medicion && !c.confirmar_medida && !excluidas.has(c.marca.trim().toLowerCase()))
+    .map(({ funcion: _f, para_que: _p, atiende_medicion: _a, confirmar_medida: _m, ...cartucho }) => cartucho);
   if (preferidos.length === 0) return base;
 
   const cubiertas = (lista: Cartucho[]) => new Set(lista.flatMap((c) => c.corrige));

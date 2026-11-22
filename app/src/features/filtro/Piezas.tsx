@@ -93,6 +93,7 @@ export function CartuchosQueNecesita({ cartuchos }: { cartuchos: CartuchoDelFilt
                 <p className="g-tarjeta-producto__codigo">{[cartucho.marca, cartucho.codigo].filter(Boolean).join(' · ')}</p>
                 <p className="g-tarjeta-producto__motivo">{cartucho.para_que}</p>
                 {cartucho.atiende_medicion && <p className="g-apagado">Atiende lo que midió tu tira.</p>}
+                {cartucho.confirmar_medida && <p className="g-apagado">Confirma la medida en la tienda.</p>}
                 {cotizar.interno ? (
                   <Link className="g-enlace" to={cotizar.destino}>
                     Cotizar por WhatsApp

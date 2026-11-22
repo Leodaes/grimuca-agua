@@ -92,7 +92,9 @@ describe('Despacho en vivo', () => {
     await screen.findByText(/Hogar 2/);
 
     await usuario.click(screen.getByRole('button', { name: /Marcar como despachado: .*Hogar 2/ }));
-    expect(screen.queryByText(/Hogar 2/)).not.toBeInTheDocument();
+    // Sale de la lista (solo queda en la vista previa del WhatsApp simulado).
+    expect(screen.queryByRole('button', { name: /Hogar 2/ })).not.toBeInTheDocument();
+    expect(within(screen.getByRole('list', { name: 'Pedidos de Mañongo' })).queryByText(/Hogar 2/)).not.toBeInTheDocument();
     expect(servicios.despachar).toHaveBeenCalledWith('token-prueba', 2);
 
     act(() => emitir().pedidoDespachado({ ...pedido(1), estado: 'despachado' }));
@@ -133,7 +135,28 @@ describe('Despacho en vivo', () => {
     expect(atendido).toHaveTextContent('Atendido');
     await usuario.click(atendido);
     expect(servicios.despachar).toHaveBeenCalledWith('token-prueba', 3);
-    expect(screen.queryByText(/Luis/)).not.toBeInTheDocument();
+    expect(within(lista).queryByText(/Luis/)).not.toBeInTheDocument();
+    const aviso = await screen.findByRole('status', { name: 'WhatsApp simulado enviado a Luis' });
+    expect(aviso).toHaveTextContent('Hola, Luis. El técnico de Grimuca Mañongo atendió tu servicio');
+  });
+
+  it('"Despachado" muestra el WhatsApp simulado enviado al hogar; un pedido nuevo en vivo no', async () => {
+    const usuario = userEvent.setup();
+    const { emitir } = montar([pedido(1, { hogar_nombre: 'Ana Pérez' })]);
+    await screen.findByText(/Ana Pérez/);
+
+    act(() => emitir().pedidoNuevo(pedido(2, { hogar_nombre: 'Luis' })));
+    expect(screen.queryByText(/WhatsApp simulado enviado/)).not.toBeInTheDocument();
+
+    await usuario.click(screen.getByRole('button', { name: /Marcar como despachado: .*Ana Pérez/ }));
+    const aviso = await screen.findByRole('status', { name: 'WhatsApp simulado enviado a Ana Pérez' });
+    expect(aviso).toHaveTextContent('Simulación: en la demo no se envía un WhatsApp real.');
+    expect(aviso).toHaveTextContent('Hola, Ana. Tu pedido N.º 1 salió de Grimuca Mañongo.');
+    // La lista sigue usable con el aviso abierto.
+    expect(screen.getByRole('button', { name: /Marcar como despachado: .*Luis/ })).toBeEnabled();
+
+    await usuario.click(within(aviso).getByRole('button', { name: 'Cerrar' }));
+    expect(screen.queryByText(/WhatsApp simulado enviado/)).not.toBeInTheDocument();
   });
 
   it('si despachar falla, el pedido vuelve a la lista', async () => {

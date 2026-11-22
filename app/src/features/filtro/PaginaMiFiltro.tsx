@@ -9,6 +9,7 @@ import { hogarId } from '../../lib/sesion';
 import type { CartuchoDelFiltro, FiltroHogar } from '../../lib/tipos';
 import { reducirImagen } from '../medicion/reducirImagen';
 import { SinHogar } from '../medicion/SinHogar';
+import { SeccionCartucho } from '../tutoriales/CambioCartucho';
 import { CartuchosQueNecesita, FichaFiltro } from './Piezas';
 import { AYUDA_FOTO, destinoSeguro, resumenFiltro } from './textos';
 
@@ -238,6 +239,7 @@ export function PaginaMiFiltro() {
             Cargarlo a mano
           </Boton>
         </section>
+        {registrado && !enAlta && <SeccionCartucho />}
       </div>
     </main>
   );

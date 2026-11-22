@@ -154,6 +154,45 @@ describe('cartuchosParaFiltro', () => {
     if (primeroSinAtender >= 0) expect(con.slice(primeroSinAtender).every((c) => !c.atiende_medicion)).toBe(true);
   });
 
+  // Recambios reales de db/semilla_cartuchos.sql para un portafiltro doble.
+  const RECAMBIOS_REALES: ProductoCatalogo[] = [
+    ...CATALOGO,
+    producto('OPW-102INFC', 'Cartucho Rellenable en Línea 10" x 2"', 'cartucho', ['sedimentos', 'cloro_libre', 'sabor_olor', 'dureza']),
+    producto('OPW-PP-20A0P1', 'Cartucho de Sedimentos 20" x 2.5" - 0.1 Micra', 'cartucho', ['sedimentos']),
+    producto('OPW-PP20AUF2', 'Cartucho de Ultrafiltración 20" x 2.5"', 'cartucho', ['sedimentos']),
+  ];
+
+  it('portafiltro doble 10x2.5: la medida ordena, no excluye; nunca deja vacía una función que el catálogo tiene', () => {
+    const lista = cartuchosParaFiltro(filtro({ tipo: 'portafiltro_doble', etapas: 2, medida: '10x2.5' }), RECAMBIOS_REALES);
+    const funciones = new Set(lista.map((c) => c.funcion));
+    expect(funciones.has('sedimentos')).toBe(true);
+    expect(funciones.has('carbon')).toBe(true);
+    // Ninguno es 10x2.5: primero el del mismo largo (10"), y todos piden confirmar la medida.
+    expect(lista.find((c) => c.funcion === 'sedimentos')?.codigo).toBe('OPW-102INFC');
+    expect(lista.every((c) => c.confirmar_medida)).toBe(true);
+    expect(lista.length).toBeLessThanOrEqual(6);
+  });
+
+  it('la medida exacta va primero y no pide confirmar; las demás sí', () => {
+    const conExacta = [
+      ...RECAMBIOS_REALES,
+      producto('SED-10', 'Cartucho de Sedimentos 10" x 2.5" - 5 Micras', 'cartucho', ['sedimentos']),
+    ];
+    const lista = cartuchosParaFiltro(filtro({ tipo: 'portafiltro_doble', etapas: 2, medida: '10x2.5' }), conExacta);
+    const sedimentos = lista.filter((c) => c.funcion === 'sedimentos');
+    expect(sedimentos.map((c) => c.codigo)).toEqual(['SED-10', 'OPW-102INFC']);
+    expect(sedimentos.map((c) => c.confirmar_medida)).toEqual([false, true]);
+  });
+
+  it('sin medida identificada devuelve los de su función sin pedir confirmar la medida', () => {
+    const lista = cartuchosParaFiltro(filtro({ tipo: 'portafiltro_doble', etapas: 2, medida: null }), RECAMBIOS_REALES);
+    expect(lista.filter((c) => c.funcion === 'sedimentos')).toHaveLength(2);
+    expect(lista.some((c) => c.funcion === 'carbon')).toBe(true);
+    for (const c of lista) expect(['sedimentos', 'carbon']).toContain(c.funcion);
+    // Solo los "para ultrafiltración" (de otro tipo de equipo, a falta de otro carbón) piden confirmarla.
+    for (const c of lista) expect(c.confirmar_medida).toBe(/Ultrafiltración/.test(c.nombre));
+  });
+
   it('equipos de tanque no usan cartuchos', () => {
     expect(cartuchosParaFiltro(filtro({ tipo: 'suavizador' }), CATALOGO)).toEqual([]);
     expect(cartuchosParaFiltro(filtro({ tipo: 'desbarrador_tanque' }), CATALOGO)).toEqual([]);

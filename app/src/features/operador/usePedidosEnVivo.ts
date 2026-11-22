@@ -69,7 +69,7 @@ export function usePedidosEnVivo(token: string, alNoAutorizado: () => void) {
   }, [servicios, token, recargar]);
 
   const marcarDespachado = useCallback(
-    async (pedido: Pedido) => {
+    async (pedido: Pedido): Promise<boolean> => {
       setErrorDespacho(null);
       despachar({ tipo: 'ocultar', id: pedido.id });
       try {
@@ -77,10 +77,12 @@ export function usePedidosEnVivo(token: string, alNoAutorizado: () => void) {
         despachar({ tipo: 'despachado', id: pedido.id });
         setAnuncio(`Pedido N.º ${pedido.id} despachado`);
         setVersion((v) => v + 1);
+        return true;
       } catch (error) {
         despachar({ tipo: 'mostrar', id: pedido.id });
         if (esNoAutorizado(error)) refNoAutorizado.current();
         else setErrorDespacho('No se pudo marcar como despachado. Intenta otra vez.');
+        return false;
       }
     },
     [servicios, token],

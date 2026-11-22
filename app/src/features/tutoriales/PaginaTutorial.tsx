@@ -1,20 +1,15 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Aviso, Boton, EstadoVacio, Insignia, Pasos } from '../../components/grimuca';
 import { api } from '../../lib/api';
 import { hogarId } from '../../lib/sesion';
-import { mensajeError } from '../resultado/textos';
+import type { Hogar } from '../../lib/tipos';
+import { fechaCorta, hoyLocal, mensajeCambioRegistrado, remitenteTienda } from '../../lib/recordatorios';
+import { MensajeTienda, RecordatorioCambio } from './CambioCartucho';
 import { Miniatura } from './Miniatura';
 import { NOTA_FABRICANTE, ROTULO_DEMO, buscarTutorial } from './contenido';
 
-/** Fecha local de hoy como AAAA-MM-DD. */
-function hoy(): string {
-  const ahora = new Date();
-  const dos = (n: number) => String(n).padStart(2, '0');
-  return `${ahora.getFullYear()}-${dos(ahora.getMonth() + 1)}-${dos(ahora.getDate())}`;
-}
-
-type Anotar = { tipo: 'inicio' } | { tipo: 'guardando' } | { tipo: 'listo' } | { tipo: 'error'; mensaje: string };
+type Anotar = { tipo: 'inicio' } | { tipo: 'guardando' } | { tipo: 'listo'; fecha: string } | { tipo: 'error'; mensaje: string };
 
 /** /tutoriales/:id: guía paso a paso de un cambio de cartucho. */
 export function PaginaTutorial() {
@@ -22,6 +17,21 @@ export function PaginaTutorial() {
   const tutorial = buscarTutorial(id);
   const idHogar = hogarId();
   const [anotar, setAnotar] = useState<Anotar>({ tipo: 'inicio' });
+  const [hogar, setHogar] = useState<Hogar | null>(null);
+
+  useEffect(() => {
+    if (!idHogar) return;
+    let vigente = true;
+    Promise.resolve()
+      .then(() => api.obtenerHogar(idHogar))
+      .then((datos) => {
+        if (vigente && datos) setHogar(datos);
+      })
+      .catch(() => undefined);
+    return () => {
+      vigente = false;
+    };
+  }, [idHogar]);
 
   if (!tutorial) {
     return (
@@ -36,10 +46,13 @@ export function PaginaTutorial() {
     if (!idHogar) return;
     setAnotar({ tipo: 'guardando' });
     try {
-      await api.actualizarHogar(idHogar, { tiene_filtro: true, ultimo_cambio: 'menos_de_un_mes', fecha_ultimo_cambio: hoy() });
-      setAnotar({ tipo: 'listo' });
+      const fecha = hoyLocal();
+      const actualizado = await api.actualizarHogar(idHogar, { tiene_filtro: true, ultimo_cambio: 'menos_de_un_mes', fecha_ultimo_cambio: fecha });
+      setHogar((previo) => ({ ...(previo ?? {}), ...(actualizado ?? {}), id: idHogar, tiene_filtro: true, fecha_ultimo_cambio: fecha }) as Hogar);
+      setAnotar({ tipo: 'listo', fecha });
     } catch (error) {
-      setAnotar({ tipo: 'error', mensaje: mensajeError(error) });
+      const mensaje = error && typeof error === 'object' && 'mensaje' in error ? String((error as { mensaje: unknown }).mensaje) : '';
+      setAnotar({ tipo: 'error', mensaje: mensaje || 'Algo falló de nuestro lado. Intenta otra vez en un momento.' });
     }
   }
 
@@ -92,15 +105,19 @@ export function PaginaTutorial() {
         </Boton>
       )}
       {anotar.tipo === 'listo' && (
-        <Aviso tono="ok" rol="status">
-          Listo. Te avisamos aquí cuando toque el próximo cambio.
-        </Aviso>
+        <>
+          <Aviso tono="ok" rol="status">
+            Listo. Registramos el cambio del {fechaCorta(anotar.fecha)}.
+          </Aviso>
+          <MensajeTienda de={remitenteTienda(hogar?.tienda_id)} mensaje={mensajeCambioRegistrado(anotar.fecha)} />
+        </>
       )}
       {anotar.tipo === 'error' && (
         <Aviso tono="error" rol="alert">
           {anotar.mensaje}
         </Aviso>
       )}
+      {idHogar && <RecordatorioCambio key={hogar?.fecha_ultimo_cambio ?? 'sin-fecha'} hogar={hogar ?? { id: idHogar }} />}
 
       <Boton a="/experto?servicio=cambio" anchoCompleto>
         ¿No sabes hacerlo? Contrata a un experto
