@@ -337,7 +337,16 @@ test.describe('Ensayo de la demo · guion de 3 minutos', () => {
         const d = Date.now();
         await telefono.getByRole('button', { name: /^\s*leer mi tira\s*$/i }).click();
         const hallado = await Promise.race([
-          telefono.waitForURL(/\/resultado\/[\w-]+/, { timeout: 60_000 }).then(() => 'resultado'),
+          // Desde el 22 nov, 1:40 p.m.: la persona confirma lo que leyó la foto antes de ver el resultado.
+          telefono
+            .getByRole('heading', { level: 1, name: /esto es lo que ves en tu tira/i })
+            .waitFor({ timeout: 60_000 })
+            .then(async () => {
+              await captura(telefono, '03e-cliente-confirmar-lectura.png');
+              await telefono.getByRole('button', { name: /s[ií], coincide: ver mi resultado/i }).click();
+              await telefono.waitForURL(/\/resultado\/[\w-]+/, { timeout: 20_000 });
+              return 'resultado';
+            }),
           telefono.getByRole('heading', { name: /no pudimos leer bien la foto/i }).waitFor({ timeout: 60_000 }).then(() => 'no_legible'),
           telefono.getByText(/^\s*(no se pudo leer la foto|no hay conexi[oó]n)\s*$/i).first().waitFor({ timeout: 60_000 }).then(() => 'error'),
         ]).catch(() => 'tiempo agotado (60 s)');

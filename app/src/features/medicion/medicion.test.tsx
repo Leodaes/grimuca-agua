@@ -12,7 +12,7 @@ vi.mock('../../lib/api', async (original) => {
   const real = await original<typeof import('../../lib/api')>();
   return {
     ...real,
-    api: { configTira: vi.fn(), medirManual: vi.fn(), medirConFoto: vi.fn() },
+    api: { configTira: vi.fn(), medirManual: vi.fn(), medirConFoto: vi.fn(), medicion: vi.fn() },
   };
 });
 
@@ -79,15 +79,20 @@ describe('/medir', () => {
     expect(screen.queryByRole('button', { name: 'Tomar la foto' })).not.toBeInTheDocument();
   });
 
-  it('lee la foto y pasa al resultado', async () => {
+  it('lee la foto, pide confirmar lo leído y, si coincide, pasa al resultado de la foto', async () => {
     apiSimulada.medirConFoto.mockResolvedValueOnce({ estado: 'ok', medicion });
+    apiSimulada.configTira.mockResolvedValue(tiraDePrueba);
+    apiSimulada.medicion.mockResolvedValue({ id: 'med-1', valores: { ph: 6.8, cloro_libre: 0.5, plomo: 0 } } as Medicion);
     const { container } = abrir('/medir');
     const foto = elegirFoto(container);
 
     await userEvent.click(await screen.findByRole('button', { name: 'Leer mi tira' }));
 
-    expect(await screen.findByText('Resultado de med-1')).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { level: 1, name: '¿Esto es lo que ves en tu tira?' })).toBeInTheDocument();
     expect(apiSimulada.medirConFoto).toHaveBeenCalledWith('hogar-1', foto);
+    await userEvent.click(screen.getByRole('button', { name: 'Sí, coincide: ver mi resultado' }));
+    expect(await screen.findByText('Resultado de med-1')).toBeInTheDocument();
+    expect(apiSimulada.medirManual).not.toHaveBeenCalled();
   });
 
   it('mientras lee muestra "Leyendo tu tira…"', async () => {
@@ -117,9 +122,11 @@ describe('/medir', () => {
     elegirFoto(container);
     await userEvent.click(await screen.findByRole('button', { name: 'Leer mi tira' }));
 
+    apiSimulada.configTira.mockResolvedValue(tiraDePrueba);
+    apiSimulada.medicion.mockResolvedValue({ id: 'med-1', valores: { ph: 6.8 } } as Medicion);
     expect(await screen.findByText('No hay conexión')).toBeInTheDocument();
     await userEvent.click(screen.getByRole('button', { name: 'Leer mi tira' }));
-    expect(await screen.findByText('Resultado de med-1')).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { level: 1, name: '¿Esto es lo que ves en tu tira?' })).toBeInTheDocument();
     expect(apiSimulada.medirConFoto).toHaveBeenCalledTimes(2);
   });
 });
@@ -146,6 +153,25 @@ describe('/medir/manual', () => {
 
     expect(await screen.findByText('Resultado de med-1')).toBeInTheDocument();
     expect(apiSimulada.medirManual).toHaveBeenCalledWith('hogar-1', { ph: 6.8, cloro_libre: 0.5, plomo: null });
+  });
+
+  it('con ?desde= trae marcado lo que leyó la foto y se corrige solo lo que no coincide', async () => {
+    apiSimulada.configTira.mockResolvedValueOnce(tiraDePrueba);
+    apiSimulada.medicion.mockResolvedValueOnce({ id: 'med-foto', valores: { ph: 6.8, cloro_libre: null, plomo: 5 } } as Medicion);
+    apiSimulada.medirManual.mockResolvedValueOnce(medicion);
+    abrir('/medir/manual?desde=med-foto');
+
+    expect(await screen.findByRole('heading', { level: 1, name: 'Corrige los colores a mano' })).toBeInTheDocument();
+    expect(apiSimulada.medicion).toHaveBeenCalledWith('med-foto');
+    const grupoPlomo = screen.getByRole('group', { name: /Plomo/ });
+    expect(within(grupoPlomo).getByRole('button', { name: '5' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByText('2 de 3 casillas')).toBeInTheDocument();
+
+    expect(within(screen.getByRole('group', { name: /Cloro libre/ })).getByText('La foto no pudo leer esta casilla: márcala tú.')).toBeInTheDocument();
+    await userEvent.click(within(grupoPlomo).getByRole('button', { name: '0' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Guardar y ver mi resultado' }));
+    expect(await screen.findByText('Resultado de med-1')).toBeInTheDocument();
+    expect(apiSimulada.medirManual).toHaveBeenCalledWith('hogar-1', { ph: 6.8, cloro_libre: null, plomo: 0 });
   });
 
   it('no envía si no se marcó ninguna casilla', async () => {

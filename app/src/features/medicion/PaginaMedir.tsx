@@ -84,7 +84,8 @@ export function PaginaMedir() {
       const lista = await reducirImagen(foto);
       const resultado = await api.medirConFoto(hogar, lista);
       if (resultado.estado === 'ok') {
-        navegar(`/resultado/${resultado.medicion.id}`);
+        // La lectura depende de la luz y de la foto: primero la persona confirma o corrige lo que leímos.
+        navegar(`/medir/manual?desde=${encodeURIComponent(resultado.medicion.id)}&confirmar=1`);
         return;
       }
       setEstado({ fase: 'no_legible', motivo: resultado.motivo });
