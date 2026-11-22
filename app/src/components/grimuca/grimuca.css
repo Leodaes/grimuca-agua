@@ -204,6 +204,34 @@ body {
   align-items: center;
   gap: var(--s3);
   margin-left: auto;
+  min-width: 0;
+}
+/* En teléfono el encabezado del operador no cabe con logo grande, título, estado y "Salir". */
+@media (max-width: 560px) {
+  .g-encabezado--operador .g-encabezado__barra {
+    gap: var(--s2);
+    padding: 0 var(--s3);
+  }
+  .g-encabezado--operador .g-encabezado__logo img {
+    height: 26px;
+  }
+  .g-encabezado__titulo {
+    padding-left: var(--s2);
+    font-size: var(--t-1);
+    white-space: nowrap;
+  }
+  .g-encabezado__acciones {
+    gap: var(--s2);
+  }
+  .g-encabezado__acciones .g-boton {
+    padding-left: var(--s3);
+    padding-right: var(--s3);
+  }
+}
+@media (max-width: 400px) {
+  .g-encabezado__barra:has(.g-encabezado__acciones > :nth-child(2)) .g-encabezado__titulo {
+    display: none;
+  }
 }
 .g-pestanas {
   --foco: var(--azul);
