@@ -106,7 +106,7 @@ describe('pestaña Zonas: mapa real (por defecto)', () => {
 
     await usuario.click(retobo as HTMLElement);
     const detalle = await screen.findByRole('complementary', { name: 'Detalle de El Retobo' });
-    expect(within(detalle).getByText('Varios hogares de la zona reportaron resultados fuera de rango.')).toBeInTheDocument();
+    expect(within(detalle).getByText('Varios hogares de la zona tienen casillas en rojo esta semana.')).toBeInTheDocument();
 
     // Vista Clientes sobre el mapa real: tono de azul con el número de hogares.
     await usuario.click(screen.getByRole('button', { name: 'Clientes' }));
@@ -146,8 +146,8 @@ describe('pestaña Zonas: tablero de hexágonos', () => {
 
     await usuario.click(screen.getByRole('button', { name: /^El Retobo, 4 hogares, estado rojo, en alerta/ }));
     const detalle = screen.getByRole('complementary', { name: 'Detalle de El Retobo' });
-    expect(within(detalle).getByText('Varios hogares de la zona reportaron resultados fuera de rango.')).toBeInTheDocument();
-    expect(within(detalle).getByText('Conviene revisar y avisar a los hogares.')).toBeInTheDocument();
+    expect(within(detalle).getByText('Varios hogares de la zona tienen casillas en rojo esta semana.')).toBeInTheDocument();
+    expect(within(detalle).getByText('Buen momento para invitar a los vecinos a medir.')).toBeInTheDocument();
     expect(within(detalle).getByText('nitrato')).toBeInTheDocument();
     expect(within(detalle).getByText('Grimuca Mañongo')).toBeInTheDocument();
     expect(detalle).not.toHaveTextContent(/potable/i);
@@ -158,11 +158,21 @@ describe('pestaña Zonas: tablero de hexágonos', () => {
 
     // Los hogares sin urbanización se listan fuera del tablero y la lista de alertas por zona se conserva.
     expect(screen.getByRole('button', { name: /Otras de Naguanagua: 1 hogar/ })).toBeInTheDocument();
-    expect(screen.getByText(/Alerta en Naguanagua: 3 hogares en rojo/)).toBeInTheDocument();
+    expect(screen.getByText(/Naguanagua: 3 hogares con casillas en rojo esta semana/)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Zonas para invitar a medir' })).toBeInTheDocument();
 
-    // Avisar a los vecinos: solo muestra el WhatsApp simulado con el texto aprobado, sin nombrar hogares.
-    await usuario.click(screen.getByRole('button', { name: 'Avisar a los vecinos de la zona' }));
-    expect(screen.getByText('Varios hogares de tu zona reportaron resultados fuera de rango. Te sugerimos medir tu agua.')).toBeInTheDocument();
+    // Invitar a los vecinos: solo muestra el WhatsApp simulado (texto de Tulio), sin nombrar hogares ni parámetros.
+    // La invitación nombra la urbanización (El Retobo), no el municipio.
+    const botones = screen.getAllByRole('button', { name: 'Invitar a los vecinos de El Retobo a medir' });
+    await usuario.click(botones[botones.length - 1]);
+    expect(
+      screen.getByText(
+        'Hola, vecina o vecino de El Retobo. Te escribe Grimuca Mañongo, la ferretería de tu zona. Esta semana varias familias de El Retobo midieron su agua en casa con nosotros y ya saben si su filtro les está funcionando.',
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getByText(/solo a los hogares de El Retobo que aceptaron recibir avisos/)).toBeInTheDocument();
+    expect(screen.getByText(/^Si quieres saber cómo está la tuya, .*responde BAJA\.\)$/)).toBeInTheDocument();
+    expect(document.body).not.toHaveTextContent(/fuera de rango/i);
     expect(screen.getByText('Enviado (simulado)')).toBeInTheDocument();
     expect(screen.getByText(/en la demo no se envía un WhatsApp real/)).toBeInTheDocument();
   });

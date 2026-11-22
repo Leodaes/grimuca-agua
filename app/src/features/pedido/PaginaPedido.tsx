@@ -13,7 +13,7 @@ const ESTILO_ENLACE = { minHeight: 44, display: 'inline-flex', alignItems: 'cent
 type Estado =
   | { tipo: 'cargando' }
   | { tipo: 'error'; mensaje: string }
-  | { tipo: 'listo'; pedidos: Pedido[]; tiendas: Tienda[]; cartuchos: Cartucho[]; nombre: string | null };
+  | { tipo: 'listo'; pedidos: Pedido[]; tiendas: Tienda[]; cartuchos: Cartucho[]; nombre: string | null; tipoFiltro: string | null };
 
 function idsDelPedido(id: string, estado: unknown, otros: string | null): string[] {
   const deEstado = (estado as { ids?: Array<string | number> } | null)?.ids;
@@ -39,10 +39,16 @@ export function PaginaPedido() {
       api.tiendas().catch(() => [] as Tienda[]),
       api.cartuchos(hogar).catch(() => [] as Cartucho[]),
       hogar ? api.obtenerHogar(hogar).then((h) => h.nombre, () => null) : Promise.resolve(null),
+      // El tipo de filtro solo adorna el mensaje: si no hay filtro registrado o falla, se omite.
+      hogar
+        ? Promise.resolve()
+            .then(() => api.filtroDeHogar(hogar))
+            .then((r) => r?.filtro?.tipo_nombre ?? null, () => null)
+        : Promise.resolve(null),
     ])
       .then(
-        ([pedidos, tiendas, cartuchos, nombre]) =>
-          vigente && setEstado({ tipo: 'listo', pedidos, tiendas, cartuchos, nombre }),
+        ([pedidos, tiendas, cartuchos, nombre, tipoFiltro]) =>
+          vigente && setEstado({ tipo: 'listo', pedidos, tiendas, cartuchos, nombre, tipoFiltro }),
       )
       .catch((error: unknown) => vigente && setEstado({ tipo: 'error', mensaje: mensajeError(error) }));
     return () => {
@@ -81,10 +87,12 @@ export function PaginaPedido() {
   const tiendaPrimero = primero ? nombreTienda(primero.tienda_id) : '';
   const horario = estado.tiendas.find((t) => t.id === primero?.tienda_id)?.horario;
   const mensajesWa = [
-    ...estado.pedidos.map((p) => mensajeRecibido(p, estado.nombre, nombreTienda(p.tienda_id), nombreProducto(p))),
+    ...estado.pedidos.map((p) =>
+      mensajeRecibido(p, estado.nombre, nombreTienda(p.tienda_id), nombreProducto(p), estado.tipoFiltro),
+    ),
     ...estado.pedidos
       .filter((p) => p.estado === 'despachado')
-      .map((p) => mensajeDespachadoCliente(p, nombreTienda(p.tienda_id))),
+      .map((p) => mensajeDespachadoCliente(p, nombreTienda(p.tienda_id), estado.nombre)),
   ];
 
   return (

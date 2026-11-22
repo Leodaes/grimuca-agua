@@ -119,13 +119,13 @@ Versión 4.1 (22 nov): costo del sobre en $2,94 como base (decisión de Leonardo
 
 **Lema en pantalla, abajo:** Clientes que llegan sabiendo qué necesitan · Saber qué tomas empieza en casa
 
-**Nota del orador (Tulio):** "Empezamos en Valencia con tres tiendas que ya existen." Alerta temprana (no cabe como cuarta viñeta, va aquí): "Cuando varios hogares de una zona salen fuera de rango en la misma semana, la red lo detecta y avisa a los vecinos que aceptaron recibir avisos, para que midan su agua. No nombramos hogares y no decimos que el agua esté contaminada." Toldos de campaña: "Las urbanizaciones punteadas del mapa no tienen clientes todavía. Ahí la ferretería aliada pone un toldo unos días, mide en vivo el agua que traen los vecinos y vende el sobre. El mapa le dice dónde ponerlo." Si preguntan si se paga: un toldo con dos promotores a unos $60 al día se cubre con unos 10 sobres al día, porque cada sobre deja $6,06 sobre el costo de $2,94 (SUPUESTO el costo del toldo; cálculo); el piloto mide cuántos salen de verdad. Después, comisión por transacción. Fuera de la demo: cuentas por usuario y cobro real. En la demo hay dos comercios de demostración (Barquisimeto y Maracay), rotulados así. Datos de la región con fuente, si piden (`modelo.md` sección 11): México, 98% de los hogares compra agua embotellada (Kantar Worldpanel, 2017); República Dominicana, 84,3% usa agua de botellón (ONE, Censo 2022). Cerrar con la dirección `agua.oydo.app` en pantalla y los nombres: Leonardo Dávila y Tulio Dávila.
+**Nota del orador (Tulio):** "Empezamos en Valencia con tres tiendas que ya existen." Invitar a medir (no cabe como cuarta viñeta, va aquí): "Cuando varias familias de una urbanización miden su agua, la ferretería invita a los vecinos que aceptaron avisos a medir la suya. Cada vecino que responde SÍ es un sobre vendido. No nombramos hogares ni le ponemos etiqueta a la urbanización." Toldos de campaña: "Las urbanizaciones punteadas del mapa no tienen clientes todavía. Ahí la ferretería aliada pone un toldo unos días, mide en vivo el agua que traen los vecinos y vende el sobre. El mapa le dice dónde ponerlo." Si preguntan si se paga: un toldo con dos promotores a unos $60 al día se cubre con unos 10 sobres al día, porque cada sobre deja $6,06 sobre el costo de $2,94 (SUPUESTO el costo del toldo; cálculo); el piloto mide cuántos salen de verdad. Después, comisión por transacción. Fuera de la demo: cuentas por usuario y cobro real. En la demo hay dos comercios de demostración (Barquisimeto y Maracay), rotulados así. Datos de la región con fuente, si piden (`modelo.md` sección 11): México, 98% de los hogares compra agua embotellada (Kantar Worldpanel, 2017); República Dominicana, 84,3% usa agua de botellón (ONE, Censo 2022). Cerrar con la dirección `agua.oydo.app` en pantalla y los nombres: Leonardo Dávila y Tulio Dávila.
 
 ---
 
 ## Preguntas probables del jurado y respuesta corta
 
-Las 23 respuestas con su número están en `docs/negocio/preguntas-jurado.md`. Las cuatro que más se hacen:
+Las 24 respuestas con su número están en `docs/negocio/preguntas-jurado.md`. Las cuatro que más se hacen:
 
 | Pregunta | Respuesta |
 |---|---|

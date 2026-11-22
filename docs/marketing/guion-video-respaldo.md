@@ -26,10 +26,10 @@ Versión 4 (22 nov), puesta al día contra la app real y contra `guion-demo.md` 
 - **Se ve:** `01-red.png` (0:10 a 0:15; o `video-red.webm`, primeros 5 s) → `02a-comercio-despacho.png` (0:15 a 0:18) → `02b-comercio-inventario.png` (0:18 a 0:21) → `02c-comercio-zonas-mapa.png` (0:21 a 0:24) → `02e-comercio-rutas.png` (0:24 a 0:28). `02d-comercio-productos.png` no va. Textos: "Una ferretería por estado cubre el estado" y, en Rutas, "15 entregas · 3 rutas · 51,9 km contra 110,9 km (datos de demostración)".
 - **Se dice:** "Esta es la Red: Grimuca en Carabobo y dos comercios de demostración, cada uno con su plan y su membresía: activa, en periodo gratis o vencida. En el panel de un comercio se ven el despacho, el inventario contra los próximos treinta días y las zonas por urbanización. En Rutas, 15 entregas salen en 3 rutas: 51,9 kilómetros contra 110,9 si se hicieran viajes sueltos. Son datos de demostración."
 
-### 2b · unos 10 s · Alerta por zona (nuevo, 22 nov 11:15; corre los tiempos siguientes unos 10 s)
-- **Se ve:** Comercio → Zonas, "Alertas por zona" → se toca "Avisar a los vecinos de la zona" → WhatsApp simulado con "Enviado (simulado)". Se graba en la toma de las 3:00 p.m.
-- **Texto en pantalla:** "Avisos solo a quien los aceptó · datos agregados y anónimos".
-- **Se dice (Tulio):** "Cuando varios hogares de una zona salen fuera de rango en la misma semana, la red lo detecta y avisa a los vecinos que aceptaron recibir avisos, para que midan su agua. Esos datos, agregados y sin nombres, también sirven para estudios por zona con universidades e instituciones públicas. Son mediciones caseras orientativas."
+### 2b · unos 10 s · Invitar a medir (nuevo, 22 nov; texto revisado por Tulio a las 12:44; corre los tiempos siguientes unos 10 s)
+- **Se ve:** Comercio → Zonas, "Zonas para invitar a medir" → se toca "Invitar a los vecinos de {urbanización} a medir" → WhatsApp simulado con "Enviado (simulado)". Se graba en la toma de las 3:00 p.m.
+- **Texto en pantalla:** "Invitaciones solo a quien las aceptó · datos agregados y anónimos".
+- **Se dice (Tulio):** "Cuando varias familias de una urbanización miden su agua, la ferretería invita a los vecinos que aceptaron avisos a medir la suya. Cada vecino que responde SÍ es un sobre vendido para la ferretería de su zona. Esos datos, agregados y sin nombres, también sirven para estudios por zona con universidades e instituciones."
 - **Si el video se pasa de tiempo:** este bloque es el primero que se corta.
 
 ### 3 · 0:28 a 0:52 · 24 s · La familia mide y pide

@@ -91,6 +91,8 @@ interface PropsOpcionesRadio {
   error?: string;
   /** 2: tarjetas lado a lado (para Sí / No). Por defecto, una debajo de otra. */
   columnas?: 1 | 2;
+  /** Con `columnas={2}`: dentro de cada tarjeta, radio e icono arriba y el texto abajo (para opciones con dibujo). */
+  apiladas?: boolean;
   /** Agrega "(opcional)" a la pregunta. */
   opcional?: boolean;
   /**
@@ -110,6 +112,7 @@ export function OpcionesRadio({
   ayuda,
   error,
   columnas = 1,
+  apiladas = false,
   opcional = false,
   anunciarError = true,
 }: PropsOpcionesRadio) {
@@ -127,7 +130,11 @@ export function OpcionesRadio({
           {ayuda}
         </p>
       )}
-      <div className={columnas === 2 ? 'alta-opciones alta-opciones--2' : 'alta-opciones'}>
+      <div
+        className={['alta-opciones', columnas === 2 && 'alta-opciones--2', apiladas && 'alta-opciones--apiladas']
+          .filter(Boolean)
+          .join(' ')}
+      >
         {opciones.map((opcion) => {
           const id = `${nombre}-${opcion.valor}`;
           const elegida = valor === opcion.valor;

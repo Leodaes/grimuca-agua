@@ -145,6 +145,56 @@ describe('panel del comercio', () => {
     expect(filas[1]).toHaveTextContent('12');
   });
 
+  it('Productos: foto, búsqueda sin acentos, filtro por tipo y existencias, y orden', async () => {
+    const usuario = userEvent.setup();
+    montar('/comercio/productos', {
+      productos: vi.fn(async () => [
+        producto({ codigo: 'SED-10', nombre: 'Cartucho de sedimentos', foto_url: 'https://grimuca.com/sed.png' }),
+        producto({
+          codigo: 'RO-8',
+          nombre: 'Filtro de ósmosis inversa',
+          categoria: 'sistema_osmosis_inversa',
+          corrige: ['nitrato'],
+          existencias: [{ tienda_id: 'tunal', tienda_nombre: 'El Tunal', cantidad: 0 }],
+        }),
+        producto({
+          codigo: 'CAR-10',
+          nombre: 'Cartucho de carbón',
+          corrige: ['cloro_libre'],
+          existencias: [{ tienda_id: 'tunal', tienda_nombre: 'El Tunal', cantidad: 9 }],
+        }),
+      ]),
+    });
+    const tabla = await screen.findByRole('table', { name: 'Productos del comercio' });
+    expect(tabla.querySelector('img')).toHaveAttribute('src', 'https://grimuca.com/sed.png');
+    expect(within(tabla).getAllByRole('img', { name: 'Foto no disponible' })).toHaveLength(2);
+    expect(screen.getByText('3 productos')).toBeInTheDocument();
+
+    await usuario.type(screen.getByLabelText('Buscar'), 'osmosis');
+    expect(within(tabla).getAllByRole('row')).toHaveLength(2);
+    expect(within(tabla).getByText('Filtro de ósmosis inversa')).toBeInTheDocument();
+    expect(screen.getByText('1 de 3 productos')).toBeInTheDocument();
+    await usuario.clear(screen.getByLabelText('Buscar'));
+
+    await usuario.selectOptions(screen.getByLabelText('Existencias'), 'sin');
+    expect(within(tabla).getAllByRole('row')).toHaveLength(2);
+    await usuario.selectOptions(screen.getByLabelText('Existencias'), 'todas');
+
+    await usuario.selectOptions(screen.getByLabelText('Filtrar por tipo'), 'cartucho');
+    expect(within(tabla).queryByText('Filtro de ósmosis inversa')).not.toBeInTheDocument();
+    await usuario.selectOptions(screen.getByLabelText('Filtrar por tipo'), 'todos');
+
+    await usuario.selectOptions(screen.getByLabelText('Ordenar por'), 'mas');
+    const filas = within(tabla).getAllByRole('row');
+    expect(filas[1]).toHaveTextContent('Cartucho de carbón');
+    expect(filas[3]).toHaveTextContent('Filtro de ósmosis inversa');
+
+    await usuario.type(screen.getByLabelText('Buscar'), 'no existe');
+    expect(screen.getByText('Ningún producto coincide con la búsqueda.')).toBeInTheDocument();
+    await usuario.click(screen.getByRole('button', { name: 'Quitar filtros' }));
+    expect(screen.getByText('3 productos')).toBeInTheDocument();
+  });
+
   it('en Despacho muestra los servicios atendidos con "Ver reporte"', async () => {
     const usuario = userEvent.setup();
     montar('/comercio/despacho', {

@@ -1,7 +1,7 @@
 // Pestaña "Productos": catálogo del comercio con existencias por tienda y alta de un producto propio.
 import { useState } from 'react';
 import type { FormEvent } from 'react';
-import { Aviso, Boton, Campo, Cargando, Casilla, EstadoVacio, Insignia } from '../../components/grimuca';
+import { Aviso, Boton, Campo, Cargando, Casilla, EstadoVacio, Icono, Insignia } from '../../components/grimuca';
 import type { ProductoComercio } from '../../lib/tipos';
 import { esNoAutorizado, mensajeDe, useServicios } from './contexto';
 import { usePanel } from './panel';
@@ -33,6 +33,21 @@ export const PENSADO_PARA = [
 
 function nombreCategoria(valor: string | null): string {
   return CATEGORIAS_PRODUCTO.find((c) => c.valor === valor)?.etiqueta ?? (valor ? valor.replace(/_/g, ' ') : '—');
+}
+
+type Orden = 'propios' | 'nombre' | 'mas' | 'menos' | 'tipo';
+
+const ORDENES: { valor: Orden; etiqueta: string }[] = [
+  { valor: 'propios', etiqueta: 'Los míos primero' },
+  { valor: 'nombre', etiqueta: 'Nombre (A a Z)' },
+  { valor: 'mas', etiqueta: 'Más existencias' },
+  { valor: 'menos', etiqueta: 'Menos existencias' },
+  { valor: 'tipo', etiqueta: 'Tipo' },
+];
+
+/** Para buscar sin importar mayúsculas ni acentos ("osmosis" encuentra "Ósmosis"). */
+function sinAcentos(texto: string): string {
+  return texto.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 }
 
 function textoPensadoPara(corrige: string[]): string {
@@ -206,6 +221,20 @@ function FormularioProducto({
   );
 }
 
+/** Miniatura del producto en la tabla; si no hay foto o no carga, el ícono de cartucho. */
+function FotoProducto({ url }: { url: string | null | undefined }) {
+  const [fallo, setFallo] = useState(false);
+  return (
+    <span className="op-producto-foto">
+      {url && !fallo ? (
+        <img src={url} alt="" width={56} height={56} loading="lazy" referrerPolicy="no-referrer" onError={() => setFallo(true)} />
+      ) : (
+        <Icono nombre="cartucho" tamano={28} titulo="Foto no disponible" />
+      )}
+    </span>
+  );
+}
+
 export function Productos({ token, version, alNoAutorizado }: Props) {
   const servicios = useServicios();
   const { tiendas } = usePanel();
@@ -216,13 +245,31 @@ export function Productos({ token, version, alNoAutorizado }: Props) {
   );
   const [agregados, setAgregados] = useState<ProductoComercio[]>([]);
   const [aviso, setAviso] = useState<string | null>(null);
+  const [busqueda, setBusqueda] = useState('');
+  const [tipo, setTipo] = useState('todos');
+  const [existenciasFiltro, setExistenciasFiltro] = useState<'todas' | 'con' | 'sin'>('todas');
+  const [orden, setOrden] = useState<Orden>('propios');
 
   const todos = [...agregados, ...(datos ?? []).filter((p) => !agregados.some((a) => a.codigo === p.codigo))];
-  const lista = [...todos].sort(
-    (a, b) => Number(b.propio) - Number(a.propio) || a.nombre.localeCompare(b.nombre, 'es'),
-  );
   const cantidad = (p: ProductoComercio, tiendaId: string) =>
     p.existencias.find((e) => e.tienda_id === tiendaId)?.cantidad ?? 0;
+  const total = (p: ProductoComercio) => tiendas.reduce((suma, t) => suma + cantidad(p, t.id), 0);
+  const tiposPresentes = Array.from(new Set(todos.map((p) => p.categoria ?? ''))).filter(Boolean);
+
+  const texto = sinAcentos(busqueda.trim());
+  const lista = todos
+    .filter((p) => !texto || sinAcentos(`${p.nombre} ${p.codigo} ${textoPensadoPara(p.corrige)}`).includes(texto))
+    .filter((p) => tipo === 'todos' || (p.categoria ?? '') === tipo)
+    .filter((p) => existenciasFiltro === 'todas' || (existenciasFiltro === 'con' ? total(p) > 0 : total(p) === 0))
+    .sort((a, b) => {
+      const porNombre = a.nombre.localeCompare(b.nombre, 'es');
+      if (orden === 'nombre') return porNombre;
+      if (orden === 'mas') return total(b) - total(a) || porNombre;
+      if (orden === 'menos') return total(a) - total(b) || porNombre;
+      if (orden === 'tipo') return nombreCategoria(a.categoria).localeCompare(nombreCategoria(b.categoria), 'es') || porNombre;
+      return Number(b.propio) - Number(a.propio) || porNombre;
+    });
+  const hayFiltros = Boolean(texto) || tipo !== 'todos' || existenciasFiltro !== 'todas';
 
   return (
     <div className="g-pila g-pila--amplia">
@@ -247,7 +294,70 @@ export function Productos({ token, version, alNoAutorizado }: Props) {
               }
             />
           )}
-          {datos && lista.length === 0 && <EstadoVacio titulo="Todavía no hay productos en tu catálogo." />}
+          {todos.length > 0 && (
+            <div className="op-productos-filtros" role="search" aria-label="Filtros de productos">
+              <Campo
+                etiqueta="Buscar"
+                type="search"
+                placeholder="Nombre, código o para qué sirve"
+                value={busqueda}
+                onChange={(e) => setBusqueda(e.target.value)}
+              />
+              <Campo
+                como="select"
+                etiqueta="Filtrar por tipo"
+                value={tipo}
+                onChange={(e) => setTipo(e.target.value)}
+                opciones={[
+                  { valor: 'todos', etiqueta: 'Todos los tipos' },
+                  ...tiposPresentes.map((valor) => ({ valor, etiqueta: nombreCategoria(valor) })),
+                ]}
+              />
+              <Campo
+                como="select"
+                etiqueta="Existencias"
+                value={existenciasFiltro}
+                onChange={(e) => setExistenciasFiltro(e.target.value as 'todas' | 'con' | 'sin')}
+                opciones={[
+                  { valor: 'todas', etiqueta: 'Todas' },
+                  { valor: 'con', etiqueta: 'Con existencias' },
+                  { valor: 'sin', etiqueta: 'Agotados' },
+                ]}
+              />
+              <Campo
+                como="select"
+                etiqueta="Ordenar por"
+                value={orden}
+                onChange={(e) => setOrden(e.target.value as Orden)}
+                opciones={ORDENES}
+              />
+            </div>
+          )}
+          {todos.length > 0 && (
+            <p className="g-apagado" style={{ margin: 0 }} aria-live="polite">
+              {lista.length === todos.length
+                ? `${todos.length} productos`
+                : `${lista.length} de ${todos.length} productos`}
+            </p>
+          )}
+          {datos && todos.length === 0 && <EstadoVacio titulo="Todavía no hay productos en tu catálogo." />}
+          {todos.length > 0 && lista.length === 0 && hayFiltros && (
+            <EstadoVacio
+              titulo="Ningún producto coincide con la búsqueda."
+              accion={
+                <Boton
+                  variante="secundario"
+                  onClick={() => {
+                    setBusqueda('');
+                    setTipo('todos');
+                    setExistenciasFiltro('todas');
+                  }}
+                >
+                  Quitar filtros
+                </Boton>
+              }
+            />
+          )}
           {lista.length > 0 && (
             <div style={{ overflowX: 'auto' }}>
               <table className="g-tabla" aria-label="Productos del comercio">
@@ -267,15 +377,20 @@ export function Productos({ token, version, alNoAutorizado }: Props) {
                   {lista.map((p) => (
                     <tr key={p.codigo}>
                       <td>
-                        <strong>{p.nombre}</strong>
-                        <br />
-                        <span className="g-apagado">{p.codigo}</span>
-                        {p.propio && (
-                          <>
-                            {' '}
-                            <Insignia tono="azul">Cargado por ti</Insignia>
-                          </>
-                        )}
+                        <div className="op-producto-celda">
+                          <FotoProducto url={p.foto_url} />
+                          <div>
+                            <strong>{p.nombre}</strong>
+                            <br />
+                            <span className="g-apagado">{p.codigo}</span>
+                            {p.propio && (
+                              <>
+                                {' '}
+                                <Insignia tono="azul">Cargado por ti</Insignia>
+                              </>
+                            )}
+                          </div>
+                        </div>
                       </td>
                       <td>{nombreCategoria(p.categoria)}</td>
                       <td>{textoPensadoPara(p.corrige)}</td>

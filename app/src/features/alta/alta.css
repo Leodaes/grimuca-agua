@@ -53,6 +53,20 @@
 .alta-opciones--2 {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
+/* Tarjetas en dos columnas con dibujo: radio y dibujo arriba, texto abajo (cabe en 375 px). */
+.alta-opciones--apiladas .alta-opcion {
+  flex-wrap: wrap;
+  align-content: flex-start;
+  row-gap: var(--s1);
+}
+.alta-opciones--apiladas .alta-opcion__texto {
+  flex-basis: 100%;
+}
+@media (max-width: 330px) {
+  .alta-opciones--apiladas {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
 .alta-opcion {
   display: flex;
   align-items: center;

@@ -137,7 +137,7 @@ describe('Despacho en vivo', () => {
     expect(servicios.despachar).toHaveBeenCalledWith('token-prueba', 3);
     expect(within(lista).queryByText(/Luis/)).not.toBeInTheDocument();
     const aviso = await screen.findByRole('status', { name: 'WhatsApp simulado enviado a Luis' });
-    expect(aviso).toHaveTextContent('Hola, Luis. El técnico de Grimuca Mañongo atendió tu servicio');
+    expect(aviso).toHaveTextContent('Hola, Luis. Nuestro técnico ya dejó listo tu filtro; en la app ves la foto de cómo quedó. Del 1 al 5, ¿cómo te atendimos?');
   });
 
   it('"Despachado" muestra el WhatsApp simulado enviado al hogar; un pedido nuevo en vivo no', async () => {
@@ -151,7 +151,7 @@ describe('Despacho en vivo', () => {
     await usuario.click(screen.getByRole('button', { name: /Marcar como despachado: .*Ana Pérez/ }));
     const aviso = await screen.findByRole('status', { name: 'WhatsApp simulado enviado a Ana Pérez' });
     expect(aviso).toHaveTextContent('Simulación: en la demo no se envía un WhatsApp real.');
-    expect(aviso).toHaveTextContent('Hola, Ana. Tu pedido N.º 1 salió de Grimuca Mañongo.');
+    expect(aviso).toHaveTextContent('Hola, Ana. Tu pedido N.º 1 salió de Grimuca Mañongo y va camino a tu casa.');
     // La lista sigue usable con el aviso abierto.
     expect(screen.getByRole('button', { name: /Marcar como despachado: .*Luis/ })).toBeEnabled();
 
