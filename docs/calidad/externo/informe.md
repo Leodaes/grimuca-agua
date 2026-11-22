@@ -4,6 +4,35 @@ Pruebas de navegador contra https://agua.oydo.app, hechas desde una máquina dis
 
 Cómo correrlas: `cd pruebas/externas && npm install && npx playwright install chromium && npx playwright test`. Revisión del repositorio: `node pruebas/externas/revisar-repo.js` desde la raíz.
 
+## Pasada 9 · sáb 21 nov, 11:50 p.m. (solo lectura)
+
+**Resumen:** la app no cambió desde la pasada 8 (mismo código y misma versión publicada). Corrió en modo solo lectura: 23 revisiones pasan, 1 falla (tamaño) y 2 se saltan (el recorrido que crea pedidos). La Calidad interna certificó a las 11:42 p.m. las compuertas 1 a 3 y el recorrido de la red (`2471b84`). **El último recorrido completo del cliente que probó esta revisión (pasada 8, 11:25 p.m.) funciona en teléfono y escritorio.**
+
+| Revisión | Teléfono (375 px) | Escritorio |
+|---|---|---|
+| Portada y 7 páginas públicas | Cargan y cumplen, salvo `/catalogo` (tamaño) | Cargan y cumplen |
+| Paneles `/operador`, `/comercio`, `/tecnico`, `/red` piden PIN | Sí | Sí |
+| No dice «potable» | Cumple | Cumple |
+| Recorrido completo del cliente | Saltado (solo lectura); funcionó en la pasada 8 | Saltado; funcionó en la pasada 8 |
+| Pedido en vivo en Despacho sin recargar | Certificado por la Calidad interna | Certificado por la Calidad interna |
+
+**Repositorio:** 395 archivos revisados, sin hallazgos.
+
+**Señales de vida del orquestador:** último commit a las 11:42 p.m. (`2471b84`). El sitio responde. No hay alerta.
+
+### Fallas abiertas
+
+**Rompe la demo**
+- Ninguna.
+
+**Confunde** (sin cambios desde la pasada 8)
+- «Cotizar por WhatsApp» mide 26 px en «Listo, guardamos tu filtro».
+- «Mira cómo cambiarlo» mide menos de 44 px en el resultado.
+- «Medir mi agua» mide menos de 44 px en `/catalogo`.
+
+**Cosmético**
+- Ninguna.
+
 ## Pasada 8 · sáb 21 nov, 11:25 p.m.
 
 **Resumen:** está publicada la red de comercios: paneles de comercio, técnico y red, cada uno con su PIN (`6eeb0da`). **El recorrido completo del cliente sigue funcionando en teléfono y en escritorio.** Esta pasada suma una revisión de solo lectura de 7 páginas públicas y de los 3 paneles nuevos: todo carga, nada dice «potable» y cada panel pide su PIN.
