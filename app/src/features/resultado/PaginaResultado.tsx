@@ -37,6 +37,7 @@ import {
   QUE_MIDE,
   RESUMEN_NIVEL,
   SUGERIDO_EJEMPLO,
+  TEXTO_PRECIO_WHATSAPP,
   avisoDeRecambio,
   datosDelHogar,
   formatearFecha,
@@ -92,16 +93,13 @@ function useHogarYTienda(idHogar: string | null): { hogar: Hogar | null; tienda:
   return { hogar, tienda };
 }
 
-/** Dónde se tocó "Agregar a mi lista": el aviso "quedó en tu lista" sale junto a ese botón. */
-type LugarAgregado = 'paso' | 'sugeridos';
-
 interface EstadoLista {
   enLista: Set<string>;
-  agregado: { nombre: string; lugar: LugarAgregado } | null;
-  agregar: (cartucho: CartuchoSugerido, lugar: LugarAgregado) => void;
+  agregado: { nombre: string } | null;
+  agregar: (cartucho: CartuchoSugerido) => void;
 }
 
-/** Mi lista compartida entre el paso 3 de "Qué hacer hoy" y las tarjetas de "Lo que te recomendamos". */
+/** "Mi lista" de las tarjetas de "Lo que te recomendamos". */
 function useListaResultado(): EstadoLista {
   const [enLista, setEnLista] = useState<Set<string>>(() => {
     try {
@@ -111,10 +109,10 @@ function useListaResultado(): EstadoLista {
     }
   });
   const [agregado, setAgregado] = useState<EstadoLista['agregado']>(null);
-  function agregar(cartucho: CartuchoSugerido, lugar: LugarAgregado) {
+  function agregar(cartucho: CartuchoSugerido) {
     agregarALista({ codigo: cartucho.codigo, nombre: cartucho.nombre, cantidad: 1 });
     setEnLista((previo) => new Set(previo).add(cartucho.codigo));
-    setAgregado({ nombre: cartucho.nombre, lugar });
+    setAgregado({ nombre: cartucho.nombre });
   }
   return { enLista, agregado, agregar };
 }
@@ -197,9 +195,10 @@ function Resultado({ medicion }: { medicion: Medicion }) {
   const consecuencias = siNoHacesNada(evaluacion.porParametro);
   const pasos = pasosQueHacerHoy({ ...entrada, hayRecomendado: sugeridos.length > 0 });
 
+  // Hilo de la página: conclusión → qué hacer → productos → detalle. Los productos solo salen en "Lo que te recomendamos".
   return (
     <>
-      <div className="g-pila">
+      <div className="g-pila resultado-encabezado">
         <p className="g-apagado">
           Medición del {formatearFecha(medicion.fecha)} ·{' '}
           {medicion.origen === 'foto' ? 'con foto' : 'anotada a mano'}
@@ -221,9 +220,6 @@ function Resultado({ medicion }: { medicion: Medicion }) {
       </section>
 
       <AvisoTira />
-      <p className="g-apagado">{PIE_ORIENTACION}</p>
-
-      {consecuencias.length > 0 && <SiNoHacesNada consecuencias={consecuencias} />}
 
       <section className="g-pila" aria-labelledby="titulo-que-hacer-hoy">
         <h2 className="g-h3" id="titulo-que-hacer-hoy">
@@ -237,9 +233,7 @@ function Resultado({ medicion }: { medicion: Medicion }) {
             contenido: (
               <ContenidoDelPaso
                 paso={paso}
-                recomendado={sugeridos[0]}
-                datos={datos}
-                estadoLista={estadoLista}
+                hayRecomendado={sugeridos.length > 0}
                 hogar={hogar}
                 fechaMedicion={medicion.fecha}
               />
@@ -248,27 +242,6 @@ function Resultado({ medicion }: { medicion: Medicion }) {
         />
       </section>
 
-      <section className="g-pila" aria-labelledby="titulo-casillas">
-        <h2 className="g-h3" id="titulo-casillas">
-          Tu agua, casilla por casilla
-        </h2>
-        <ListaParametros>
-          {parametros.map((parametro) => (
-            <FilaResultado key={parametro.clave} parametro={parametro} />
-          ))}
-        </ListaParametros>
-      </section>
-
-      {aviso && (
-        <AvisoRecambio
-          dias={evaluacion.diasParaRecambio}
-          ultimoCambio={hogar?.ultimo_cambio}
-          destino="#titulo-sugeridos"
-          etiqueta={sugeridos.length > 0 ? 'Ver productos sugeridos' : 'Cotizar el recambio'}
-        />
-      )}
-
-      <LineaFiltro />
       <Sugeridos
         sugeridos={sugeridos}
         datos={datos}
@@ -289,7 +262,23 @@ function Resultado({ medicion }: { medicion: Medicion }) {
         </section>
       )}
 
-      <nav className="g-pila" aria-label="Cambiar el cartucho" style={{ gap: 'var(--s2)' }}>
+      {consecuencias.length > 0 && <SiNoHacesNada consecuencias={consecuencias} />}
+
+      <Casillas parametros={parametros} />
+
+      <p className="g-apagado">{PIE_ORIENTACION}</p>
+
+      {aviso && (
+        <AvisoRecambio
+          dias={evaluacion.diasParaRecambio}
+          ultimoCambio={hogar?.ultimo_cambio}
+          destino="#titulo-sugeridos"
+          etiqueta={sugeridos.length > 0 ? 'Ver productos sugeridos' : 'Cotizar el recambio'}
+        />
+      )}
+
+      <nav className="resultado-enlaces" aria-label="Cambiar el cartucho">
+        <EnlaceCatalogo />
         <Link className="g-enlace" to="/tutoriales" style={ESTILO_ENLACE}>
           Aprende a cambiar tu cartucho
         </Link>
@@ -298,7 +287,7 @@ function Resultado({ medicion }: { medicion: Medicion }) {
         </Link>
       </nav>
 
-      <nav className="g-pila" aria-label="Qué hacer ahora">
+      <nav className="resultado-enlaces" aria-label="Qué hacer ahora">
         <Link className="g-enlace" to="/bacterias" style={ESTILO_ENLACE}>
           Reportar mi prueba de bacterias
         </Link>
@@ -316,43 +305,74 @@ function conFuente(consecuencia: Consecuencia): string {
   return `${consecuencia.texto.replace(/\.$/, '')} (${consecuencia.fuente}).`;
 }
 
-/** "Si no haces nada": una línea por casilla en rojo o amarillo, de la más grave a la menos grave. */
+/** Cuántas líneas de "Si no haces nada" se ven sin abrir "Ver todas". */
+const CONSECUENCIAS_VISIBLES = 4;
+
+function LineaConsecuencia({ c }: { c: Consecuencia }) {
+  return (
+    <li className="resultado-consecuencia">
+      <p className="resultado-consecuencia__texto">
+        <span className="resultado-consecuencia__nombre">{c.nombre}</span>{' '}
+        <Semaforo nivel={c.nivel} palabra={PALABRA_NIVEL[c.nivel]} className="resultado-consecuencia__semaforo" />{' '}
+        {conFuente(c)}
+        {c.nota && (
+          <>
+            {' '}
+            <span className="resultado-consecuencia__nota">{c.nota}</span>
+          </>
+        )}
+      </p>
+    </li>
+  );
+}
+
+/** "Si no haces nada": una línea por casilla en rojo o amarillo, de la más grave a la menos grave (4 a la vista). */
 function SiNoHacesNada({ consecuencias }: { consecuencias: Consecuencia[] }) {
+  const visibles = consecuencias.slice(0, CONSECUENCIAS_VISIBLES);
+  const resto = consecuencias.slice(CONSECUENCIAS_VISIBLES);
   return (
     <section className="g-pila" aria-labelledby="titulo-si-no-haces-nada">
       <h2 className="g-h3" id="titulo-si-no-haces-nada">
         Si no haces nada
       </h2>
       <ul className="resultado-consecuencias">
-        {consecuencias.map((c) => (
-          <li className="resultado-consecuencia" key={c.clave}>
-            <p className="resultado-consecuencia__cabeza">
-              <span className="resultado-consecuencia__nombre">{c.nombre}</span>
-              <Semaforo nivel={c.nivel} palabra={PALABRA_NIVEL[c.nivel]} />
-            </p>
-            <p className="resultado-consecuencia__texto">{conFuente(c)}</p>
-            {c.nota && <p className="resultado-consecuencia__nota">{c.nota}</p>}
-          </li>
+        {visibles.map((c) => (
+          <LineaConsecuencia c={c} key={c.clave} />
         ))}
       </ul>
+      {resto.length > 0 && (
+        <details className="resultado-detalle resultado-plegable">
+          <summary>Ver todas</summary>
+          <ul className="resultado-consecuencias">
+            {resto.map((c) => (
+              <LineaConsecuencia c={c} key={c.clave} />
+            ))}
+          </ul>
+        </details>
+      )}
       <p className="g-apagado">{LINEA_FIJA_CONSECUENCIAS}</p>
     </section>
   );
 }
 
-/** Lo que va debajo del texto de cada paso: el primer producto, un enlace a la tienda o al catálogo. */
+/** Enlace corto al ancla de "Lo que te recomendamos" (paso 3 y filas en rojo o amarillo). */
+function EnlaceRecomendado() {
+  return (
+    <a className="g-enlace g-enlace--tactil resultado-ver-recomendado" href="#titulo-sugeridos">
+      Ver qué te recomendamos
+    </a>
+  );
+}
+
+/** Lo que va debajo del texto de cada paso: el enlace a la recomendación, a la tienda o al catálogo. */
 function ContenidoDelPaso({
   paso,
-  recomendado,
-  datos,
-  estadoLista,
+  hayRecomendado,
   hogar,
   fechaMedicion,
 }: {
   paso: PasoHoy;
-  recomendado: CartuchoSugerido | undefined;
-  datos: DatosMensaje;
-  estadoLista: EstadoLista;
+  hayRecomendado: boolean;
   hogar: Hogar | null;
   fechaMedicion: string;
 }): ReactNode {
@@ -360,14 +380,14 @@ function ContenidoDelPaso({
     return <RecordatorioProximaMedicion hogar={hogar} fechaMedicion={fechaMedicion} />;
   }
   if (paso.id === 'solucion') {
-    if (!recomendado) {
+    if (!hayRecomendado) {
       return (
         <Link className="g-enlace" to="/tiendas" style={ESTILO_ENLACE}>
           Ver las tiendas
         </Link>
       );
     }
-    return <RecomendadoDelPaso cartucho={recomendado} datos={datos} estadoLista={estadoLista} />;
+    return <EnlaceRecomendado />;
   }
   if (paso.id === 'productos') {
     return (
@@ -405,36 +425,6 @@ function RecordatorioProximaMedicion({ hogar, fechaMedicion }: { hogar: Hogar | 
           />
         }
       />
-    </div>
-  );
-}
-
-/** Paso 3: el primer producto con su porqué, "Agregar a mi lista" y "Cotizar por WhatsApp". */
-function RecomendadoDelPaso({
-  cartucho,
-  datos,
-  estadoLista,
-}: {
-  cartucho: CartuchoSugerido;
-  datos: DatosMensaje;
-  estadoLista: EstadoLista;
-}) {
-  const yaEsta = estadoLista.enLista.has(cartucho.codigo);
-  return (
-    <div className="resultado-paso-producto">
-      <p className="resultado-paso-producto__nombre">{cartucho.nombre}</p>
-      <PorQueTeLoRecomendamos sugerido={cartucho} />
-      <Boton
-        variante={yaEsta ? 'secundario' : 'primario'}
-        anchoCompleto
-        disabled={yaEsta}
-        icono={<Icono nombre={yaEsta ? 'check' : 'mas'} tamano={20} />}
-        onClick={() => estadoLista.agregar(cartucho, 'paso')}
-      >
-        {yaEsta ? 'Agregado' : 'Agregar a mi lista'}
-      </Boton>
-      <CotizarWhatsApp mensaje={mensajeCotizar(datos, cartucho)} />
-      {estadoLista.agregado?.lugar === 'paso' && <AvisoAgregado nombre={estadoLista.agregado.nombre} />}
     </div>
   );
 }
@@ -509,26 +499,92 @@ export function AvisoRecambio({
   );
 }
 
+
+/** "Cloro libre" → "cloro libre"; "pH" se queda igual. */
+function enMinuscula(nombre: string): string {
+  if (nombre.length > 1 && nombre.charAt(1) === nombre.charAt(1).toUpperCase() && /[A-Z]/.test(nombre.charAt(1))) return nombre;
+  return `${nombre.charAt(0).toLowerCase()}${nombre.slice(1)}`;
+}
+
+function enumerarNombres(nombres: string[]): string {
+  if (nombres.length <= 1) return nombres.join('');
+  return `${nombres.slice(0, -1).join(', ')} y ${nombres[nombres.length - 1]}`;
+}
+
+/**
+ * "Tu agua, casilla por casilla": las filas en rojo y amarillo a la vista; las verdes agrupadas en un
+ * solo plegable; las que no se leyeron, en una línea con su enlace para completarlas.
+ */
+function Casillas({ parametros }: { parametros: ResultadoParametro[] }) {
+  const marcadas = parametros.filter((p) => p.nivel === 'rojo' || p.nivel === 'amarillo');
+  const verdes = parametros.filter((p) => p.nivel === 'verde');
+  const sinLectura = parametros.filter((p) => p.nivel === 'sin_dato');
+  const n = verdes.length;
+  return (
+    <section className="g-pila resultado-casillas" aria-labelledby="titulo-casillas">
+      <h2 className="g-h3" id="titulo-casillas">
+        Tu agua, casilla por casilla
+      </h2>
+      {marcadas.length > 0 && (
+        <ListaParametros>
+          {marcadas.map((parametro) => (
+            <FilaResultado key={parametro.clave} parametro={parametro} conEnlace />
+          ))}
+        </ListaParametros>
+      )}
+      {n > 0 && (
+        <details className="resultado-detalle resultado-plegable resultado-verdes">
+          <summary>
+            {n} {n === 1 ? 'casilla' : 'casillas'} en verde: {enumerarNombres(verdes.map((p) => enMinuscula(p.nombre)))}
+          </summary>
+          <ListaParametros>
+            {verdes.map((parametro) => (
+              <FilaResultado key={parametro.clave} parametro={parametro} />
+            ))}
+          </ListaParametros>
+        </details>
+      )}
+      {sinLectura.length > 0 && (
+        <p className="resultado-sin-lectura">
+          Sin lectura: {enumerarNombres(sinLectura.map((p) => p.nombre))}.{' '}
+          <Link className="g-enlace" to="/medir/manual" style={ESTILO_ENLACE}>
+            Completarlas a mano
+          </Link>
+        </p>
+      )}
+    </section>
+  );
+}
+
 /** Fila de una casilla: nombre, valor, semáforo y una frase corta; lo largo va en "Qué mide y por qué importa". */
-function FilaResultado({ parametro }: { parametro: ResultadoParametro }) {
+function FilaResultado({ parametro, conEnlace = false }: { parametro: ResultadoParametro; conEnlace?: boolean }) {
   const hayValor = parametro.valor !== null && parametro.valor !== undefined;
   const corta = fraseCorta(parametro);
   const queMide = QUE_MIDE[parametro.clave];
   const fraseLarga = parametro.frase && parametro.frase !== corta ? parametro.frase : null;
+  const hayDetalle = Boolean(queMide || fraseLarga || parametro.orientativo);
   return (
-    <li className="g-fila-parametro">
-      <div>
-        <p className="g-fila-parametro__nombre">
-          {parametro.nombre}{' '}
-          {parametro.orientativo && <Insignia tono="aviso">Orientativo</Insignia>}
-        </p>
-        <p className="g-fila-parametro__valor">
+    <li className="g-fila-parametro resultado-fila">
+      <p className="g-fila-parametro__nombre">
+        {parametro.nombre}{' '}
+        <span className="g-fila-parametro__valor resultado-fila__valor">
           {hayValor ? `${parametro.valor}${parametro.unidad ? ` ${parametro.unidad}` : ''}` : 'No se pudo leer'}
-        </p>
-      </div>
+        </span>{' '}
+        {parametro.orientativo && <Insignia tono="aviso">Orientativo</Insignia>}
+      </p>
       <Semaforo nivel={parametro.nivel} palabra={PALABRA_NIVEL[parametro.nivel]} />
-      <p className="g-fila-parametro__frase">{corta}</p>
-      {(queMide || fraseLarga || parametro.orientativo) && (
+      <p className="g-fila-parametro__frase">
+        {corta}
+        {conEnlace && (
+          <>
+            {' '}
+            <a className="g-enlace resultado-ver-recomendado" href="#titulo-sugeridos">
+              Ver qué te recomendamos
+            </a>
+          </>
+        )}
+      </p>
+      {hayDetalle && (
         <details className="resultado-detalle">
           <summary>Qué mide y por qué importa</summary>
           {queMide && <p>{queMide}</p>}
@@ -560,6 +616,74 @@ export function PorQueTeLoRecomendamos({ sugerido }: { sugerido: Partial<Pick<Ca
   );
 }
 
+/** Cuántos productos se ven sin abrir "Ver más opciones". */
+const SUGERIDOS_VISIBLES = 3;
+
+function TarjetaSugerido({
+  cartucho,
+  mejor,
+  datos,
+  estadoLista,
+}: {
+  cartucho: CartuchoSugerido;
+  mejor: boolean;
+  datos: DatosMensaje;
+  estadoLista: EstadoLista;
+}) {
+  const yaEsta = estadoLista.enLista.has(cartucho.codigo);
+  const lineaCodigo = [cartucho.marca, cartucho.codigo].filter(Boolean).join(' · ');
+  return (
+    <article
+      className={mejor ? 'g-tarjeta-producto g-tarjeta-producto--destacado' : 'g-tarjeta-producto resultado-tarjeta-compacta'}
+      aria-label={mejor ? `La mejor opción para tu casa: ${cartucho.nombre}` : cartucho.nombre}
+    >
+      {mejor && (
+        <p className="producto-mejor" style={{ margin: 0 }}>
+          <Insignia tono="azul">La mejor opción para tu casa</Insignia>
+        </p>
+      )}
+      <FotoProducto url={cartucho.foto_url} compacta />
+      <div className="g-tarjeta-producto__cuerpo">
+        <h3 className="g-tarjeta-producto__nombre">{cartucho.nombre}</h3>
+        {lineaCodigo && <p className="g-tarjeta-producto__codigo">{lineaCodigo}</p>}
+        {cartucho.es_ejemplo && (
+          <div className="g-tarjeta-producto__etiquetas">
+            <Insignia tono="aviso">Ejemplo</Insignia>
+          </div>
+        )}
+      </div>
+      <div className="g-tarjeta-producto__acciones">
+        {cartucho.corrige.length > 0 && (
+          <p className="g-tarjeta-producto__motivo">Pensado para: {traducirCorrige(cartucho.corrige)}.</p>
+        )}
+        {mejor ? (
+          <PorQueTeLoRecomendamos sugerido={cartucho} />
+        ) : (
+          cartucho.motivo && (
+            <details className="resultado-detalle">
+              <summary>Por qué te lo recomendamos</summary>
+              <p>{cartucho.motivo}</p>
+              <ChipsAtiende atiende={cartucho.atiende} />
+            </details>
+          )
+        )}
+        <div className={mejor ? 'resultado-tarjeta__botones' : 'resultado-tarjeta__botones resultado-tarjeta__botones--fila'}>
+          <Boton
+            variante={mejor && !yaEsta ? 'primario' : 'secundario'}
+            anchoCompleto
+            disabled={yaEsta}
+            icono={<Icono nombre={yaEsta ? 'check' : 'mas'} tamano={20} />}
+            onClick={() => estadoLista.agregar(cartucho)}
+          >
+            {yaEsta ? 'Agregado' : 'Agregar a mi lista'}
+          </Boton>
+          <CotizarWhatsApp mensaje={mensajeCotizar(datos, cartucho)} sinEditar={!mejor} />
+        </div>
+      </div>
+    </article>
+  );
+}
+
 function Sugeridos({
   sugeridos,
   datos,
@@ -571,7 +695,7 @@ function Sugeridos({
   tieneFiltro: boolean;
   estadoLista: EstadoLista;
 }) {
-  const { enLista, agregado, agregar } = estadoLista;
+  const { agregado } = estadoLista;
 
   if (sugeridos.length === 0) {
     return (
@@ -589,12 +713,16 @@ function Sugeridos({
         <Link className="g-enlace" to="/tiendas" style={ESTILO_ENLACE}>
           ¿Dudas? Pasa por la tienda y lo vemos contigo.
         </Link>
-        <EnlaceCatalogo />
       </section>
     );
   }
 
   const hayEjemplo = sugeridos.some((cartucho) => cartucho.es_ejemplo);
+  const visibles = sugeridos.slice(0, SUGERIDOS_VISIBLES);
+  const resto = sugeridos.slice(SUGERIDOS_VISIBLES);
+  const tarjeta = (cartucho: CartuchoSugerido, indice: number) => (
+    <TarjetaSugerido key={cartucho.codigo} cartucho={cartucho} mejor={indice === 0} datos={datos} estadoLista={estadoLista} />
+  );
 
   return (
     <section className="g-pila" aria-labelledby="titulo-sugeridos">
@@ -602,56 +730,18 @@ function Sugeridos({
         Lo que te recomendamos
       </h2>
       <p className="g-apagado">
-        {hayEjemplo ? SUGERIDO_EJEMPLO : 'Según tu resultado y lo que nos contaste de tu casa.'}
+        {hayEjemplo ? SUGERIDO_EJEMPLO : 'Según tu resultado y lo que nos contaste de tu casa.'}{' '}
+        {TEXTO_PRECIO_WHATSAPP}
       </p>
-      {sugeridos.map((cartucho, indice) => {
-        const yaEsta = enLista.has(cartucho.codigo);
-        const lineaCodigo = [cartucho.marca, cartucho.codigo].filter(Boolean).join(' · ');
-        const mejor = indice === 0;
-        return (
-          <article
-            className={mejor ? 'g-tarjeta-producto g-tarjeta-producto--destacado' : 'g-tarjeta-producto'}
-            key={cartucho.codigo}
-            aria-label={mejor ? `La mejor opción para tu casa: ${cartucho.nombre}` : cartucho.nombre}
-          >
-            {mejor && (
-              <p className="producto-mejor" style={{ margin: 0 }}>
-                <Insignia tono="azul">La mejor opción para tu casa</Insignia>
-              </p>
-            )}
-            <FotoProducto url={cartucho.foto_url} />
-            <div className="g-tarjeta-producto__cuerpo">
-              <h3 className="g-tarjeta-producto__nombre">{cartucho.nombre}</h3>
-              {lineaCodigo && <p className="g-tarjeta-producto__codigo">{lineaCodigo}</p>}
-              {cartucho.corrige.length > 0 && (
-                <p className="g-tarjeta-producto__motivo">
-                  Pensado para: {traducirCorrige(cartucho.corrige)}.
-                </p>
-              )}
-              {cartucho.es_ejemplo && (
-                <div className="g-tarjeta-producto__etiquetas">
-                  <Insignia tono="aviso">Ejemplo</Insignia>
-                </div>
-              )}
-            </div>
-            <div className="g-tarjeta-producto__acciones">
-              <PorQueTeLoRecomendamos sugerido={cartucho} />
-              <Boton
-                variante={mejor && !yaEsta ? 'primario' : 'secundario'}
-                anchoCompleto
-                disabled={yaEsta}
-                icono={<Icono nombre={yaEsta ? 'check' : 'mas'} tamano={20} />}
-                onClick={() => agregar(cartucho, 'sugeridos')}
-              >
-                {yaEsta ? 'Agregado' : 'Agregar a mi lista'}
-              </Boton>
-              <CotizarWhatsApp mensaje={mensajeCotizar(datos, cartucho)} conLineaPrecio />
-            </div>
-          </article>
-        );
-      })}
-      {agregado?.lugar === 'sugeridos' && <AvisoAgregado nombre={agregado.nombre} />}
-      <EnlaceCatalogo />
+      <LineaFiltro />
+      {visibles.map(tarjeta)}
+      {resto.length > 0 && (
+        <details className="resultado-detalle resultado-plegable resultado-mas-opciones">
+          <summary>Ver más opciones</summary>
+          <div className="g-pila">{resto.map((cartucho, i) => tarjeta(cartucho, i + SUGERIDOS_VISIBLES))}</div>
+        </details>
+      )}
+      {agregado && <AvisoAgregado nombre={agregado.nombre} />}
     </section>
   );
 }

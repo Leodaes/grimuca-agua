@@ -117,52 +117,117 @@
   line-height: 1.45;
 }
 
-/* "Si no haces nada" */
+/* "Si no haces nada": una línea por casilla (nombre, semáforo y la consecuencia seguidos). */
 .resultado-consecuencias {
   display: grid;
-  gap: var(--s3);
+  gap: var(--s2);
   margin: 0;
   padding: 0;
   list-style: none;
 }
 .resultado-consecuencia {
-  display: grid;
-  gap: var(--s1);
-  padding-bottom: var(--s3);
+  padding-bottom: var(--s2);
   border-bottom: 1px solid var(--linea);
-}
-.resultado-consecuencia__cabeza {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--s2);
-  margin: 0;
 }
 .resultado-consecuencia__nombre {
   color: var(--tinta);
   font-weight: 700;
 }
+.resultado-consecuencia__semaforo {
+  vertical-align: middle;
+}
 .resultado-consecuencia__texto {
   margin: 0;
   color: var(--tinta-2);
+  font-size: var(--t-1);
+  line-height: 1.45;
+}
+.resultado-consecuencia__nombre {
+  font-size: var(--t0);
 }
 .resultado-consecuencia__nota {
-  margin: 0;
   color: var(--apagado);
+}
+
+/* Plegables de la página ("Ver todas", casillas en verde, "Ver más opciones"). */
+.resultado-plegable > summary {
+  font-size: var(--t0);
+}
+.resultado-plegable[open] > summary {
+  margin-bottom: var(--s2);
+}
+
+/* Casillas compactas: frase corta, y en una sola línea el enlace a la recomendación y el plegable. */
+.resultado-fila {
+  padding: var(--s2) 0;
+}
+.resultado-fila__acciones {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 0 var(--s4);
+}
+.resultado-fila__acciones > .resultado-detalle[open] {
+  flex-basis: 100%;
+}
+.resultado-sin-lectura {
+  margin: 0;
+  color: var(--tinta-2);
+}
+
+.resultado-fila__valor {
+  font-weight: 400;
+}
+.resultado-fila > .resultado-detalle > summary {
+  min-height: 40px;
+}
+
+/* Tarjetas del resultado: foto chica y "Pensado para" a todo el ancho. Las que no son "La mejor opción":
+   porqué plegado y los dos botones en una fila. */
+#titulo-sugeridos ~ .g-tarjeta-producto,
+.resultado-mas-opciones .g-tarjeta-producto {
+  grid-template-columns: 64px 1fr;
+  gap: var(--s2) var(--s3);
+}
+#titulo-sugeridos ~ .g-tarjeta-producto .g-tarjeta-producto__foto,
+.resultado-mas-opciones .g-tarjeta-producto__foto {
+  width: 64px;
+  height: 64px;
+}
+.resultado-tarjeta__botones {
+  display: grid;
+  gap: var(--s2);
+}
+.resultado-tarjeta__botones--fila {
+  grid-template-columns: 1fr 1fr;
+  align-items: start;
+}
+.resultado-tarjeta__botones--fila .producto-cotizar {
+  margin-top: 0;
+}
+.resultado-tarjeta__botones--fila .g-boton {
+  padding-inline: var(--s2);
   font-size: var(--t-1);
 }
 
-/* Paso 3 de "Qué hacer hoy": el primer producto con su porqué y sus botones. */
+/* Enlaces del pie: dos columnas. */
+.resultado-enlaces {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: var(--s1) var(--s3);
+  font-size: var(--t-1);
+}
+.resultado-enlaces > .g-boton {
+  grid-column: auto;
+}
+
+/* Debajo de un paso de "Qué hacer hoy": el recordatorio de la próxima medición. */
 .resultado-paso-producto {
   display: grid;
   gap: var(--s2);
   margin-top: var(--s2);
-}
-.resultado-paso-producto__nombre {
-  margin: 0;
-  color: var(--tinta);
-  font-weight: 700;
 }
 
 /* Fila de casilla: lo largo va plegado. */

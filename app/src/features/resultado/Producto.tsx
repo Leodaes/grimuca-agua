@@ -54,10 +54,13 @@ export function CotizarWhatsApp({
   mensaje,
   etiqueta = 'Cotizar por WhatsApp',
   conLineaPrecio = false,
+  sinEditar = false,
 }: {
   mensaje: string;
   etiqueta?: string;
   conLineaPrecio?: boolean;
+  /** Solo el botón, sin "Ver o editar el mensaje" (opciones secundarias del resultado). */
+  sinEditar?: boolean;
 }) {
   const [texto, setTexto] = useState(mensaje);
   const idCampo = useId();
@@ -76,7 +79,7 @@ export function CotizarWhatsApp({
         </Boton>
       )}
       {conLineaPrecio && <p className="producto-cotizar__nota">{TEXTO_PRECIO_WHATSAPP}</p>}
-      {!enlace.interno && (
+      {!enlace.interno && !sinEditar && (
         <details className="producto-cotizar__mensaje">
           <summary>Ver o editar el mensaje</summary>
           <label className="producto-cotizar__etiqueta" htmlFor={idCampo}>

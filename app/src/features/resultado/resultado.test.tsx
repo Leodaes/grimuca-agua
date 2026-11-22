@@ -160,20 +160,25 @@ describe('PaginaResultado', () => {
     expect(within(hoy).getByRole('button', { name: /Recuérdame cuándo hacer mi próxima medición/ })).toBeInTheDocument();
     const cotizar = screen.getAllByRole('link', { name: 'Cotizar por WhatsApp' })[0];
     expect(cotizar.getAttribute('href')).toMatch(/^https:\/\/wa\.me\/584144409396\?text=.*OA-01/);
-    expect(screen.getAllByText('El precio te lo confirma la tienda por WhatsApp, sin compromiso.')).toHaveLength(2);
+    // La línea del precio sale una sola vez, debajo del título "Lo que te recomendamos".
+    expect(screen.getAllByText(/El precio te lo confirma la tienda por WhatsApp, sin compromiso\./)).toHaveLength(1);
   });
 
   it('cada sugerido muestra "Por qué te lo recomendamos", sus chips y la foto; el primero es la mejor opción', async () => {
     montar();
     expect(await screen.findByRole('heading', { name: 'Lo que te recomendamos' })).toBeInTheDocument();
-    expect(screen.getByText('Según tu resultado y lo que nos contaste de tu casa.')).toBeInTheDocument();
+    expect(screen.getByText(/^Según tu resultado y lo que nos contaste de tu casa\./)).toBeInTheDocument();
     const mejor = screen.getByRole('article', { name: /La mejor opción para tu casa/ });
     expect(within(mejor).getByText('La mejor opción para tu casa')).toBeInTheDocument();
     expect(within(mejor).getByRole('heading', { name: 'Por qué te lo recomendamos' })).toBeInTheDocument();
     expect(within(mejor).getByText(MOTIVO)).toBeInTheDocument();
     expect(within(mejor).getByText('Cloro libre · Amarillo')).toBeInTheDocument();
     expect(within(mejor).getByText('Tu filtro')).toBeInTheDocument();
-    expect(screen.getAllByRole('heading', { name: 'Por qué te lo recomendamos' })).toHaveLength(2);
+    // La mejor opción muestra su porqué; las demás lo traen plegado.
+    expect(screen.getAllByRole('heading', { name: 'Por qué te lo recomendamos' })).toHaveLength(1);
+    const otra = screen.getByRole('article', { name: 'Cartucho de sedimentos' });
+    expect(within(otra).getByText('Por qué te lo recomendamos').tagName).toBe('SUMMARY');
+    expect(within(otra).getByRole('link', { name: 'Cotizar por WhatsApp' })).toBeInTheDocument();
 
     const foto = mejor.querySelector('img')!;
     expect(foto).toHaveAttribute('src', 'https://grimuca.com/foto-oa-01.png');
@@ -285,14 +290,33 @@ describe('PaginaResultado', () => {
       'Paso 3: Elige la opción para tu casa',
     ]);
     expect(hoy).toHaveTextContent('hervir no quita el plomo ni el cobre, y el nitrito se concentra (EPA).');
-    expect(within(hoy).getByText(MOTIVO)).toBeInTheDocument();
-    expect(within(hoy).getByRole('button', { name: 'Agregar a mi lista' })).toBeInTheDocument();
-    expect(within(hoy).getByRole('link', { name: 'Cotizar por WhatsApp' })).toBeInTheDocument();
+    // El paso 3 lleva a la recomendación: los productos solo están en "Lo que te recomendamos".
+    expect(within(hoy).getByRole('link', { name: 'Ver qué te recomendamos' })).toHaveAttribute('href', '#titulo-sugeridos');
+    expect(within(hoy).queryByRole('button', { name: 'Agregar a mi lista' })).not.toBeInTheDocument();
+    expect(within(hoy).queryByText(MOTIVO)).not.toBeInTheDocument();
+    expect(screen.getAllByRole('button', { name: 'Agregar a mi lista' })).toHaveLength(2);
 
     // Casillas: una frase corta y lo largo plegado; ya no está "Qué encontramos".
     expect(screen.getByRole('heading', { name: 'Tu agua, casilla por casilla' })).toBeInTheDocument();
     expect(screen.queryByRole('heading', { name: 'Qué encontramos' })).not.toBeInTheDocument();
     expect(screen.getAllByText('Qué mide y por qué importa').length).toBe(9);
+    // Rojas y amarillas a la vista, cada una con su enlace a la recomendación; las verdes en un solo plegable.
+    const casillas = screen.getByRole('region', { name: 'Tu agua, casilla por casilla' });
+    expect(within(casillas).getAllByRole('link', { name: 'Ver qué te recomendamos' })).toHaveLength(4);
+    const verdes = within(casillas).getByText('5 casillas en verde: alcalinidad, dureza, nitrato, cloro libre y hierro');
+    expect(verdes.tagName).toBe('SUMMARY');
+    expect((verdes.parentElement as HTMLDetailsElement).open).toBe(false);
+    expect(within(verdes.parentElement!).getAllByRole('listitem')).toHaveLength(5);
+    expect(within(casillas).queryByRole('button', { name: 'Agregar a mi lista' })).not.toBeInTheDocument();
+    // Orden: conclusión → qué hacer hoy → recomendación → si no haces nada → casillas.
+    const titulos = screen.getAllByRole('heading', { level: 2 }).map((h) => h.textContent);
+    expect(titulos.slice(0, 5)).toEqual([
+      'Tu conclusión',
+      'Qué hacer hoy',
+      'Lo que te recomendamos',
+      'Si no haces nada',
+      'Tu agua, casilla por casilla',
+    ]);
     expect(screen.getByRole('heading', { name: 'Lo que te recomendamos' })).toBeInTheDocument();
     expect(
       screen.getByText('Esta tira no mide todo. Un buen resultado no significa que el agua sea apta para tomar.'),
@@ -300,6 +324,53 @@ describe('PaginaResultado', () => {
 
     const texto = (document.body.textContent ?? '').toLowerCase();
     expect(texto).not.toMatch(/potable|segura|te vas a enfermar|tu agua tiene plomo/);
+  });
+
+  it('más de 3 productos y más de 4 casillas marcadas: "Ver más opciones", "Ver todas" y la línea de las sin lectura', async () => {
+    const otro = (n: number) => ({ ...medicionVerde.sugeridos![1], codigo: `OA-0${n}`, nombre: `Cartucho ${n}` });
+    const fila = (clave: ClaveParametro, nombre: string, nivel: Nivel, valor: number | null = 1) => ({
+      clave,
+      nombre,
+      unidad: 'mg/L',
+      valor,
+      nivel,
+      frase: '',
+      orientativo: false,
+    });
+    api.medicion.mockResolvedValue({
+      ...medicionVerde,
+      evaluacion: {
+        ...medicionVerde.evaluacion,
+        semaforo: 'rojo',
+        porParametro: [
+          fila('plomo', 'Plomo', 'rojo', 15),
+          fila('cobre', 'Cobre', 'rojo', 2),
+          fila('nitrato', 'Nitrato', 'rojo', 50),
+          fila('nitrito', 'Nitrito', 'rojo', 5),
+          fila('dureza', 'Dureza', 'amarillo', 250),
+          fila('hierro', 'Hierro', 'sin_dato', null),
+          fila('cloro_libre', 'Cloro libre', 'verde', 1),
+        ],
+      },
+      sugeridos: [...medicionVerde.sugeridos!, otro(3), otro(4)],
+    });
+    montar();
+    const recomendados = await screen.findByRole('region', { name: 'Lo que te recomendamos' });
+    const mas = within(recomendados).getByText('Ver más opciones');
+    expect(mas.tagName).toBe('SUMMARY');
+    expect(within(mas.parentElement!).getAllByRole('article')).toHaveLength(1);
+    expect(within(recomendados).getAllByRole('article')).toHaveLength(4);
+
+    const siNo = screen.getByRole('region', { name: 'Si no haces nada' });
+    const todas = within(siNo).getByText('Ver todas');
+    expect(todas.tagName).toBe('SUMMARY');
+    expect(within(todas.parentElement!).getAllByRole('listitem')).toHaveLength(1);
+    expect(within(siNo).getByText(LINEA_FIJA_CONSECUENCIAS)).toBeInTheDocument();
+
+    const casillas = screen.getByRole('region', { name: 'Tu agua, casilla por casilla' });
+    expect(within(casillas).getByText('1 casilla en verde: cloro libre')).toBeInTheDocument();
+    expect(within(casillas).getByText(/Sin lectura: Hierro\./)).toBeInTheDocument();
+    expect(within(casillas).getByRole('link', { name: 'Completarlas a mano' })).toHaveAttribute('href', '/medir/manual');
   });
 
   it('hogar sin filtro: puerta al filtro por WhatsApp', async () => {
