@@ -156,13 +156,19 @@ img, .image-container { max-width: 100%; max-height: min(50vh, 400px); object-fi
    desplaza y el scroll-snap del html funciona */
 body { overflow-x: clip; }
 
+/* Escala general: el diseño se hizo a 1366×768 (rem = 16px) y crece en
+   proporción con la pantalla (a 1920×1080, rem ≈ 22px), sin deformarse */
+html { font-size: clamp(14px, min(1.172vw, 2.083vh), 30px); }
+
 /* ===========================================
    AJUSTES DE TAMAÑO PROPIOS DE ESTE DECK
    =========================================== */
 :root {
   --title-size: clamp(1.6rem, 4.2vw, 3.6rem);
   --body-size: clamp(0.85rem, 1.5vw, 1.3rem);
-  --small-size: clamp(0.68rem, 1vw, 0.95rem);
+  --small-size: clamp(0.72rem, 1vw, 0.95rem);
+  /* Descripciones de tarjetas y columnas: un punto más grandes que las notas */
+  --desc-size: clamp(0.8rem, 1.22vw, 1.1rem);
 }
 
 /* ===========================================
@@ -207,7 +213,7 @@ body { overflow-x: clip; }
 .pie-legal {
   position: absolute; bottom: clamp(0.6rem, 2vh, 1.4rem); left: var(--slide-padding);
   right: calc(var(--slide-padding) + 4rem);
-  font-size: clamp(0.6rem, 0.85vw, 0.8rem); line-height: 1.35; color: var(--apagado); z-index: 3;
+  font-size: clamp(0.66rem, 0.9vw, 0.85rem); line-height: 1.35; color: var(--apagado); z-index: 3;
 }
 .oscura .pie-legal { color: var(--sobre-azul-3); }
 /* Las láminas con cabecera dejan aire arriba para que el logo no tape el texto */
@@ -274,7 +280,7 @@ h2 { font-size: var(--title-size); font-weight: 800; line-height: 1.06; max-widt
   padding: var(--slide-padding); padding-bottom: calc(var(--slide-padding) + 3rem);
 }
 .portada .foto { flex: 1 1 53%; position: relative; overflow: hidden; }
-.portada .foto img { position: absolute; inset: 0; width: 100%; height: 100%; max-height: none; object-fit: cover; object-position: 62% center; }
+.portada .foto img { position: absolute; inset: 0; width: 100%; height: 100%; max-height: none; object-fit: cover; object-position: 88% center; }
 .portada .marca { height: clamp(24px, 4.4vh, 40px); max-height: none; width: auto; margin-bottom: clamp(1rem, 4vh, 2.6rem); align-self: flex-start; }
 .portada h1 .agua { color: var(--turquesa-700); display: block; }
 .portada .lema-grande {
@@ -302,7 +308,7 @@ h2 { font-size: var(--title-size); font-weight: 800; line-height: 1.06; max-widt
 .tres-col > div:first-child { padding-left: 0; border-left: 0; }
 .tres-col svg { width: clamp(28px, 3.4vw, 46px); height: auto; color: var(--azul); }
 .tres-col b { font-family: var(--f-titulo); font-stretch: 108%; font-weight: 800; font-size: clamp(.95rem, 1.6vw, 1.4rem); color: var(--tinta); line-height: 1.2; }
-.tres-col p { font-size: var(--small-size); color: var(--tinta-2); line-height: 1.45; }
+.tres-col p { font-size: var(--desc-size); color: var(--tinta-2); line-height: 1.45; }
 .tres-col .cifra-mini { font-family: var(--f-titulo); font-weight: 800; color: var(--accion); font-size: clamp(1.2rem, 2.4vw, 2rem); line-height: 1; }
 
 /* ===========================================
@@ -313,7 +319,7 @@ h2 { font-size: var(--title-size); font-weight: 800; line-height: 1.06; max-widt
 .paso .num { font-weight: 700; font-size: var(--small-size); color: var(--tinta); padding-bottom: .5em; border-bottom: 3px solid var(--turquesa); }
 .paso b { font-family: var(--f-titulo); font-stretch: 112%; font-weight: 800; font-size: clamp(1.05rem, 2vw, 1.75rem); color: var(--tinta); }
 .paso .grande { font-family: var(--f-titulo); font-weight: 800; color: var(--azul); font-size: clamp(1.4rem, 3vw, 2.6rem); line-height: 1; }
-.paso p { font-size: var(--small-size); color: var(--tinta-2); line-height: 1.45; }
+.paso p { font-size: var(--desc-size); color: var(--tinta-2); line-height: 1.45; }
 .semaforo-mini { display: flex; gap: .4em; font-size: clamp(.9rem, 1.4vw, 1.2rem); }
 .semaforo-mini i { width: .8em; height: .8em; border-radius: 50%; display: block; }
 
@@ -333,7 +339,7 @@ h2 { font-size: var(--title-size); font-weight: 800; line-height: 1.06; max-widt
 .modulo .n { font-family: var(--f-titulo); font-weight: 800; color: var(--amarillo); font-size: clamp(1.1rem, 2.4vw, 2rem); line-height: 1; }
 .modulo b { font-family: var(--f-titulo); font-stretch: 112%; font-weight: 800; font-size: clamp(1rem, 1.9vw, 1.6rem); }
 .modulo code { font-family: var(--f-texto); font-size: var(--small-size); color: var(--sobre-azul-3); }
-.modulo span { font-size: var(--small-size); color: var(--sobre-azul-2); line-height: 1.38; margin-top: auto; }
+.modulo span { font-size: var(--desc-size); color: var(--sobre-azul-2); line-height: 1.38; margin-top: auto; }
 .en-vivo { margin-top: clamp(1rem, 4vh, 2.6rem); display: flex; align-items: center; gap: clamp(.8rem, 2vw, 1.6rem); flex-wrap: wrap; }
 .boton { display: inline-flex; align-items: center; gap: .6em; background: var(--accion); color: #fff; font-weight: 700; font-size: clamp(1rem, 1.8vw, 1.5rem); padding: .55em 1.1em; border-radius: 2px; }
 .punto-vivo { width: .55em; height: .55em; border-radius: 50%; background: #fff; animation: latido 1.6s ease-in-out infinite; }
@@ -383,13 +389,13 @@ h2 { font-size: var(--title-size); font-weight: 800; line-height: 1.06; max-widt
 /* ===========================================
    9 · CIERRE (foto de mostrador arriba)
    =========================================== */
-.cierre .tira-foto { height: 38vh; position: relative; overflow: hidden; flex: none; }
+.cierre .tira-foto { height: 44vh; position: relative; overflow: hidden; flex: none; }
 .cierre .tira-foto img { position: absolute; inset: 0; width: 100%; height: 100%; max-height: none; object-fit: cover; object-position: center 30%; }
-.cierre .slide-content { justify-content: flex-start; padding-top: clamp(1rem, 4vh, 2.4rem); }
+.cierre .slide-content { justify-content: center; padding-top: clamp(1rem, 3vh, 2rem); }
 .cierre h2 { max-width: 28ch; }
 .cierre-fila { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, .9fr); gap: clamp(1rem, 3vw, 3rem); align-items: start; margin-top: clamp(.6rem, 2vh, 1.4rem); }
 .cierre .sub { font-size: var(--body-size); color: var(--tinta-2); }
-.siguiente { font-size: var(--small-size); color: var(--tinta-2); line-height: 1.45; }
+.siguiente { font-size: var(--desc-size); color: var(--tinta-2); line-height: 1.45; }
 .siguiente b { display: block; font-family: var(--f-titulo); font-stretch: 108%; font-weight: 800; color: var(--azul); font-size: clamp(.9rem, 1.4vw, 1.2rem); margin-bottom: .3em; }
 .siguiente ul { list-style: none; display: flex; flex-direction: column; gap: .3em; }
 .siguiente li::before { content: "· "; color: var(--azul); font-weight: 700; }
@@ -409,9 +415,11 @@ h2 { font-size: var(--title-size); font-weight: 800; line-height: 1.06; max-widt
    NAVEGACIÓN: barra de progreso y puntos
    =========================================== */
 .progreso { position: fixed; top: 0; left: 0; height: 3px; background: var(--amarillo); width: 0; z-index: 50; transition: width .4s var(--ease); }
-.nav-dots { position: fixed; right: clamp(.5rem, 1.2vw, 1.2rem); top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 10px; z-index: 50; }
-.nav-dots button { width: 10px; height: 10px; border-radius: 0; border: 1px solid var(--azul-100); background: transparent; cursor: pointer; padding: 0; mix-blend-mode: difference; }
-.nav-dots button[aria-current="true"] { background: var(--amarillo); border-color: var(--amarillo); mix-blend-mode: normal; }
+/* Puntos sobre una pastilla azul: se ven igual sobre foto, blanco o azul */
+.nav-dots { position: fixed; right: clamp(.4rem, .8vw, .9rem); top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 8px; z-index: 50; background: rgba(9, 34, 64, .72); padding: 8px 6px; border-radius: 2px; opacity: .55; transition: opacity .2s; }
+.nav-dots:hover, .nav-dots:focus-within { opacity: 1; }
+.nav-dots button { width: 8px; height: 8px; border-radius: 0; border: 1px solid var(--azul-100); background: transparent; cursor: pointer; padding: 0; }
+.nav-dots button[aria-current="true"] { background: var(--amarillo); border-color: var(--amarillo); }
 .nav-dots button:focus-visible { outline: 2px solid var(--amarillo); outline-offset: 2px; }
 
 /* ===========================================
