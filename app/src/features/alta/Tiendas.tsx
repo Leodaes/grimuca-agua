@@ -9,7 +9,7 @@ export function Tiendas() {
   const conHogar = Boolean(hogarId());
 
   return (
-    <PaginaAlta>
+    <PaginaAlta ancho>
       <h1 className="g-h1">Nuestras tiendas</h1>
       <p>Retira tus cartuchos o pregunta lo que necesites en la tienda que te quede más cerca.</p>
       <p>
@@ -25,14 +25,18 @@ export function Tiendas() {
       </p>
       {carga.cargando && <Cargando variante="esqueleto" texto="Un momento…" lineas={6} />}
       {carga.error && <ErrorConReintento mensaje={carga.error} onReintentar={carga.reintentar} />}
-      {carga.datos?.map((t) => (
+      {carga.datos && (
+        <div className="g-rejilla alta-tiendas">
+          {carga.datos.map((t) => (
         <TarjetaTienda
           key={t.id}
           nombre={t.nombre}
           horario={t.horario ? `Horario: ${t.horario}` : undefined}
           direccion={t.direccion ?? undefined}
         />
-      ))}
+          ))}
+        </div>
+      )}
       {!conHogar && carga.datos && (
         <p className="g-apagado">¿Quieres medir tu agua? Empieza desde el inicio.</p>
       )}
