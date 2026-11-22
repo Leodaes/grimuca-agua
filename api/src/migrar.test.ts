@@ -36,6 +36,12 @@ describe('migrar', () => {
     const { rows } = await bd.query('SELECT nombre FROM migraciones ORDER BY nombre');
     expect(rows.map((fila) => fila.nombre)).toEqual(primera.aplicadas);
     expect(await total(bd, 'tiendas')).toBe(3);
+    const tiendas = await bd.query('SELECT id, horario, direccion FROM tiendas ORDER BY id');
+    expect(tiendas.rows.map((fila) => fila.id)).toEqual(['biglow', 'cem', 'manongo']);
+    for (const fila of tiendas.rows) {
+      expect(fila.horario).toMatch(/Lunes a viernes/);
+      expect(fila.direccion).toBeTruthy();
+    }
     // Las columnas del catálogo real existen.
     await bd.query('SELECT categoria, recomendable, url_producto, disponible FROM cartuchos');
 
@@ -192,6 +198,11 @@ describe('db/semilla.sql (datos de demostración)', () => {
   it('trae stock en las tres tiendas (con faltantes) y de 6 a 8 pedidos pendientes mezclados', async () => {
     const stock = await bd.query('SELECT tienda_id, cantidad FROM stock');
     expect(new Set(stock.rows.map((fila) => fila.tienda_id)).size).toBe(3);
+    // Las tres tiendas tienen hogares y pedidos pendientes: ninguna queda vacía en el panel.
+    const hogaresPorTienda = await bd.query('SELECT tienda_id, count(*) AS total FROM hogares GROUP BY tienda_id');
+    expect(hogaresPorTienda.rows).toHaveLength(3);
+    const pendientesPorTienda = await bd.query("SELECT tienda_id, count(*) AS total FROM pedidos WHERE estado = 'pendiente' GROUP BY tienda_id");
+    expect(pendientesPorTienda.rows).toHaveLength(3);
     expect(stock.rows.some((fila) => Number(fila.cantidad) === 0)).toBe(true);
     expect(stock.rows.some((fila) => Number(fila.cantidad) > 0)).toBe(true);
 

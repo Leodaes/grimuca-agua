@@ -16,3 +16,12 @@ Una línea por decisión: qué y por qué.
 - sáb 21 nov, 9:00 p.m. · La alerta de zona cuenta solo rojos de parámetros de salud (cobre, nitrato, nitrito, plomo, cloro); dureza o hierro en rojo son demanda de equipos, no alerta.
 - sáb 21 nov, 9:00 p.m. · La promesa "agua de calidad, monitoreada y permanente" no se usa dentro de la app; la revisión legal la considera una garantía. Se le propuso a Tulio una versión matizada.
 - sáb 21 nov, 9:25 p.m. · Catálogo: decisión de Leonardo, solo marca Oasis. Aqual no se carga ni se recomienda. Reemplaza la decisión anterior de cargar las dos marcas.
+- sáb 21 nov, 8:55 p.m. · Decisiones de Tulio aplicadas: lema "Saber qué tomas empieza en casa", semáforo con las palabras Verde, Amarillo y Rojo, frase de qué mide cada indicador, entrada por el QR del sobre con dos caminos, datos reales de las tiendas y recambio de cartucho cada 3 meses.
+- sáb 21 nov, 8:55 p.m. · Dos ajustes a lo que pidió Tulio, por la revisión legal: el pie del resultado no usa la palabra que la app evita siempre ("…no certifica que el agua sea apta para tomar"), y en cobre y plomo no se dice "toca filtrar".
+- sáb 21 nov, 8:55 p.m. · Los precios que mandó Tulio son de otras tiendas en línea; no se muestran en la app como precios de Grimuca. Se usan en el modelo de negocio como referencia de mercado.
+- sáb 21 nov, 9:00 p.m. · Tienda por zona: Naguanagua y Valencia → Mañongo; San Diego → Big Low. CC CEM queda como opción que el cliente puede elegir.
+- sáb 21 nov, 9:00 p.m. · El documento de traspaso público se recortó otra vez (sin detalle del servidor, de claves ni de correo) y el guion de despliegue ya no trae servidor ni llave por defecto, tras la revisión de secretos de Calidad.
+- sáb 21 nov, 9:00 p.m. · Repositorio con licencia MIT; marca, logos y fotos de productos quedan fuera. Por confirmar con Leonardo.
+- sáb 21 nov, 9:05 p.m. · Las cuatro imágenes de campaña que entregó Leonardo se usan en la portada y en la pantalla del sobre; la de los botellones queda solo para el deck porque su frase final suena a promesa sobre el agua.
+- sáb 21 nov, 9:20 p.m. · Los productos sugeridos cubren cada hallazgo: si un parámetro en rojo queda sin producto que lo atienda, entra el equipo que lo trate aunque el hogar ya tenga filtro.
+- sáb 21 nov, 9:20 p.m. · Marketing y Business trabajan con el método de asesoría de marketing y ventas del equipo (diagnóstico de fugas y plan numerado).

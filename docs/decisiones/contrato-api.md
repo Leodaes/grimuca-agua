@@ -36,7 +36,7 @@ Rutas del front por dueño:
 ## Identificadores fijos
 
 - Tiendas (`tiendas.id`, texto): `manongo` (Mañongo), `biglow` (Big Low), `cem` (CC CEM).
-- Zonas: `Naguanagua`, `San Diego`, `Valencia norte`, `Valencia sur`, `Otra`. Tienda sugerida por zona (SUPUESTO hasta que Tulio confirme): Naguanagua → `manongo`, San Diego → `biglow`, Valencia norte → `cem`, resto → `cem`.
+- Zonas: `Naguanagua`, `San Diego`, `Valencia norte`, `Valencia sur`, `Otra`. Tienda sugerida por zona (SUPUESTO hasta que Tulio confirme): Naguanagua → `manongo`, San Diego → `biglow`, resto → `manongo`.
 - Claves de parámetros: `alcalinidad`, `dureza`, `cobre`, `nitrato`, `cloro_libre`, `plomo`, `ph`, `nitrito`, `hierro`.
 - Niveles de semáforo: `verde`, `amarillo`, `rojo`, `sin_dato`.
 - El hogar se identifica con un UUID que el front guarda en `localStorage` (clave `agua.hogar_id`). No hay cuentas.
@@ -201,3 +201,5 @@ Tablas de la sección 6 del documento de traspaso, con estos ajustes: `tiendas.i
 - sáb 21 nov, Plataforma · Semillas: `--semilla` carga `semilla_cartuchos.sql` siempre (actualiza lo existente) y `semilla.sql` solo si no hay hogares. `semilla.sql` se genera con `npx tsx db/generar_semilla.ts` usando la evaluación real; además de lo pedido trae el historial despachado (52 pedidos, 7 pendientes) y 4 pruebas de bacterias.
 - sáb 21 nov, Plataforma · Front (`app/src/lib`): `api.bacterias()` devuelve `null` si el hogar no ha iniciado la prueba; las funciones del operador usan el token guardado si no se les pasa uno y lo borran ante un 401; `api.medirManual` acepta `(hogarId, valores)` o `{ hogar_id, valores }`. `suscribirEventos(token, manejadores)` acepta `pedido_nuevo`/`pedidoNuevo`, `pedido_despachado`/`pedidoDespachado`, `medicion_nueva`/`medicionNueva`, `pedidos` (lista de pendientes del sondeo), `conexion` (`conectando`, `en_vivo`, `reconectando`) y `sinPermiso`; devuelve la función para cancelar. `sesion.ts` suma `cambiarCantidad`, `cantidadEnLista` y `alCambiarLista`; el token del operador se guarda en `agua.token_operador`.
 - sáb 21 nov, Plataforma · `.env.example` incluye `VISION_CABECERAS` y `VISION_FORZAR_HERRAMIENTA` (las usa el lector). `MARCAS_EXCLUIDAS` queda opcional y vacía.
+- sáb 21 nov, Plataforma · Nueva migración `003_tiendas.sql`: pone el horario y la dirección públicos de las tres tiendas (CC CEM queda en San Diego, frente al Big Low). En `tipos.ts`, `tiendaSugerida` devuelve hoy `manongo` para Valencia norte y para el resto de las zonas (cambio hecho fuera de Plataforma; la línea "Identificadores fijos" de arriba todavía dice `cem`).
+- sáb 21 nov, Plataforma · `semilla.sql` asigna la tienda de cada hogar de forma explícita (16 en Mañongo, 7 en Big Low, 7 en CC CEM) para que ninguna tienda quede vacía en el panel, y mezcla fechas de último cambio de cartucho pensadas para un ciclo de 90 días.

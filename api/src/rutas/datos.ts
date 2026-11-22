@@ -203,6 +203,28 @@ export interface CriterioSugeridos {
  * Los equipos de desinfección no salen aquí: van con la prueba de bacterias.
  */
 export function sugerirCartuchos(catalogo: CartuchoCatalogo[], criterio: CriterioSugeridos): Cartucho[] {
+  const candidatos = ordenarCandidatos(catalogo, criterio);
+  const elegidos = candidatos.slice(0, MAXIMO_SUGERIDOS);
+  // Si algún hallazgo queda sin producto que lo atienda, entra el que más hallazgos pendientes cubra y sale el último
+  // de la lista. Así un nitrato en rojo trae un equipo que lo trate aunque el hogar ya tenga filtro.
+  const cubre = (clave: string) => elegidos.some((par) => par.cartucho.corrige.includes(clave));
+  let cupo = elegidos.length - 1;
+  while (cupo >= 1) {
+    const pendientes = criterio.corrige.filter((clave) => !cubre(clave));
+    if (pendientes.length === 0) break;
+    const aporte = (par: (typeof candidatos)[number]) =>
+      par.cartucho.corrige.filter((clave) => pendientes.includes(clave)).length;
+    const mejor = candidatos
+      .filter((par) => !elegidos.includes(par))
+      .reduce<(typeof candidatos)[number] | null>((m, par) => (aporte(par) > (m ? aporte(m) : 0) ? par : m), null);
+    if (!mejor) break;
+    elegidos[cupo] = mejor;
+    cupo -= 1;
+  }
+  return elegidos.map((par) => aCartuchoPublico(par.cartucho));
+}
+
+function ordenarCandidatos(catalogo: CartuchoCatalogo[], criterio: CriterioSugeridos) {
   const pedidas = new Set(criterio.corrige);
   const excluidas = new Set((criterio.marcasExcluidas ?? []).map((marca) => marca.trim().toLowerCase()));
   const preferidas = criterio.tieneFiltro ? ['cartucho'] : ['filtro', 'sistema_osmosis_inversa'];
@@ -225,9 +247,7 @@ export function sugerirCartuchos(catalogo: CartuchoCatalogo[], criterio: Criteri
         a.preferido - b.preferido ||
         b.aciertos - a.aciertos ||
         (a.cartucho.codigo < b.cartucho.codigo ? -1 : a.cartucho.codigo > b.cartucho.codigo ? 1 : 0),
-    )
-    .slice(0, MAXIMO_SUGERIDOS)
-    .map((par) => aCartuchoPublico(par.cartucho));
+    );
 }
 
 /** Equipos de desinfección: solo cuando la prueba de bacterias se reportó con cambio de color. */
