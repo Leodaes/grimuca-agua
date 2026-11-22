@@ -16,7 +16,7 @@ Versión 5 (22 nov, 3:00 p.m.), lista para la entrega de las 4:30 p.m. Enfoque: 
 | Video | Los clips de `docs/marketing/video/clips/`, si el portal pide video (ver la nota) |
 
 **Antes de enviar, revisar:**
-1. **El repositorio queda privado** (decisión de Leonardo, 22 nov 3:00 p.m.). Tienen acceso Leonardo y diegogallovich; la invitación a Pleo2 sigue pendiente de aceptar. Si la organización pide acceso para el jurado, se invita solo a la cuenta que indique.
+1. **El repositorio es público** (decisión de Leonardo, 22 nov, en la tarde; antes era privado). Se revisó antes de abrirlo: no tiene PIN, claves, correos personales, la IP del servidor ni `insumos-tulio/`, ni en los archivos ni en la historia.
 2. **Los PIN no van en el portal ni en el repositorio.** Si el jurado tiene que entrar a los paneles, se los pasa Leonardo aparte.
 3. **Video:** si el portal pide un solo enlace, el más claro es `08-pedido-en-vivo.mp4`, el momento clave. Los clips no tienen voz ni rótulos.
 

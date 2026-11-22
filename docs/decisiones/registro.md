@@ -53,3 +53,6 @@ Una línea por decisión: qué y por qué.
 - Con la tira real mojada, la app leyó plomo 5 (a ojo, 0) y alcalinidad 0 (a ojo, entre 0 y 40); el semáforo salió amarillo. Detalle en `docs/calibracion/guia-calibracion.md`, Compuerta 4.
 - Leonardo pidió que la app no dé por buena la lectura: después de la foto se muestra lo leído para confirmar o corregir. Si no cambia nada, se usa la medición de la foto; si corrige, se guarda una medición a mano.
 - También "Corrígela a mano" en todo resultado por foto, y "Completarlas a mano" de las casillas sin lectura llega con lo leído ya marcado.
+
+## 22 nov, 6:15 p.m. · Repositorio público (decisión de Leonardo)
+- Se cambia de privado a público. Antes se revisó que no hubiera PIN, claves, correos personales, la IP del servidor ni `insumos-tulio/` en los archivos ni en la historia. La licencia sigue siendo "todos los derechos reservados".
