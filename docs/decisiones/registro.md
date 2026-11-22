@@ -33,3 +33,7 @@ Una línea por decisión: qué y por qué.
 - dom 22 nov, 4:15 a.m. · No se aplicaron dos propuestas legales: (1) "Con esto no se juega" en cobre y plomo se mantiene porque es texto de Tulio ya revisado y no afirma nada sobre la salud; (2) "Calidad del agua" en el panel del comercio se mantiene porque es vocabulario interno y cambiarlo rompía las pruebas cerca del congelamiento. Ambas quedan para Leonardo y Tulio.
 - dom 22 nov, 4:15 a.m. · Deck y documentos públicos usan $4,00 como costo base del sobre, con $2,94 como variante en nota, hasta que Leonardo decida.
 - dom 22 nov · Leonardo decidió $2,94 como costo del sobre puesto en Venezuela; $4,00 queda como sensibilidad.
+- dom 22 nov, 8:40 a.m. · Decisión de Leonardo: repositorio privado y "todos los derechos reservados" (antes MIT). Acceso como colaboradores para diegogallovich y Pleo2 (en una cuenta personal GitHub no ofrece rol de administrador; Leonardo confirmó que basta con colaborador). El repositorio `hackathon` no se comparte.
+- dom 22 nov, 8:40 a.m. · Decisión de Leonardo: Big Low y CC CEM se ubican en Castillito (San Diego), según OpenStreetMap.
+- dom 22 nov, 8:40 a.m. · Decisión de Leonardo: se quitan "Con esto no se juega" (cobre y plomo) y "Calidad del agua" en el panel del comercio pasa a "Resultados de la tira".
+- dom 22 nov, 8:40 a.m. · El cliente puede cerrar sesión desde su tablero; se olvida el perfil en el teléfono y sus mediciones siguen guardadas.
