@@ -51,6 +51,11 @@ export const UBICACION_TIENDAS: Readonly<Record<string, Coordenada & { coordenad
   biglow: { lat: 10.1926, lng: -67.9654, coordenada_aproximada: true },
   // Aproximada, Castillito.
   cem: { lat: 10.1918, lng: -67.9648, coordenada_aproximada: true },
+  // Centros de llenado de demostración: ubicaciones de Google Maps que dio Leonardo (22 nov).
+  'llenado-el-vinedo': { lat: 10.215967, lng: -68.012573, coordenada_aproximada: true },
+  'llenado-trigal-norte': { lat: 10.228967, lng: -67.996243, coordenada_aproximada: true },
+  'llenado-capremco': { lat: 10.255576, lng: -68.013492, coordenada_aproximada: true },
+  'llenado-el-remanso': { lat: 10.260012, lng: -67.960444, coordenada_aproximada: true },
 };
 
 const N = 'Naguanagua' as const;

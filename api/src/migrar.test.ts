@@ -127,8 +127,8 @@ describe('db/semilla.sql (datos de demostración)', () => {
     await bd.query(sql);
   });
 
-  it('carga 7 tiendas (5 de ferreterías y 2 centros de llenado), 60 hogares de Grimuca en sus tres zonas y 10 de los dos aliados', async () => {
-    expect(await total(bd, 'tiendas')).toBe(7);
+  it('carga 11 tiendas (5 de ferreterías y 6 centros de llenado), 60 hogares de Grimuca en sus tres zonas y 10 de los dos aliados', async () => {
+    expect(await total(bd, 'tiendas')).toBe(11);
     const { rows } = await bd.query('SELECT zona, count(*) AS total FROM hogares GROUP BY zona ORDER BY zona');
     expect(rows.map((fila) => [fila.zona, Number(fila.total)])).toEqual([
       ['Barquisimeto', 6],
@@ -146,6 +146,7 @@ describe('db/semilla.sql (datos de demostración)', () => {
       'aliado-lara',
       'centro-demo-naguanagua',
       'centro-demo-san-diego',
+      'centro-demo-valencia',
       'grimuca',
     ]);
     for (const fila of rows) {
@@ -158,15 +159,20 @@ describe('db/semilla.sql (datos de demostración)', () => {
     expect(tiendas.rows.map((fila) => [fila.comercio_id, Number(fila.total)])).toEqual([
       ['aliado-aragua', 1],
       ['aliado-lara', 1],
-      ['centro-demo-naguanagua', 1],
-      ['centro-demo-san-diego', 1],
+      ['centro-demo-naguanagua', 2],
+      ['centro-demo-san-diego', 2],
+      ['centro-demo-valencia', 2],
       ['grimuca', 3],
     ]);
     // Los centros publican todo: también la medición de El Tulipán con la dureza fuera de rango.
     const mediciones = await bd.query('SELECT tienda_id, count(*) AS total FROM mediciones_centro GROUP BY tienda_id ORDER BY tienda_id');
     expect(mediciones.rows.map((fila) => [fila.tienda_id, Number(fila.total)])).toEqual([
+      ['llenado-capremco', 1],
       ['llenado-el-naranjal', 3],
+      ['llenado-el-remanso', 1],
       ['llenado-el-tulipan', 2],
+      ['llenado-el-vinedo', 2],
+      ['llenado-trigal-norte', 1],
     ]);
     const stockLara = await bd.query("SELECT count(*) AS total FROM stock WHERE tienda_id = 'lara-centro'");
     expect(Number(stockLara.rows[0].total)).toBe(6);
@@ -349,6 +355,7 @@ describe('db/semilla.sql (datos de demostración)', () => {
         'aliado-aragua': ['vencida', 4],
         'centro-demo-naguanagua': ['activa', 0],
         'centro-demo-san-diego': ['periodo_gratis', 0],
+        'centro-demo-valencia': ['activa', 0],
       });
       // Grimuca es el comercio más antiguo de la red (no aparece como recién dado de alta).
       const altas = Object.fromEntries(

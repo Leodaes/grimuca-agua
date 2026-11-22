@@ -490,3 +490,23 @@ INSERT INTO mediciones_centro (tienda_id, fecha, valores, bacterias, fecha_bacte
   ('llenado-el-naranjal', now() - interval '10 days', '{"alcalinidad": 120, "dureza": 120, "cobre": 0, "nitrato": 0, "cloro_libre": 0.5, "plomo": 0, "ph": 7.2, "nitrito": 0}'::jsonb, 'sin_cambio', now() - interval '8 days', 'Muestra del grifo de despacho.', 'Técnico de Grimuca'),
   ('llenado-el-tulipan', now() - interval '38 days', '{"alcalinidad": 80, "dureza": 50, "cobre": 0, "nitrato": 0, "cloro_libre": 0.5, "plomo": 0, "ph": 7.2, "nitrito": 0}'::jsonb, 'sin_cambio', now() - interval '36 days', 'Muestra del grifo de despacho.', 'Técnico de Grimuca'),
   ('llenado-el-tulipan', now() - interval '1 day', '{"alcalinidad": 240, "dureza": 425, "cobre": 0, "nitrato": 0, "cloro_libre": 0.5, "plomo": 0, "ph": 7.2, "nitrito": 0}'::jsonb, 'pendiente', NULL, 'Muestra del grifo de despacho. El frasco se lee mañana.', 'Técnico de Grimuca');
+
+-- Cuatro centros más en las ubicaciones que dio Leonardo (22 nov, 2:10 p.m.; Google Maps). Nombres y datos de
+-- demostración: los centros reales de esas direcciones no son aliados todavía.
+INSERT INTO comercios (id, nombre, tipo, estado_pais, ciudad, plan, membresia_usd, fecha_alta, fin_periodo_gratis, activo, es_demostracion) VALUES
+  ('centro-demo-valencia', 'Centros de llenado Valencia norte (comercio de demostración)', 'centro_llenado', 'Carabobo', 'Valencia', 'basico', NULL, now() - interval '60 days', NULL, true, true)
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO tiendas (id, nombre, horario, direccion, comercio_id, urbanizacion) VALUES
+  ('llenado-el-vinedo', 'Centro de llenado · El Viñedo', 'Todos los días de 7:00 a.m. a 7:00 p.m.', 'El Viñedo, Valencia (ubicación de Google Maps; dato de demostración)', 'centro-demo-valencia', 'El Viñedo'),
+  ('llenado-trigal-norte', 'Centro de llenado · Trigal Norte', 'Lunes a sábado de 7:00 a.m. a 6:00 p.m.', 'Trigal Norte, Valencia (ubicación de Google Maps; dato de demostración)', 'centro-demo-valencia', 'Trigal Norte'),
+  ('llenado-capremco', 'Centro de llenado · Capremco', 'Todos los días de 7:00 a.m. a 7:00 p.m.', 'Capremco, Naguanagua (ubicación de Google Maps; dato de demostración)', 'centro-demo-naguanagua', 'Capremco'),
+  ('llenado-el-remanso', 'Centro de llenado · El Remanso', 'Lunes a sábado de 7:00 a.m. a 6:00 p.m.', 'El Remanso, San Diego (ubicación de Google Maps; dato de demostración)', 'centro-demo-san-diego', 'El Remanso')
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO mediciones_centro (tienda_id, fecha, valores, bacterias, fecha_bacterias, nota, medido_por) VALUES
+  ('llenado-el-vinedo', now() - interval '33 days', '{"alcalinidad": 80, "dureza": 50, "cobre": 0, "nitrato": 0, "cloro_libre": 0.5, "plomo": 0, "ph": 7.2, "nitrito": 0}'::jsonb, 'sin_cambio', now() - interval '31 days', 'Muestra del grifo de despacho.', 'Técnico de Grimuca'),
+  ('llenado-el-vinedo', now() - interval '4 days', '{"alcalinidad": 80, "dureza": 25, "cobre": 0, "nitrato": 0, "cloro_libre": 0.5, "plomo": 0, "ph": 7.2, "nitrito": 0}'::jsonb, 'sin_cambio', now() - interval '2 days', 'Muestra del grifo de despacho.', 'Técnico de Grimuca'),
+  ('llenado-trigal-norte', now() - interval '12 days', '{"alcalinidad": 120, "dureza": 50, "cobre": 0, "nitrato": 0, "cloro_libre": 0.5, "plomo": 0, "ph": 7.6, "nitrito": 0}'::jsonb, 'sin_cambio', now() - interval '10 days', 'Muestra del grifo de despacho.', 'Técnico de Grimuca'),
+  ('llenado-capremco', now() - interval '20 days', '{"alcalinidad": 80, "dureza": 120, "cobre": 0, "nitrato": 10, "cloro_libre": 0.5, "plomo": 0, "ph": 7.2, "nitrito": 0}'::jsonb, 'sin_cambio', now() - interval '18 days', 'Muestra del grifo de despacho.', 'Técnico de Grimuca'),
+  ('llenado-el-remanso', now() - interval '6 days', '{"alcalinidad": 80, "dureza": 50, "cobre": 0, "nitrato": 0, "cloro_libre": 1, "plomo": 0, "ph": 7.2, "nitrito": 0}'::jsonb, 'sin_cambio', now() - interval '4 days', 'Muestra del grifo de despacho.', 'Técnico de Grimuca');
