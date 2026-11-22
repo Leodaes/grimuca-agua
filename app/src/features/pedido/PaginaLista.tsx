@@ -5,6 +5,7 @@ import { cambiarCantidad as fijarCantidad, hogarId, lista, quitarDeLista, vaciar
 import type { Hogar, Tienda } from '../../lib/tipos';
 import { Aviso, Boton, Campo, Chip, EstadoVacio, ListaArticulos } from '../../components/grimuca';
 import { TEXTO_SIN_COBRO, mensajeError } from '../resultado/textos';
+import './pedido.css';
 
 interface Articulo {
   codigo: string;
@@ -142,17 +143,23 @@ export function PaginaLista() {
   const tiendaElegida = tiendas.find((t) => t.id === tiendaId);
 
   return (
-    <main id="contenido" className="g-pantalla__contenido g-pila" tabIndex={-1}>
-      <h1 className="g-h1">Mi lista</h1>
-      <p>Lo que vas a pedir a la tienda.</p>
+    <main id="contenido" className="g-pantalla__contenido g-pantalla__contenido--ancho g-pila g-pila--amplia pedido-pagina" tabIndex={-1}>
+      <div className="pedido-encabezado">
+        <h1 className="g-h1">Mi lista</h1>
+        <p>Lo que vas a pedir a la tienda.</p>
+      </div>
 
-      <ListaArticulos
-        articulos={articulos.map((a) => ({ id: a.codigo, nombre: a.nombre, detalle: a.codigo, cantidad: a.cantidad }))}
-        alCambiarCantidad={cambiarCantidad}
-        alQuitar={quitar}
-      />
-      <EnlaceSeguirViendo />
+      <div className="g-columnas">
+        <div className="g-pila">
+          <ListaArticulos
+            articulos={articulos.map((a) => ({ id: a.codigo, nombre: a.nombre, detalle: a.codigo, cantidad: a.cantidad }))}
+            alCambiarCantidad={cambiarCantidad}
+            alQuitar={quitar}
+          />
+          <EnlaceSeguirViendo />
+        </div>
 
+        <div className="g-columnas__lateral pedido-panel">
       <section className="g-pila" aria-labelledby="titulo-modalidad">
         <h2 className="g-h3" id="titulo-modalidad">
           ¿Cómo lo quieres?
@@ -205,6 +212,8 @@ export function PaginaLista() {
       >
         Hacer pedido
       </Boton>
+        </div>
+      </div>
     </main>
   );
 }

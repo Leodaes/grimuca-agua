@@ -121,7 +121,7 @@ export function PaginaCatalogo() {
   }
 
   return (
-    <main id="contenido" className="g-pantalla__contenido g-pila g-pila--amplia" tabIndex={-1}>
+    <main id="contenido" className="g-pantalla__contenido g-pantalla__contenido--ancho g-pila g-pila--amplia" tabIndex={-1}>
       <div className="g-pila">
         <h1 className="g-h1">Productos de la tienda</h1>
         <p className="g-apagado">Mira todo lo que tenemos y cotízalo por WhatsApp.</p>

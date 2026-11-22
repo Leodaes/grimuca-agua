@@ -74,3 +74,15 @@
   width: 64px;
   height: 64px;
 }
+
+/* Computadora: tres tarjetas por fila, chips en varias líneas. */
+@media (min-width: 900px) {
+  .catalogo-rejilla {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: var(--s4);
+  }
+  .catalogo-chips {
+    flex-wrap: wrap;
+    overflow-x: visible;
+  }
+}
