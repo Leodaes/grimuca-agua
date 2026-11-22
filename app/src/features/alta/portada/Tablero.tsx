@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Boton, Cargando, Icono, Semaforo, TEXTO_AVISO_TIRA } from '../../../components/grimuca';
 import type { NombreIcono } from '../../../components/grimuca';
@@ -66,6 +66,17 @@ const ACCESOS: { etiqueta: string; a: string; icono: NombreIcono }[] = [
 /** Olvida el perfil en este teléfono. Las mediciones y pedidos siguen en el servidor. */
 function CerrarSesion() {
   const [confirmando, setConfirmando] = useState(false);
+  const refConfirmacion = useRef<HTMLDivElement>(null);
+
+  // El botón queda al final del tablero: en una pantalla de escritorio la confirmación podía quedar debajo del
+  // borde y parecía que no pasaba nada. Al pedirla, se centra en pantalla y el foco va a "Sí, cerrar sesión".
+  useEffect(() => {
+    if (!confirmando) return;
+    const caja = refConfirmacion.current;
+    if (!caja) return;
+    if (typeof caja.scrollIntoView === 'function') caja.scrollIntoView({ block: 'center' });
+    caja.querySelector<HTMLButtonElement>('button')?.focus({ preventScroll: true });
+  }, [confirmando]);
 
   function cerrar() {
     guardarHogarId(null);
@@ -79,7 +90,7 @@ function CerrarSesion() {
         ¿No eres tú o quieres empezar de nuevo?
       </h2>
       {confirmando ? (
-        <>
+        <div ref={refConfirmacion} className="g-pila" role="group" aria-label="Confirmar cierre de sesión">
           <p>
             Se borra tu perfil de este teléfono y se vacía tu lista. Tus mediciones y pedidos no se pierden, pero para
             volver a verlos aquí tendrás que llenar el perfil otra vez.
@@ -90,7 +101,7 @@ function CerrarSesion() {
           <Boton variante="secundario" anchoCompleto onClick={() => setConfirmando(false)}>
             Cancelar
           </Boton>
-        </>
+        </div>
       ) : (
         <Boton variante="secundario" anchoCompleto onClick={() => setConfirmando(true)}>
           Cerrar sesión
