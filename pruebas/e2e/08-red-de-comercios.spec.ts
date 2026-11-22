@@ -248,7 +248,7 @@ test.describe('Red de comercios · el recorrido de la demo', () => {
         // (de Calidad o de Tulio). Se cuentan solo los de la demo y se exige que estén los tres.
         const deLaDemo = (notas.comerciosRed as string[]).filter((t) => !/^prueba\b/i.test(t));
         notas.comerciosDeLaDemo = deLaDemo.length;
-        expect.soft(deLaDemo.length, 'Sin contar los "Prueba …", hay 3 comercios').toBe(3);
+        expect.soft(deLaDemo.length, 'Sin contar los "Prueba …", hay 6 comercios (Grimuca, 2 aliados y 3 de centros de llenado)').toBe(6);
 
         const g = await filaComercio(red, /^\s*grimuca\s*$/i);
         const l = await filaComercio(red, /aliado lara/i);
