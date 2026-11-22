@@ -1,12 +1,16 @@
 // Cliente HTTP del front: una función por ruta de la API (docs/decisiones/contrato-api.md).
 // Todas devuelven datos tipados y, si algo falla, lanzan `ErrorApi` con un `mensaje` que se puede mostrar tal cual.
+import { EVENTO_PERFIL_PERDIDO, MENSAJE_PERFIL_PERDIDO } from './avisosSesion';
 import {
+  guardarHogarId,
   guardarTokenOperador,
   guardarTokenRed,
   guardarTokenTecnico,
+  hogarId as hogarEnSesion,
   tokenOperador,
   tokenRed,
   tokenTecnico,
+  vaciarLista,
 } from './sesion';
 import type {
   ComercioEnRed,
@@ -46,6 +50,10 @@ export const BASE_API = '/api';
 export const MENSAJE_SIN_CONEXION = 'No pudimos conectar. Revisa tu internet e intenta de nuevo.';
 export const MENSAJE_GENERICO = 'Algo salió mal. Intenta de nuevo en un momento.';
 
+/** Lo que responde la API (404) cuando el hogar no está en la base: `noEncontrado('El hogar')`. */
+export const MENSAJE_HOGAR_INEXISTENTE = 'El hogar no existe.';
+export { EVENTO_PERFIL_PERDIDO, MENSAJE_PERFIL_PERDIDO };
+
 export class ErrorApi extends Error {
   /** Texto legible para mostrar a la persona. */
   readonly mensaje: string;
@@ -73,6 +81,48 @@ interface Opciones {
   formulario?: FormData;
   /** Token del operador. */
   token?: string | null;
+}
+
+/** Id de hogar que lleva la petición: en la ruta (`/hogares/:id…`, `/bacterias/:id`), en `?hogar_id=`, en el cuerpo o en el formulario. */
+function hogarDeLaPeticion(ruta: string, opciones: Opciones): string | null {
+  const decodificar = (texto: string) => {
+    try {
+      return decodeURIComponent(texto);
+    } catch {
+      return texto;
+    }
+  };
+  const enRuta = /^\/(?:hogares|bacterias)\/([^/?#]+)/.exec(ruta);
+  if (enRuta) return decodificar(enRuta[1]);
+  const enConsulta = /[?&]hogar_id=([^&#]+)/.exec(ruta);
+  if (enConsulta) return decodificar(enConsulta[1]);
+  const cuerpo = opciones.cuerpo;
+  if (typeof cuerpo === 'object' && cuerpo !== null) {
+    const valor = (cuerpo as { hogar_id?: unknown }).hogar_id;
+    if (typeof valor === 'string') return valor;
+  }
+  const delFormulario = opciones.formulario?.get('hogar_id');
+  return typeof delFormulario === 'string' ? delFormulario : null;
+}
+
+/**
+ * Si la API dice que el hogar de esta sesión no existe (se reinició la demostración, se borró la base…),
+ * lo olvida junto con "Mi lista" y avisa con `EVENTO_PERFIL_PERDIDO`. Devuelve `true` si fue así.
+ */
+function olvidarSiElHogarYaNoExiste(ruta: string, opciones: Opciones, estado: number, mensaje: string): boolean {
+  if (estado !== 404) return false;
+  const delHogar = mensaje === MENSAJE_HOGAR_INEXISTENTE || /^\/hogares\/[^/?#]+$/.test(ruta);
+  if (!delHogar) return false;
+  const enSesion = hogarEnSesion();
+  if (!enSesion || hogarDeLaPeticion(ruta, opciones) !== enSesion) return false;
+  guardarHogarId(null);
+  vaciarLista();
+  try {
+    window.dispatchEvent(new CustomEvent(EVENTO_PERFIL_PERDIDO));
+  } catch {
+    // sin window (pruebas fuera del navegador)
+  }
+  return true;
 }
 
 async function pedir<T>(ruta: string, opciones: Opciones = {}): Promise<T> {
@@ -109,6 +159,9 @@ async function pedir<T>(ruta: string, opciones: Opciones = {}): Promise<T> {
     const cuerpoError = (dato ?? {}) as { error?: unknown; detalle?: unknown };
     const mensaje =
       typeof cuerpoError.error === 'string' && cuerpoError.error ? cuerpoError.error : MENSAJE_GENERICO;
+    if (olvidarSiElHogarYaNoExiste(ruta, opciones, respuesta.status, mensaje)) {
+      throw new ErrorApi(MENSAJE_PERFIL_PERDIDO, respuesta.status, cuerpoError.detalle);
+    }
     throw new ErrorApi(mensaje, respuesta.status, cuerpoError.detalle);
   }
   return dato as T;

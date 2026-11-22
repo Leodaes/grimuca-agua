@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type APIRequestContext, type Page } from '@playwright/test';
 import path from 'node:path';
 import {
   AVISO_FIJO,
@@ -52,6 +52,18 @@ function valoresTira(tira: ParametroTira[], nitrato: number | null): Record<stri
   return valores;
 }
 
+/** GET con JSON y dos reintentos cortos si la conexión se corta (ECONNRESET, socket hang up); no reintenta por el código HTTP. */
+async function getJson(request: APIRequestContext, url: string): Promise<any> {
+  for (let intento = 1; ; intento += 1) {
+    try {
+      return await (await request.get(url)).json();
+    } catch (error) {
+      if (intento >= 3 || !/ECONNRESET|socket hang up|ECONNREFUSED|ETIMEDOUT/i.test(String(error))) throw error;
+      await new Promise((listo) => setTimeout(listo, 1_000 * intento));
+    }
+  }
+}
+
 async function frasesPorQue(page: Page): Promise<string[]> {
   return page.locator('.producto-porque__frase').allInnerTexts();
 }
@@ -102,22 +114,26 @@ test.describe('Funciones nuevas · teléfono', () => {
     });
     // Número inválido: muestra error y no avanza.
     await page.getByRole('button', { name: /^\s*continuar\s*$/i }).click();
-    await expect(page.getByText(/revisa el n[uú]mero/i).first(), 'Número inválido → mensaje de error').toBeVisible();
+    // 22 nov: con +58 el número va en dos partes (Operadora + Número de 7 dígitos).
+    await expect(page.getByText(/revisa el n[uú]mero|7 d[ií]gitos del n[uú]mero/i).first(), 'Número inválido → mensaje de error').toBeVisible();
     await expect(page, 'Con número inválido no avanza').toHaveURL(/\/perfil/);
     expect(await leerGuardado(page, 'agua.hogar_id'), 'Con número inválido no se crea el hogar').toBeNull();
     await revisar(page, '50b-perfil-telefono-invalido.png');
 
-    await page.getByRole('textbox', { name: /tu whatsapp/i }).fill('0414-555-0199');
-    await page.getByRole('textbox', { name: /tu whatsapp/i }).blur();
-    notas.whatsappAlSalir = await page.getByRole('textbox', { name: /tu whatsapp/i }).inputValue();
+    await page.getByRole('combobox', { name: /^\s*operadora\s*$/i }).selectOption('0414');
+    const numero = page.getByRole('textbox', { name: /^\s*n[uú]mero\s*$/i });
+    await numero.fill('555-0199');
+    await numero.blur();
+    // Al salir del campo quita espacios y guiones: queda 5550199.
+    notas.whatsappAlSalir = await numero.inputValue();
     await revisar(page, '50-perfil-nuevo.png');
     await page.getByRole('button', { name: /^\s*continuar\s*$/i }).click();
     await expect(page, 'Sin filtro y ?ya=1 va directo a /medir').toHaveURL(/\/medir\/?$/);
 
     const id = String(await leerGuardado(page, 'agua.hogar_id'));
-    const hogar = await (await page.request.get(`/api/hogares/${id}`)).json();
+    const hogar = await getJson(page.request, `/api/hogares/${id}`);
     notas.hogarGuardado = { whatsapp: hogar.whatsapp, urbanizacion: hogar.urbanizacion, mascotas: hogar.mascotas, tiene_filtro: hogar.tiene_filtro };
-    expect(hogar.whatsapp, '0414-555-0199 se guarda como +584145550199').toBe('+584145550199');
+    expect(hogar.whatsapp, '0414 + 555-0199 se guarda como +584145550199').toBe('+584145550199');
     expect(hogar.urbanizacion).toBe('El Naranjal');
     expect(hogar.mascotas).toBe(true);
   });
@@ -156,13 +172,13 @@ test.describe('Funciones nuevas · teléfono', () => {
     expect(cartuchos.length, 'Debe listar los cartuchos que necesita').toBeGreaterThan(0);
 
     // ¿Se guarda antes de que el cliente confirme?
-    const antesDeConfirmar = await (await page.request.get(`/api/hogares/${hogar.id}/filtro`)).json();
+    const antesDeConfirmar = await getJson(page.request, `/api/hogares/${hogar.id}/filtro`);
     notas.filtroAntesDeConfirmar = antesDeConfirmar?.filtro ?? null;
     expect.soft(antesDeConfirmar?.filtro ?? null, 'La foto no debería guardar el filtro antes de "Sí, es este"').toBeNull();
 
     await page.getByRole('button', { name: /s[ií], es este/i }).click();
     await expect(page, '"Sí, es este" sin ?sigue vuelve al inicio').toHaveURL(/\/$/);
-    const confirmado = await (await page.request.get(`/api/hogares/${hogar.id}/filtro`)).json();
+    const confirmado = await getJson(page.request, `/api/hogares/${hogar.id}/filtro`);
     notas.filtroConfirmado = confirmado?.filtro ?? null;
     expect(confirmado?.filtro?.tipo).toMatch(/^portafiltro_/);
 
@@ -178,7 +194,7 @@ test.describe('Funciones nuevas · teléfono', () => {
     await revisar(page, '54-mi-filtro-no-reconocido.png');
     await expect(noReconocido, 'Una imagen que no es un filtro no debe identificarse').toBeVisible();
     await expect(page.getByRole('link', { name: /cargarlo a mano/i }).or(page.getByRole('button', { name: /cargarlo a mano/i })).first()).toBeVisible();
-    const filtroTrasNoFiltro = await (await page.request.get(`/api/hogares/${hogar.id}/filtro`)).json();
+    const filtroTrasNoFiltro = await getJson(page.request, `/api/hogares/${hogar.id}/filtro`);
     notas.filtroTrasFotoNoFiltro = filtroTrasNoFiltro?.filtro?.tipo ?? null;
 
     // 3. Carga manual.
@@ -192,7 +208,7 @@ test.describe('Funciones nuevas · teléfono', () => {
     await expect(page.getByRole('heading', { name: /guardamos tu filtro/i })).toBeVisible({ timeout: 15_000 });
     actual = '56-mi-filtro-guardado';
     await revisar(page, '56-mi-filtro-guardado.png');
-    const manual = await (await page.request.get(`/api/hogares/${hogar.id}/filtro`)).json();
+    const manual = await getJson(page.request, `/api/hogares/${hogar.id}/filtro`);
     notas.filtroManual = manual?.filtro ?? null;
     expect(manual?.filtro?.tipo).toBe('portafiltro_doble');
     expect(manual?.filtro?.medida).toBe('10x2.5');
@@ -518,7 +534,10 @@ test.describe('Funciones nuevas · operador', () => {
     await expect(detalle).toBeVisible();
     notas.laBegonaDetalle = (await detalle.innerText()).replace(/\n+/g, ' | ');
     expect(begona?.alerta, 'Con los datos sembrados La Begoña está en alerta').toBe(true);
-    await expect(detalle.getByText(/posible problema en la zona/i), 'El detalle muestra la alerta').toBeVisible();
+    await expect(
+      detalle.getByText(/varios hogares de la zona reportaron resultados fuera de rango/i),
+      'El detalle muestra la alerta',
+    ).toBeVisible();
     await expect(detalle).toContainText(String(begona.hogares_en_rojo_7_dias));
     await revisar(page, '71-zonas-detalle-la-begona.png', { movil: false, desborde: true });
 

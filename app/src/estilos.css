@@ -18,3 +18,10 @@ h1 { font-size: var(--t4); font-weight: 800; line-height: 1.05; }
 h2 { font-size: var(--t3); font-weight: 700; line-height: 1.15; }
 h3 { font-size: var(--t2); font-weight: 600; line-height: 1.25; }
 :focus-visible { outline: 2px solid var(--foco); outline-offset: 2px; }
+
+/* Aviso del marco del cliente (p. ej., el perfil guardado en este teléfono ya no existe). */
+.g-marco__aviso {
+  width: min(480px, 100%);
+  margin: 0 auto;
+  padding: var(--s4) var(--s4) 0;
+}

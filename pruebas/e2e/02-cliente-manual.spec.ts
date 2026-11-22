@@ -19,7 +19,7 @@ import {
   palabra,
   sinPalabraProhibida,
 } from './apoyo/pagina';
-import { filtroAMano } from './apoyo/perfil';
+import { filtroAMano, llenarNombre, llenarWhatsapp } from './apoyo/perfil';
 
 /**
  * Compuerta 2 · recorrido completo del cliente con carga manual (el camino seguro de la demo).
@@ -34,20 +34,20 @@ import { filtroAMano } from './apoyo/perfil';
  * |-----------------|--------------------------|----------------|--------------------------------------------------------------|
  * | /               | Título                   | heading 1      | Descubre la calidad del agua de tu casa                      |
  * | /               | Botón principal          | link o button  | Empezar                                                      |
- * | /perfil         | Nombre                   | textbox        | Nombre · ¿Cómo te llamas?                                    |
+ * | /perfil         | Nombre / Apellido        | textbox ×2     | Nombre · Apellido (se guardan juntos en `nombre`)            |
  * | /perfil         | Zona                     | combobox/chips | Zona → Naguanagua                                            |
  * | /perfil         | Origen del agua          | group de chips | ¿De dónde viene/sale el agua…? → Tanque                      |
- * | /perfil         | Personas                 | spinbutton     | ¿Cuántos viven…?                                             |
+ * | /perfil         | Personas                 | spinbutton     | ¿Cuántos viven…? (con botones − y +)                         |
  * | /perfil         | Tiene filtro             | group de chips | ¿Tienen filtro…? → Sí                                        |
  * | /perfil         | Urbanización (pasada 2)  | combobox       | Urbanización → La Campiña                                    |
  * | /perfil         | Mascotas (pasada 2)      | group de radios| ¿Hay mascotas en casa? → Sí                                  |
  * | /perfil         | Último cambio (con filtro)| group de radios| ¿Cuándo cambiaste el cartucho…? → Hace más de tres meses    |
- * | /mi-filtro      | Con filtro, tras guardar | link           | ¿No puedes tomar la foto? Cárgalo a mano → Tres vasos        |
+ * | /mi-filtro      | Con filtro, tras guardar | link           | ¿No puedes tomar la foto? → Cargarlo a mano → Tres vasos     |
  * | /perfil         | Agua turbia              | group de chips | …turbia o amarilla… → Sí                                     |
- * | /perfil         | WhatsApp                 | textbox        | WhatsApp                                                     |
+ * | /perfil         | WhatsApp (grupo)         | combobox+textbox| Tu WhatsApp: Operadora 0412 + Número 0000000 (con +58)      |
  * | /perfil         | Consentimiento           | checkbox       | Acepto que Grimuca use estos datos…                          |
  * | /perfil         | Botón principal          | button         | Guardar y seguir · Continuar                                 |
- * | /envio          | Dirección                | textbox        | Dirección…                                                   |
+ * | /envio          | Dirección                | textbox        | Dirección de entrega (+ Punto de referencia, opcional)       |
  * | /envio          | Botón principal          | button o link  | Seguir al pago · Continuar al pago                           |
  * | /pago           | Rótulo                   | texto          | Simulación                                                   |
  * | /pago           | Botón principal          | button         | Pagar $9 (simulación) · Simular pago de $9                   |
@@ -73,7 +73,8 @@ const T = {
   // 21 nov: la portada ya no tiene "Empezar"; este recorrido va por el camino a domicilio
   // (el camino "Ya tengo mi sobre" lo recorre 06-capturas-revision).
   empezar: /pedir el sobre a domicilio/i,
-  nombre: /nombre|c[oó]mo te llamas/i,
+  nombre: /^\s*nombre\s*$/i,
+  apellido: /^\s*apellido/i,
   zona: /zona/i,
   origenAgua: /de d[oó]nde (viene|sale) el agua/i,
   personas: /cu[aá]nt[oa]s (personas )?viven/i,
@@ -83,7 +84,7 @@ const T = {
   mascotas: /hay mascotas en casa/i,
   ultimoCambio: /cu[aá]ndo cambiaste el cartucho/i,
   aguaTurbia: /turbia o amarilla/i,
-  whatsapp: /tu whatsapp/i,
+  whatsapp: /tu whatsapp/i, // grupo: Código de país + Operadora + Número
   consentimiento: /acepto/i,
   guardarPerfil: /guardar y seguir|^\s*continuar\s*$|^\s*guardar\s*$/i,
   direccion: /direcci[oó]n/i,
@@ -131,7 +132,8 @@ test.describe('Compuerta 2 · recorrido del cliente con carga manual', () => {
     });
 
     await test.step('2. Perfil del hogar: todos los campos y el consentimiento', async () => {
-      await page.getByRole('textbox', { name: T.nombre }).first().fill(perfil.nombre);
+      // 22 nov: Nombre y Apellido van en campos separados; la API guarda "Nombre Apellido" en `nombre`.
+      await llenarNombre(page, perfil.nombre);
       await elegirOpcion(page, T.zona, /naguanagua/i);
       await elegirOpcion(page, T.origenAgua, /^\s*tanque\b/i);
       await page.getByLabel(T.personas).first().fill(String(perfil.personas));
@@ -144,7 +146,8 @@ test.describe('Compuerta 2 · recorrido del cliente con carga manual', () => {
 
       await elegirOpcion(page, T.aguaTurbia, /^\s*s[ií]\s*$/i);
       await expect.soft(page.getByRole('combobox', { name: /c[oó]digo de pa[ií]s/i }), 'Código de país +58 por defecto').toHaveValue('58');
-      await page.getByRole('textbox', { name: T.whatsapp }).first().fill(perfil.whatsapp);
+      // 22 nov: con +58 el WhatsApp va en dos partes: Operadora (0412…0426) y Número (7 dígitos).
+      await llenarWhatsapp(page, perfil.whatsapp);
 
       const consentimiento = page.getByRole('checkbox', { name: T.consentimiento }).first();
       await expect(consentimiento, 'La casilla de consentimiento no puede venir marcada').not.toBeChecked();

@@ -175,6 +175,13 @@ export function cartuchosParaFiltro(
       par.funcion !== null && funciones.includes(par.funcion),
     )
     .filter((par) => par.funcion !== 'membrana' || membranaSirve(par.producto, filtro.tipo))
+    // Un cartucho "para ultrafiltración" o "para ósmosis" no va en otro tipo de filtro (misma regla que la frase del porqué).
+    .filter((par) => {
+      const nombre = sinAcentos(par.producto.nombre);
+      if (/ultrafiltracion/.test(nombre) && filtro.tipo !== 'ultrafiltracion') return false;
+      if (/osmosis/.test(nombre) && filtro.tipo !== 'osmosis_inversa') return false;
+      return true;
+    })
     .filter((par) => {
       const suya = medidaDelNombre(par.producto.nombre);
       return !medida || !suya || suya === medida;

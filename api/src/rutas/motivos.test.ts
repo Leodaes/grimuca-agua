@@ -114,6 +114,37 @@ describe('motivoDe', () => {
     );
   });
 
+  it('con el filtro identificado, la frase lo nombra aunque el producto no vaya dentro de él', () => {
+    const conFiltro = { tiene_filtro: true, filtro: filtroTriple, ultimo_cambio: 'menos_de_un_mes' as const };
+    const osmosis = producto({ codigo: 'OI-8', categoria: 'cartucho', nombre: 'Filtro de Agua por Ósmosis Inversa de 8 Etapas - 110 GPD', corrige: ['nitrato', 'sedimentos'] });
+    const { motivo: deEquipo, atiende } = motivoDe(osmosis, contexto({ nitrato: 'rojo' }, conFiltro, { diasParaRecambio: 60 }));
+    expect(deEquipo).toBe(
+      'Te recomendamos esta ósmosis inversa porque tu medición dio Nitrato en Rojo: es una casilla para vigilar. Está pensada para esa casilla. Tu filtro de 3 vasos no está pensado para el nitrato: por eso te sugerimos un equipo aparte. La tira solo orienta: confirma con un laboratorio.',
+    );
+    expect(atiende.map((a) => a.clave)).toEqual(['nitrato']);
+
+    const suavizador = producto({ categoria: 'suavizador', nombre: 'Suavizador de agua', corrige: ['dureza'] });
+    expect(motivoDe(suavizador, contexto({ dureza: 'rojo' }, conFiltro)).motivo).toMatch(/Es un equipo aparte: no va dentro de tu filtro de 3 vasos\.$/);
+
+    const otraMedida = producto({ codigo: 'RL-10', nombre: 'Cartucho Rellenable en Línea 10" x 2"', corrige: ['sedimentos'] });
+    expect(motivoDe(otraMedida, contexto({ ph: 'verde' }, { ...conFiltro, agua_turbia: true })).motivo).toMatch(
+      /Ojo: es de 10 x 2 y tu filtro de 3 vasos es de 10 x 2\.5; confirma la medida antes de pedirlo\.$/,
+    );
+    const deUf = producto({ codigo: 'CTO-UF', nombre: 'Cartucho CTO para Ultrafiltración - 5 Etapas', corrige: ['cloro_libre'] });
+    const { motivo: deCartuchoUf } = motivoDe(deUf, contexto({ cloro_libre: 'amarillo' }, conFiltro));
+    expect(deCartuchoUf).toMatch(/Ojo: es para equipos de ultrafiltración, no para tu filtro de 3 vasos\.$/);
+    for (const frase of [deEquipo, deCartuchoUf]) sinProhibidas(frase);
+  });
+
+  it('un cartucho "para ultrafiltración" no cuenta como compatible con un portafiltro', () => {
+    const catalogo = [
+      { ...producto({ codigo: 'CTO-UF', nombre: 'Cartucho CTO para Ultrafiltración - 5 Etapas', corrige: ['cloro_libre'] }), recomendable: true },
+      { ...producto({ codigo: 'GAC-10', nombre: 'Cartucho de Carbón GAC 10" x 2.5"', corrige: ['cloro_libre'] }), recomendable: true },
+    ];
+    expect(cartuchosParaFiltro(filtroTriple, catalogo, ['cloro_libre']).map((c) => c.codigo)).toEqual(['GAC-10']);
+    expect(cartuchosParaFiltro({ ...filtroTriple, tipo: 'ultrafiltracion', etapas: 5, medida: null }, catalogo, ['cloro_libre']).map((c) => c.codigo)).toContain('CTO-UF');
+  });
+
   it('suavizador con dureza en rojo explica qué es', () => {
     const suavizador = producto({ categoria: 'suavizador', nombre: 'Suavizador de agua', corrige: ['dureza'] });
     const { motivo } = motivoDe(suavizador, contexto({ dureza: 'rojo' }, { tiene_filtro: true }));

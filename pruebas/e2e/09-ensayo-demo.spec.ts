@@ -308,7 +308,7 @@ test.describe('Ensayo de la demo · guion de 3 minutos', () => {
         const ms2 = await reloj(async () => {
           await telefono.locator('.p-hero__acciones').getByRole('link', { name: /^\s*ya tengo mi sobre\s*$/i }).click();
           await expect(telefono).toHaveURL(/\/perfil\?ya=1/);
-          await expect(telefono.getByRole('textbox', { name: /c[oó]mo te llamas/i })).toBeVisible();
+          await expect(telefono.getByRole('textbox', { name: /^\s*nombre\s*$/i })).toBeVisible();
         });
         return ms + ms2;
       });

@@ -66,7 +66,7 @@ test.describe('Revisión en vivo · teléfono', () => {
     await expect(page.getByRole('button', { name: /tomar una foto de mi filtro/i })).toBeVisible();
     await expect(page.getByRole('button', { name: /elegir una foto del tel[eé]fono/i })).toBeVisible();
     await revisar(page, '03b-mi-filtro-inicio.png');
-    await page.getByRole('link', { name: /c[aá]rgalo a mano/i }).first().click();
+    await page.getByRole('link', { name: /c[aá]rg(alo|arlo) a mano/i }).first().click();
     await expect(page).toHaveURL(/\/mi-filtro\/manual\?sigue=%2Fmedir/);
     actual = '03c-mi-filtro-manual';
     await page.getByRole('group', { name: /c[oó]mo es tu filtro/i }).getByLabel(/^\s*tres vasos/i).check();

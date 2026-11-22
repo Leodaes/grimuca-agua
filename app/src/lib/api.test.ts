@@ -1,6 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { api, ErrorApi, MENSAJE_GENERICO, MENSAJE_SIN_CONEXION } from './api';
+import { api, ErrorApi, EVENTO_PERFIL_PERDIDO, MENSAJE_GENERICO, MENSAJE_PERFIL_PERDIDO, MENSAJE_SIN_CONEXION } from './api';
 import {
+  agregarALista,
+  guardarHogarId,
+  hogarId,
+  lista,
   guardarTokenOperador,
   guardarTokenRed,
   guardarTokenTecnico,
@@ -253,5 +257,62 @@ describe('api: operador', () => {
     responder(401, { error: 'PIN incorrecto.' });
     await expect(api.operadorEntrar('0000')).rejects.toMatchObject({ mensaje: 'PIN incorrecto.', estado: 401 });
     expect(tokenOperador()).toBe('111.guardado');
+  });
+});
+
+describe('api: perfil que ya no existe', () => {
+  const ID = '11111111-1111-4111-8111-111111111111';
+
+  it('un 404 del hogar de la sesión lo olvida, vacía "Mi lista", emite el evento y lanza el mensaje amable', async () => {
+    guardarHogarId(ID);
+    agregarALista({ codigo: 'C-1', nombre: 'Cartucho' });
+    const oyente = vi.fn();
+    window.addEventListener(EVENTO_PERFIL_PERDIDO, oyente);
+    try {
+      responder(404, { error: 'El hogar no existe.' });
+      await expect(api.medirManual(ID, { ph: 7 })).rejects.toMatchObject({ estado: 404, mensaje: MENSAJE_PERFIL_PERDIDO });
+      expect(hogarId()).toBeNull();
+      expect(lista()).toEqual([]);
+      expect(oyente).toHaveBeenCalledTimes(1);
+    } finally {
+      window.removeEventListener(EVENTO_PERFIL_PERDIDO, oyente);
+    }
+  });
+
+  it('vale para las rutas /hogares/:id…, el formulario de la foto y la consulta de bacterias', async () => {
+    const casos: Array<() => Promise<unknown>> = [
+      () => api.obtenerHogar(ID),
+      () => api.medicionesDeHogar(ID),
+      () => api.filtroDeHogar(ID),
+      () => api.medirConFoto(ID, new Blob(['x'], { type: 'image/jpeg' })),
+      () => api.crearPedido({ hogar_id: ID } as never),
+      () => api.iniciarBacterias(ID),
+    ];
+    for (const llamar of casos) {
+      guardarHogarId(ID);
+      responder(404, { error: 'El hogar no existe.' });
+      await expect(llamar()).rejects.toMatchObject({ mensaje: MENSAJE_PERFIL_PERDIDO });
+      expect(hogarId()).toBeNull();
+    }
+  });
+
+  it('no toca la sesión si el 404 es de otra cosa o de otro hogar', async () => {
+    guardarHogarId(ID);
+    const oyente = vi.fn();
+    window.addEventListener(EVENTO_PERFIL_PERDIDO, oyente);
+    try {
+      responder(404, { error: 'La prueba de bacterias de este hogar no existe.' });
+      await expect(api.bacterias(ID)).resolves.toBeNull();
+      responder(404, { error: 'La medición no existe.' });
+      await expect(api.medicion('m-1')).rejects.toMatchObject({ mensaje: 'La medición no existe.' });
+      responder(404, { error: 'El hogar no existe.' });
+      await expect(api.obtenerHogar('22222222-2222-4222-8222-222222222222')).rejects.toMatchObject({
+        mensaje: 'El hogar no existe.',
+      });
+      expect(hogarId()).toBe(ID);
+      expect(oyente).not.toHaveBeenCalled();
+    } finally {
+      window.removeEventListener(EVENTO_PERFIL_PERDIDO, oyente);
+    }
   });
 });

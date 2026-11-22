@@ -169,6 +169,59 @@ function fraseCompatible(producto: Cartucho, filtro: FiltroHogar): string | null
   return 'Va con el filtro que registraste.';
 }
 
+/** "tu filtro de 3 vasos", "tu filtro de ósmosis inversa", "tu filtro de 5 etapas"… */
+function nombreDelFiltro(filtro: FiltroHogar): string {
+  const vasos = VASOS[filtro.tipo];
+  if (vasos) return `tu filtro de ${vasos}`;
+  if (filtro.tipo === 'osmosis_inversa') return 'tu filtro de ósmosis inversa';
+  if (filtro.tipo === 'ultrafiltracion') return 'tu filtro de ultrafiltración';
+  if (filtro.etapas) return `tu filtro de ${filtro.etapas} etapas`;
+  return 'tu filtro';
+}
+
+function conMayuscula(texto: string): string {
+  return texto.charAt(0).toUpperCase() + texto.slice(1);
+}
+
+/**
+ * Recambio que, por su nombre, no va con el filtro registrado: se dice para que no se pida a ciegas.
+ * Mismas reglas que `fraseCompatible`; null si nada en el nombre lo contradice.
+ */
+function fraseIncompatible(producto: Cartucho, filtro: FiltroHogar): string | null {
+  const nombre = producto.nombre.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+  const suyo = nombreDelFiltro(filtro);
+  if (/ultrafiltracion/.test(nombre) && filtro.tipo !== 'ultrafiltracion') {
+    return `Ojo: es para equipos de ultrafiltración, no para ${suyo}.`;
+  }
+  if (/osmosis/.test(nombre) && filtro.tipo !== 'osmosis_inversa') {
+    return `Ojo: es para equipos de ósmosis inversa, no para ${suyo}.`;
+  }
+  const etapasProducto = etapasDelNombre(producto.nombre);
+  const etapasFiltro = filtro.etapas ?? NUMERO_VASOS[filtro.tipo] ?? null;
+  if (etapasProducto !== null && etapasFiltro !== null && etapasProducto !== etapasFiltro) {
+    return `Ojo: es para equipos de ${etapasProducto} etapas y ${suyo} es de ${etapasFiltro}; confírmalo antes de pedirlo.`;
+  }
+  const medida = medidaDelNombre(producto.nombre);
+  if (filtro.medida && medida && medida !== filtro.medida) {
+    return `Ojo: es de ${medida.replace('x', ' x ')} y ${suyo} es de ${filtro.medida.replace('x', ' x ')}; confirma la medida antes de pedirlo.`;
+  }
+  return null;
+}
+
+/**
+ * Equipo completo para un hogar que ya registró su filtro: por qué hace falta un equipo aparte.
+ * Solo se afirma que el filtro no está pensado para nitrato o nitrito cuando no es de ósmosis inversa.
+ */
+function fraseEquipoConFiltro(filtro: FiltroHogar, parametros: ResultadoParametro[]): string {
+  const suyo = nombreDelFiltro(filtro);
+  const noLoAtiende = parametros.filter((p) => p.clave === 'nitrato' || p.clave === 'nitrito');
+  if (filtro.tipo !== 'osmosis_inversa' && noLoAtiende.length > 0) {
+    const casilla = noLoAtiende.length === 1 ? `el ${noLoAtiende[0].nombre.toLowerCase()}` : 'el nitrato ni el nitrito';
+    return `${conMayuscula(suyo)} no está pensado para ${casilla}: por eso te sugerimos un equipo aparte.`;
+  }
+  return `Es un equipo aparte: no va dentro de ${suyo}.`;
+}
+
 type Recambio = 'mas_de_tres_meses' | 'no_me_acuerdo' | 'vencido' | null;
 
 function recambioDe(producto: Cartucho, contexto: ContextoMotivo): Recambio {
@@ -241,11 +294,20 @@ export function motivoDe(
 
   const turbia = Boolean(hogar?.agua_turbia && producto.corrige.includes('sedimentos') && contexto.corrige.includes('sedimentos'));
   const recambio = recambioDe(producto, contexto);
+  const filtroHogar = hogar?.tiene_filtro && hogar.filtro ? hogar.filtro : null;
   const fraseFiltro =
-    hogar?.tiene_filtro && hogar.filtro && contexto.compatibles?.has(producto.codigo) && esRecambio(producto)
-      ? fraseCompatible(producto, hogar.filtro)
+    filtroHogar && contexto.compatibles?.has(producto.codigo) && esRecambio(producto)
+      ? fraseCompatible(producto, filtroHogar)
       : null;
   const compatible = fraseFiltro !== null;
+  // Con el filtro identificado, la frase siempre lo nombra: va con él, no va con él, o es un equipo aparte.
+  const otraFraseFiltro = !filtroHogar || compatible
+    ? null
+    : esRecambio(producto)
+      ? fraseIncompatible(producto, filtroHogar)
+      : esEquipoCompleto(producto)
+        ? fraseEquipoConFiltro(filtroHogar, parametros)
+        : null;
   const sinFiltro = Boolean(hogar && !hogar.tiene_filtro && esEquipoCompleto(producto));
 
   if (turbia) atiende.push({ clave: 'sedimentos', nombre: 'Agua turbia', nivel: null });
@@ -285,6 +347,7 @@ export function motivoDe(
 
   if (sinFiltro && hogar) hogarAlFinal.push(oracionHogarSinFiltro(hogar));
   if (fraseFiltro) hogarAlFinal.push(fraseFiltro);
+  if (otraFraseFiltro) hogarAlFinal.push(otraFraseFiltro);
 
   // Lo del hogar que más pesa va al final; máximo dos oraciones de hogar.
   oraciones.push(...hogarAlFinal.slice(-2));

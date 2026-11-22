@@ -1,6 +1,9 @@
 // Lo que el navegador recuerda: el hogar, "Mi lista" y la sesión del operador.
 // No hay cuentas: el hogar se identifica con un UUID guardado en localStorage.
+import { EVENTO_HOGAR } from './avisosSesion';
 import type { ItemLista } from './tipos';
+
+export { EVENTO_HOGAR };
 
 export const CLAVE_HOGAR = 'agua.hogar_id';
 export const CLAVE_LISTA = 'agua.lista';
@@ -35,6 +38,11 @@ export function hogarId(): string | null {
 /** Pasa `null` para olvidar el hogar en este navegador. */
 export function guardarHogarId(id: string | null): void {
   escribir(CLAVE_HOGAR, id);
+  try {
+    window.dispatchEvent(new CustomEvent(EVENTO_HOGAR, { detail: id }));
+  } catch {
+    // sin window (pruebas fuera del navegador)
+  }
 }
 
 // ---------- Mi lista ----------
