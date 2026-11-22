@@ -15,3 +15,4 @@ Una línea por decisión: qué y por qué.
 - sáb 21 nov, 8:55 p.m. · Las tarjetas de producto dicen "Cotizar por WhatsApp": grimuca.com no publica precios y no se inventan.
 - sáb 21 nov, 9:00 p.m. · La alerta de zona cuenta solo rojos de parámetros de salud (cobre, nitrato, nitrito, plomo, cloro); dureza o hierro en rojo son demanda de equipos, no alerta.
 - sáb 21 nov, 9:00 p.m. · La promesa "agua de calidad, monitoreada y permanente" no se usa dentro de la app; la revisión legal la considera una garantía. Se le propuso a Tulio una versión matizada.
+- sáb 21 nov, 9:25 p.m. · Catálogo: decisión de Leonardo, solo marca Oasis. Aqual no se carga ni se recomienda. Reemplaza la decisión anterior de cargar las dos marcas.
