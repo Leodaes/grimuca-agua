@@ -78,7 +78,7 @@ Se recorrieron los 381 paquetes de terceros instalados (según la licencia que d
 
 | Elemento | Dónde | Licencia | Estado |
 |---|---|---|---|
-| Teselas del mapa (`tile.openstreetmap.org`) | Se cargan en vivo en las pestañas Rutas y Zonas del comercio; no se copian al repositorio | Datos © colaboradores de OpenStreetMap, Open Database License (ODbL 1.0) | Atribución visible en el mapa: "© OpenStreetMap" con enlace a openstreetmap.org/copyright. Uso de demo, dentro de la política de uso de teselas de OSM (poco tráfico, sin descarga masiva). Para producción conviene un proveedor de teselas propio o contratado |
+| Teselas del mapa (CARTO Voyager, `basemaps.cartocdn.com`) | Se cargan en vivo en las pestañas Rutas y Zonas del comercio; no se copian al repositorio | Datos © colaboradores de OpenStreetMap, Open Database License (ODbL 1.0); diseño © CARTO | Atribución visible en el mapa: "© OpenStreetMap © CARTO" con sus enlaces. Uso de demo con poco tráfico, dentro de las condiciones de los mapas base gratuitos de CARTO. Para producción conviene un proveedor de teselas propio o contratado |
 | Coordenadas de urbanizaciones y tiendas | `api/src/logistica/urbanizaciones.ts` (y su copia del front), tomadas de `docs/negocio/urbanizaciones-verificadas.md` | Datos © colaboradores de OpenStreetMap (ODbL 1.0) | Atribución en el mapa y en este archivo. Son coordenadas sueltas (3 decimales), no una copia de la base |
 
 ## Fuentes

@@ -50,8 +50,11 @@ const LIMITES_POR_DEFECTO: L.LatLngBoundsExpression = [
   [10.18, -68.05],
   [10.3, -67.94],
 ];
-const TESELAS = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
-const ATRIBUCION = '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
+// Teselas de CARTO (Voyager), hechas con datos de OpenStreetMap. Las de tile.openstreetmap.org bloquean
+// las peticiones sin Referer, y el sitio manda Referrer-Policy: same-origin.
+const TESELAS = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+const ATRIBUCION =
+  '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> © <a href="https://carto.com/attributions">CARTO</a>';
 /** Con este número de teselas fallidas se pasa al fondo liso. */
 const MAXIMO_FALLAS = 4;
 export const AVISO_SIN_FONDO = 'Sin mapa de fondo: se muestran solo los puntos y las rutas';
@@ -106,7 +109,13 @@ export function MapaReal({ marcas, lineas = [], etiqueta, claveEncaje, encajarEn
     let teselas: L.TileLayer | null = null;
     if (!sinConexion()) {
       let fallas = 0;
-      teselas = L.tileLayer(TESELAS, { attribution: ATRIBUCION, maxZoom: 19, crossOrigin: true });
+      teselas = L.tileLayer(TESELAS, {
+        attribution: ATRIBUCION,
+        subdomains: 'abcd',
+        maxZoom: 19,
+        crossOrigin: true,
+        referrerPolicy: 'strict-origin-when-cross-origin',
+      });
       teselas.on('tileerror', () => {
         fallas += 1;
         if (fallas >= MAXIMO_FALLAS) {
