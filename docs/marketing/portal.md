@@ -1,22 +1,22 @@
 # Portal del hackatón · Grimuca Agua
 
-Versión 3 (21 nov, noche), con las decisiones de Tulio y el lente de marketing y ventas: la familia es la protagonista y Grimuca la guía. Track: Logística.
+Versión 4 (21 nov, noche), enfoque B2B2C: plataforma para ferreterías que Grimuca opera. Track: Logística.
 
-## Lema
+## Lema del cliente final
 
 **Saber qué tomas empieza en casa**
 
-## Promesa
+## Frase para el lado empresa (propuesta)
 
-Menos botellones: mide tu agua y cambia el cartucho cuando toca.
+**Clientes que llegan sabiendo qué necesitan**
 
-## Descripción corta (62 palabras)
+## Descripción corta (50 palabras)
 
-Menos botellones: mide tu agua y cambia el cartucho cuando toca. Con un sobre de $9, una familia de Valencia mide el agua de su casa con una tira y una foto, entiende cada casilla en Verde, Amarillo o Rojo y retira el cartucho que le corresponde en la tienda Grimuca más cercana. La tienda lo ve en vivo en su despacho.
+Plataforma para ferreterías que Grimuca opera. Cada familia mide su agua con un sobre de $9 y el sistema la asigna al comercio más cercano que tiene el producto. La ferretería recibe clientes ya medidos, inventario contra demanda y despacho en vivo, y un técnico reporta con foto.
 
-## Descripción larga (145 palabras)
+## Descripción larga (120 palabras)
 
-Muchas familias de Valencia cargan botellones cada quincena sin ver nunca una medición de lo que toman, o tienen un filtro y no saben cuándo cambiarle el cartucho. Grimuca Agua les da un plan de tres pasos: medir, entender y filtrar. El sobre de $9 trae una tira, una prueba casera de bacterias y una tabla de colores. La familia escanea el QR, pone una gota por casilla, toma una foto y la app explica cada resultado en Verde, Amarillo o Rojo, con el aviso de que la tira no mide todo y no certifica el agua. Después recomienda el cartucho que corresponde y avisa cuándo toca cambiarlo. El pedido sale de una de las tres tiendas Grimuca, que funcionan como almacenes, y el operador ve en vivo el despacho, el inventario que va a faltar y las zonas con más resultados fuera de rango.
+La ferretería compra, almacena y despacha repuestos a ciegas, porque nadie sabe cuándo toca cambiar cada cartucho. Grimuca Agua es una plataforma para ferreterías que Grimuca opera, con cuatro módulos: Cliente, Comercio, Técnico y Red. La familia escanea el sobre de $9, mide su agua con una tira y una foto, y la app explica cada resultado en Verde, Amarillo o Rojo, con el aviso de que no certifica el agua. El sistema asigna el pedido al comercio más cercano con existencias, donde aparece en vivo. La ferretería ve inventario contra demanda y recambios con fecha; el técnico marca "Ya fui" con foto. Ingresos: sobre, membresía de la ferretería y sobres al mayor. Con una ferretería por estado, el estado queda cubierto.
 
 ## Datos para llenar el portal
 
@@ -30,6 +30,6 @@ Muchas familias de Valencia cargan botellones cada quincena sin ver nunca una me
 ## Notas
 
 - Ninguna de las dos versiones dice "potable", "segura" ni "apta para tomar", ni "agua de calidad" ni "permanente". La palabra "certifica" aparece solo en negativo.
-- Si el portal pide aclarar qué funciona de verdad, agregar al final: "En la demo el pago del sobre es simulado. El recordatorio por WhatsApp, el video para cambiar el cartucho y el servicio de plomero son el siguiente paso."
-- Cliente ideal, por si el portal lo pide: padres y madres de clase media y media alta en Valencia, preocupados por el agua que toman sus hijos [Tulio].
-- Cifras de mercado: ninguna en el portal. El gasto en botellón ("hasta $576 al año") es estimación de Tulio y va en el deck, con su etiqueta.
+- Si el portal pide aclarar qué funciona de verdad, agregar al final: "Es una demo con datos sembrados: el pago del sobre es simulado, la membresía no se cobra y los comercios de Lara y Aragua son de demostración. Cuentas por usuario, comisión por transacción y plan premium son el siguiente paso."
+- Cifras en el portal: ninguna. El modelo con sus supuestos va en el deck y en `docs/negocio/modelo.md`.
+- Cliente final, por si el portal lo pide: padres y madres de clase media y media alta en Valencia, preocupados por el agua que toman sus hijos (Tulio). Cliente que paga: la ferretería.

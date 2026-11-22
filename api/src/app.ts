@@ -18,6 +18,9 @@ import { rutasHogares } from './rutas/hogares';
 import { rutasMediciones, TAMANO_MAXIMO_FOTO } from './rutas/mediciones';
 import { rutasOperador } from './rutas/operador';
 import { rutasPedidos } from './rutas/pedidos';
+import { rutasProductos } from './rutas/productos';
+import { rutasRed } from './rutas/red';
+import { rutasTecnico } from './rutas/tecnico';
 import type { Evaluacion, LecturaTira, ParametroTira, PerfilHogar, ValoresMedicion } from './tipos';
 
 /** Lo que las rutas necesitan del módulo de medición (`api/src/medicion/index.ts`). */
@@ -28,9 +31,10 @@ export interface Medidor {
   diasParaRecambio(perfil: PerfilHogar, hoy?: Date): number | null;
 }
 
-export type ConfigApp = Pick<Config, 'pinOperador' | 'secretoSesion' | 'version'> & {
-  marcasExcluidas?: string[];
-};
+export type ConfigApp = Pick<Config, 'pinOperador' | 'secretoSesion' | 'version'> &
+  Partial<Pick<Config, 'pinesComercios' | 'pinSuperadmin' | 'pinTecnico'>> & {
+    marcasExcluidas?: string[];
+  };
 
 export interface Contexto {
   bd: Bd;
@@ -172,7 +176,19 @@ export async function crearApp(opciones: OpcionesApp): Promise<FastifyInstance> 
     limits: { fileSize: TAMANO_MAXIMO_FOTO, files: 1, fields: 5, fieldSize: 1_000 },
   });
 
-  for (const rutas of [rutasCatalogo, rutasHogares, rutasMediciones, rutasPedidos, rutasBacterias, rutasOperador, rutasEventos, rutasFiltro]) {
+  for (const rutas of [
+    rutasCatalogo,
+    rutasHogares,
+    rutasMediciones,
+    rutasPedidos,
+    rutasBacterias,
+    rutasOperador,
+    rutasEventos,
+    rutasFiltro,
+    rutasRed,
+    rutasTecnico,
+    rutasProductos,
+  ]) {
     await app.register(rutas, { prefix: '/api' });
   }
   if (opciones.conLogistica !== false) await registrarLogistica(app, opciones.bd);

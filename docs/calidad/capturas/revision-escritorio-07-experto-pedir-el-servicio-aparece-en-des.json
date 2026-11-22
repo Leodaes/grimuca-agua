@@ -1,0 +1,22 @@
+{
+  "prueba": "experto: \"Pedir el servicio\" aparece en Despacho en vivo con \"Servicio técnico\" y \"Atendido\" lo cierra",
+  "estado": "passed",
+  "hallazgos": [],
+  "erroresConsola": [],
+  "tiempos": {
+    "servicioAparicionSegundos": 0.324
+  },
+  "notas": {
+    "filaServicio": "Nuevo\nServicio técnico\nCambio de cartucho · Prueba Calidad MWR7YG0CG9 servicio\n10:29 p. m.\nNaguanagua\nVisita: Calle Inventada MWR7YG0CG9, casa servicio\nFecha preferida: domingo, 22 de noviembre · En la mañana\nAtendido",
+    "pantallaPedidoServicio": "Pedido recibido\nListo, tu pedido ya está en la tienda\n\nGrimuca Mañongo te contactará para confirmar el costo y la fecha de la visita.\n\nHorario: Lunes a viernes de 8:30 a.m. a 4:30 p.m. Sábados de 9:00 a.m. a 2:00 p.m.\n\nPedido N.º 111\n\nServicio técnico: cambio de cartucho\n\nFecha preferida: domingo, 22 de noviembre · En la mañana\n\nVisita a domicilio · Grimuca Mañongo\n\nCalle Inventada MWR7YG0CG9, casa servicio\n\nPor confirmar\nNo se cobra nada ahora. La tienda te contactará para confirmar.\nVolver a mis resultados\nIr al inicio",
+    "pedidoServicioApi": {
+      "id": 111,
+      "tipo": "servicio",
+      "servicio": "cambio_cartucho",
+      "estado": "pendiente",
+      "tienda_id": "manongo",
+      "fecha_preferida": "2026-11-22"
+    },
+    "estadoTrasAtendido": "despachado"
+  }
+}

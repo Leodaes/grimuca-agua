@@ -1,6 +1,24 @@
 // Cliente HTTP del front: una función por ruta de la API (docs/decisiones/contrato-api.md).
 // Todas devuelven datos tipados y, si algo falla, lanzan `ErrorApi` con un `mensaje` que se puede mostrar tal cual.
-import { guardarTokenOperador, tokenOperador } from './sesion';
+import {
+  guardarTokenOperador,
+  guardarTokenRed,
+  guardarTokenTecnico,
+  tokenOperador,
+  tokenRed,
+  tokenTecnico,
+} from './sesion';
+import type {
+  ComercioEnRed,
+  EntradaComercio,
+  EntradaConComercio,
+  EntradaProducto,
+  FiltroServicios,
+  ProductoComercio,
+  ResumenRed,
+  ServicioConReporte,
+  Yo,
+} from './tipos';
 import type {
   AlertaZona,
   CambiosHogar,
@@ -106,7 +124,38 @@ async function pedirComoOperador<T>(ruta: string, opciones: Opciones = {}): Prom
   }
 }
 
+/** Igual que `pedirComoOperador`, con el token de la red (superadmin). */
+async function pedirComoRed<T>(ruta: string, opciones: Opciones = {}): Promise<T> {
+  const token = opciones.token ?? tokenRed();
+  try {
+    return await pedir<T>(ruta, { ...opciones, token });
+  } catch (error) {
+    if (error instanceof ErrorApi && error.estado === 401) guardarTokenRed(null);
+    throw error;
+  }
+}
+
+/** Igual que `pedirComoOperador`, con el token del técnico. */
+async function pedirComoTecnico<T>(ruta: string, opciones: Opciones = {}): Promise<T> {
+  const token = opciones.token ?? tokenTecnico();
+  try {
+    return await pedir<T>(ruta, { ...opciones, token });
+  } catch (error) {
+    if (error instanceof ErrorApi && error.estado === 401) guardarTokenTecnico(null);
+    throw error;
+  }
+}
+
 const id = (valor: string | number) => encodeURIComponent(String(valor));
+
+/**
+ * URL de la foto del reporte de un servicio (para `<img src>`): lleva el token en la consulta.
+ * Sin `token`, usa el del técnico, el del comercio o el de la red, en ese orden.
+ */
+function urlFotoServicio(pedidoId: number | string, token?: string | null): string {
+  const elegido = token ?? tokenTecnico() ?? tokenOperador() ?? tokenRed() ?? '';
+  return `${BASE_API}/servicios/${id(pedidoId)}/foto?token=${encodeURIComponent(elegido)}`;
+}
 
 function medirManual(hogarId: string, valores: ValoresMedicion): Promise<Medicion>;
 function medirManual(datos: { hogar_id: string; valores: ValoresMedicion }): Promise<Medicion>;
@@ -193,7 +242,8 @@ export const api = {
 
   // --- Operador ---
   /** Con PIN malo lanza `ErrorApi` con `estado` 401. No guarda el token: llama a `guardarTokenOperador(token)`. */
-  operadorEntrar: (pin: string) => pedir<{ token: string }>('/operador/entrar', { metodo: 'POST', cuerpo: { pin } }),
+  operadorEntrar: (pin: string) =>
+    pedir<EntradaConComercio>('/operador/entrar', { metodo: 'POST', cuerpo: { pin } }),
   /** `operadorPedidos(estado = 'pendiente', token = tokenOperador())`. Trae `hogar_nombre`, `zona` y `cartucho_nombre`. */
   operadorPedidos,
   despachar: (pedidoId: number | string, token?: string) =>
@@ -203,6 +253,48 @@ export const api = {
   zonas: (token?: string) => pedirComoOperador<AlertaZona[]>('/operador/zonas', { token }),
   /** Mapa de hexágonos: una entrada por urbanización, más las "Otras de <zona>" (`en_tablero: false`). */
   mapa: (token?: string) => pedirComoOperador<UrbanizacionMapa[]>('/operador/mapa', { token }),
+
+  // --- Plataforma: comercio ---
+  /** Respuesta completa de la entrada del comercio (`operadorEntrar` sigue sirviendo y trae los mismos campos). */
+  comercioEntrar: (pin: string) =>
+    pedir<EntradaConComercio>('/operador/entrar', { metodo: 'POST', cuerpo: { pin } }),
+  /** Comercio y tiendas del token del operador. */
+  yo: (token?: string) => pedirComoOperador<Yo>('/operador/yo', { token }),
+  productosComercio: (token?: string) => pedirComoOperador<ProductoComercio[]>('/operador/productos', { token }),
+  crearProducto: (datos: EntradaProducto, token?: string) =>
+    pedirComoOperador<ProductoComercio>('/operador/productos', { metodo: 'POST', cuerpo: datos, token }),
+  /** Servicios atendidos de las tiendas del comercio, con su reporte. */
+  reportes: (token?: string) => pedirComoOperador<ServicioConReporte[]>('/operador/reportes', { token }),
+
+  // --- Plataforma: red (superadmin) ---
+  /** No guarda el token: llama a `guardarTokenRed(token)`. */
+  redEntrar: (pin: string) =>
+    pedir<{ token: string; rol: 'superadmin' }>('/red/entrar', { metodo: 'POST', cuerpo: { pin } }),
+  redResumen: (token?: string) => pedirComoRed<ResumenRed>('/red/resumen', { token }),
+  crearComercio: (datos: EntradaComercio, token?: string) =>
+    pedirComoRed<ComercioEnRed>('/red/comercios', { metodo: 'POST', cuerpo: datos, token }),
+
+  // --- Plataforma: técnico ---
+  /** No guarda el token: llama a `guardarTokenTecnico(token)`. */
+  tecnicoEntrar: (pin: string) =>
+    pedir<EntradaConComercio>('/tecnico/entrar', { metodo: 'POST', cuerpo: { pin } }),
+  tecnicoServicios: (estado: FiltroServicios = 'pendiente', token?: string) =>
+    pedirComoTecnico<ServicioConReporte[]>(`/tecnico/servicios?estado=${estado}`, { token }),
+  /** "Ya fui": foto opcional (jpeg/png/webp, máx. 8 MB) y nota. */
+  atenderServicio: (pedidoId: number | string, datos: { foto?: Blob | null; nota?: string | null }, token?: string) => {
+    const formulario = new FormData();
+    if (datos.nota) formulario.append('nota', datos.nota);
+    if (datos.foto) {
+      const nombre = datos.foto instanceof File && datos.foto.name ? datos.foto.name : 'servicio.jpg';
+      formulario.append('foto', datos.foto, nombre);
+    }
+    return pedirComoTecnico<ServicioConReporte>(`/tecnico/servicios/${id(pedidoId)}/atender`, {
+      metodo: 'POST',
+      formulario,
+      token,
+    });
+  },
+  urlFotoServicio,
 };
 
 export type Api = typeof api;

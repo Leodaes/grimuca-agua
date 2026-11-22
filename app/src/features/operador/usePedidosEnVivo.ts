@@ -41,7 +41,7 @@ export function usePedidosEnVivo(token: string, alNoAutorizado: () => void) {
         despachar({ tipo: 'llego', pedido });
         setContadorNuevos((n) => n + 1);
         setUltimoNuevo(pedido);
-        setAnuncio(`Pedido nuevo en ${nombreTienda(pedido.tienda_id)}`);
+        setAnuncio(`Pedido nuevo en ${pedido.tienda_nombre ?? nombreTienda(pedido.tienda_id)}`);
         setVersion((v) => v + 1);
         const t = window.setTimeout(() => {
           tiempos.delete(t);

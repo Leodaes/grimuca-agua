@@ -31,6 +31,7 @@ export function filaATienda(fila: Fila): Tienda {
     nombre: String(fila.nombre),
     horario: String(fila.horario),
     direccion: (fila.direccion as string | null) ?? null,
+    ...(typeof fila.comercio_id === 'string' ? { comercio_id: fila.comercio_id } : {}),
   };
 }
 
@@ -124,6 +125,10 @@ export function filaAPedido(fila: Fila, conDetalle = false): Pedido {
     nota: (fila.nota as string | null) ?? null,
     cartucho_nombre: (fila.cartucho_nombre as string | null) ?? null,
   };
+  // Plataforma: tienda y comercio que atienden el pedido (campos agregados; el resto no cambia).
+  if (typeof fila.tienda_nombre === 'string') pedido.tienda_nombre = fila.tienda_nombre;
+  if (typeof fila.comercio_nombre === 'string') pedido.comercio_nombre = fila.comercio_nombre;
+  if (typeof fila.comercio_id === 'string') pedido.comercio_id = fila.comercio_id;
   if (conDetalle) {
     pedido.hogar_nombre = String(fila.hogar_nombre);
     pedido.zona = String(fila.zona);
@@ -144,8 +149,14 @@ export function filaABacterias(fila: Fila, sugeridos: Cartucho[] = []): PruebaBa
 
 // ---------- Consultas ----------
 
-export async function listarTiendas(bd: Consultable): Promise<Tienda[]> {
-  const { rows } = await bd.query('SELECT id, nombre, horario, direccion FROM tiendas ORDER BY nombre');
+/** Sin `comercioId`, todas las tiendas de la red. */
+export async function listarTiendas(bd: Consultable, comercioId?: string): Promise<Tienda[]> {
+  const { rows } = comercioId
+    ? await bd.query(
+        'SELECT id, nombre, horario, direccion, comercio_id FROM tiendas WHERE comercio_id = $1 ORDER BY nombre',
+        [comercioId],
+      )
+    : await bd.query('SELECT id, nombre, horario, direccion, comercio_id FROM tiendas ORDER BY nombre');
   return rows.map(filaATienda);
 }
 
@@ -172,13 +183,16 @@ export async function buscarHogar(bd: Consultable, id: string): Promise<Hogar | 
   return rows[0] ? filaAHogar(rows[0]) : null;
 }
 
-const SELECT_PEDIDO = `
+export const SELECT_PEDIDO = `
   SELECT p.id, p.hogar_id, p.tipo, p.cartucho_codigo, p.cantidad, p.modalidad, p.direccion, p.pago,
          p.tienda_id, p.estado, p.fecha, p.fecha_despacho, p.servicio, p.fecha_preferida, p.momento, p.nota,
-         h.nombre AS hogar_nombre, h.zona AS zona, c.nombre AS cartucho_nombre
+         h.nombre AS hogar_nombre, h.zona AS zona, c.nombre AS cartucho_nombre,
+         t.nombre AS tienda_nombre, t.comercio_id AS comercio_id, co.nombre AS comercio_nombre
     FROM pedidos p
     JOIN hogares h ON h.id = p.hogar_id
-    LEFT JOIN cartuchos c ON c.codigo = p.cartucho_codigo`;
+    LEFT JOIN cartuchos c ON c.codigo = p.cartucho_codigo
+    LEFT JOIN tiendas t ON t.id = p.tienda_id
+    LEFT JOIN comercios co ON co.id = t.comercio_id`;
 
 export async function buscarPedido(bd: Consultable, id: number, conDetalle = false): Promise<Pedido | null> {
   const { rows } = await bd.query(`${SELECT_PEDIDO} WHERE p.id = $1`, [id]);
@@ -192,14 +206,24 @@ export async function pedidosDeHogar(bd: Consultable, hogarId: string): Promise<
   return rows.map((fila) => filaAPedido(fila));
 }
 
+/** Sin `comercioId`, los de toda la red; con él, solo los de las tiendas de ese comercio. */
 export async function pedidosDelOperador(
   bd: Consultable,
   estado: 'pendiente' | 'despachado' | 'todos',
+  comercioId?: string,
 ): Promise<Pedido[]> {
-  const { rows } =
-    estado === 'todos'
-      ? await bd.query(`${SELECT_PEDIDO} ORDER BY p.fecha DESC, p.id DESC`)
-      : await bd.query(`${SELECT_PEDIDO} WHERE p.estado = $1 ORDER BY p.fecha DESC, p.id DESC`, [estado]);
+  const condiciones: string[] = [];
+  const valores: unknown[] = [];
+  if (estado !== 'todos') {
+    valores.push(estado);
+    condiciones.push(`p.estado = $${valores.length}`);
+  }
+  if (comercioId) {
+    valores.push(comercioId);
+    condiciones.push(`t.comercio_id = $${valores.length}`);
+  }
+  const donde = condiciones.length > 0 ? ` WHERE ${condiciones.join(' AND ')}` : '';
+  const { rows } = await bd.query(`${SELECT_PEDIDO}${donde} ORDER BY p.fecha DESC, p.id DESC`, valores);
   return rows.map((fila) => filaAPedido(fila, true));
 }
 

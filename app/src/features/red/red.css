@@ -1,0 +1,105 @@
+/* Módulo Red (pensado para proyector 1366×768) y página de módulos. */
+.red-tabla {
+  overflow-x: auto;
+  border: 1px solid var(--linea);
+  background: var(--blanco);
+}
+.red-tabla .g-tabla {
+  width: 100%;
+}
+.red-tabla__comercio {
+  text-align: left;
+  font-weight: 700;
+  color: var(--azul);
+}
+.red-fila--nueva {
+  background: var(--azul-50);
+}
+.red-columnas {
+  display: grid;
+  gap: var(--s5);
+  grid-template-columns: minmax(0, 1fr);
+}
+@media (min-width: 1000px) {
+  .red-columnas {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.2fr);
+    align-items: start;
+  }
+}
+.red-bloque {
+  border: 1px solid var(--linea);
+  padding: var(--s4);
+  background: var(--blanco);
+}
+.red-bloque > h2 {
+  margin: 0 0 var(--s3);
+}
+.red-cobertura,
+.red-actividad {
+  display: grid;
+  gap: var(--s2);
+  margin: 0 0 var(--s3);
+  padding: 0;
+  list-style: none;
+}
+.red-actividad li {
+  padding-bottom: var(--s2);
+  border-bottom: 1px solid var(--linea);
+}
+.red-actividad__hora {
+  color: var(--apagado);
+  font-variant-numeric: tabular-nums;
+}
+.red-dos {
+  display: grid;
+  gap: var(--s3);
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+.red-pie {
+  margin: 0;
+  font-size: var(--t-1);
+}
+
+/* Página /modulos */
+.mod-rejilla {
+  display: grid;
+  gap: var(--s4);
+  grid-template-columns: minmax(0, 1fr);
+}
+@media (min-width: 720px) {
+  .mod-rejilla {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.mod-tarjeta {
+  display: grid;
+  gap: var(--s2);
+  min-height: 160px;
+  padding: var(--s5);
+  border: 1px solid var(--linea);
+  border-top: 4px solid var(--azul);
+  background: var(--blanco);
+  color: var(--tinta);
+  text-decoration: none;
+}
+.mod-tarjeta:hover,
+.mod-tarjeta:focus-visible {
+  border-color: var(--azul);
+  background: var(--azul-50);
+}
+.mod-tarjeta__nombre {
+  font-family: var(--f-titulo);
+  font-weight: 800;
+  font-size: var(--t3);
+  color: var(--azul);
+}
+.mod-tarjeta__ruta {
+  font-family: ui-monospace, monospace;
+  color: var(--tinta-2);
+  overflow-wrap: anywhere;
+}
+.mod-tarjeta__abrir {
+  font-weight: 700;
+  color: var(--azul);
+  text-decoration: underline;
+}

@@ -2,6 +2,7 @@
 import type { Pool } from 'pg';
 import type { FilaInventario } from '../tipos';
 import {
+  hogarDeTiendas,
   leerHogaresDemanda,
   leerPedidosDemanda,
   leerTiendas,
@@ -100,18 +101,25 @@ export function calcularInventario(
   return resultado;
 }
 
-export async function inventario(bd: Pool, hoy: Date = new Date()): Promise<FilaInventario[]> {
-  const [tiendas, cartuchosRes, stockRes, hogares, pedidos] = await Promise.all([
-    leerTiendas(bd),
+/** Con `comercioId`, solo las existencias, hogares y pedidos de sus tiendas. */
+export async function inventario(bd: Pool, hoy: Date = new Date(), comercioId?: string): Promise<FilaInventario[]> {
+  const [tiendas, cartuchosRes, stockRes, todosLosHogares, todosLosPedidos] = await Promise.all([
+    leerTiendas(bd, comercioId),
     bd.query<FilaCartucho>('SELECT codigo, nombre FROM cartuchos'),
     bd.query('SELECT tienda_id, cartucho_codigo, cantidad FROM stock'),
     leerHogaresDemanda(bd),
     leerPedidosDemanda(bd),
   ]);
-  const stock: FilaStock[] = stockRes.rows.map((s) => ({
-    tienda_id: String(s.tienda_id),
-    cartucho_codigo: String(s.cartucho_codigo),
-    cantidad: Number(s.cantidad),
-  }));
+  const propias = new Set(tiendas.map((t) => t.id));
+  const deEste = (tienda: string) => !comercioId || propias.has(tienda);
+  const stock: FilaStock[] = stockRes.rows
+    .map((s) => ({
+      tienda_id: String(s.tienda_id),
+      cartucho_codigo: String(s.cartucho_codigo),
+      cantidad: Number(s.cantidad),
+    }))
+    .filter((s) => deEste(s.tienda_id));
+  const hogares = comercioId ? todosLosHogares.filter((h) => hogarDeTiendas(h, propias)) : todosLosHogares;
+  const pedidos = todosLosPedidos.filter((p) => deEste(p.tienda_id));
   return calcularInventario(tiendas, cartuchosRes.rows, stock, hogares, pedidos, hoy);
 }

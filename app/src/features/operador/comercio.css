@@ -1,0 +1,81 @@
+/* Ficha del comercio bajo la barra azul del panel y pestaña Productos. */
+.op-comercio {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s2) var(--s3);
+  padding: var(--s2) var(--s5);
+  background: var(--azul-900);
+  color: var(--blanco);
+}
+.op-comercio__nombre {
+  font-family: var(--f-titulo);
+  font-weight: 800;
+  font-size: var(--t1);
+}
+
+.op-productos {
+  display: grid;
+  gap: var(--s5);
+  grid-template-columns: minmax(0, 1fr);
+}
+@media (min-width: 1100px) {
+  .op-productos {
+    grid-template-columns: minmax(0, 2fr) minmax(320px, 1fr);
+    align-items: start;
+  }
+}
+.op-formulario {
+  border: 1px solid var(--linea);
+  padding: var(--s4);
+  background: var(--blanco);
+}
+.op-casillas {
+  display: grid;
+  gap: 0 var(--s3);
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+}
+.op-existencias {
+  display: grid;
+  gap: var(--s3);
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+}
+
+.op-reportes {
+  border: 1px solid var(--linea);
+  background: var(--blanco);
+}
+.op-reportes > summary {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+  min-height: 48px;
+  padding: 0 var(--s4);
+  cursor: pointer;
+  font-family: var(--f-titulo);
+  font-weight: 700;
+  color: var(--azul);
+}
+.op-reportes__lista {
+  display: grid;
+  gap: 0;
+  padding: 0 var(--s4) var(--s4);
+}
+.op-reporte {
+  display: grid;
+  gap: var(--s2);
+  padding: var(--s3) 0;
+  border-top: 1px solid var(--linea);
+}
+.op-reporte__fila {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s2) var(--s3);
+}
+.op-reporte__foto {
+  display: block;
+  max-width: min(100%, 320px);
+  height: auto;
+  border: 1px solid var(--linea);
+}

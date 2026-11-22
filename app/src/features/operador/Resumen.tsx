@@ -1,7 +1,7 @@
 import { BandaCifras, Boton, Cargando, EstadoVacio, TarjetaTienda } from '../../components/grimuca';
 import type { ResumenTienda } from '../../lib/tipos';
 import { useServicios } from './contexto';
-import { TIENDAS_OPERADOR } from './estadoPedidos';
+import { usePanel } from './panel';
 import { useDatos } from './useDatos';
 
 interface Props {
@@ -16,6 +16,7 @@ function suma(filas: ResumenTienda[], campo: keyof Omit<ResumenTienda, 'tienda_i
 
 export function Resumen({ token, version, alNoAutorizado }: Props) {
   const servicios = useServicios();
+  const { base, tiendas } = usePanel();
   const { datos, estado, reintentar } = useDatos(() => servicios.resumen(token), version, alNoAutorizado);
 
   return (
@@ -39,7 +40,7 @@ export function Resumen({ token, version, alNoAutorizado }: Props) {
       {datos && (
         <>
           <BandaCifras
-            etiqueta="Totales de las tres tiendas"
+            etiqueta={tiendas.length === 1 ? 'Totales de la tienda' : `Totales de las ${tiendas.length} tiendas`}
             cifras={[
               { valor: suma(datos, 'hogares'), etiqueta: 'Hogares' },
               { valor: suma(datos, 'pedidos_pendientes'), etiqueta: 'Pedidos pendientes' },
@@ -48,7 +49,7 @@ export function Resumen({ token, version, alNoAutorizado }: Props) {
             ]}
           />
           <div className="g-rejilla-tiendas">
-            {TIENDAS_OPERADOR.map((t) => {
+            {tiendas.map((t) => {
               const f = datos.find((d) => d.tienda_id === t.id);
               return (
                 <TarjetaTienda
@@ -62,7 +63,7 @@ export function Resumen({ token, version, alNoAutorizado }: Props) {
                     { etiqueta: 'Recambios en 30 días', valor: f?.recambios_30_dias ?? 0 },
                   ]}
                   acciones={
-                    <Boton variante="secundario" a={`/operador/despacho?tienda=${t.id}`}>
+                    <Boton variante="secundario" a={`${base}/despacho?tienda=${t.id}`}>
                       Ver despacho de {t.nombre}
                     </Boton>
                   }

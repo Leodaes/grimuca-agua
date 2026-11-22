@@ -1,7 +1,17 @@
-// GET /api/eventos?token=<token> · Eventos en vivo para el panel del operador (SSE).
+// GET /api/eventos?token=<token> · Eventos en vivo para el panel del comercio, la red y el técnico (SSE).
+// Cada conexión recibe solo los eventos de su comercio; el superadmin recibe todos.
 import type { FastifyInstance } from 'fastify';
 import { aTextoSse } from '../eventos';
-import { tokenValido } from './operador';
+import type { EventoAgua } from '../tipos';
+import { leerToken, type Sesion } from './operador';
+import { COMERCIO_PRINCIPAL } from './plataforma';
+
+/** ¿Este evento le llega a esta sesión? Los eventos sin comercio son de `grimuca`. */
+export function eventoParaSesion(evento: EventoAgua, sesion: Sesion): boolean {
+  if (sesion.rol === 'superadmin') return true;
+  const comercio = evento.datos.comercio_id ?? COMERCIO_PRINCIPAL;
+  return comercio === (sesion.comercio_id ?? COMERCIO_PRINCIPAL);
+}
 
 export const LATIDO_MS = 20_000;
 export const REINTENTO_CLIENTE_MS = 3_000;
@@ -17,9 +27,11 @@ export async function rutasEventos(app: FastifyInstance): Promise<void> {
 
   app.get('/eventos', async (req, reply) => {
     const token = (req.query as { token?: unknown } | undefined)?.token;
-    if (!tokenValido(token, config.secretoSesion)) {
+    const sesion = leerToken(token, config.secretoSesion);
+    if (!sesion) {
       return reply.code(401).send({ error: 'Tu sesión de operador venció o no es válida. Vuelve a entrar con el PIN.' });
     }
+    const leToca = (evento: EventoAgua) => eventoParaSesion(evento, sesion);
 
     // Desde aquí la respuesta se escribe a mano y queda abierta.
     reply.hijack();
@@ -35,7 +47,7 @@ export async function rutasEventos(app: FastifyInstance): Promise<void> {
 
     let abierta = true;
     const dejarDeEscuchar = eventos.suscribir((evento) => {
-      if (abierta) salida.write(aTextoSse(evento));
+      if (abierta && leToca(evento)) salida.write(aTextoSse(evento));
     });
     const latido = setInterval(() => {
       if (abierta) salida.write(': latido\n\n');

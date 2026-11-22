@@ -12,7 +12,9 @@ import {
   TarjetaTienda,
 } from '../../components/grimuca';
 import type { Pedido } from '../../lib/tipos';
-import { TIENDAS_OPERADOR, horaDe } from './estadoPedidos';
+import { horaDe } from './estadoPedidos';
+import { usePanel } from './panel';
+import { ReportesTecnico } from './Reportes';
 import { ZONAS_OPERADOR } from './datosZonas';
 import type { PedidosEnVivo } from './usePedidosEnVivo';
 import { nombreServicio, textoFechaPreferida } from '../tutoriales/contenido';
@@ -29,8 +31,9 @@ export function Despacho({ envivo }: { envivo: PedidosEnVivo }) {
   const [tienda, setTienda] = useState<string>(parametros.get('tienda') ?? 'todas');
   const [zona, setZona] = useState<string>('todas');
   const { pendientes, nuevos, carga, conexion } = envivo;
+  const { tiendas } = usePanel();
 
-  const tiendasVisibles = TIENDAS_OPERADOR.filter((t) => tienda === 'todas' || t.id === tienda);
+  const tiendasVisibles = tiendas.filter((t) => tienda === 'todas' || t.id === tienda);
   const filtrados = pendientes.filter((p) => zona === 'todas' || p.zona === zona);
   const totalVisibles = filtrados.filter((p) => tiendasVisibles.some((t) => t.id === p.tienda_id)).length;
 
@@ -63,7 +66,7 @@ export function Despacho({ envivo }: { envivo: PedidosEnVivo }) {
             <Chip activo={tienda === 'todas'} onClick={() => setTienda('todas')}>
               Todas las tiendas
             </Chip>
-            {TIENDAS_OPERADOR.map((t) => (
+            {tiendas.map((t) => (
               <Chip key={t.id} activo={tienda === t.id} onClick={() => setTienda(t.id)}>
                 {t.nombre}
               </Chip>
@@ -128,6 +131,8 @@ export function Despacho({ envivo }: { envivo: PedidosEnVivo }) {
           })}
         </div>
       )}
+
+      <ReportesTecnico version={envivo.version} />
     </div>
   );
 }

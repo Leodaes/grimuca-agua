@@ -1,121 +1,135 @@
 # Deck · Grimuca Agua · 6 láminas
 
-Versión 3 (21 nov, noche), con las decisiones de Tulio y el lente de marketing y ventas: la familia es la protagonista y Grimuca es la guía que le da un plan. Deck final: domingo 1:30 p.m.
+Versión 4 (21 nov, noche), enfoque B2B2C por decisión de Leonardo: Grimuca opera una **plataforma para ferreterías**. La familia mide su agua (entrada y señal) y la ferretería es el cliente que paga. Deck final: domingo 1:30 p.m.
 
-**Lema:** Saber qué tomas empieza en casa
-**Promesa:** Menos botellones: mide tu agua y cambia el cartucho cuando toca.
+**Lema del cliente final:** Saber qué tomas empieza en casa
+**Frase para el lado empresa (propuesta):** Clientes que llegan sabiendo qué necesitan
+**Promesa para la familia:** Menos botellones: mide tu agua y cambia el cartucho cuando toca.
 
 **Reglas del deck**
 - Máximo 3 viñetas por lámina. Lo demás lo dice el orador.
-- Toda cifra lleva su fuente. Las de Tulio van como "estimación de Tulio"; las de Business, como "supuesto" o "cálculo", con el archivo `docs/negocio/modelo.md`. Nada se presenta como medido: el piloto de 1.000 sobres es lo que las mide.
+- Toda cifra lleva su origen: "Tulio", "supuesto" o "cálculo", con `docs/negocio/modelo.md`. Nada se presenta como medido. Las cifras que no existen (membresía, precio al mayor, cuántas ferreterías entran) se rotulan **SUPUESTO** en la lámina.
+- Decir siempre que esto se ejecuta a largo plazo y que lo de hoy es una demo con datos sembrados: los comercios de Lara y Aragua son de demostración, la membresía no se cobra y el pago del sobre es simulado.
 - Nunca "potable", "segura" ni "apta para tomar" como afirmación. Plomo y cobre: "posible presencia, confirma con un laboratorio".
 - Sin "agua de calidad" ni "permanente". No se nombra a competidores, a Hidrocentro ni a marcas de botellón. Sin miedo: ni niños enfermos ni hospitales.
 - Pie legal en láminas con resultados o salud: "Grimuca Agua ofrece mediciones caseras orientativas. No certifica agua ni reemplaza un análisis de laboratorio."
-- Diseño: azul Grimuca `#12437F`, un solo acento naranja por lámina, esquinas rectas, sin sombras. Logo de Grimuca arriba a la izquierda.
+- Diseño: azul Grimuca `#12437F`, un solo acento naranja por lámina, esquinas rectas, sin sombras. Logo arriba a la izquierda.
 
-**Imágenes** (`docs/marketing/imagenes/`)
-- Portada, antes de la lámina 1 (no cuenta como lámina): `01-saber-que-tomas.jpg`.
-- Lámina 1: `02-botellones.jpg` (en el deck va con el pie legal; dentro de la app no se usa).
-- Lámina 2: `03-sobre.jpg` (la tabla de colores de la imagen es ilustrativa; decirlo en la nota).
-- Lámina 3: `04-mide-entiende-filtra.jpg`, en pantalla solo dos segundos.
-- Láminas 4 y 5: sin imagen de campaña; llevan el esquema de tiendas y la cuenta del sobre.
-- Lámina 6: `01-saber-que-tomas.jpg` de fondo, con el lema.
+**Imágenes disponibles** (`docs/marketing/imagenes/` y capturas de `docs/calidad/capturas/`):
+- Portada, antes de la lámina 1 (no cuenta): `01-saber-que-tomas.jpg`.
+- Lámina 1: `02-botellones.jpg` con el pie legal.
+- Lámina 2: `03-sobre.jpg` (la tabla de colores es ilustrativa) y un esquema de tres cajas: familia, plataforma y ferretería.
+- Lámina 3: cuatro capturas, una por módulo (detalle abajo). **Las de `/red`, `/tecnico` y la pestaña Productos de `/comercio` no existen todavía**: se toman cuando la migración `008_red_de_comercios.sql` esté desplegada.
+- Lámina 4: `33-operador-inventario.png` y `34-operador-zonas.png`.
+- Lámina 5: sin imagen; tabla de las tres líneas de ingreso.
+- Lámina 6: mapa de Venezuela con estados cubiertos (la Red lo muestra como cifra) y `01-saber-que-tomas.jpg` de fondo.
 
-**Qué pilar del jurado trabaja cada lámina:** 1 y 2 producto; 3 calidad técnica; 4 innovación y producto; 5 modelo de negocio; 6 innovación y modelo.
+**Qué pilar del jurado trabaja cada lámina:** 1 y 2 producto; 3 calidad técnica y producto; 4 innovación y logística; 5 modelo de negocio; 6 modelo e innovación.
 
 ---
 
-## Lámina 1 · El cliente y su problema
+## Lámina 1 · El problema
 
 **Imagen:** `02-botellones.jpg`
-**Título:** Una familia de Valencia carga botellones sin saber qué toma
+**Título:** La ferretería vende filtros a ciegas y el hogar no mide
 
-- Nuestro cliente: padres y madres de clase media y media alta en Valencia, preocupados por el agua que toman sus hijos [Tulio].
-- Cargan 5 a 6 botellones por quincena: hasta $576 al año con delivery (estimación de Tulio, sin encuesta).
-- Muchas familias no ven nunca una medición del agua que compran.
+- La ferretería no sabe qué agua tiene la casa del comprador, qué cartucho le toca ni cuándo vuelve; compra y almacena repuestos a ciegas.
+- El hogar carga 5 a 6 botellones por quincena, hasta $576 al año con delivery (estimación de Tulio, sin encuesta), y no ve nunca una medición de lo que toma.
+- Resultado: pedidos sorpresa, piezas que faltan y dinero parado en estante.
 
 **Lema en pantalla, abajo:** Saber qué tomas empieza en casa
 
-**Nota del orador (Tulio):** "En el mostrador de Grimuca nos lo preguntan todos los días: ¿este filtro me sirve?, ¿cuándo le cambio el cartucho? Y la verdad es que nadie sabe, porque nadie mide." La cuenta, por si preguntan: 5 a 6 botellones por quincena, unos $2 cada uno, hasta $4 con delivery; son $20 a $24 al mes, o $40 a $48 con delivery, hasta $576 al año. Es estimación nuestra, no una encuesta. El protagonista de la historia es la familia; la lámina no habla de Grimuca todavía. No se nombra a ninguna marca ni empresa de botellones.
+**Nota del orador (Tulio):** "En el mostrador de Grimuca nos lo preguntan todos los días: ¿este filtro me sirve?, ¿cuándo le cambio el cartucho? Nadie sabe, porque nadie mide. Y nosotros, que vendemos el cartucho, tampoco sabemos cuándo lo van a pedir." Cuenta del botellón por si preguntan: $2 cada uno, hasta $4 con delivery; $20 a $24 al mes o $40 a $48 con delivery; estimación nuestra. No se nombra a ninguna marca de botellón.
 
 ---
 
-## Lámina 2 · El plan: mide, entiende, filtra
+## Lámina 2 · La solución
 
-**Imagen:** `03-sobre.jpg`
-**Título:** Un sobre de $9 le da a la familia un plan en tres pasos
+**Imagen:** `03-sobre.jpg` y el esquema familia → plataforma → ferretería
+**Título:** La medición es la entrada; la plataforma para ferreterías es el negocio
 
-- Mide: escanea el QR del sobre, pone una gota por casilla y le toma una foto a la tira junto a la tabla de colores.
-- Entiende: la app explica cada casilla en Verde, Amarillo o Rojo y qué mide cada una.
-- Filtra: recomienda el cartucho que corresponde y avisa cuándo toca cambiarlo. Menos botellones.
+- Una familia mide su agua con un sobre de $9 (Tulio): tira, prueba de bacterias y tabla de colores. El sistema la asigna a la ferretería más cercana que tiene el producto.
+- La ferretería recibe clientes ya medidos, inventario contra demanda y recambios con fecha. Grimuca opera la red.
+- La familia mide y entiende en Verde, Amarillo o Rojo; la ferretería despacha y un técnico visita.
 
-**Nota del orador (Tulio):** "El sobre se compra en el mostrador de Mañongo o San Diego, en farmacias y supermercados aliados, o se pide a domicilio. Trae una tira, una prueba casera de bacterias y la tabla de colores." Decir siempre, sin que lo pregunten: "La tira no mide todo y no certificamos el agua. Con plomo y cobre decimos 'posible presencia' y mandamos al laboratorio. Somos una ferretería, no un laboratorio: orientamos y resolvemos lo que sí se resuelve con un cartucho." La tabla de colores de la imagen es ilustrativa.
+**Nota del orador (Tulio):** "Esto lo vamos a ejecutar a largo plazo; hoy les mostramos una demo." Decir siempre, sin que lo pregunten: "La tira no mide todo y no certificamos el agua. Con plomo y cobre decimos 'posible presencia' y mandamos al laboratorio. Somos una ferretería, no un laboratorio." La tabla de colores de la imagen es ilustrativa.
 
 ---
 
-## Lámina 3 · Demo
+## Lámina 3 · Demo: los cuatro módulos
 
-**Imagen:** `04-mide-entiende-filtra.jpg`
-**Título:** Del teléfono de la familia al mostrador de la tienda, en vivo
+**Imagen:** cuatro capturas en fila, con el nombre del módulo y la dirección debajo
+1. Red (`/red`): lista de comercios con plan y periodo gratis, cifras de toda la red. *Captura nueva pendiente.*
+2. Comercio (`/comercio`): `31-operador-despacho.png` y pestaña Productos. *Productos pendiente.*
+3. Cliente (`/`): `41-telefono-pedido-para-despacho.png`.
+4. Técnico (`/tecnico`): servicio asignado con "Ya fui". *Captura nueva pendiente.*
 
-- Teléfono: la familia escanea el sobre, mide, ve su resultado y pide el cartucho.
-- Laptop: el pedido aparece en el despacho de Mañongo sin recargar.
-- Inventario que va a faltar y alerta por zona.
+**Título:** Un mismo pedido recorre los cuatro módulos
 
-**Nota del orador (Tulio):** Esta lámina se queda en pantalla solo dos segundos: es la entrada a la demo en vivo. "Mejor se los mostramos." El detalle está en `guion-demo.md`. Si falla el internet: datos móviles; si falla la foto: se anotan los colores a mano; si falla todo: video de respaldo.
+- Red y Comercio: la ferretería ve su despacho, su inventario contra demanda y el mapa por urbanización.
+- Cliente: mide, ve por qué se le recomienda un producto y pide. El pedido aparece en vivo en el comercio.
+- Técnico: marca "Ya fui" con foto de cómo quedó, y la Red refleja la actividad.
+
+**Nota del orador (Tulio):** Esta lámina se queda en pantalla solo dos segundos: es la entrada a la demo en vivo. "Mejor se los mostramos." El detalle está en `guion-demo.md`. Si falla internet: datos móviles; si fallan los datos: video de respaldo.
 
 ---
 
 ## Lámina 4 · Por qué es logística
 
-**Título:** Se despacha lo que la medición pide
+**Imagen:** `33-operador-inventario.png` (faltantes en rojo) y `34-operador-zonas.png`
+**Título:** Lo que deja de existir es el pedido sorpresa
 
-- Tres tiendas Grimuca funcionan como almacenes: Mañongo, Big Low y CC CEM. Un almacenista por tienda y un responsable de logística [Tulio].
-- Aliados previstos: SAMA Logística 3 para el delivery (última milla, rastreo, cobro contra entrega, mismo día) y Cobrix para los pagos. Tarifas por cotizar.
-- El operador ve cuántos cartuchos se van a pedir en 7 y 30 días, por tienda y por zona.
+- Con la medición y la fecha del último cambio, cada cartucho tiene fecha y referencia conocidas con semanas de anticipación.
+- Tres ahorros: compra al proveedor contra demanda prevista; asignación al comercio más cercano que sí tiene la pieza; entregas y visitas técnicas agrupadas por urbanización y por semana.
+- Última milla con operadores que ya tienen red; la foto del filtro evita el cartucho equivocado y la segunda visita.
 
-**Nota del orador (Tulio):** "Esto no es una app de agua: es una forma de saber qué hay que despachar antes de que el cliente lo pida. Cada medición nos dice cuándo le toca el cartucho a esa casa. Con eso la tienda sabe qué le va a faltar el mes que viene, y si tres casas de una misma zona salen en rojo en una semana, salta la alerta y se refuerza el inventario de la tienda que atiende esa zona." Un hogar que cambia el cartucho a tiempo mueve unos 6 kg al año contra 2.370 a 2.844 kg de botellones (supuesto de pesos y estimación de Tulio de 5 a 6 botellones por quincena; `docs/negocio/modelo.md` §10). Aclarar: en la demo el pago es simulado; Cobrix y SAMA son los aliados previstos, todavía sin tarifas.
+**Nota del orador (Tulio):** "Una ferretería compra, almacena y despacha a ciegas. Nosotros le damos la fecha de cada cartucho." Cifra de industria, solo como supuesto: comprar por adelantado el inventario del piloto pide $15.000 a $20.000 de capital de trabajo, contra unas dos semanas de cartuchos si se compra contra demanda prevista (supuesto de Business). **Cuando Tulio entregue sus datos, completar:** "Grimuca tiene $[DATO DE TULIO] en inventario de filtros y cartuchos, que rota cada [DATO DE TULIO] días; comprando contra demanda prevista baja a [CÁLCULO]". Mientras tanto, ejemplo de orden de magnitud, rotulado supuesto: con 90 días de rotación y 639 juegos al mes, el dinero parado baja de unos $18.200 a unos $2.800. Un hogar con filtro mueve unos 6 kg al año contra 2.370 a 2.844 kg en botellones (estimación de Tulio y pesos supuestos). SAMA Logística 3 cubre Valencia, con tarifas por cotizar; en otros estados todavía no hay operador confirmado.
 
 ---
 
 ## Lámina 5 · Modelo de negocio
 
-**Título:** El sobre se paga solo; el negocio son los cartuchos
+**Título:** Tres líneas de ingreso, y la ferretería es la que paga
 
-- Sobre de $9: deja entre $3,56 (con envío a domicilio) y $6,06 (retiro en tienda) después de costo en fábrica, importación y empaque (cálculo de Business con supuestos marcados). El filtro se vende casi a costo (20% de margen). Los cartuchos dejan 50% de margen y se cambian cada 3 meses (estimación de Tulio).
-- De cada 100 sobres: 10 compran filtro, 30 ya tenían filtro y compran cartuchos, 60 se quedan con la información (estimación de Tulio; el piloto la mide).
-- Piloto de 1.000 sobres: $9.000 en ventas contra $1.940 de costo en fábrica con ese volumen (frasco a $1,90, tira a unos $0,04; fuentes de Tulio, cálculo de Business). El piloto responde cuántos hogares por tienda y qué porcentaje compra qué.
+- **Sobre de $9** al cliente final (Tulio). **Membresía de la ferretería: $30 al mes con 1 a 3 meses gratis (SUPUESTO).** **Sobres al mayor a $5,50 (SUPUESTO).**
+- La ferretería recibe unos $280 al mes en margen de las familias asignadas (cálculo con márgenes de Tulio y 40 familias, supuesto) y recupera la membresía con 5 familias.
+- Cada ferretería deja a la red entre $103 y $144 al mes (cálculo; el rango depende del costo del sobre, $4,00 o $2,94, por decidir); 4 a 5 ferreterías pagando cubren los fijos de la red. Siguiente paso: comisión por transacción y plan premium.
 
-**Nota del orador (Tulio):** "El sobre no es el negocio: es la puerta. El que compra el filtro vuelve por cartuchos cada tres meses, y el que ya tiene filtro y no sabe cuándo cambiarlo también: la app le recuerda y le dice cuál cartucho va." Si preguntan por tienda: con 150 hogares captados al mes por tienda, al mes 12 son unos 720 hogares por tienda y unos $2.280 de margen mensual por cartuchos (unos $6.840 las tres), suponiendo que nadie deja de comprar y antes de importación, empaque, delivery, pasarela de pagos y el responsable de logística. Business calcula el punto de equilibrio entre 40 y 62 sobres al mes por tienda (supuestos marcados en `modelo.md` §5) y que la variable que más pesa es la captación de hogares. Filtros de referencia (Oasis, precios de Mundo JAB, 21 nov): ultrafiltración de 6 etapas $119,99; ósmosis de 8 etapas $329,99; kit de 3 cartuchos $18,99. Precios y márgenes de Grimuca todavía por confirmar. Cuando el jurado pregunte lo que no tenemos: "Eso es estimación nuestra, no medido; para eso es el piloto."
+**Nota del orador (Tulio):** "El que paga todos los meses es la ferretería. La familia entra por la medición y paga $9." Honestidad en tarima: "No hay todavía ninguna ferretería aliada; la membresía, el precio al mayor y el número de ferreterías son supuestos que el piloto confirma." Si preguntan por caja: el primer año de la red es de inversión (base +$1.094 con el sobre a $2,94 y −$2.035 con $4,00); la operación mensual es positiva desde el mes 4. La variable que lo tumba es cuántas familias medidas le llegan a cada ferretería al mes: con 35 a 55 el año 1 cierra en cero. Las tres tiendas propias de Carabobo siguen con su economía (hipótesis de Tulio: +$65.500 en el base del modelo anterior).
 
 ---
 
-## Lámina 6 · Lo que sigue, y dónde más cabe
+## Lámina 6 · Red y expansión por estados
 
-**Imagen:** `01-saber-que-tomas.jpg` de fondo
-**Título:** Lo que sigue, y dónde más cabe
+**Imagen:** `01-saber-que-tomas.jpg` de fondo, con el mapa de estados cubiertos
+**Título:** Una ferretería por estado cubre el estado
 
-- Siguiente paso: recordatorio por WhatsApp para cambiar el cartucho, video corto para cambiarlo uno mismo y servicio de plomero a pedido (instalar $40 a $60, cambiar cartucho $30; Grimuca se queda el 30%, estimación de Tulio).
-- El mismo problema se repite en la región: donde se carga botellón y hay una ferretería con mostrador, cabe este modelo.
-- **Saber qué tomas empieza en casa.**
+- Grimuca es el comercio de Carabobo y opera la red; en otros estados entran ferreterías aliadas, una por estado.
+- La Red muestra comercios, plan, periodo gratis y cifras de toda la red; el alta de un comercio nuevo se hace en pantalla.
+- Siguiente: piloto de 1.000 sobres en Carabobo, primeras ferreterías aliadas y comisión por transacción. Fuera de la demo: cuentas por usuario y cobro real.
 
-**Nota del orador (Tulio):** "En la demo el recordatorio va dentro de la app; el bot de WhatsApp con recordatorio, sugerencia y pago es el siguiente paso." "Empezamos en Valencia con tres tiendas que ya existen. La tira cambia, las tiendas cambian, el sistema es el mismo." Datos de la región con fuente, si piden (`docs/negocio/modelo.md` §12): en México, 98% de los hogares compra agua embotellada (Kantar Worldpanel, datos 2017); en República Dominicana, 84,3% usa agua de botellón (ONE, Censo 2022). Cerrar con la promesa ("Menos botellones: mide tu agua y cambia el cartucho cuando toca"), el lema, la dirección `agua.oydo.app` en pantalla y los nombres: Leonardo Dávila y Tulio Dávila.
+**Lema en pantalla, abajo:** Clientes que llegan sabiendo qué necesitan · Saber qué tomas empieza en casa
+
+**Nota del orador (Tulio):** "Empezamos en Valencia con tres tiendas que ya existen." En la demo hay dos comercios de demostración (Barquisimeto y Maracay), rotulados así. Datos de la región con fuente, si piden (`modelo.md` sección 11): México, 98% de los hogares compra agua embotellada (Kantar Worldpanel, 2017); República Dominicana, 84,3% usa agua de botellón (ONE, Censo 2022). Cerrar con la dirección `agua.oydo.app` en pantalla y los nombres: Leonardo Dávila y Tulio Dávila.
 
 ---
 
 ## Preguntas probables del jurado y respuesta corta
 
+Las 21 respuestas con su número están en `docs/negocio/preguntas-jurado.md`. Las cuatro que más se hacen:
+
 | Pregunta | Respuesta |
 |---|---|
-| ¿Por qué no hay precio en la app? | El precio lo confirma la tienda por WhatsApp, con el resultado del cliente ya escrito en el mensaje. Los precios cambian por tienda y por tasa. |
-| ¿Cómo cierran la venta? | En el chat de la tienda, con un guion de venta consultiva (`guion-whatsapp-tiendas.md`). La app entrega el cliente con su resultado. |
-| ¿Qué pasa con la familia que solo se informa? | El sobre ya se pagó solo. Se le avisa cuándo repetir la medición. Para ella el recambio de cartucho solo aplica si tiene filtro. |
+| ¿Por qué pagaría una ferretería? | Recibe familias ya medidas y inventario contra demanda; con 40 familias al mes gana unos $280 y paga $30 (cálculo, supuestos). |
+| ¿Cuál es el problema logístico? | Se compra, almacena y despacha a ciegas; la fecha de cada cartucho elimina el pedido sorpresa. |
+| ¿Quién es el cliente? | La familia entra por la medición y paga $9; la ferretería paga cada mes. |
 | ¿Certifican el agua? | No. Orientamos con una medición casera y despachamos el cartucho correcto. |
 
 ## Cifras que siguen pendientes
 
 | Lámina | Qué falta | Quién |
 |---|---|---|
-| 4 | Tarifa y cobertura de SAMA (Naguanagua y San Diego); costos de Cobrix | Tulio |
-| 5 | Costo del envío del sobre (supuesto de $2,50, pendiente) | Tulio |
-| 5 | Margen y frecuencia reales del cartucho (Tulio dio 50% y 3 meses); importación y empaque; precios internos de Grimuca | Tulio |
+| 4 | Dinero en inventario, días de rotación, faltantes y entregas por semana de Grimuca | Tulio |
+| 5 | Precio de membresía, precio al mayor, cuántas ferreterías entran y cuántas pagan | Tulio |
+| 5 | Costo del sobre puesto en Venezuela: $2,94 o $4,00 | Leonardo |
+| 3 | Capturas de `/red`, `/tecnico` y Productos | Calidad o Leonardo, tras desplegar la migración 008 |

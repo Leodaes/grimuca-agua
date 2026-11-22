@@ -102,9 +102,17 @@ export function calcularResumen(
 
 // --- Consultas ---
 
-export async function leerTiendas(bd: Pool): Promise<FilaTienda[]> {
-  const { rows } = await bd.query<FilaTienda>('SELECT id, nombre FROM tiendas ORDER BY nombre');
-  return rows;
+/** Sin `comercioId`, todas las tiendas; con él, solo las de ese comercio. */
+export async function leerTiendas(bd: Pool, comercioId?: string): Promise<FilaTienda[]> {
+  const { rows } = comercioId
+    ? await bd.query<FilaTienda>('SELECT id, nombre FROM tiendas WHERE comercio_id = $1 ORDER BY nombre', [comercioId])
+    : await bd.query<FilaTienda>('SELECT id, nombre FROM tiendas ORDER BY nombre');
+  return rows.map((t) => ({ id: String(t.id), nombre: String(t.nombre) }));
+}
+
+/** ¿El hogar lo atiende alguna de estas tiendas? (sin tienda propia, cuenta la sugerida por su zona) */
+export function hogarDeTiendas(hogar: Pick<FilaHogarDemanda, 'tienda_id' | 'zona'>, tiendas: Set<string>): boolean {
+  return tiendas.has(tiendaDelHogar(hogar));
 }
 
 /** Hogares con la vida útil y el código del último cartucho que pidieron (si pidieron alguno). */
@@ -154,9 +162,10 @@ export async function leerPedidosDemanda(bd: Pool): Promise<FilaPedidoDemanda[]>
   }));
 }
 
-export async function resumenPorTienda(bd: Pool, hoy: Date = new Date()): Promise<ResumenTienda[]> {
+/** Con `comercioId`, solo sus tiendas (los hogares y pedidos de otras tiendas no se cuentan). */
+export async function resumenPorTienda(bd: Pool, hoy: Date = new Date(), comercioId?: string): Promise<ResumenTienda[]> {
   const [tiendas, hogares, pedidos] = await Promise.all([
-    leerTiendas(bd),
+    leerTiendas(bd, comercioId),
     leerHogaresDemanda(bd),
     leerPedidosDemanda(bd),
   ]);

@@ -1,0 +1,46 @@
+{
+  "prueba": "revisión en vivo: enlaces internos, \"potable\", desbordes y consola",
+  "estado": "passed",
+  "hallazgos": [],
+  "erroresConsola": [
+    {
+      "pantalla": "/bacterias",
+      "texto": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "pantalla": "enlace /bacterias",
+      "texto": "Failed to load resource: the server responded with a status of 404 ()"
+    }
+  ],
+  "tiempos": {},
+  "notas": {
+    "enlacesRevisados": [
+      "/",
+      "/resultado/ultimo",
+      "/tutoriales",
+      "/medir",
+      "/resultados",
+      "/perfil",
+      "/catalogo",
+      "/mi-filtro",
+      "/tiendas",
+      "/privacidad",
+      "/terminos",
+      "/lista",
+      "/medir/manual",
+      "/experto",
+      "/bacterias",
+      "/resultado/8f44cb56-1c4a-490e-a240-09790640d840",
+      "/tutoriales/sedimentos",
+      "/tutoriales/carbon",
+      "/tutoriales/membrana",
+      "/tutoriales/cuando",
+      "/experto?servicio=cambio",
+      "/mi-filtro/manual"
+    ],
+    "enlacesRotos": [],
+    "potable": [],
+    "desbordes375": [],
+    "erroresConsola": 2
+  }
+}

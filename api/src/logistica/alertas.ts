@@ -1,6 +1,7 @@
 // Alertas por zona: hogares cuya última medición de los últimos 7 días salió en rojo en un parámetro de salud.
 import type { Pool } from 'pg';
 import type { AlertaZona, ClaveParametro } from '../tipos';
+import { hogarDeTiendas, leerTiendas } from './demanda';
 
 /** Solo estos parámetros cuentan para la alerta (los demás son de sabor, dureza o comodidad). */
 export const PARAMETROS_SALUD: readonly ClaveParametro[] = ['cobre', 'nitrato', 'nitrito', 'plomo', 'cloro_libre'];
@@ -80,25 +81,35 @@ export function calcularAlertas(
   return resultado;
 }
 
-export async function alertasZona(bd: Pool, hoy: Date = new Date()): Promise<AlertaZona[]> {
-  const [zonasRes, ultimasRes] = await Promise.all([
-    bd.query<{ zona: string }>('SELECT DISTINCT zona FROM hogares'),
+/** Con `comercioId`, solo los hogares que atienden sus tiendas (y sus zonas). */
+export async function alertasZona(bd: Pool, hoy: Date = new Date(), comercioId?: string): Promise<AlertaZona[]> {
+  const [zonasRes, ultimasRes, propias] = await Promise.all([
+    comercioId
+      ? bd.query<{ zona: string }>('SELECT id, zona, tienda_id FROM hogares')
+      : bd.query<{ zona: string }>('SELECT DISTINCT zona FROM hogares'),
     bd.query(
       `SELECT DISTINCT ON (m.hogar_id) m.hogar_id, h.zona, m.fecha, m.semaforo_por_parametro
          FROM mediciones m
          JOIN hogares h ON h.id = m.hogar_id
         ORDER BY m.hogar_id, m.fecha DESC`,
     ),
+    comercioId ? leerTiendas(bd, comercioId) : Promise.resolve(null),
   ]);
-  const ultimas: FilaUltimaMedicion[] = ultimasRes.rows.map((f) => ({
+  let ultimas: FilaUltimaMedicion[] = ultimasRes.rows.map((f) => ({
     hogar_id: String(f.hogar_id),
     zona: String(f.zona),
     fecha: f.fecha,
     semaforo_por_parametro: f.semaforo_por_parametro,
   }));
-  return calcularAlertas(
-    zonasRes.rows.map((z) => z.zona),
-    ultimas,
-    hoy,
-  );
+  let zonas = zonasRes.rows.map((z) => String(z.zona));
+  if (propias) {
+    const tiendas = new Set(propias.map((t) => t.id));
+    const hogares = (zonasRes.rows as Array<{ id: unknown; zona: unknown; tienda_id: unknown }>)
+      .map((h) => ({ id: String(h.id), zona: String(h.zona), tienda_id: (h.tienda_id as string | null) ?? null }))
+      .filter((h) => hogarDeTiendas(h, tiendas));
+    const ids = new Set(hogares.map((h) => h.id));
+    zonas = [...new Set(hogares.map((h) => h.zona))];
+    ultimas = ultimas.filter((m) => ids.has(m.hogar_id));
+  }
+  return calcularAlertas(zonas, ultimas, hoy);
 }

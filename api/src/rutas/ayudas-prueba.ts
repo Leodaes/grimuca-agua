@@ -12,12 +12,40 @@ import type { Evaluacion, EventoAgua, LecturaTira, Nivel, ParametroTira, Resulta
 export const PIN_PRUEBA = '2468';
 export const SECRETO_PRUEBA = 'secreto-solo-para-pruebas-0123456789';
 
+/** PIN del comercio aliado de las pruebas (`aliado-lara`), de la red y del técnico de Grimuca. */
+export const PIN_LARA_PRUEBA = '1357';
+export const PIN_RED_PRUEBA = '9753';
+export const PIN_TECNICO_PRUEBA = '8642';
+
 export const CONFIG_PRUEBA: ConfigApp = {
   pinOperador: PIN_PRUEBA,
+  pinesComercios: { 'aliado-lara': PIN_LARA_PRUEBA },
+  pinSuperadmin: PIN_RED_PRUEBA,
+  pinTecnico: PIN_TECNICO_PRUEBA,
   secretoSesion: SECRETO_PRUEBA,
   version: 'prueba',
   marcasExcluidas: [],
 };
+
+/**
+ * Agrega un comercio aliado con una tienda (la migración solo crea `grimuca`).
+ * `finGratis`: AAAA-MM-DD del fin del periodo gratis, o null.
+ */
+export async function insertarComercio(
+  bd: Bd,
+  datos: { id: string; nombre: string; estado: string; ciudad: string; tienda: string; finGratis?: string | null; activo?: boolean },
+): Promise<void> {
+  await bd.query(
+    `INSERT INTO comercios (id, nombre, estado_pais, ciudad, plan, membresia_usd, fin_periodo_gratis, activo, es_demostracion)
+     VALUES ($1, $2, $3, $4, 'basico', NULL, $5, $6, true)`,
+    [datos.id, datos.nombre, datos.estado, datos.ciudad, datos.finGratis ?? null, datos.activo ?? true],
+  );
+  await bd.query("INSERT INTO tiendas (id, nombre, horario, direccion, comercio_id) VALUES ($1, $2, 'Por confirmar', NULL, $3)", [
+    datos.tienda,
+    `Tienda de ${datos.nombre}`,
+    datos.id,
+  ]);
+}
 
 /**
  * Nombres que Postgres pone a los CHECK en línea y su equivalente en pg-mem, que los numera por tabla

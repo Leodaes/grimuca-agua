@@ -130,3 +130,26 @@ export function tokenOperador(): string | null {
 export function guardarTokenOperador(token: string | null): void {
   escribir(CLAVE_TOKEN_OPERADOR, token);
 }
+
+// ---------- Red (superadmin) y técnico: un token por rol ----------
+
+export const CLAVE_TOKEN_RED = 'agua.token_red';
+export const CLAVE_TOKEN_TECNICO = 'agua.token_tecnico';
+
+export function tokenRed(): string | null {
+  return leer(CLAVE_TOKEN_RED) || null;
+}
+
+/** Pasa `null` para cerrar la sesión de la red. */
+export function guardarTokenRed(token: string | null): void {
+  escribir(CLAVE_TOKEN_RED, token);
+}
+
+export function tokenTecnico(): string | null {
+  return leer(CLAVE_TOKEN_TECNICO) || null;
+}
+
+/** Pasa `null` para cerrar la sesión del técnico. */
+export function guardarTokenTecnico(token: string | null): void {
+  escribir(CLAVE_TOKEN_TECNICO, token);
+}

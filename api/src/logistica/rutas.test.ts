@@ -1,23 +1,18 @@
-import { randomUUID } from 'node:crypto';
-import { readFileSync } from 'node:fs';
-import { DataType, newDb } from 'pg-mem';
-import type { Pool } from 'pg';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import type { FastifyInstance } from 'fastify';
 import { crearApp, type Medidor } from '../app';
 import { crearToken } from '../rutas/operador';
+import { crearBdDePrueba } from '../rutas/ayudas-prueba';
 
 const SECRETO = 'secreto-de-prueba-logistica';
 let app: FastifyInstance;
 
 beforeAll(async () => {
-  const db = newDb();
-  db.public.registerFunction({ name: 'gen_random_uuid', returns: DataType.uuid, implementation: randomUUID, impure: true });
-  db.public.none(readFileSync(new URL('../../../db/migraciones/001_inicial.sql', import.meta.url), 'utf8'));
-  const { Pool: PoolMem } = db.adapters.createPg();
+  // Todas las migraciones: desde la 008 las tiendas pertenecen a un comercio.
+  const bd = await crearBdDePrueba();
   const medicion = { tira: [], leerTira: async () => ({ estado: 'no_legible', motivo: '' }), evaluarAgua: () => ({}), diasParaRecambio: () => null } as unknown as Medidor;
   app = await crearApp({
-    bd: new PoolMem() as Pool,
+    bd,
     config: { pinOperador: '1234', secretoSesion: SECRETO, version: 'prueba' },
     medicion,
   });

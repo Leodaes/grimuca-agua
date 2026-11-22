@@ -22,6 +22,9 @@ const esquemaEntorno = z.object({
   PUERTO: z.coerce.number().int().min(1).max(65535).default(3070),
   DATABASE_URL: textoOpcional,
   PIN_OPERADOR: textoOpcional,
+  PINES_COMERCIOS: textoOpcional,
+  PIN_SUPERADMIN: textoOpcional,
+  PIN_TECNICO: textoOpcional,
   SECRETO_SESION: textoOpcional,
   VISION_API_URL: textoOpcional,
   VISION_API_KEY: textoOpcional,
@@ -37,6 +40,12 @@ export interface Config {
   urlBd: string | null;
   /** PIN del panel del operador. Si falta, nadie puede entrar al panel. */
   pinOperador: string | null;
+  /** PIN de cada comercio aliado (`PINES_COMERCIOS`, JSON `{"aliado-lara":"…"}`). `PIN_OPERADOR` es el de `grimuca`. */
+  pinesComercios: Record<string, string>;
+  /** PIN de la red (superadmin). Sin él, nadie entra a /red. */
+  pinSuperadmin: string | null;
+  /** PIN del técnico del comercio `grimuca`. Sin él, nadie entra a /tecnico. */
+  pinTecnico: string | null;
   /** Secreto con el que se firman los tokens del operador. */
   secretoSesion: string;
   /** true si el secreto se generó al arrancar (los tokens dejan de valer al reiniciar). */
@@ -53,6 +62,31 @@ export interface Config {
 }
 
 export class ErrorConfig extends Error {}
+
+/**
+ * `PINES_COMERCIOS`: JSON `{ "<id del comercio>": "<PIN>" }`. Si no se entiende, se ignora con un aviso
+ * (el servidor arranca igual y los aliados no pueden entrar). Las entradas vacías o no texto se descartan.
+ */
+export function leerPinesComercios(texto: string | undefined, avisos: string[] = []): Record<string, string> {
+  if (!texto) return {};
+  let dato: unknown;
+  try {
+    dato = JSON.parse(texto);
+  } catch {
+    avisos.push('PINES_COMERCIOS no es un JSON válido: se ignora (solo entra Grimuca con PIN_OPERADOR).');
+    return {};
+  }
+  if (typeof dato !== 'object' || dato === null || Array.isArray(dato)) {
+    avisos.push('PINES_COMERCIOS debe ser un objeto {"id-del-comercio":"PIN"}: se ignora.');
+    return {};
+  }
+  const pines: Record<string, string> = {};
+  for (const [id, pin] of Object.entries(dato as Record<string, unknown>)) {
+    if (typeof pin !== 'string' || !pin.trim() || !/^[a-z0-9-]{1,60}$/.test(id)) continue;
+    pines[id] = pin.trim();
+  }
+  return pines;
+}
 
 export function cargarConfig(entorno: Record<string, string | undefined> = process.env): Config {
   const leido = esquemaEntorno.safeParse(entorno);
@@ -89,10 +123,15 @@ export function cargarConfig(entorno: Record<string, string | undefined> = proce
 
   const dirEstaticos = path.resolve(RAIZ_API, v.DIR_ESTATICOS ?? '../app/dist');
 
+  const pinesComercios = leerPinesComercios(v.PINES_COMERCIOS, avisos);
+
   return {
     puerto: v.PUERTO,
     urlBd: v.DATABASE_URL ?? null,
     pinOperador: v.PIN_OPERADOR ?? null,
+    pinesComercios,
+    pinSuperadmin: v.PIN_SUPERADMIN ?? null,
+    pinTecnico: v.PIN_TECNICO ?? null,
     secretoSesion,
     secretoEfimero,
     marcasExcluidas,

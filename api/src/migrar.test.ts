@@ -4,7 +4,15 @@ import path from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import type { Bd } from './bd';
 import { DIR_DB, migrar } from './migrar';
-import { crearBdDePrueba, crearBdVacia, crearEntorno, insertarCartuchos, type CartuchoDePrueba } from './rutas/ayudas-prueba';
+import {
+  crearBdDePrueba,
+  crearBdVacia,
+  crearEntorno,
+  insertarCartuchos,
+  PIN_RED_PRUEBA,
+  PIN_TECNICO_PRUEBA,
+  type CartuchoDePrueba,
+} from './rutas/ayudas-prueba';
 import { buscarUrbanizacion } from './logistica/urbanizaciones';
 import { CLAVES_PARAMETRO, NIVELES, type Evaluacion, type Medicion, type Pedido } from './tipos';
 
@@ -119,18 +127,62 @@ describe('db/semilla.sql (datos de demostración)', () => {
     await bd.query(sql);
   });
 
-  it('carga 3 tiendas y 60 hogares repartidos en las tres zonas', async () => {
-    expect(await total(bd, 'tiendas')).toBe(3);
+  it('carga 5 tiendas, 60 hogares de Grimuca en sus tres zonas y 10 de los dos aliados', async () => {
+    expect(await total(bd, 'tiendas')).toBe(5);
     const { rows } = await bd.query('SELECT zona, count(*) AS total FROM hogares GROUP BY zona ORDER BY zona');
     expect(rows.map((fila) => [fila.zona, Number(fila.total)])).toEqual([
+      ['Barquisimeto', 6],
+      ['Maracay', 4],
       ['Naguanagua', 20],
       ['San Diego', 20],
       ['Valencia norte', 20],
     ]);
   });
 
+  it('trae los comercios de la red: Grimuca y dos aliados rotulados como de demostración', async () => {
+    const { rows } = await bd.query('SELECT id, nombre, plan, membresia_usd, es_demostracion FROM comercios ORDER BY id');
+    expect(rows.map((fila) => fila.id)).toEqual(['aliado-aragua', 'aliado-lara', 'grimuca']);
+    for (const fila of rows) {
+      expect(fila.membresia_usd).toBeNull();
+      if (fila.id === 'grimuca') expect(fila.es_demostracion).toBe(false);
+      else expect(fila.nombre.endsWith('(comercio de demostración)')).toBe(true);
+    }
+    const tiendas = await bd.query('SELECT comercio_id, count(*) AS total FROM tiendas GROUP BY comercio_id ORDER BY comercio_id');
+    expect(tiendas.rows.map((fila) => [fila.comercio_id, Number(fila.total)])).toEqual([
+      ['aliado-aragua', 1],
+      ['aliado-lara', 1],
+      ['grimuca', 3],
+    ]);
+    const stockLara = await bd.query("SELECT count(*) AS total FROM stock WHERE tienda_id = 'lara-centro'");
+    expect(Number(stockLara.rows[0].total)).toBe(6);
+    const pendientesLara = await bd.query("SELECT count(*) AS total FROM pedidos WHERE tienda_id = 'lara-centro' AND estado = 'pendiente'");
+    expect(Number(pendientesLara.rows[0].total)).toBe(3);
+  });
+
+  it('trae 3 servicios técnicos pendientes y 1 atendido con reporte sin foto, todos de Grimuca', async () => {
+    const { rows } = await bd.query(
+      `SELECT p.estado, p.servicio, p.fecha_preferida, t.comercio_id, r.nota, r.foto
+         FROM pedidos p JOIN tiendas t ON t.id = p.tienda_id LEFT JOIN reportes_servicio r ON r.pedido_id = p.id
+        WHERE p.tipo = 'servicio'`,
+    );
+    expect(rows.filter((fila) => fila.estado === 'pendiente')).toHaveLength(3);
+    const atendidos = rows.filter((fila) => fila.estado === 'despachado');
+    expect(atendidos).toHaveLength(1);
+    expect(atendidos[0].nota).toBeTruthy();
+    expect(atendidos[0].foto).toBeNull();
+    for (const fila of rows) {
+      expect(fila.comercio_id).toBe('grimuca');
+      expect(fila.servicio).toBeTruthy();
+      expect(fila.fecha_preferida).toBeTruthy();
+    }
+  });
+
   it('cada hogar tiene urbanización de la lista (28 a 32 distintas) y cerca de la mitad tiene mascotas', async () => {
-    const { rows } = await bd.query('SELECT zona, urbanizacion, mascotas FROM hogares');
+    // Los hogares de Grimuca (los de los aliados no tienen urbanización de la lista de Valencia).
+    const { rows } = await bd.query(
+      "SELECT h.zona, h.urbanizacion, h.mascotas FROM hogares h JOIN tiendas t ON t.id = h.tienda_id WHERE t.comercio_id = 'grimuca'",
+    );
+    expect(rows).toHaveLength(60);
     const distintas = new Set(rows.map((fila) => fila.urbanizacion));
     expect(distintas.size).toBeGreaterThanOrEqual(28);
     expect(distintas.size).toBeLessThanOrEqual(32);
@@ -142,18 +194,18 @@ describe('db/semilla.sql (datos de demostración)', () => {
 
   it('todos los datos personales son inventados y están marcados como de prueba', async () => {
     const { rows } = await bd.query('SELECT nombre, whatsapp, direccion FROM hogares');
-    expect(rows).toHaveLength(60);
+    expect(rows).toHaveLength(70);
     for (const fila of rows) {
       expect(fila.nombre).toMatch(/^\p{Lu}\p{Ll}+ \p{Lu}\.$/u); // nombre de pila + inicial
       expect(fila.whatsapp).toMatch(/^0414-555-0[12]\d\d$/);
       expect(fila.direccion).toMatch(/\(dato de prueba\)$/);
     }
-    expect(new Set(rows.map((fila) => fila.whatsapp)).size).toBe(60);
+    expect(new Set(rows.map((fila) => fila.whatsapp)).size).toBe(70);
   });
 
   it('cada hogar tiene de 1 a 4 mediciones con la forma del contrato', async () => {
     const porHogar = await bd.query('SELECT hogar_id, count(*) AS total FROM mediciones GROUP BY hogar_id');
-    expect(porHogar.rows).toHaveLength(60);
+    expect(porHogar.rows).toHaveLength(70);
     for (const fila of porHogar.rows) {
       expect(Number(fila.total)).toBeGreaterThanOrEqual(1);
       expect(Number(fila.total)).toBeLessThanOrEqual(4);
@@ -207,18 +259,23 @@ describe('db/semilla.sql (datos de demostración)', () => {
     expect(porZona.get('Valencia norte') ?? 0).toBeLessThan(3);
   });
 
-  it('trae stock en las tres tiendas (con faltantes) y de 8 a 12 pedidos pendientes mezclados', async () => {
-    const stock = await bd.query('SELECT tienda_id, cantidad FROM stock');
+  it('trae stock en las tres tiendas de Grimuca (con faltantes) y de 8 a 12 pedidos pendientes mezclados', async () => {
+    const DE_GRIMUCA = "tienda_id IN ('manongo', 'biglow', 'cem')";
+    const stock = await bd.query(`SELECT tienda_id, cantidad FROM stock WHERE ${DE_GRIMUCA}`);
     expect(new Set(stock.rows.map((fila) => fila.tienda_id)).size).toBe(3);
     // Las tres tiendas tienen hogares y pedidos pendientes: ninguna queda vacía en el panel.
-    const hogaresPorTienda = await bd.query('SELECT tienda_id, count(*) AS total FROM hogares GROUP BY tienda_id');
+    const hogaresPorTienda = await bd.query(`SELECT tienda_id, count(*) AS total FROM hogares WHERE ${DE_GRIMUCA} GROUP BY tienda_id`);
     expect(hogaresPorTienda.rows).toHaveLength(3);
-    const pendientesPorTienda = await bd.query("SELECT tienda_id, count(*) AS total FROM pedidos WHERE estado = 'pendiente' GROUP BY tienda_id");
+    const pendientesPorTienda = await bd.query(
+      `SELECT tienda_id, count(*) AS total FROM pedidos WHERE estado = 'pendiente' AND ${DE_GRIMUCA} GROUP BY tienda_id`,
+    );
     expect(pendientesPorTienda.rows).toHaveLength(3);
     expect(stock.rows.some((fila) => Number(fila.cantidad) === 0)).toBe(true);
     expect(stock.rows.some((fila) => Number(fila.cantidad) > 0)).toBe(true);
 
-    const pendientes = await bd.query("SELECT tipo, pago, cartucho_codigo, modalidad, direccion FROM pedidos WHERE estado = 'pendiente'");
+    const pendientes = await bd.query(
+      `SELECT tipo, pago, cartucho_codigo, modalidad, direccion FROM pedidos WHERE estado = 'pendiente' AND tipo <> 'servicio' AND ${DE_GRIMUCA}`,
+    );
     expect(pendientes.rows.length).toBeGreaterThanOrEqual(8);
     expect(pendientes.rows.length).toBeLessThanOrEqual(12);
     expect(pendientes.rows.some((fila) => fila.tipo === 'sobre')).toBe(true);
@@ -230,7 +287,7 @@ describe('db/semilla.sql (datos de demostración)', () => {
     }
   });
 
-  it('la API responde sobre la semilla: despacho del operador y resultado de un hogar', async () => {
+  it('la API responde sobre la semilla: despacho del operador y resultado de un hogar', { timeout: 30_000 }, async () => {
     const entorno = await crearEntorno({ bd });
     try {
       const cabeceras = await entorno.entrarComoOperador();
@@ -255,6 +312,31 @@ describe('db/semilla.sql (datos de demostración)', () => {
       const bacterias = await entorno.app.inject({ method: 'GET', url: '/api/bacterias/00000000-0000-4000-8000-000000000002' });
       expect(bacterias.json()).toMatchObject({ resultado: 'cambio' });
       expect(bacterias.json().sugeridos.map((c: { codigo: string }) => c.codigo)).toEqual(['EMUV-11W']);
+
+      // La red sobre la semilla: Grimuca activa, Lara en periodo gratis y Aragua vencida.
+      const red = await entorno.app.inject({ method: 'POST', url: '/api/red/entrar', payload: { pin: PIN_RED_PRUEBA } });
+      const resumen = await entorno.app.inject({
+        method: 'GET',
+        url: '/api/red/resumen',
+        headers: { authorization: `Bearer ${red.json().token}` },
+      });
+      const estados = Object.fromEntries(
+        (resumen.json().comercios as Array<{ id: string; estado_membresia: string; hogares: number }>).map((c) => [
+          c.id,
+          [c.estado_membresia, c.hogares],
+        ]),
+      );
+      expect(estados).toEqual({ grimuca: ['activa', 60], 'aliado-lara': ['periodo_gratis', 6], 'aliado-aragua': ['vencida', 4] });
+      // Grimuca no ve los pedidos del aliado de Lara.
+      expect(lista.every((p) => p.comercio_nombre === 'Grimuca')).toBe(true);
+      // El técnico tiene sus 3 servicios pendientes.
+      const tecnico = await entorno.app.inject({ method: 'POST', url: '/api/tecnico/entrar', payload: { pin: PIN_TECNICO_PRUEBA } });
+      const servicios = await entorno.app.inject({
+        method: 'GET',
+        url: '/api/tecnico/servicios',
+        headers: { authorization: `Bearer ${tecnico.json().token}` },
+      });
+      expect(servicios.json()).toHaveLength(3);
     } finally {
       await entorno.app.close();
     }

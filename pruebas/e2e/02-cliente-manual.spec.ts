@@ -19,6 +19,7 @@ import {
   palabra,
   sinPalabraProhibida,
 } from './apoyo/pagina';
+import { filtroAMano } from './apoyo/perfil';
 
 /**
  * Compuerta 2 · recorrido completo del cliente con carga manual (el camino seguro de la demo).
@@ -38,8 +39,10 @@ import {
  * | /perfil         | Origen del agua          | group de chips | ¿De dónde viene/sale el agua…? → Tanque                      |
  * | /perfil         | Personas                 | spinbutton     | ¿Cuántos viven…?                                             |
  * | /perfil         | Tiene filtro             | group de chips | ¿Tienen filtro…? → Sí                                        |
- * | /perfil         | Etapas (si hay filtro)   | combobox       | …etapas… → 3                                                 |
- * | /perfil         | Último cambio            | fecha          | ¿Cuándo cambiaron el cartucho…?                              |
+ * | /perfil         | Urbanización (pasada 2)  | combobox       | Urbanización → La Campiña                                    |
+ * | /perfil         | Mascotas (pasada 2)      | group de radios| ¿Hay mascotas en casa? → Sí                                  |
+ * | /perfil         | Último cambio (con filtro)| group de radios| ¿Cuándo cambiaste el cartucho…? → Hace más de tres meses    |
+ * | /mi-filtro      | Con filtro, tras guardar | link           | ¿No puedes tomar la foto? Cárgalo a mano → Tres vasos        |
  * | /perfil         | Agua turbia              | group de chips | …turbia o amarilla… → Sí                                     |
  * | /perfil         | WhatsApp                 | textbox        | WhatsApp                                                     |
  * | /perfil         | Consentimiento           | checkbox       | Acepto que Grimuca use estos datos…                          |
@@ -76,9 +79,11 @@ const T = {
   personas: /cu[aá]nt[oa]s (personas )?viven/i,
   tieneFiltro: /tienen filtro/i,
   etapas: /etapas/i,
-  ultimoCambio: /cu[aá]ndo cambiaron/i,
+  urbanizacion: /urbanizaci[oó]n/i,
+  mascotas: /hay mascotas en casa/i,
+  ultimoCambio: /cu[aá]ndo cambiaste el cartucho/i,
   aguaTurbia: /turbia o amarilla/i,
-  whatsapp: /whatsapp/i,
+  whatsapp: /tu whatsapp/i,
   consentimiento: /acepto/i,
   guardarPerfil: /guardar y seguir|^\s*continuar\s*$|^\s*guardar\s*$/i,
   direccion: /direcci[oó]n/i,
@@ -130,22 +135,15 @@ test.describe('Compuerta 2 · recorrido del cliente con carga manual', () => {
       await elegirOpcion(page, T.zona, /naguanagua/i);
       await elegirOpcion(page, T.origenAgua, /^\s*tanque\b/i);
       await page.getByLabel(T.personas).first().fill(String(perfil.personas));
+      // Pasada 2: urbanización y mascotas nuevas; con filtro ya no se piden etapas ni fecha.
+      await elegirEnLista(page.getByRole('combobox', { name: T.urbanizacion }).first(), /^\s*otra\s*$/i); // "Otra": no se ensucia el mapa de una urbanización real
+      await page.getByRole('group', { name: T.mascotas }).getByLabel(/^\s*s[ií]\s*$/i).check();
       await elegirOpcion(page, T.tieneFiltro, /^\s*s[ií]\s*$/i);
-
-      // Campos que aparecen al decir que sí hay filtro. Si no están, se anota y se sigue.
-      const etapas = page.getByRole('combobox', { name: T.etapas }).first();
-      if (await etapas.isVisible().catch(() => false)) await elegirEnLista(etapas, /^\s*3\b/);
-      else expect.soft(false, 'No apareció "¿De cuántas etapas?" al marcar que hay filtro').toBe(true);
-
-      const ultimoCambio = page.getByLabel(T.ultimoCambio).first();
-      if (await ultimoCambio.isVisible().catch(() => false)) {
-        const llenado = await ultimoCambio.fill(perfil.fecha_ultimo_cambio).then(() => true, () => false);
-        expect.soft(llenado, 'La fecha del último cambio no aceptó una fecha AAAA-MM-DD').toBe(true);
-      } else {
-        expect.soft(false, 'No apareció la fecha del último cambio de cartucho').toBe(true);
-      }
+      await expect.soft(page.getByRole('combobox', { name: T.etapas }), 'Ya no se piden las etapas en el perfil').toHaveCount(0);
+      await page.getByRole('group', { name: T.ultimoCambio }).getByLabel(/m[aá]s de tres meses/i).check();
 
       await elegirOpcion(page, T.aguaTurbia, /^\s*s[ií]\s*$/i);
+      await expect.soft(page.getByRole('combobox', { name: /c[oó]digo de pa[ií]s/i }), 'Código de país +58 por defecto').toHaveValue('58');
       await page.getByRole('textbox', { name: T.whatsapp }).first().fill(perfil.whatsapp);
 
       const consentimiento = page.getByRole('checkbox', { name: T.consentimiento }).first();
@@ -157,7 +155,10 @@ test.describe('Compuerta 2 · recorrido del cliente con carga manual', () => {
 
       await sinPalabraProhibida(page, '/perfil', false);
       await accion(page, T.guardarPerfil).click();
-      await expect(page, 'Al guardar el perfil debe pasar al envío').toHaveURL(/\/envio/);
+      // Con filtro y sin registrarlo: primero /mi-filtro?sigue=/envio. Se carga a mano y sigue al envío.
+      await expect(page, 'Con filtro, al guardar debe ir a /mi-filtro?sigue=/envio').toHaveURL(/\/mi-filtro\?sigue=%2Fenvio/);
+      await filtroAMano(page);
+      await expect(page, 'Después de guardar el filtro debe pasar al envío').toHaveURL(/\/envio/);
 
       hogarId = String((await leerGuardado(page, 'agua.hogar_id')) ?? '');
       expect(hogarId, 'El dispositivo debe recordar el hogar en localStorage (agua.hogar_id)').toMatch(/^[0-9a-f-]{36}$/i);
@@ -168,6 +169,11 @@ test.describe('Compuerta 2 · recorrido del cliente con carga manual', () => {
       expect.soft(guardado.origen_agua).toBe('tanque');
       expect.soft(guardado.tiene_filtro).toBe(true);
       expect.soft(guardado.agua_turbia).toBe(true);
+      expect.soft(guardado.urbanizacion, 'Urbanización "Otra" se guarda vacía').toBeNull();
+      expect.soft(guardado.mascotas, 'Mascotas guardadas').toBe(true);
+      expect.soft(guardado.ultimo_cambio, 'Último cambio guardado').toBe('mas_de_tres_meses');
+      expect.soft(guardado.whatsapp, 'WhatsApp normalizado').toBe('+584120000000');
+      expect.soft(guardado.filtro?.tipo, 'Filtro cargado a mano').toBe('portafiltro_triple');
       expect.soft(Boolean(guardado.consentimiento_fecha), 'Debe quedar la fecha del consentimiento').toBe(true);
     });
 

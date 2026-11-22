@@ -1,26 +1,29 @@
-// Panel del operador: resumen por tienda, inventario contra demanda y alertas por zona.
+// Panel del comercio: resumen por tienda, inventario contra demanda y alertas por zona.
 // Se registra como las demás rutas (con prefijo /api), así que aquí van sin él.
+// Cada comercio ve solo sus tiendas y los hogares que atienden (docs/decisiones/contrato-red.md).
 import type { FastifyInstance } from 'fastify';
 import { alertasZona, inventario, mapaUrbanizaciones, resumenPorTienda } from '../logistica';
 import type { AlertaZona, FilaInventario, ResumenTienda, UrbanizacionMapa } from '../tipos';
-import { exigirOperador } from './operador';
+import { comercioDe, exigirOperador } from './operador';
 
 export async function rutasLogistica(app: FastifyInstance): Promise<void> {
   const { bd } = app.contexto;
 
-  app.get('/operador/resumen', { preHandler: exigirOperador }, async (): Promise<ResumenTienda[]> =>
-    resumenPorTienda(bd),
+  app.get('/operador/resumen', { preHandler: exigirOperador }, async (req): Promise<ResumenTienda[]> =>
+    resumenPorTienda(bd, new Date(), comercioDe(req)),
   );
 
-  app.get('/operador/inventario', { preHandler: exigirOperador }, async (): Promise<FilaInventario[]> =>
-    inventario(bd),
+  app.get('/operador/inventario', { preHandler: exigirOperador }, async (req): Promise<FilaInventario[]> =>
+    inventario(bd, new Date(), comercioDe(req)),
   );
 
-  app.get('/operador/zonas', { preHandler: exigirOperador }, async (): Promise<AlertaZona[]> => alertasZona(bd));
+  app.get('/operador/zonas', { preHandler: exigirOperador }, async (req): Promise<AlertaZona[]> =>
+    alertasZona(bd, new Date(), comercioDe(req)),
+  );
 
   // Mapa de hexágonos por urbanización (calidad del agua y clientes).
-  app.get('/operador/mapa', { preHandler: exigirOperador }, async (): Promise<UrbanizacionMapa[]> =>
-    mapaUrbanizaciones(bd),
+  app.get('/operador/mapa', { preHandler: exigirOperador }, async (req): Promise<UrbanizacionMapa[]> =>
+    mapaUrbanizaciones(bd, new Date(), comercioDe(req)),
   );
 }
 

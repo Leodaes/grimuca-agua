@@ -54,6 +54,8 @@ export interface Tienda {
   nombre: string;
   horario: string;
   direccion: string | null;
+  /** Comercio dueño de la tienda (plataforma). */
+  comercio_id?: string;
 }
 
 /** GET /api/config/tira */
@@ -339,6 +341,12 @@ export interface Pedido {
   /** Solo en respuestas del operador y en los eventos. */
   zona?: string;
   cartucho_nombre?: string | null;
+  /** Nombre de la tienda que atiende el pedido. */
+  tienda_nombre?: string;
+  /** Nombre del comercio dueño de esa tienda. */
+  comercio_nombre?: string;
+  /** Id del comercio dueño de esa tienda. */
+  comercio_id?: string;
 }
 
 /**
@@ -445,6 +453,8 @@ export interface DatosMedicionNueva {
   hogar_id: string;
   zona: string;
   semaforo: Nivel;
+  /** Comercio al que pertenece el hogar (para repartir el evento solo a ese comercio). */
+  comercio_id?: string;
 }
 
 export type EventoAgua =
@@ -455,6 +465,114 @@ export type EventoAgua =
 export type TipoEvento = EventoAgua['tipo'];
 
 export const TIPOS_EVENTO: readonly TipoEvento[] = ['pedido_nuevo', 'pedido_despachado', 'medicion_nueva'];
+
+// --- Plataforma: red de comercios (docs/decisiones/contrato-red.md) ---
+
+export type RolPlataforma = 'comercio' | 'superadmin' | 'tecnico';
+export type PlanComercio = 'basico' | 'premium';
+export const PLANES_COMERCIO: readonly PlanComercio[] = ['basico', 'premium'];
+export type EstadoMembresia = 'periodo_gratis' | 'activa' | 'vencida';
+
+export interface Comercio {
+  id: string;
+  nombre: string;
+  estado_pais: string;
+  ciudad: string;
+  plan: PlanComercio;
+  /** Nulo en la demo: el precio todavía no está fijado. */
+  membresia_usd: number | null;
+  fecha_alta: string;
+  /** AAAA-MM-DD */
+  fin_periodo_gratis: string | null;
+  activo: boolean;
+  es_demostracion: boolean;
+}
+
+export interface ComercioEnRed extends Comercio {
+  tiendas: number;
+  hogares: number;
+  mediciones_mes: number;
+  pedidos_pendientes: number;
+  pedidos_mes: number;
+  productos_propios: number;
+  estado_membresia: EstadoMembresia;
+  /** Solo en periodo gratis; null en los demás estados. */
+  dias_gratis_restantes: number | null;
+}
+
+export interface ResumenRed {
+  comercios: ComercioEnRed[];
+  totales: {
+    comercios: number;
+    estados_cubiertos: number;
+    tiendas: number;
+    hogares: number;
+    mediciones_mes: number;
+    pedidos_mes: number;
+    pedidos_pendientes: number;
+  };
+}
+
+/** Cuerpo de POST /api/red/comercios. `meses_gratis` de 0 a 3. */
+export interface EntradaComercio {
+  nombre: string;
+  estado_pais: string;
+  ciudad: string;
+  plan: PlanComercio;
+  meses_gratis: number;
+  tienda_nombre: string;
+  tienda_direccion?: string | null;
+}
+
+/** Respuesta de POST /api/operador/entrar y POST /api/tecnico/entrar. */
+export interface EntradaConComercio {
+  token: string;
+  rol: RolPlataforma;
+  comercio: Comercio;
+}
+
+/** GET /api/operador/yo */
+export interface Yo {
+  rol: RolPlataforma;
+  comercio: Comercio;
+  tiendas: Tienda[];
+}
+
+export interface ExistenciaTienda {
+  tienda_id: string;
+  tienda_nombre: string;
+  cantidad: number;
+}
+
+/** GET /api/operador/productos: catálogo general + los propios del comercio. */
+export interface ProductoComercio extends Cartucho {
+  propio: boolean;
+  existencias: ExistenciaTienda[];
+}
+
+/** Cuerpo de POST /api/operador/productos. */
+export interface EntradaProducto {
+  codigo: string;
+  nombre: string;
+  categoria: string;
+  corrige: string[];
+  foto_url?: string | null;
+  /** tienda_id → cantidad (solo tiendas del comercio). */
+  existencias: Record<string, number>;
+}
+
+export interface ReporteServicio {
+  fecha_visita: string;
+  nota: string | null;
+  tiene_foto: boolean;
+}
+
+/** En el contrato se llama `ServicioTecnico` (ese nombre ya es la unión de arriba): un pedido de servicio con su reporte. */
+export interface ServicioConReporte extends Pedido {
+  reporte: ReporteServicio | null;
+}
+
+export type FiltroServicios = 'pendiente' | 'atendido' | 'todos';
 
 // --- Otros ---
 

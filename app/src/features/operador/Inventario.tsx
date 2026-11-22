@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Boton, Cargando, Chip, EstadoVacio, Insignia } from '../../components/grimuca';
 import { useServicios } from './contexto';
-import { TIENDAS_OPERADOR } from './estadoPedidos';
+import { usePanel } from './panel';
 import { useDatos } from './useDatos';
 
 interface Props {
@@ -12,6 +12,7 @@ interface Props {
 
 export function Inventario({ token, version, alNoAutorizado }: Props) {
   const servicios = useServicios();
+  const { tiendas } = usePanel();
   const { datos, estado, reintentar } = useDatos(() => servicios.inventario(token), version, alNoAutorizado);
   const [tienda, setTienda] = useState('todas');
 
@@ -24,7 +25,7 @@ export function Inventario({ token, version, alNoAutorizado }: Props) {
         a.cartucho_nombre.localeCompare(b.cartucho_nombre, 'es'),
     );
 
-  const faltantesPorTienda = TIENDAS_OPERADOR.map((t) => ({
+  const faltantesPorTienda = tiendas.map((t) => ({
     ...t,
     faltan: filas.filter((f) => f.tienda_id === t.id).reduce((n, f) => n + f.faltante, 0),
   })).filter((t) => t.faltan > 0);
@@ -41,7 +42,7 @@ export function Inventario({ token, version, alNoAutorizado }: Props) {
           <Chip activo={tienda === 'todas'} onClick={() => setTienda('todas')}>
             Todas las tiendas
           </Chip>
-          {TIENDAS_OPERADOR.map((t) => (
+          {tiendas.map((t) => (
             <Chip key={t.id} activo={tienda === t.id} onClick={() => setTienda(t.id)}>
               {t.nombre}
             </Chip>

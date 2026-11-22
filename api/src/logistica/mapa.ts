@@ -3,6 +3,7 @@
 import type { Pool } from 'pg';
 import { CLAVES_PARAMETRO, type EstadoUrbanizacion, type UrbanizacionMapa } from '../tipos';
 import { DIAS_ALERTA, MINIMO_HOGARES_ALERTA, parametrosSaludEnRojo } from './alertas';
+import { hogarDeTiendas, leerTiendas } from './demanda';
 import { URBANIZACIONES, normalizarNombre, type Urbanizacion } from './urbanizaciones';
 
 export const DIAS_MEDICION_RECIENTE = 30;
@@ -189,21 +190,30 @@ function buscarUrbanizacionEn(lista: readonly Urbanizacion[], texto: string | nu
   return lista.find((u) => normalizarNombre(u.nombre) === clave || u.id === texto.trim());
 }
 
-export async function mapaUrbanizaciones(bd: Pool, hoy: Date = new Date()): Promise<UrbanizacionMapa[]> {
-  const [hogaresRes, ultimasRes, pedidosRes] = await Promise.all([
-    bd.query('SELECT id, zona, urbanizacion FROM hogares'),
+/** Con `comercioId`, solo los hogares que atienden sus tiendas. */
+export async function mapaUrbanizaciones(bd: Pool, hoy: Date = new Date(), comercioId?: string): Promise<UrbanizacionMapa[]> {
+  const [hogaresRes, ultimasRes, pedidosRes, propias] = await Promise.all([
+    bd.query('SELECT id, zona, urbanizacion, tienda_id FROM hogares'),
     bd.query(
       `SELECT DISTINCT ON (hogar_id) hogar_id, fecha, semaforo, semaforo_por_parametro
          FROM mediciones
         ORDER BY hogar_id, fecha DESC`,
     ),
     bd.query(`SELECT hogar_id, count(*) AS n FROM pedidos WHERE estado = 'pendiente' GROUP BY hogar_id`),
+    comercioId ? leerTiendas(bd, comercioId) : Promise.resolve(null),
   ]);
-  const hogares: FilaHogarMapa[] = hogaresRes.rows.map((f) => ({
-    id: String(f.id),
-    zona: String(f.zona),
-    urbanizacion: (f.urbanizacion as string | null) ?? null,
-  }));
+  const tiendas = propias ? new Set(propias.map((t) => t.id)) : null;
+  const hogares: FilaHogarMapa[] = hogaresRes.rows
+    .filter(
+      (f) =>
+        !tiendas ||
+        hogarDeTiendas({ tienda_id: (f.tienda_id as string | null) ?? null, zona: String(f.zona) }, tiendas),
+    )
+    .map((f) => ({
+      id: String(f.id),
+      zona: String(f.zona),
+      urbanizacion: (f.urbanizacion as string | null) ?? null,
+    }));
   const ultimas: FilaMedicionMapa[] = ultimasRes.rows.map((f) => ({
     hogar_id: String(f.hogar_id),
     fecha: f.fecha,

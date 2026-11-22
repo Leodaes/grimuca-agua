@@ -15,6 +15,16 @@ npm run e2e -- 02-cliente-manual       # un archivo
 npm run e2e -- --list                  # lista las pruebas sin correrlas
 ```
 
+**Comando vigente (pasada 2, Git Bash en Windows, sin Node en el PATH):**
+
+```bash
+export PATH="/c/Users/lede4/Valenhack/herramientas/node:$PATH"
+set -a; . ./.env.pruebas; set +a          # carga PIN_OPERADOR sin imprimirlo
+npx playwright test -c pruebas/playwright.config.ts            # todo (01 a 07)
+npx playwright test -c pruebas/playwright.config.ts 07         # solo las funciones nuevas
+npx playwright test -c pruebas/playwright.config.ts --project=movil 02 06 07
+```
+
 | Variable | Para qué | Si falta |
 |---|---|---|
 | `URL_BASE` | Dirección contra la que se prueba | Usa `https://agua.oydo.app` |
@@ -40,8 +50,10 @@ Salidas que no van a git: `pruebas/informe-html/` y `pruebas/test-results/` (ya 
 | `03-despacho-en-vivo.spec.ts` | escritorio (abre también un contexto de teléfono) | El pedido aparece en Despacho **sin recargar** en menos de 10 s y sale de pendientes al pulsar "Despachado". Dos variantes: pedido creado por la API y pedido confirmado en el teléfono |
 | `04-api.spec.ts` | escritorio | Contrato de la API: hogar sin consentimiento → 4xx; medición manual con `evaluacion.porParametro`; operador sin token → 401; `config/tira` con parámetros; tiendas, catálogo, pedidos, bacterias y despacho con PIN |
 | `05-accesibilidad.spec.ts` | movil y escritorio | `lang` en `html`, un solo `h1`, campos con etiqueta, botones con nombre, botones principales de 44 px o más (solo en movil), foco visible al tabular |
+| `06-capturas-revision.spec.ts` | movil (cliente) y escritorio (panel) | Los dos caminos del cliente con el perfil nuevo (con filtro pasa por `/mi-filtro` → carga a mano; sin filtro va directo), foto que no es tira, bacterias (no deja reportar antes de 48 h sin "Saltar la espera (demostración)") y las 4 pestañas del operador. Capturas `01`…`34` y `revision-*.json` |
+| `07-funciones-nuevas.spec.ts` | movil (cliente) y escritorio (operador) | Perfil (+58, número inválido, urbanización, mascotas); Mi filtro por foto (filtro real y una imagen que no es filtro) y a mano; "Por qué te lo recomendamos" sin filtro y con filtro; mensaje de WhatsApp; todo en verde → "Lo que sigue"; catálogo; tutoriales → experto; pedido de servicio en Despacho en vivo → "Atendido"; mapa de zonas (vistas, detalle, cifras contra la API, desborde a 1366 y 375); enlaces internos rotos. Capturas `50`…`72` y `revision-*-07-*.json` con frases, mensajes y tiempos |
 
-Ayudas en `pruebas/e2e/apoyo/`: `dispositivos.ts` (teléfono y laptop), `datos.ts` (datos inventados y llamadas a la API), `pagina.ts` (selectores por rol y texto). Los textos que se asumen están en una tabla al inicio de `02` y `03`: si cambia una palabra, se ajusta ahí.
+Ayudas en `pruebas/e2e/apoyo/`: `dispositivos.ts` (teléfono y laptop), `datos.ts` (datos inventados y llamadas a la API), `pagina.ts` (selectores por rol y texto), `perfil.ts` (llenar el perfil vigente y cargar el filtro a mano), `revision.ts` (revisión en vivo y capturas, compartida por 06 y 07). Los textos que se asumen están en una tabla al inicio de `02` y `03`: si cambia una palabra, se ajusta ahí.
 
 ## 3. Qué certifica cada compuerta y con qué comando
 
@@ -51,6 +63,7 @@ Ayudas en `pruebas/e2e/apoyo/`: `dispositivos.ts` (teléfono y laptop), `datos.t
 | **2** · tras integrar Cliente | Recorrido completo con carga manual en la URL pública, en teléfono; aviso fijo literal; ninguna pantalla dice "potable"; accesibilidad básica | `npm run e2e -- --project=movil 01-salud 02-cliente-manual 05-accesibilidad` | Salida + capturas `resultado` y `pedido-confirmado` del informe HTML |
 | **3** · tras integrar Operador | Un pedido creado en el teléfono aparece en Despacho sin recargar (< 10 s) y sale al despacharlo | `npm run e2e -- --project=escritorio 03-despacho-en-vivo 04-api` (con `PIN_OPERADOR`) | Salida con el "tiempo de aparición" anotado + capturas del despacho antes y después |
 | **4** · antes de congelar | Lectura con tira real y foto real en la URL pública | Manual, en un teléfono real (lista de abajo) + `npm run e2e` completo como regresión | Foto usada, captura del resultado y salida de la regresión |
+| **Funciones nuevas** · pasada 2 | Perfil, Mi filtro, porqué, WhatsApp, catálogo, experto → Despacho, mapa | `npx playwright test -c pruebas/playwright.config.ts 07` (con `PIN_OPERADOR`) | Salida + `revision-*-07-*.json` + capturas `50`…`72` |
 | **Pasada final** (dom 12:00 m.) | Nada se rompió al congelar; repo limpio | `SOLO_LECTURA=1 npm run e2e -- 01-salud 05-accesibilidad`, más `docs/calidad/secretos.md` y `LICENCIAS.md` al día | Salida + fecha de la revisión de secretos |
 
 Una compuerta **pasa** solo si su comando termina sin fallas y sin pruebas saltadas que le correspondan (por ejemplo, la 3 no pasa si el operador se saltó por falta de PIN). Una prueba que pasa solo en el reintento se anota como inestable.
@@ -67,7 +80,8 @@ Una compuerta **pasa** solo si su comando termina sin fallas y sin pruebas salta
 ## 4. Límites conocidos de estas pruebas
 
 - Se escribieron contra la especificación y los primeros componentes; **todavía no han corrido contra la app desplegada**. La primera corrida real puede pedir ajustes de selectores (son cambios en las tablas de textos, no en la lógica).
-- La lectura por foto no se prueba de forma automática (depende de la tira real): es la Compuerta 4.
+- La lectura por foto de la tira no se prueba de forma automática (depende de la tira real): es la Compuerta 4. La foto del **filtro** sí se prueba en `07` con `docs/marketing/imagenes/02-botellones.jpg` (y `app/public/marca/og-01.jpg` como imagen que no es filtro); la respuesta viene de un modelo y puede variar entre corridas (tipo, medida, cartuchos).
+- `07` espera que La Begoña esté en alerta con los datos sembrados; si se vuelve a sembrar distinto, se ajusta esa línea.
 - El campo del PIN solo acepta dígitos: si el PIN configurado tiene letras, la prueba lo reporta y no puede entrar por la interfaz.
 - La API frena los intentos fallidos de PIN (8 por dirección en 5 minutos). `04` hace un intento fallido a propósito por corrida: no correrlo en bucle, o el panel queda bloqueado unos minutos.
 - La accesibilidad es básica y aproximada; no reemplaza una revisión con lector de pantalla.
@@ -81,7 +95,11 @@ Cada corrida completa crea alrededor de una docena de hogares llamados **`Prueba
 - Después de limpiar, solo se corre con `SOLO_LECTURA=1`.
 - Todos los datos son inventados (teléfono `0412 000 0000`, "Calle Inventada"). Ninguno corresponde a una persona real.
 
-## 6. Estado al sáb 21 nov, 8:50 p.m.
+## 6. Estado (histórico)
+
+Estado vigente: ver `docs/calidad/informe-pasada-2.md`.
+
+### Sáb 21 nov, 8:50 p.m.
 
 - `npx playwright test -c pruebas/playwright.config.ts --list`: **84 pruebas en 5 archivos**, compila sin errores.
 - `01-salud` contra `https://agua.oydo.app` (sin reintentos, para probar el arnés): **2 pasan, 38 fallan, 2 saltadas** de 42. Es lo esperado hoy: el sitio muestra la página provisional, `/api/salud` y las demás rutas responden 404, y no hay PIN cargado. Pasa solo "sin perfil: /" (carga y no dice "potable"). El arnés, los dos proyectos, las capturas en fallo y el informe HTML funcionan.

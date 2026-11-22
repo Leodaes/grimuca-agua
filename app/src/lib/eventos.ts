@@ -1,4 +1,4 @@
-// Tiempo real para el panel del operador.
+// Tiempo real para el panel del comercio (operador), el técnico y la red: el servidor filtra por comercio.
 // Usa EventSource contra GET /api/eventos y, mientras esa conexión no esté viva,
 // sondea GET /api/operador/pedidos cada 5 s para que la lista de despacho nunca se quede vieja.
 import { api, BASE_API, ErrorApi } from './api';
@@ -24,6 +24,11 @@ export interface ManejadoresEventos {
   conexion?: (estado: EstadoConexion) => void;
   /** El servidor rechazó el token (401): hay que volver a pedir el PIN. Se deja de escuchar. */
   sinPermiso?: () => void;
+  /**
+   * Qué consultar en el sondeo de respaldo. Por defecto, los pendientes del comercio (`api.operadorPedidos`).
+   * El técnico pasa `(token) => api.tecnicoServicios('pendiente', token)`.
+   */
+  sondearCon?: (token: string) => Promise<Pedido[]>;
 }
 
 /** Devuelve la función para dejar de escuchar (ciérrala al desmontar la pantalla). */
@@ -67,7 +72,9 @@ export function suscribirEventos(token: string, manejadores: ManejadoresEventos)
     if (!activo || sondeando) return;
     sondeando = true;
     try {
-      const pendientes = await api.operadorPedidos('pendiente', token);
+      const pendientes = manejadores.sondearCon
+        ? await manejadores.sondearCon(token)
+        : await api.operadorPedidos('pendiente', token);
       if (!activo) return;
       const ahora = new Map(pendientes.map((pedido) => [pedido.id, pedido] as const));
       if (conocidos) {

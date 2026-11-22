@@ -2,7 +2,17 @@
 // la app usa los de `lib/` y las pruebas inyectan dobles con <ProveedorServicios>.
 import { createContext, useContext } from 'react';
 import type { ReactNode } from 'react';
-import type { AlertaZona, FilaInventario, Pedido, ResumenTienda, UrbanizacionMapa } from '../../lib/tipos';
+import type {
+  AlertaZona,
+  EntradaProducto,
+  FilaInventario,
+  Pedido,
+  ProductoComercio,
+  ResumenTienda,
+  ServicioConReporte,
+  UrbanizacionMapa,
+  Yo,
+} from '../../lib/tipos';
 import { serviciosReales } from './servicios';
 
 export type EstadoConexion = 'conectando' | 'en_vivo' | 'reconectando';
@@ -30,6 +40,15 @@ export interface ServiciosOperador {
   zonas(token: string): Promise<AlertaZona[]>;
   /** Mapa por urbanización. Opcional para que los dobles viejos de las pruebas sigan sirviendo. */
   mapa?(token: string): Promise<UrbanizacionMapa[]>;
+  // Red de comercios (opcionales: sin ellos el panel trabaja como Grimuca con sus tres tiendas).
+  /** Comercio y tiendas del token. */
+  yo?(token: string): Promise<Yo>;
+  productos?(token: string): Promise<ProductoComercio[]>;
+  crearProducto?(token: string, datos: EntradaProducto): Promise<ProductoComercio>;
+  /** Servicios técnicos atendidos, con su reporte. */
+  reportes?(token: string): Promise<ServicioConReporte[]>;
+  /** URL de la foto del reporte para `<img src>`. */
+  urlFoto?(token: string, pedidoId: number): string;
   /** Devuelve la función para dejar de escuchar. */
   enVivo(token: string, manejadores: ManejadoresEnVivo): () => void;
 }

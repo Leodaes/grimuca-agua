@@ -1,125 +1,124 @@
 # Guion de la demo · 3 minutos
 
-Versión 3 (21 nov, noche), con las decisiones de Tulio y el lente de marketing y ventas: la demo cuenta la historia de una familia (la protagonista) y Grimuca la guía paso a paso. Ensayo técnico: domingo 3:30 p.m.
+Versión 4 (21 nov, noche), enfoque B2B2C: la demo **abre en el lado empresa** (la Red y el panel de un comercio) y usa el teléfono del cliente como "así llega el dato". Un solo pedido recorre los cuatro módulos. Ensayo técnico: domingo 3:30 p.m.
 
 **Quién hace qué**
-- **Tulio** abre, narra el momento clave y cierra.
-- **Leonardo** maneja el teléfono y la laptop, y narra lo que va tocando.
+- **Tulio** abre, narra el momento clave y cierra (negocio y modelo).
+- **Leonardo** maneja la laptop y el teléfono del cliente y narra lo que toca.
+- **Teléfono del técnico:** un segundo teléfono, en manos de Tulio, con `/tecnico` abierto. Tulio marca "Ya fui" cuando Leonardo se lo indica.
 
 **Qué se ve**
-- **Laptop (proyector):** lámina del problema al inicio, luego el panel del operador, luego la lámina de cierre.
-- **Teléfono:** la app del cliente en `agua.oydo.app`. Si se puede duplicar la pantalla del teléfono en el proyector, mitad y mitad con la laptop; si no, Leonardo lo muestra en la mano hacia el jurado.
+- **Laptop (proyector):** `/red` al inicio, luego `/comercio` (Grimuca Mañongo), luego la lámina de cierre. Dos pestañas abiertas y ya con la sesión iniciada con su PIN (los PIN no van escritos en este documento).
+- **Teléfono del cliente:** `agua.oydo.app` en `/`. Si se puede duplicar la pantalla en el proyector, mitad y mitad con la laptop; si no, Leonardo lo muestra en alto.
 
-**El momento clave:** minuto 1:50. El pedido hecho en el teléfono aparece en el despacho de Mañongo sin que nadie toque la laptop. Ahí se hace una pausa de dos segundos en silencio.
+**El momento clave:** minuto 1:35. El pedido hecho en el teléfono aparece en el despacho del comercio sin que nadie toque la laptop. Pausa de dos segundos en silencio.
 
-**Pilares del jurado en la demo:** producto (bloques 1 a 4), calidad técnica (bloque 5, en vivo), innovación y logística (bloques 5 y 6), modelo de negocio (bloque 7).
+**Pilares del jurado:** modelo de negocio (bloques 1 y 7), producto (2 y 3), calidad técnica (4, en vivo), innovación y logística (2, 4, 5 y 6).
 
 ---
 
 ## Antes de subir
 
-- Laptop: sesión del operador ya abierta con el PIN, pestaña **Despacho**, filtro en **Mañongo**. Deck abierto en otra ventana, en la lámina 1.
-- Teléfono: app abierta en la bienvenida, brillo al máximo, sin notificaciones, con datos móviles listos por si falla el Wi-Fi.
-- **Un sobre físico de prueba** sobre la mesa, con su código QR a la vista, y la tira ya mojada junto a la tabla de colores sobre una hoja blanca, con buena luz.
-- Una foto buena de esa misma tira ya guardada en el teléfono, por si la cámara falla. Anotado también el código del sobre por si el QR no se lee ("Escribir el código del sobre").
-- Datos del perfil inventados y ensayados (ningún nombre, teléfono ni dirección real). Perfil sugerido: familia de 4 en Naguanagua con un filtro de 3 etapas, para que el resultado y el cartucho recomendado se vean completos.
+- Laptop: pestaña 1 en `/red` con la sesión de superadmin; pestaña 2 en `/comercio` con la sesión de Grimuca, en **Despacho**, filtro en Mañongo y la lista sin el pedido de la demo. Deck en otra ventana, en la lámina 3.
+- Teléfono del cliente: app en la bienvenida, brillo al máximo, sin notificaciones, con datos móviles listos. Perfil ya llenado de una familia inventada de 4 en Naguanagua con un filtro de 3 etapas (ningún dato real).
+- **Un sobre físico** con su QR a la vista y la tira ya mojada junto a la tabla de colores, sobre una hoja blanca con buena luz. Una foto buena de esa tira guardada en el teléfono, y el código del sobre anotado.
+- Teléfono del técnico: `/tecnico` con la sesión abierta, un servicio pendiente en la lista y una foto de un filtro ya instalado guardada en la galería.
+- **Verificar antes de subir:** que el cliente pueda pedir un técnico desde la app. Si esa opción no está lista, se usa uno de los servicios técnicos pendientes de la semilla y Leonardo dice "se asigna un técnico".
 - Video de respaldo abierto y en pausa en la laptop.
 
 ---
 
 ## Guion cronometrado
 
-### Bloque 1 · 0:00 a 0:20 · La familia y su problema
+### Bloque 1 · 0:00 a 0:25 · La Red: comercios y cobertura
 - **Habla:** Tulio.
-- **Laptop:** lámina 1, "Una familia de Valencia carga botellones sin saber qué toma".
-- **Teléfono:** en la mano de Leonardo, pantalla de bienvenida.
-
-> **Tulio:** "Piensen en un papá o una mamá de Valencia, preocupados por el agua que toman sus hijos. Cargan cinco o seis botellones cada quincena: según nuestra estimación, hasta quinientos setenta y seis dólares al año, y nadie les ha mostrado qué hay en esa agua. Somos Grimuca, una ferretería de Valencia con tres tiendas. Les damos un plan en tres pasos: medir, entender y filtrar. Saber qué tomas empieza en casa."
-
-### Bloque 2 · 0:20 a 0:45 · Paso 1: la familia pide su sobre
-- **Habla:** Leonardo.
-- **Laptop:** Leonardo cambia al panel del operador, Despacho de Mañongo. Queda quieta.
-- **Teléfono:** Bienvenida (dos caminos: "Ya tengo mi sobre" y "Pedir el sobre a domicilio ($9)") → "Pedir el sobre a domicilio ($9)" → perfil del hogar (nombre, zona, origen del agua, cuántos viven, filtro) → dirección → "Simular pago de $9".
-
-> **Leonardo:** "Si ya tienes el sobre, lo escaneas; si no, lo pides a domicilio. Yo lo pido: cuento de mi casa, pongo mi dirección y el pago es simulado. Fíjense en la laptop: el sobre ya está en la lista de despacho de Mañongo."
-
-### Bloque 3 · 0:45 a 1:25 · Paso 2: mide y entiende
-- **Habla:** Leonardo.
-- **Laptop:** Despacho de Mañongo, con el sobre en la lista.
-- **Teléfono:** "Ya me llegó el sobre (saltar la espera)" → **"Escanea el QR de tu sobre"** (Leonardo apunta la cámara al sobre físico) → "Cómo medir tu agua en 4 pasos" (pasada rápida) → foto de la tira junto a la tabla → "Sí, leer mi tira" → resultado con el semáforo por casilla (Verde, Amarillo, Rojo, cada una con su explicación) y el aviso fijo.
-
-> **Leonardo:** "Me llegó el sobre. Lo primero es escanear su código. *(escanea)* Una gota por casilla, espero entre treinta y sesenta segundos y le tomo la foto junto a la tabla de colores. *(toma la foto; mientras lee, silencio)* La app me dice, casilla por casilla, Verde, Amarillo o Rojo, y qué mide cada una. Y avisa siempre: esta tira no mide todo; un buen resultado no significa que el agua sea apta para tomar."
-
-### Bloque 4 · 1:25 a 1:50 · Paso 3: filtra, con lo que la familia necesita
-- **Habla:** Leonardo.
-- **Laptop:** Despacho de Mañongo, sin tocar.
-- **Teléfono:** baja a "Lo que te recomendamos" → "Agregar a mi lista" → Mi lista → "Hacer pedido" → "Retiro en tienda" → Grimuca Mañongo → confirmar.
-
-> **Leonardo:** "Con ese resultado y con lo que conté de mi casa, me recomienda el cartucho y me avisa cuándo toca cambiarlo. El precio lo confirma la tienda por WhatsApp, con mi resultado ya escrito en el mensaje. Hoy lo agrego a mi lista, escojo retiro en Mañongo y confirmo."
-
-*Si el ensayo da 2:50 o menos:* antes de confirmar, Leonardo toca "Cotizar por WhatsApp" y muestra el mensaje ya escrito con el resultado y la casa (3 segundos), y vuelve.
-
-### Bloque 5 · 1:50 a 2:05 · MOMENTO CLAVE: el pedido aparece en el despacho
-- **Habla:** Tulio.
-- **Laptop:** el pedido nuevo aparece arriba en Despacho de Mañongo, con la etiqueta "Nuevo", sin recargar. Leonardo levanta las manos del teclado. Después toca "Despachado".
-- **Teléfono:** pantalla de pedido confirmado, en alto.
-
-> **Tulio:** "Ahora miren la laptop. *(pausa de dos segundos)* Nadie la tocó: el pedido ya está en el despacho de Mañongo. En la tienda lo preparan y marcan Despachado."
-
-### Bloque 6 · 2:05 a 2:25 · Lo que ve la tienda: inventario y zonas
-- **Habla:** Leonardo.
-- **Laptop:** pestaña **Inventario** (faltantes en rojo) → pestaña **Zonas** (alerta de zona).
+- **Laptop:** `/red`. Lista de comercios con plan y periodo gratis; cifras de toda la red (comercios, estados cubiertos, hogares, mediciones del mes).
 - **Teléfono:** guardado.
 
-> **Leonardo:** "En Inventario la tienda ve, en rojo, lo que le va a faltar en los próximos treinta días. En Zonas, si tres o más casas de una zona salen en rojo en una semana, salta la alerta antes de que lleguen los pedidos."
+> **Tulio:** "Una ferretería compra, almacena y despacha repuestos a ciegas, porque nadie sabe cuándo se le acaba el cartucho a cada casa. Grimuca opera una red de ferreterías que recibe clientes ya medidos. Esta es la Red: Grimuca en Carabobo y dos comercios de demostración en otros estados, cada uno con su plan y su periodo gratis. Con una ferretería por estado, ese estado queda cubierto. Esto lo vamos a ejecutar a largo plazo; hoy es una demo."
 
-### Bloque 7 · 2:25 a 3:00 · Modelo, siguiente paso y cierre
-- **Habla:** Tulio.
-- **Laptop:** lámina 6, con el lema y `agua.oydo.app`.
+### Bloque 2 · 0:25 a 0:50 · El comercio: despacho vacío, inventario y mapa
+- **Habla:** Leonardo.
+- **Laptop:** pestaña `/comercio` de Grimuca Mañongo. Despacho vacío → Inventario (faltantes en rojo) → mapa por urbanización → un segundo en la pestaña Productos.
 - **Teléfono:** guardado.
 
-> **Tulio:** "El sobre de nueve dólares se paga solo. De cada cien, según estimamos, diez compran filtro, que vendemos casi a costo, y treinta ya tenían filtro y compran cartuchos. El negocio son los cartuchos, que se cambian cada tres meses. Eso lo vamos a medir con un piloto de mil sobres. Lo que sigue: recordatorio por WhatsApp, un video para cambiar el cartucho y un plomero a pedido. Menos botellones: mide tu agua y cambia el cartucho cuando toca. Saber qué tomas empieza en casa."
+> **Leonardo:** "Así ve su día una ferretería. El despacho está vacío. En Inventario ve, en rojo, lo que le va a faltar en los próximos treinta días, y en el mapa, las urbanizaciones con más resultados fuera de rango. Y desde Productos carga lo que tiene. Así desaparece el pedido sorpresa: cada cartucho tiene fecha y referencia con semanas de anticipación, y se compra contra demanda prevista. Ahora vean cómo le llega el dato."
+
+### Bloque 3 · 0:50 a 1:35 · El teléfono del cliente: mide, entiende y pide
+- **Habla:** Leonardo.
+- **Laptop:** `/comercio`, Despacho quieto.
+- **Teléfono:** "Ya tengo mi sobre" → escanea el QR del sobre → foto de la tira junto a la tabla → resultado con el semáforo por casilla y el aviso fijo → tarjeta del producto con "por qué te lo recomendamos" → "Agregar a mi lista" → "Hacer pedido" → retiro en tienda.
+
+> **Leonardo:** "Una familia escanea el sobre de nueve dólares, le toma una foto a la tira junto a la tabla y la app le dice, casilla por casilla, Verde, Amarillo o Rojo, y qué mide cada una. Siempre avisa que la tira no mide todo. Con ese resultado y lo que contó de su casa, le explica por qué le recomienda este cartucho. Lo pide, y el sistema lo asigna al comercio más cercano que lo tiene."
+
+### Bloque 4 · 1:35 a 1:55 · MOMENTO CLAVE: el pedido aparece en el comercio
+- **Habla:** Tulio.
+- **Laptop:** Leonardo cambia a `/comercio`. El pedido nuevo aparece arriba en Despacho con la etiqueta "Nuevo", sin recargar. Leonardo levanta las manos del teclado. Después toca "Despachado".
+- **Teléfono:** pedido confirmado, en alto.
+
+> **Tulio:** "Miren la laptop. *(pausa de dos segundos)* Nadie la tocó: el pedido llegó solo al comercio, con el resultado de la familia ya escrito. La ferretería ya sabe qué preparar y para qué casa."
+
+### Bloque 5 · 1:55 a 2:25 · El técnico: "Ya fui" con foto
+- **Habla:** Leonardo.
+- **Teléfono del cliente:** pide un técnico para instalar el filtro.
+- **Teléfono del técnico (Tulio):** el servicio asignado aparece en `/tecnico`; Tulio toca "Ya fui" y adjunta la foto.
+- **Laptop:** `/comercio`, el servicio atendido muestra su reporte con la foto.
+
+> **Leonardo:** "La familia pide que le instalen el filtro. Se asigna a un técnico de la ferretería, y aquí lo ve en su teléfono. *(Tulio toca "Ya fui" y sube la foto)* El técnico marca que fue y sube una foto de cómo quedó. El comercio ve el reporte y no necesita llamarlo."
+
+### Bloque 6 · 2:25 a 2:40 · La Red refleja la actividad
+- **Habla:** Leonardo.
+- **Laptop:** pestaña `/red`, con los pedidos y mediciones del mes y los pendientes ya actualizados.
+
+> **Leonardo:** "Y la Red lo refleja: las mediciones, los pedidos del mes y los pendientes de cada comercio."
+
+### Bloque 7 · 2:40 a 3:00 · El modelo y el cierre
+- **Habla:** Tulio.
+- **Laptop:** lámina 5 (modelo) y luego lámina 6 con el lema y `agua.oydo.app`.
+- **Teléfono:** guardado.
+
+> **Tulio:** "Tenemos tres líneas de ingreso: el sobre de nueve dólares a la familia, una membresía mensual de la ferretería, que suponemos en treinta dólares, y los sobres que les vendemos al mayor. Con cuatro o cinco ferreterías pagando cubrimos los costos de la red; son supuestos que el piloto confirma. Para la familia: saber qué tomas empieza en casa. Para la ferretería: clientes que llegan sabiendo qué necesitan."
 
 ---
 
 ## Resumen de tiempos
 
-| Bloque | Tiempo | Habla | Teléfono | Laptop |
-|---|---|---|---|---|
-| 1. La familia y su problema | 0:00 – 0:20 | Tulio | Bienvenida | Lámina 1 |
-| 2. Pide su sobre | 0:20 – 0:45 | Leonardo | Perfil y pago simulado | Despacho de Mañongo |
-| 3. Mide y entiende | 0:45 – 1:25 | Leonardo | QR, 4 pasos, foto, resultado | Despacho, quieta |
-| 4. Filtra | 1:25 – 1:50 | Leonardo | Mi lista, retiro, confirmar | Despacho, quieta |
-| 5. **Momento clave** | 1:50 – 2:05 | Tulio | Pedido confirmado | El pedido aparece solo |
-| 6. Inventario y zonas | 2:05 – 2:25 | Leonardo | — | Inventario y Zonas |
-| 7. Cierre | 2:25 – 3:00 | Tulio | — | Lámina 6 |
+| Bloque | Tiempo | Habla | Pantalla |
+|---|---|---|---|
+| 1. La Red | 0:00 – 0:25 | Tulio | Laptop `/red` |
+| 2. Comercio | 0:25 – 0:50 | Leonardo | Laptop `/comercio` |
+| 3. Cliente | 0:50 – 1:35 | Leonardo | Teléfono del cliente |
+| 4. **Momento clave** | 1:35 – 1:55 | Tulio | Laptop `/comercio`, el pedido aparece |
+| 5. Técnico | 1:55 – 2:25 | Leonardo | Teléfono del técnico y laptop |
+| 6. La Red refleja | 2:25 – 2:40 | Leonardo | Laptop `/red` |
+| 7. Modelo y cierre | 2:40 – 3:00 | Tulio | Láminas 5 y 6 |
 
-Son unas 400 palabras habladas, ajustado para 3 minutos: se ensaya con cronómetro. Si en el ensayo se pasa de 3:00, se recorta en este orden: la mención del piloto en el bloque 7, los 4 pasos (se nombran sin mostrarlos), la pestaña Zonas, los dos caminos del bloque 2.
+Son unas 440 palabras habladas: se ensaya con cronómetro. Si en el ensayo se pasa de 3:00, se recorta en este orden: el segundo en Productos (bloque 2), el mapa por urbanización, los pasos del resultado (se nombran sin mostrarlos) y la mención de los supuestos en el bloque 7.
 
 ---
 
+## Plan B si falla el internet
+
+| Momento | Falla | Qué se hace | Qué se dice |
+|---|---|---|---|
+| Antes de empezar | No hay Wi-Fi | Laptop y los dos teléfonos pasan a datos móviles (zona de datos del teléfono de Tulio) | Nada |
+| Bloque 1 a 3 | Una pantalla no carga | Esperar 5 segundos y recargar una vez; si no carga, pasar a la captura de esa pantalla en el deck | "Les muestro la captura." |
+| Bloque 3 | La cámara o el QR fallan | "Escribir el código del sobre" o "Elegir una foto del teléfono" con la foto guardada | "Uso la foto que tomé hace un rato." |
+| Bloque 4 | El pedido no aparece en 5 segundos | Esperar 5 segundos más; recargar una vez | "Aquí está el pedido." |
+| Bloque 5 | El técnico no sube la foto | Tulio toca "Ya fui" sin foto y Leonardo muestra la foto guardada del reporte sembrado | "Aquí el reporte de una visita anterior." |
+| Cualquier bloque | Se cae todo (más de 10 segundos sin respuesta) | Video de respaldo en la laptop, Tulio narra encima, desde el bloque en que se cayó | "Les mostramos la grabación de esta mañana." |
+
+Sin internet no hay demo en vivo: la app y el panel viven en `agua.oydo.app`. Por eso el video de respaldo cubre los cuatro módulos y está copiado en la laptop y en el teléfono.
+
 ## Si preguntan por el precio
 
-"El precio lo confirma la tienda por WhatsApp. El mensaje llega con el resultado de la familia y su filtro, para que quien atiende recomiende bien antes de dar la cifra. Los precios cambian por tienda y por tasa, y los internos de Grimuca están por confirmar."
-
-## Si algo falla
-
-| Falla | Qué se hace | Qué se dice |
-|---|---|---|
-| No hay Wi-Fi | Teléfono y laptop pasan a datos móviles | Nada. Se sigue. |
-| El QR no se lee | "Escribir el código del sobre" con el código anotado | "Si el código no se lee, se escribe a mano." |
-| La cámara no abre | "Elegir una foto del teléfono" con la foto guardada | "Uso la foto que tomé hace un rato." |
-| La foto no se lee | "Anotar los colores a mano" | "Si la foto no se ve bien, la app no adivina: los anoto yo." |
-| El pedido no aparece en 5 segundos | Esperar 5 segundos más (la lista se actualiza sola). Si no, recargar una vez | "Aquí está el pedido." |
-| Se cae todo | Video de respaldo en la laptop, Tulio narra encima | "Les mostramos la grabación de esta mañana." |
+"La membresía y el precio al mayor son supuestos nuestros, y el piloto los confirma. En la demo no se cobra nada. El precio del producto lo confirma la tienda, con el resultado de la familia ya escrito en el mensaje."
 
 ## Lo que no se dice en tarima
 
 - Nunca "potable", "segura" ni "apta para tomar" como afirmación; tampoco "agua de calidad" ni "permanente".
-- Con plomo o cobre: "posible presencia, confirma con un laboratorio". Nunca "tu agua tiene plomo" ni "toca filtrar".
-- La prueba de bacterias no certifica el agua, salga como salga.
-- Nada de miedo: ni niños enfermos ni hospitales. El problema se cuenta con la carga de los botellones, el gasto y no saber qué se toma.
-- No se dice que el pago es real: es simulado y la pantalla lo rotula.
-- WhatsApp: el botón abre un chat con el mensaje escrito; la app no envía recordatorios por WhatsApp. El bot con recordatorio se dice "lo que sigue". Cobrix y SAMA se nombran como aliados previstos, sin tarifas.
-- Cifras del modelo (los 10 de cada 100, los 3 meses, el gasto en botellón): siempre "estimación nuestra". Si el jurado pregunta por un número que no tenemos: "Eso lo tenemos como estimado, no medido; para eso es el piloto."
-- No se nombra a ninguna marca de botellón ni a competidores.
+- Con plomo o cobre: "posible presencia, confirma con un laboratorio". La prueba de bacterias no certifica el agua, salga como salga.
+- Nada de miedo: ni niños enfermos ni hospitales. El problema se cuenta con la carga de los botellones, el gasto y el repuesto que se compra sin saber.
+- No se dice que el pago es real: es simulado y la pantalla lo rotula. Los comercios de Lara y Aragua son de demostración y no hay ferreterías aliadas reales todavía.
+- La membresía, el precio al mayor y el número de ferreterías se dicen siempre "supuesto". Si el jurado pregunta por un número que no tenemos: "Eso lo tenemos como estimado, no medido; para eso es el piloto."
+- Cobrix y SAMA se nombran como aliados previstos, sin tarifas. No se nombra a competidores ni a marcas de botellón.

@@ -1,0 +1,61 @@
+{
+  "prueba": "mi filtro: foto de un filtro, foto que no es un filtro y carga a mano",
+  "estado": "failed",
+  "hallazgos": [],
+  "erroresConsola": [],
+  "tiempos": {
+    "fotoFiltroSegundos": 10.259,
+    "fotoNoFiltroSegundos": 3.49
+  },
+  "notas": {
+    "fotoFiltroPantalla": "¿Es este tu filtro?\nTipo\nPortafiltro doble\nEtapas\n2\nMedida de los cartuchos\nNo la sabemos todavía\n\nEs una imagen publicitaria (marca \"Grimuca Agua\" en el anuncio, no en el equipo) que muestra dos vasos blancos con tapas azules en línea bajo el fregadero.\n\nIdentificación orientativa a partir de la foto. Confirma el modelo y la medida en la tienda antes de comprar.\n\nCartuchos que necesita\nCartucho Rellenable en Línea 10\" x 2\"\n\nOasis · OPW-102INFC\n\nPensado para retener tierra, óxido y partículas.\n\nCotizar por WhatsApp\nAgregar a mi lista\nCartucho CTO para Ultrafiltración - 5 Etapas\n\nOasis · OPW-CTOSU5\n\nPensado para reducir el cloro y mejorar el sabor y el olor.\n\nCotizar por WhatsApp\nAgregar a mi lista\nCartucho para Filtro Reusable 20\" x 4.5\"\n\nOasis · OPW-20BBRFC\n\nPensado para retener tierra, óxido y partículas.\n\nCotizar por WhatsApp\nAgregar a mi lista\nCartucho GAC para Ultrafiltración - 5 Etapas\n\nOasis · OPW-GACSU5\n\nPensado para reducir el cloro y mejorar el sabor y el olor.\n\nCotizar por WhatsApp\nAgregar a mi lista\nSí, es este\nCorregir",
+    "fotoFiltroFicha": "Tipo\nPortafiltro doble\nEtapas\n2\nMedida de los cartuchos\nNo la sabemos todavía\n\nEs una imagen publicitaria (marca \"Grimuca Agua\" en el anuncio, no en el equipo) que muestra dos vasos blancos con tapas azules en línea bajo el fregadero.\n\nIdentificación orientativa a partir de la foto. Confirma el modelo y la medida en la tienda antes de comprar.",
+    "fotoFiltroCartuchos": [
+      "Cartucho Rellenable en Línea 10\" x 2\"",
+      "Cartucho CTO para Ultrafiltración - 5 Etapas",
+      "Cartucho para Filtro Reusable 20\" x 4.5\"",
+      "Cartucho GAC para Ultrafiltración - 5 Etapas"
+    ],
+    "filtroAntesDeConfirmar": {
+      "tipo": "portafiltro_doble",
+      "tipo_nombre": "Portafiltro doble",
+      "etapas": 2,
+      "medida": null,
+      "modelo_codigo": null,
+      "modelo_nombre": null,
+      "marca_visible": null,
+      "modelo_visible": null,
+      "confianza": "media",
+      "origen": "foto",
+      "observaciones": "Es una imagen publicitaria (marca \"Grimuca Agua\" en el anuncio, no en el equipo) que muestra dos vasos blancos con tapas azules en línea bajo el fregadero."
+    },
+    "filtroConfirmado": {
+      "tipo": "portafiltro_doble",
+      "tipo_nombre": "Portafiltro doble",
+      "etapas": 2,
+      "medida": null,
+      "modelo_codigo": null,
+      "modelo_nombre": null,
+      "marca_visible": null,
+      "modelo_visible": null,
+      "confianza": "media",
+      "origen": "foto",
+      "observaciones": "Es una imagen publicitaria (marca \"Grimuca Agua\" en el anuncio, no en el equipo) que muestra dos vasos blancos con tapas azules en línea bajo el fregadero."
+    },
+    "fotoNoFiltroPantalla": "No pudimos reconocer tu filtro\nNo vemos un filtro de agua en la foto. Tómale una foto al filtro completo, o cárgalo a mano.\n\nQue se vea el filtro completo y, si tiene, la etiqueta.\n\nRepetir la foto\nCargarlo a mano",
+    "filtroTrasFotoNoFiltro": "portafiltro_doble",
+    "filtroManual": {
+      "tipo": "portafiltro_doble",
+      "tipo_nombre": "Portafiltro doble",
+      "etapas": 2,
+      "medida": "10x2.5",
+      "modelo_codigo": null,
+      "modelo_nombre": null,
+      "marca_visible": null,
+      "modelo_visible": null,
+      "confianza": null,
+      "origen": "manual",
+      "observaciones": null
+    }
+  }
+}

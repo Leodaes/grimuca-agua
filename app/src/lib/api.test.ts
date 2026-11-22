@@ -1,6 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { api, ErrorApi, MENSAJE_GENERICO, MENSAJE_SIN_CONEXION } from './api';
-import { guardarTokenOperador, tokenOperador } from './sesion';
+import {
+  guardarTokenOperador,
+  guardarTokenRed,
+  guardarTokenTecnico,
+  tokenOperador,
+  tokenRed,
+  tokenTecnico,
+} from './sesion';
 
 const pedir = vi.fn();
 
@@ -26,6 +33,74 @@ beforeEach(() => {
 
 afterEach(() => {
   vi.unstubAllGlobals();
+});
+
+describe('api: plataforma (comercio, red y técnico)', () => {
+  it('cada rol usa su propio token guardado y arma bien sus rutas', async () => {
+    guardarTokenOperador('tok-comercio');
+    guardarTokenRed('tok-red');
+    guardarTokenTecnico('tok-tecnico');
+    const casos: Array<[() => Promise<unknown>, string, string, string | null]> = [
+      [() => api.yo(), 'GET', '/api/operador/yo', 'tok-comercio'],
+      [() => api.productosComercio(), 'GET', '/api/operador/productos', 'tok-comercio'],
+      [
+        () => api.crearProducto({ codigo: 'X-1', nombre: 'Prueba', categoria: 'cartucho', corrige: ['sedimentos'], existencias: { t: 2 } }),
+        'POST',
+        '/api/operador/productos',
+        'tok-comercio',
+      ],
+      [() => api.reportes(), 'GET', '/api/operador/reportes', 'tok-comercio'],
+      [() => api.redEntrar('1'), 'POST', '/api/red/entrar', null],
+      [() => api.redResumen(), 'GET', '/api/red/resumen', 'tok-red'],
+      [
+        () =>
+          api.crearComercio({ nombre: 'A', estado_pais: 'Lara', ciudad: 'B', plan: 'basico', meses_gratis: 1, tienda_nombre: 'T' }),
+        'POST',
+        '/api/red/comercios',
+        'tok-red',
+      ],
+      [() => api.tecnicoEntrar('1'), 'POST', '/api/tecnico/entrar', null],
+      [() => api.tecnicoServicios(), 'GET', '/api/tecnico/servicios?estado=pendiente', 'tok-tecnico'],
+      [() => api.tecnicoServicios('todos'), 'GET', '/api/tecnico/servicios?estado=todos', 'tok-tecnico'],
+    ];
+    for (const [llamar, metodo, ruta, token] of casos) {
+      responder(200, {});
+      await llamar();
+      const [url, opciones] = llamada();
+      expect(url).toBe(ruta);
+      expect(opciones.method).toBe(metodo);
+      expect((opciones.headers as Record<string, string>).Authorization).toBe(token ? `Bearer ${token}` : undefined);
+    }
+  });
+
+  it('atenderServicio envía la foto y la nota como formulario con el token del técnico', async () => {
+    guardarTokenTecnico('tok-tecnico');
+    responder(200, { id: 9, reporte: { tiene_foto: true } });
+    const foto = new File([new Uint8Array([1, 2])], 'listo.jpg', { type: 'image/jpeg' });
+    await api.atenderServicio(9, { foto, nota: 'Listo' });
+    const [url, opciones] = llamada();
+    expect(url).toBe('/api/tecnico/servicios/9/atender');
+    const formulario = opciones.body as FormData;
+    expect(formulario.get('nota')).toBe('Listo');
+    expect((formulario.get('foto') as File).name).toBe('listo.jpg');
+    expect((opciones.headers as Record<string, string>).Authorization).toBe('Bearer tok-tecnico');
+  });
+
+  it('urlFotoServicio lleva el token en la consulta; un 401 borra solo el token de ese rol', async () => {
+    guardarTokenOperador('tok comercio');
+    expect(api.urlFotoServicio(5)).toBe('/api/servicios/5/foto?token=tok%20comercio');
+    expect(api.urlFotoServicio(5, 'otro')).toBe('/api/servicios/5/foto?token=otro');
+
+    guardarTokenRed('tok-red');
+    responder(401, { error: 'Tu sesión venció.' });
+    await expect(api.redResumen()).rejects.toMatchObject({ estado: 401 });
+    expect(tokenRed()).toBeNull();
+    expect(tokenOperador()).toBe('tok comercio');
+    guardarTokenTecnico('tok-tecnico');
+    responder(401, { error: 'Tu sesión venció.' });
+    await expect(api.tecnicoServicios()).rejects.toMatchObject({ estado: 401 });
+    expect(tokenTecnico()).toBeNull();
+  });
 });
 
 describe('api: rutas del cliente', () => {

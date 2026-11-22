@@ -1,0 +1,16 @@
+{
+  "prueba": "perfil: WhatsApp +58, número inválido, urbanización y mascotas",
+  "estado": "passed",
+  "hallazgos": [],
+  "erroresConsola": [],
+  "tiempos": {},
+  "notas": {
+    "whatsappAlSalir": "0414 555 01 99",
+    "hogarGuardado": {
+      "whatsapp": "+584145550199",
+      "urbanizacion": "El Naranjal",
+      "mascotas": true,
+      "tiene_filtro": false
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "prueba": "resultado con filtro identificado: el porqué menciona su filtro; todo en verde: \"Lo que sigue\"",
+  "estado": "failed",
+  "hallazgos": [],
+  "erroresConsola": [],
+  "tiempos": {},
+  "notas": {
+    "conFiltro": {
+      "nombres": [
+        "Cartucho CTO para Ultrafiltración - 5 Etapas",
+        "Filtro de Agua por Ósmosis Inversa de 8 Etapas - 110 GPD",
+        "Cartucho Rellenable en Línea 10\" x 2\"",
+        "Cartucho para Filtro Reusable 20\" x 4.5\""
+      ],
+      "frases": [
+        "Te recomendamos este cartucho de carbón para ultrafiltración porque nos dijiste que el agua sale turbia y viene de tanque y ya te toca el cambio: el último fue hace más de tres meses. Está pensado para retener la tierra y el sedimento.",
+        "Te recomendamos esta ósmosis inversa porque tu medición dio Nitrato en Rojo: es una señal de alerta que conviene atender. Está pensada para esa casilla. También nos dijiste que el agua sale turbia.",
+        "Te recomendamos este cartucho de sedimentos porque nos dijiste que el agua sale turbia y viene de tanque y ya te toca el cambio: el último fue hace más de tres meses. Está pensado para retener la tierra y el sedimento.",
+        "Te recomendamos este cartucho de sedimentos porque nos dijiste que el agua sale turbia y viene de tanque y ya te toca el cambio: el último fue hace más de tres meses. Está pensado para retener la tierra y el sedimento. Esta opción es el de 20 x 4.5."
+      ],
+      "lineaFiltro": "Elegidos para tu filtro: Portafiltro triple, 10\" x 2.5\". Cambiar mi filtro"
+    },
+    "fotosSugeridosConFiltro": {
+      "total": 4,
+      "cargadas": 4,
+      "sinFoto": 0,
+      "rotas": [],
+      "pendientes": []
+    },
+    "todoVerde": {
+      "semaforo": "verde",
+      "sugeridos": []
+    },
+    "mensajeRecambio": "Hola, soy Prueba Calidad MWR80DQJBQ verde, de Naguanagua. Tengo un filtro de 3 etapas y el último cambio de cartucho fue hace menos de un mes. Mi medición del 21 de noviembre de 2026: Todas las casillas medidas salieron en Verde. Quiero cotizar el recambio."
+  }
+}

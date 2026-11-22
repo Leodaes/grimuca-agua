@@ -155,6 +155,71 @@ const HOGARES: HogarSemilla[] = [
   h('Irene F.', V, 'Guaparo', MAN, 'botellon', 3, 0, null, false, [[18, 'bien_2', 'foto']]),
 ];
 
+// ---------- Red de comercios (docs/decisiones/contrato-red.md) ----------
+// Dos aliados INVENTADOS y rotulados "(comercio de demostración)". Sus hogares (61 a 70) no tienen urbanización
+// de la lista de Valencia: en su mapa salen como "Otras de <zona>".
+const LARA = 'lara-centro';
+const ARAGUA = 'aragua-centro';
+const BQTO = 'Barquisimeto';
+const MCY = 'Maracay';
+
+/** Comercios: [id, nombre, estado, ciudad, plan, alta hace cuántos días, fin del periodo gratis (SQL)]. */
+const COMERCIOS_ALIADOS: Array<[string, string, string, string, 'basico' | 'premium', number, string]> = [
+  // Alta hace 20 días con 3 meses gratis: el periodo sigue vigente.
+  ['aliado-lara', 'Aliado Lara (comercio de demostración)', 'Lara', 'Barquisimeto', 'basico', 20, "(now() + interval '70 days')::date"],
+  // Alta hace 100 días con 3 meses gratis: el periodo venció hace 10 días.
+  ['aliado-aragua', 'Aliado Aragua (comercio de demostración)', 'Aragua', 'Maracay', 'basico', 100, "(now() - interval '10 days')::date"],
+];
+
+/** Tiendas de los aliados: [id, nombre, horario, dirección, comercio]. */
+const TIENDAS_ALIADAS: Array<[string, string, string, string, string]> = [
+  [LARA, 'Aliado Lara · Centro', 'Lunes a sábado de 8:00 a.m. a 5:00 p.m.', 'Calle 1, local 1, Barquisimeto (dato de prueba)', 'aliado-lara'],
+  [ARAGUA, 'Aliado Aragua · Centro', 'Lunes a sábado de 8:00 a.m. a 5:00 p.m.', 'Calle 2, local 3, Maracay (dato de prueba)', 'aliado-aragua'],
+];
+
+/** Producto cargado por el aliado de Lara (aparece en su pestaña Productos como propio). */
+const PRODUCTO_PROPIO_LARA = {
+  codigo: 'ALIADO-LARA-SED10',
+  nombre: 'Cartucho de sedimentos 10 pulgadas (producto de demostración)',
+  categoria: 'cartucho',
+  corrige: ['sedimentos'],
+};
+
+const HOGARES_ALIADOS: HogarSemilla[] = [
+  // Aliado Lara: 6 hogares en Barquisimeto.
+  h('Yelitza R.', BQTO, '', LARA, 'chorro', 4, 0, null, false, [[6, 'dura', 'foto']]),
+  h('Henry P.', BQTO, '', LARA, 'tanque', 5, 2, 95, true, [[12, 'bien_2', 'foto'], [3, 'cloro_alto', 'foto']]),
+  h('Zuleima T.', BQTO, '', LARA, 'pozo', 3, 0, null, false, [[9, 'nitrato_medio', 'manual']]),
+  h('Edgar M.', BQTO, '', LARA, 'botellon', 2, 0, null, false, [[15, 'bien', 'foto']]),
+  h('Norelys C.', BQTO, '', LARA, 'chorro', 4, 3, 40, false, [[4, 'bien', 'foto']]),
+  h('Javier S.', BQTO, '', LARA, 'filtro', 3, 5, 60, false, [[20, 'bien_2', 'foto']]),
+  // Aliado Aragua: 4 hogares en Maracay.
+  h('Xiomara L.', MCY, '', ARAGUA, 'chorro', 3, 0, null, false, [[25, 'cloro_alto', 'foto']]),
+  h('Richard A.', MCY, '', ARAGUA, 'tanque', 5, 0, null, true, [[40, 'dura', 'manual']]),
+  h('Deisy V.', MCY, '', ARAGUA, 'chorro', 2, 2, 120, false, [[18, 'bien', 'foto']]),
+  h('Luis F.', MCY, '', ARAGUA, 'botellon', 4, 0, null, false, [[50, 'bien_2', 'foto']]),
+];
+
+/** Pedidos pendientes del aliado de Lara: [n.º de hogar, tipo, código, cantidad, modalidad, hace cuántas horas]. */
+const PENDIENTES_LARA: Array<[number, 'sobre' | 'cartucho', string | null, number, 'retiro' | 'envio', number]> = [
+  [61, 'sobre', null, 1, 'envio', 6],
+  [62, 'cartucho', 'OPW-GACSU5', 1, 'retiro', 10],
+  [65, 'cartucho', PRODUCTO_PROPIO_LARA.codigo, 2, 'retiro', 3],
+];
+
+/**
+ * Servicios técnicos de Grimuca: [n.º de hogar, servicio, en cuántos días (fecha preferida), momento, nota,
+ * atendido hace cuántos días (null = pendiente), nota del técnico].
+ */
+const SERVICIOS: Array<
+  [number, 'cambio_cartucho' | 'instalacion_filtro', number, 'manana' | 'tarde', string | null, number | null, string | null]
+> = [
+  [2, 'cambio_cartucho', 1, 'manana', 'El filtro está debajo del fregadero. (dato de prueba)', null, null],
+  [12, 'instalacion_filtro', 2, 'tarde', null, null, null],
+  [24, 'cambio_cartucho', 3, 'manana', 'Llamar antes de llegar. (dato de prueba)', null, null],
+  [8, 'cambio_cartucho', -2, 'tarde', null, 1, 'Se cambiaron los cartuchos de sedimentos y carbón; sin fugas. (dato de prueba)'],
+];
+
 // Todos los códigos de este archivo existen en el catálogo (db/semilla_cartuchos.sql).
 
 /** Pedidos pendientes: [n.º de hogar, tipo, código, cantidad, modalidad, hace cuántas horas] */
@@ -185,6 +250,12 @@ const STOCK: Record<string, Record<string, number>> = {
     'OPW-PP20A022': 10, 'OPW-PP20BFL02': 4, 'OPW-GACSU5': 6, 'OPW-CTOSU5': 0, 'OPW-RSSU5': 3,
     'OPW-100GPD-8TN': 2, 'OPW-200GPD-8TN': 0, 'OPW-6STUF10S': 4, 'EMUV-11W': 3,
   },
+  // Aliados (comercios de demostración): 6 productos en Lara (uno propio) y 4 en Aragua.
+  [LARA]: {
+    'OPW-PP20A022': 4, 'OPW-GACSU5': 0, 'OPW-RSSU5': 3, 'OPW-100GPD-8TN': 1, 'OPW-6STUF10S': 2,
+    [PRODUCTO_PROPIO_LARA.codigo]: 5,
+  },
+  [ARAGUA]: { 'OPW-PP20A022': 2, 'OPW-CTOSU5': 3, 'OPW-RSSU5': 0, 'EMUV-11W': 1 },
 };
 
 /** Tiendas: [id, nombre, horario, dirección]. Datos públicos de grimuca.com (los mismos de db/migraciones/003_tiendas.sql). */
@@ -239,7 +310,9 @@ const rojosRecientesPorZona = new Map<string, number>();
 let totalMediciones = 0;
 const ultimasParaMapa: FilaMedicionMapa[] = [];
 
-HOGARES.forEach((hogar, indice) => {
+const TODOS_LOS_HOGARES = [...HOGARES, ...HOGARES_ALIADOS];
+
+TODOS_LOS_HOGARES.forEach((hogar, indice) => {
   const n = indice + 1;
   const id = idHogar(n);
   const tieneFiltro = hogar.etapas > 0;
@@ -251,7 +324,8 @@ HOGARES.forEach((hogar, indice) => {
   filasHogares.push(
     `  (${txt(id)}, ${txt(hogar.nombre)}, ${txt(hogar.zona)}, ${txt(hogar.origen)}, ${hogar.personas}, ${tieneFiltro}, ` +
       `${tieneFiltro ? hogar.etapas : 'NULL'}, ${hogar.diasCambio === null ? 'NULL' : `(${hace(hogar.diasCambio)})::date`}, ` +
-      `${hogar.turbia}, ${txt(`0414-555-01${dos(n)}`)}, ${txt(direccion)}, ${txt(tienda)}, ${txt(hogar.urbanizacion)}, ` +
+      `${hogar.turbia}, ${txt(n <= 60 ? `0414-555-01${dos(n)}` : `0414-555-02${dos(n)}`)}, ${txt(direccion)}, ${txt(tienda)}, ` +
+      `${txt(hogar.urbanizacion || null)}, ` +
       `${mascotasDe(n)}, ${hace(diasSobre, 1)})`,
   );
 
@@ -288,8 +362,8 @@ HOGARES.forEach((hogar, indice) => {
       };
     }
   });
-  if (ultimaParaMapa) ultimasParaMapa.push(ultimaParaMapa);
-  if (ultimoNivel === 'rojo' && ultimoDias < 7) {
+  if (ultimaParaMapa && n <= HOGARES.length) ultimasParaMapa.push(ultimaParaMapa);
+  if (ultimoNivel === 'rojo' && ultimoDias < 7 && n <= HOGARES.length) {
     rojosRecientesPorZona.set(hogar.zona, (rojosRecientesPorZona.get(hogar.zona) ?? 0) + 1);
   }
 
@@ -316,6 +390,34 @@ for (const [n, tipo, codigo, cantidad, modalidad, horas] of [...PENDIENTES].sort
   );
 }
 
+// Pendientes del aliado de Lara (después de los de Grimuca).
+for (const [n, tipo, codigo, cantidad, modalidad, horas] of [...PENDIENTES_LARA].sort((a, b) => b[5] - a[5])) {
+  const hogar = TODOS_LOS_HOGARES[n - 1];
+  filasPedidos.push(
+    `  (${txt(idHogar(n))}, ${txt(tipo)}, ${txt(codigo)}, ${cantidad}, ${txt(modalidad)}, ` +
+      `${modalidad === 'envio' ? txt(direccionDe(n)) : 'NULL'}, ${txt(tipo === 'sobre' ? 'simulado' : 'no_aplica')}, ` +
+      `${txt(hogar.tienda)}, 'pendiente', ${haceHoras(horas)}, NULL)`,
+  );
+}
+
+// Servicios técnicos de Grimuca: 3 pendientes y 1 atendido con su reporte (sin foto).
+const filasServicios = SERVICIOS.map(([n, servicio, enDias, momento, nota, atendidoHace]) => {
+  const hogar = TODOS_LOS_HOGARES[n - 1];
+  const fechaPreferida = enDias >= 0 ? `(now() + interval '${enDias} days')::date` : `(${hace(-enDias)})::date`;
+  const fecha = atendidoHace === null ? haceHoras(5 + n) : hace(atendidoHace + 3);
+  return (
+    `  (${txt(idHogar(n))}, 'servicio', NULL, 1, 'envio', ${txt(direccionDe(n))}, 'no_aplica', ${txt(hogar.tienda)}, ` +
+    `${atendidoHace === null ? "'pendiente'" : "'despachado'"}, ${fecha}, ${atendidoHace === null ? 'NULL' : hace(atendidoHace)}, ` +
+    `${txt(servicio)}, ${fechaPreferida}, ${txt(momento)}, ${txt(nota)})`
+  );
+});
+const filasReportes = SERVICIOS.filter((s) => s[5] !== null).map(
+  ([n, , , , , atendidoHace, notaTecnico]) =>
+    `INSERT INTO reportes_servicio (pedido_id, fecha_visita, nota)\n` +
+    `  SELECT id, ${hace(atendidoHace as number)}, ${txt(notaTecnico)} FROM pedidos\n` +
+    `   WHERE hogar_id = ${txt(idHogar(n))} AND tipo = 'servicio' AND estado = 'despachado';`,
+);
+
 const filasStock = Object.entries(STOCK).flatMap(([tienda, existencias]) =>
   Object.entries(existencias).map(([codigo, cantidad]) => `  (${txt(tienda)}, ${txt(codigo)}, ${cantidad})`),
 );
@@ -327,7 +429,10 @@ const filasBacterias = BACTERIAS.map(
 
 // ---------- Comprobaciones antes de escribir ----------
 
-if (HOGARES.length !== 60) throw new Error('La semilla debe tener 60 hogares.');
+if (HOGARES.length !== 60) throw new Error('La semilla debe tener 60 hogares de Grimuca.');
+if (HOGARES_ALIADOS.filter((x) => x.tienda === LARA).length !== 6) throw new Error('El aliado de Lara lleva 6 hogares.');
+if (HOGARES_ALIADOS.filter((x) => x.tienda === ARAGUA).length !== 4) throw new Error('El aliado de Aragua lleva 4 hogares.');
+if (SERVICIOS.filter((x) => x[5] === null).length !== 3) throw new Error('Van 3 servicios técnicos pendientes.');
 for (const hogar of HOGARES) {
   const u = buscarUrbanizacion(hogar.urbanizacion);
   if (!u || u.nombre !== hogar.urbanizacion || u.zona !== hogar.zona) {
@@ -349,7 +454,7 @@ if (conClientes.length < 28 || conClientes.length > 32) {
 }
 if (enAlerta.join('|') !== 'El Naranjal|La Begoña') throw new Error(`Urbanizaciones en alerta inesperadas: ${enAlerta.join(', ')}`);
 if (sinMedicion.length < 3 || sinMedicion.length > 4) throw new Error(`Sin medición reciente: ${sinMedicion.join(', ')}`);
-if (HOGARES.some((hogar) => hogar.serie.length < 1 || hogar.serie.length > 4)) {
+if (TODOS_LOS_HOGARES.some((hogar) => hogar.serie.length < 1 || hogar.serie.length > 4)) {
   throw new Error('Cada hogar lleva de 1 a 4 mediciones.');
 }
 if ((rojosRecientesPorZona.get(N) ?? 0) < 3) {
@@ -362,13 +467,32 @@ const sql = `-- Datos de demostración de Grimuca Agua. TODO ES INVENTADO: nombr
 -- Requiere el catálogo cargado antes (db/semilla_cartuchos.sql): el stock y los pedidos usan sus códigos.
 -- Lo aplica \`npm run migrar -w api -- --semilla\`, solo si la tabla hogares está vacía.
 -- Las fechas son relativas a now(): la semilla siempre queda "reciente".
--- Contenido: 3 tiendas, ${HOGARES.length} hogares, ${totalMediciones} mediciones, ${filasPedidos.length} pedidos (${PENDIENTES.length} pendientes),
+-- Contenido: 3 comercios (Grimuca y 2 aliados "de demostración"), 5 tiendas, ${TODOS_LOS_HOGARES.length} hogares
+-- (${HOGARES.length} de Grimuca), ${totalMediciones} mediciones, ${filasPedidos.length + filasServicios.length} pedidos
+-- (${PENDIENTES.length} pendientes de Grimuca, ${PENDIENTES_LARA.length} del aliado de Lara y ${filasServicios.length} servicios técnicos),
 -- ${filasStock.length} filas de stock y ${filasBacterias.length} pruebas de bacterias.
+-- Los PIN de cada comercio, del técnico y de la red van en el entorno del servidor, nunca aquí.
 
 -- Tiendas (identificadores fijos; las migraciones ya las crean con su horario y dirección).
 INSERT INTO tiendas (id, nombre, horario, direccion) VALUES
 ${TIENDAS.map((tienda) => `  (${tienda.map(txt).join(', ')})`).join(',\n')}
 ON CONFLICT (id) DO NOTHING;
+UPDATE tiendas SET comercio_id = 'grimuca' WHERE comercio_id IS NULL;
+
+-- Comercios aliados INVENTADOS (comercio de demostración). Grimuca ya lo crea la migración 008.
+-- membresia_usd va nulo: el precio de la membresía todavía no está fijado.
+INSERT INTO comercios (id, nombre, estado_pais, ciudad, plan, membresia_usd, fecha_alta, fin_periodo_gratis, activo, es_demostracion) VALUES
+${COMERCIOS_ALIADOS.map(([id, nombre, estado, ciudad, plan, alta, fin]) => `  (${txt(id)}, ${txt(nombre)}, ${txt(estado)}, ${txt(ciudad)}, ${txt(plan)}, NULL, ${hace(alta)}, ${fin}, true, true)`).join(',\n')}
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO tiendas (id, nombre, horario, direccion, comercio_id) VALUES
+${TIENDAS_ALIADAS.map((tienda) => `  (${tienda.map(txt).join(', ')})`).join(',\n')}
+ON CONFLICT (id) DO NOTHING;
+
+-- Producto propio del aliado de Lara (cargado por el comercio; entra al catálogo y a los sugeridos).
+INSERT INTO cartuchos (codigo, nombre, marca, precio_usd, corrige, es_ejemplo, foto_url, vida_util_meses, categoria, recomendable, url_producto, disponible, comercio_id) VALUES
+  (${txt(PRODUCTO_PROPIO_LARA.codigo)}, ${txt(PRODUCTO_PROPIO_LARA.nombre)}, ${txt(COMERCIOS_ALIADOS[0][1])}, NULL, ARRAY[${PRODUCTO_PROPIO_LARA.corrige.map((c) => txt(c)).join(', ')}], false, NULL, 6, ${txt(PRODUCTO_PROPIO_LARA.categoria)}, true, NULL, true, 'aliado-lara')
+ON CONFLICT (codigo) DO NOTHING;
 
 -- Hogares inventados: 20 en Naguanagua, 20 en San Diego y 20 en Valencia norte, repartidos entre las tres tiendas
 -- y en ${conClientes.length} urbanizaciones (de ${URBANIZACIONES.length} de la lista; el resto queda "por captar").
@@ -387,6 +511,13 @@ ${filasStock.join(',\n')};
 -- Pedidos: historial despachado y, al final, los ${PENDIENTES.length} pendientes (sobres y cartuchos).
 INSERT INTO pedidos (hogar_id, tipo, cartucho_codigo, cantidad, modalidad, direccion, pago, tienda_id, estado, fecha, fecha_despacho) VALUES
 ${filasPedidos.join(',\n')};
+
+-- Servicios técnicos de Grimuca ("Contrata a un experto"): 3 pendientes para el técnico y 1 atendido.
+INSERT INTO pedidos (hogar_id, tipo, cartucho_codigo, cantidad, modalidad, direccion, pago, tienda_id, estado, fecha, fecha_despacho, servicio, fecha_preferida, momento, nota) VALUES
+${filasServicios.join(',\n')};
+
+-- Reporte del servicio atendido (sin foto).
+${filasReportes.join('\n')}
 
 -- Pruebas de bacterias.
 INSERT INTO pruebas_bacterias (id, hogar_id, fecha_inicio, fecha_reporte, resultado) VALUES

@@ -1,0 +1,40 @@
+{
+  "prueba": "resultado sin filtro con nitrato 50: ósmosis inversa, \"Nitrato en Rojo\" y mensaje de WhatsApp",
+  "estado": "passed",
+  "hallazgos": [],
+  "erroresConsola": [],
+  "tiempos": {},
+  "notas": {
+    "sinFiltro": {
+      "nombreMejor": "Filtro de Agua por Ósmosis Inversa de 8 Etapas - 110 GPD",
+      "fraseMejor": "Te recomendamos esta ósmosis inversa porque tu medición dio Nitrato en Rojo: es una señal de alerta que conviene atender. Está pensada para esa casilla. También nos dijiste que el agua sale turbia. Son 4 en casa, con mascotas, y todavía no tienen filtro.",
+      "frases": [
+        "Te recomendamos esta ósmosis inversa porque tu medición dio Nitrato en Rojo: es una señal de alerta que conviene atender. Está pensada para esa casilla. También nos dijiste que el agua sale turbia. Son 4 en casa, con mascotas, y todavía no tienen filtro.",
+        "Te recomendamos esta ósmosis inversa porque tu medición dio Nitrato en Rojo: es una señal de alerta que conviene atender. Está pensada para esa casilla. También nos dijiste que el agua sale turbia. Son 4 en casa, con mascotas, y todavía no tienen filtro. Esta opción es la de 8 etapas.",
+        "Te recomendamos este filtro porque nos dijiste que el agua sale turbia y viene de tanque. Está pensado para retener la tierra y el sedimento. Son 4 en casa, con mascotas, y todavía no tienen filtro.",
+        "Te recomendamos este desbarrador porque nos dijiste que el agua sale turbia y viene de tanque. Está pensado para retener la tierra y el sedimento. Son 4 en casa, con mascotas, y todavía no tienen filtro."
+      ],
+      "sugeridosApi": [
+        "OPW-100GPD-8TN · sistema_osmosis_inversa",
+        "OPW-200GPD-8TN · sistema_osmosis_inversa",
+        "OPW-RO-100H · filtro",
+        "CMB-T1054V34F · filtro_desbarrador"
+      ]
+    },
+    "altoCotizar": [
+      44,
+      44,
+      44,
+      44
+    ],
+    "fotosSugeridos": {
+      "total": 4,
+      "cargadas": 4,
+      "sinFoto": 0,
+      "rotas": [],
+      "pendientes": []
+    },
+    "mensajeWhatsApp": "Hola, soy Prueba Calidad MWR7RIFFD2 sin filtro, de Naguanagua. Medí mi agua con el sobre de Grimuca Agua el 21 de noviembre de 2026. Casillas para vigilar o atender: Nitrato: Rojo. Somos 4 en casa y todavía no tenemos filtro. Quiero cotizar: Filtro de Agua por Ósmosis Inversa de 8 Etapas - 110 GPD (código OPW-100GPD-8TN). ¿Tienen en Grimuca Mañongo?",
+    "mensajePreguntarFiltros": "Hola, soy Prueba Calidad MWR7RIFFD2 sin filtro, de Naguanagua. Somos 4 en casa y no tenemos filtro. Mi medición del 21 de noviembre de 2026: Casillas para vigilar o atender: Nitrato: Rojo. ¿Qué filtros tienen y cuánto cuestan?"
+  }
+}

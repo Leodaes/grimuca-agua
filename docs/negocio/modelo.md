@@ -1,458 +1,376 @@
-# Modelo de negocio · Grimuca Agua
+# Modelo de negocio · Grimuca Agua · red de ferreterías
 
-**Versión 2 · sábado 21 nov 2026 · hackatón ValenValley, track Logística**
-**Reescrito con las cifras y el modelo de Tulio (correos del 21 nov, 8:38 a 8:52 p.m.). Sus cifras mandan sobre los supuestos del borrador anterior.**
+**Versión 3 · sábado 21 nov 2026, noche · hackatón ValenValley, track Logística**
+**Rehecho tras la decisión de Leonardo (10:00 p.m.) y dos asesorías con jurados.** Grimuca pasa de "la app de Grimuca" a una plataforma para ferreterías que Grimuca opera. La versión anterior, con las tres tiendas propias, quedó guardada en `modelo-v2-tres-tiendas.md` (cuentas de Tulio verificadas, KPI y experimentos del piloto, flujo de caja de las tres tiendas). Lo que sigue valiendo se conserva aquí de forma resumida.
 
-**Lema:** "Saber qué tomas empieza en casa".
-**Promesa:** "Menos botellones: mide tu agua y cambia el cartucho cuando toca".
+**Lema del cliente final:** "Saber qué tomas empieza en casa".
+**Frase para el lado empresa (propuesta):** "Clientes que llegan sabiendo qué necesitan".
 
-Cómo leer este documento. Cada cifra lleva su origen:
+## Cómo leer este documento
 
-- **Tulio** = lo dijo él en sus correos.
-- **Referencia de mercado** = precio de una tienda en línea u otra fuente pública. **No es precio de Grimuca.**
-- **SUPUESTO** = lo puso Business para poder calcular. Se cambia cuando Tulio dé el real.
-- Montos en dólares. Los totales se calculan con todos los decimales; al sumar filas puede haber diferencias de $1.
-- Nada de lo que sigue es una promesa sobre la calidad del agua. La app orienta y avisa cuándo cambiar el cartucho; no certifica.
+Cada cifra lleva su origen:
 
----
+- **Tulio** = lo dijo él en sus correos (`insumos-tulio/`).
+- **Asesoría** = se dijo en una de las dos asesorías con jurados. Sin documento detrás.
+- **Referencia de mercado** = precio público de una tienda en línea. No es precio de Grimuca.
+- **SUPUESTO** = lo puso Business para poder calcular. **Tulio lo corrige** (lista en la sección 12).
+- **Cálculo** = cuenta de Business con las cifras anteriores.
 
-## 0. El modelo en 10 líneas
+Montos en dólares. Las cuentas se hicieron con todos los decimales. Nada de esto es una promesa sobre la calidad del agua: la app orienta con una medición casera y no certifica.
 
-1. El **sobre de $9** es el gancho para captar hogares (Tulio). Cuesta **$1,54 a $2,04 en fábrica** (Tulio, fuente en la sección 1), sin envío, importación ni empaque.
-2. El **filtro se vende casi a costo: 20% de margen** (Tulio), más barato que la competencia. Con los precios de referencia, eso es $24 (ultrafiltración) a $66 (ósmosis) por filtro.
-3. El margen grande está en los **cartuchos: 50% de margen, cambio cada 3 meses** (Tulio). Un juego de referencia de $18,99 deja $9,50.
-4. Por cada 100 sobres (Tulio): **10 compran filtro, 30 ya tienen filtro y compran cartuchos, 60 solo se informan.** El segundo mercado son los hogares que ya tienen filtro y no saben cuándo cambiarlo.
-5. El **plomero** cobra $40 a $60 por instalar y $30 por cambiar; Grimuca se queda con el 30%.
-6. Con **150 hogares al mes por tienda**, el modelo de Tulio da **$1.650 a $2.450 al mes por tienda** descontado el almacenista ($360). Al revisar la cuenta me da **$1.657 a $2.377** (sección 4).
-7. Descontando lo que Tulio todavía no incluía (importación, empaque, envío, pasarela, responsable de logística, todo SUPUESTO), quedan **unos $1.150 a $1.830 por tienda al mes** el primer mes.
-8. **Punto de equilibrio:** unos **40 a 44 sobres al mes por tienda** con la conversión de Tulio, y 62 con la mitad de conversión. La meta de Tulio es 150.
-9. **Flujo de caja a 12 meses, las 3 tiendas:** escenario base **+$65.500** de caja al cerrar el año; conservador **+$6.200**. La variable que lo tumba es la **captación de hogares por tienda** (sección 6).
-10. Contra el botellón de Tulio (5 a 6 por quincena, $240 a $576 al año), un hogar que cambia el cartucho a tiempo **mueve menos de 6 kg al año contra 2.370 a 2.844 kg**.
+**Alcance:** esto es un negocio para ejecutar a largo plazo. Para el hackatón existe una demo con datos sembrados: los comercios de Lara y de Aragua son de demostración y están rotulados así; no hay ninguna ferretería aliada real todavía y la membresía no se cobra.
 
 ---
 
-## 1. El sobre: precio, costo y margen
+## 0. La cifra que no cuadra: el sobre, $2,94 contra $4,00
 
-**Qué trae (Tulio):** 1 tira multiparámetro, 1 prueba de bacterias en frasco, tabla de colores impresa, QR al video. Precio **$9**.
-
-**El primer paso del cliente es escanear el QR del sobre.** El pago dentro de la app es solo para quien pide el sobre a domicilio; también puede retirarlo en la tienda (Tulio).
-
-### Costo en fábrica (Tulio)
-
-| Componente | Costo | Origen |
+| | Versión A: modelo anterior | Versión B: dicho en la asesoría |
 |---|---|---|
-| Frasco de bacterias, de 10 a 499 unidades | $2,00 | Tulio (Shenzhen Hongyi, Alibaba) |
-| Frasco, de 500 a 1.999 unidades | $1,90 | Tulio |
-| Frasco, desde 2.000 unidades | $1,50 | Tulio |
-| Tira HORYZON | ~$0,04 | Tulio |
-| **Sobre en fábrica** | **$2,04 / $1,94 / $1,54** según volumen | Tulio: rango $1,54 a $2,04 |
+| Costo del sobre puesto en Venezuela | **$2,94** | **$4,00** |
+| De dónde sale | Fábrica $1,94 (frasco $1,90 en el escalón de 500 a 1.999, más tira de $0,04; Tulio) + $1,00 de importación y empaque (SUPUESTO de Business) | Asesoría. No hay desglose |
+| Margen del sobre de $9 a domicilio (envío $2,50 y pasarela $0,18, SUPUESTOS) | **$3,38** | **$2,38** |
+| Margen del sobre de $9 con retiro en tienda | **$6,06** | **$5,00** |
+| Margen del sobre al mayor a $5,50 (SUPUESTO), con $0,25 de flete al comercio | **$2,31** | **$1,25** |
+| Lote de 1.000 sobres pagado por adelantado | $2.940 | $4.000 |
 
-### Lo que se suma hasta la puerta (SUPUESTO, pendiente de Tulio)
+**Qué implica el $4.** Con el frasco a $2,00 y la tira a $0,04, el sobre sale a $2,04 en fábrica (Tulio, lote chico). Para llegar a $4,00 puesto en Venezuela, el flete, la aduana y el empaque tendrían que sumar $1,96 por sobre. Business había supuesto $1,00, con un rango de $0,60 a $1,50. El $4 queda fuera de ese rango, o incluye algo que el modelo anterior no contaba (envío dentro del país, IVA, comisión de un importador).
 
-| Concepto | Valor usado | Origen |
+**Resultado del modelo con las dos versiones** (detalle en las secciones 5 a 8):
+
+| Resultado | Con $2,94 | Con $4,00 |
 |---|---|---|
-| Importación (flete y aduana) más empaque e impresos | **$1,00 por sobre** (rango $0,60 a $1,50) | SUPUESTO. Antes: importación 35% (~$0,63) y empaque ~$0,35 |
-| Envío a domicilio | **$2,50 por entrega** | SUPUESTO, sin tarifa real (SAMA Logística 3 por cotizar) |
-| Parte de los sobres que van a domicilio | **50%** | SUPUESTO; el resto se retira en tienda, farmacia o supermercado aliado |
-| Pasarela de pagos | **2% de lo que se paga en la app; en promedio 1% de las ventas** | SUPUESTO, costos de Cobrix pendientes |
+| Aporte de la red por ferretería al mes, volumen completo, escenario base | **$144** | **$103** |
+| Ferreterías que pagan para cubrir los fijos de la red, base | **4** | **5** |
+| Caja de la red al cierre del año 1, base | **+$1.094** | **−$2.035** |
+| Caja de la red al cierre del año 1, conservador | **−$7.203** | **−$8.263** |
+| Hogares al mes por ferretería para que el año 1 cierre en cero, base | **35** | **55** |
 
-### Margen por sobre
-
-| | Fábrica $1,94 (lote del piloto) | Fábrica $1,54 (2.000 o más) |
-|---|---|---|
-| Retiro en tienda (sin envío) | $9 − $1,94 − $1,00 = **$6,06** | $6,46 |
-| A domicilio ($2,50 de envío) | **$3,56** | $3,96 |
-| Con el 50% a domicilio (promedio base), antes de pasarela | **$4,81** | $5,21 |
-| Con el 50% a domicilio y 1% de pasarela | **$4,72** | $5,12 |
-
-El sobre se paga solo en cualquier combinación de estos números. Ni el frasco a $2,00 ni el envío a $2,50 lo pasan a pérdida. Esto cambia lo que decía el borrador anterior, cuando el frasco se supuso a $2,70 y la importación a 35% sobre todo.
-
-**Lectura:** el sobre de $9 deja entre $3,56 y $6,06 antes de mirar un solo filtro. Con 150 sobres por tienda al mes eso son $530 a $910, que casi paga solo el almacenista ($360) más la parte del responsable de logística.
+**Pregunta para Leonardo:** ¿quién dio el $4,00, qué incluye (flete, aduana, empaque, envío nacional, IVA) y cuál de las dos cifras va en la lámina? Mientras no se decida, todo material público muestra el rango y el modelo se lee con las dos columnas.
 
 ---
 
-## 2. Filtro, cartuchos y plomero
+## 1. El modelo en 10 líneas
 
-**Precios de referencia de mercado (Oasis, tienda en línea Mundo JAB; no son precios de Grimuca):**
+1. **El cliente que paga es la ferretería.** La familia mide su agua con un sobre de **$9** (Tulio) y genera la señal: una medición con su perfil y la fecha del último cambio del cartucho.
+2. **El sistema asigna cada familia al comercio más cercano que tiene el producto.** La ferretería recibe clientes ya medidos y con su necesidad identificada, y no vende filtros a ciegas.
+3. **Tres líneas de ingreso para Grimuca como operador:** (1) el sobre de $9 al cliente final, (2) la membresía mensual de la ferretería, con 1 a 3 meses gratis de entrada, y (3) la venta de sobres al mayor a las ferreterías. Siguiente paso, fuera de la demo: comisión por transacción y plan premium con prioridad de asignación.
+4. **Supuestos de precio (SUPUESTO):** membresía de **$30 al mes** (rango $20 a $50), sobre al mayor a **$5,50** (rango $5,00 a $6,00).
+5. **Por cada ferretería a volumen completo, la red aporta $144 al mes con el sobre a $2,94 y $103 con el sobre a $4,00** (cálculo, escenario base).
+6. **La ferretería recibe unos $280 al mes en margen de las 40 familias asignadas** (primer mes a volumen completo, cálculo con los márgenes de Tulio) y paga $30. Con 5 familias al mes recupera la membresía.
+7. **Punto de equilibrio de la red: 4 a 5 ferreterías pagando** en el escenario base, 6 a 8 en el conservador (fijos de la red $450 al mes, SUPUESTO). Solo con membresía harían falta 15.
+8. **Flujo de caja de la red a 12 meses:** base +$1.094 con el sobre a $2,94 y −$2.035 con $4,00; conservador −$7.203 y −$8.263. El año 1 es de inversión; el flujo mensual de la operación pasa a positivo en el mes 4 (base) o en el mes 11 (conservador).
+9. **Lo que tumba el modelo** es el volumen de familias medidas que la red le entrega a cada ferretería: con 20 al mes en vez de 40, el año 1 base pasa de +$1.094 a −$3.105.
+10. **Logística:** lo que deja de existir es el pedido sorpresa. Cada cartucho tiene fecha y referencia con semanas de anticipación, y de ahí salen tres ahorros (sección 3).
 
-| Producto | Precio de referencia | Margen de Grimuca (Tulio) | Margen en dólares |
+---
+
+## 2. Quién paga y por qué pagaría
+
+**Cliente 1, la familia.** Padres y madres de clase media y media alta de Valencia, preocupados por el agua que toman sus hijos (Tulio). Compra el sobre de $9 y aporta los datos. Es la entrada del negocio y no el lado grande del ingreso.
+
+**Cliente 2, la ferretería.** Dueño de una ferretería o tienda de plomería con filtros y cartuchos en el mostrador. Es el cliente que paga todos los meses. Hoy vende filtros sin saber qué agua tiene la casa del comprador ni cuándo vuelve por el cartucho (Tulio: "nos preguntan todos los días si el filtro les sirve y cuándo cambiar el cartucho").
+
+**Qué recibe la ferretería a cambio de la membresía:**
+
+1. **Clientes ya medidos y con la necesidad identificada**, asignados por cercanía. Cada hogar llega con su resultado por casilla, su perfil (zona, origen del agua, personas en casa, filtro y etapas) y el producto que se le recomienda.
+2. **Inventario contra demanda.** El panel muestra los cartuchos que se van a pedir en 7 y 30 días por tienda y por zona, y el mapa por urbanización avisa dónde se acumulan resultados fuera de rango.
+3. **Recambios previstos.** Cada hogar tiene fecha de último cambio; la ferretería sabe qué cartucho sale y cuándo.
+4. **Técnicos y despacho.** Los servicios de instalación se asignan a un técnico, que marca "Ya fui" con foto, y el comercio ve el reporte.
+
+**Lo que vale para la ferretería (cálculo, con los márgenes de Tulio aplicados a la ferretería: 20% en filtros y 50% en cartuchos sobre precios de referencia; el margen real de cada ferretería aliada es SUPUESTO):**
+
+| Por mes, a volumen completo | Escenario base | Escenario conservador |
+|---|---|---|
+| Familias asignadas | 40 (SUPUESTO) | 20 (SUPUESTO) |
+| Compran filtro (10% base, 5% conservador; Tulio y la mitad) | 4 × $24,00 = $96 | 1 × $24,00 = $24 |
+| Compran cartuchos (30% y 15%) | 12 × $9,50 = $114 | 3 × $9,50 = $29 |
+| Sobre vendido en mostrador, la mitad de las familias: $9 menos $5,50 | 20 × $3,50 = $70 | 10 × $3,50 = $35 |
+| **Margen mensual de la ferretería** | **$280** | **$88** |
+| Membresía | $30 (11% del margen) | $20 (23% del margen) |
+
+Recambios: cada familia que compró vuelve cada 3 meses (Tulio, sin abandono). A plena madurez suman unos $456 más al mes en el base, un techo y no un valor esperado. Para recuperar la membresía de $30 la ferretería necesita unas **5 familias asignadas al mes** con la conversión de Tulio (cada familia deja $7,00 entre producto y sobre) y 7 con la mitad de la conversión.
+
+**¿Quién es el cliente, la familia o la ferretería?** Las dos, en orden distinto: la familia entra por la medición y paga $9, y la ferretería paga cada mes por recibir a esa familia con su dato. El modelo se diseñó para que la ferretería sea la parte que sostiene el ingreso recurrente.
+
+**¿Qué impide que la ferretería lo haga sola?** Una ferretería sola no tiene la lectura de la tira por foto, el perfil del hogar ni los hogares de la zona que aún no la conocen. Tampoco tiene la fecha de recambio de clientes que nunca le compraron. Lo que Grimuca vende es el flujo de familias medidas y la previsión de lo que van a pedir; la ferretería conserva su margen de producto.
+
+---
+
+## 3. El problema logístico y cuánto ahorra
+
+**La respuesta a la pregunta del jurado, "¿cuál es el problema logístico y cuánto le ahorran a la industria?"**
+
+La ferretería compra, almacena y despacha repuestos a ciegas, porque nadie en la cadena conoce la fecha de cambio de cada cartucho. Lo que deja de existir es el **pedido sorpresa**: con la medición y la fecha del último cambio, cada cartucho tiene fecha y referencia conocidas con semanas de anticipación. De ahí salen tres ahorros:
+
+1. **Compra al proveedor contra demanda prevista.** Menos dinero parado en inventario y menos quiebres de pieza.
+2. **Asignación del pedido al comercio más cercano que sí tiene la pieza.** Menos ventas perdidas por falta de stock y menos viajes de la familia.
+3. **Entregas y visitas técnicas agrupadas por urbanización y por semana.** Una ruta por zona en lugar de un viaje por pedido.
+
+Además, la identificación del filtro por foto reduce la venta del cartucho equivocado: menos devoluciones y menos segundas visitas del técnico.
+
+**La cifra de industria que existe hoy es una sola y sale de supuestos.** El capital de trabajo del piloto, si se compran por adelantado los ~100 filtros y ~300 juegos de cartuchos que debería traer (a 80% y 50% del precio de referencia), es de **$15.000 a $20.000** (cálculo de Business en `auditoria-asesor.md`, SUPUESTO). Comprando contra demanda prevista, con unas dos semanas de cartuchos en estante, baja a una fracción de eso. **Preséntese como supuesto.**
+
+**Ejemplo de orden de magnitud** (SUPUESTO de rotación; los datos reales de Grimuca están pedidos a Tulio):
+
+| | Cálculo |
+|---|---|
+| Cartuchos que sale Grimuca al mes 12 del modelo anterior | 639 juegos al mes (escenario base de `modelo-v2-tres-tiendas.md`) |
+| Costo por juego | $18,99 de referencia × 50% = $9,50 |
+| Compra mensual de cartuchos al costo | 639 × $9,50 = **$6.070** |
+| Inventario con rotación de 90 días (SUPUESTO) | 3 meses × $6.070 = **$18.200** |
+| Inventario contra demanda prevista, 14 días | 14/30 × $6.070 = **$2.830** |
+| Dinero que deja de estar parado (ejemplo) | **$15.400**, 85% del inventario de ejemplo |
+
+**Frase lista para rellenar con los datos de Tulio (no inventar):**
+
+> "Grimuca tiene $[DATO DE TULIO] en inventario de filtros y cartuchos, que rota cada [DATO DE TULIO] días; comprando contra demanda prevista baja a [CÁLCULO: inventario ÷ días de rotación × 14]."
+
+Datos pedidos a Tulio: dinero en inventario de filtros y cartuchos, días de rotación, veces al mes que falta una pieza en la tienda, y entregas por semana con el costo de cada una. Cuando lleguen, la frase se completa y el ejemplo de arriba se reemplaza por la cifra real.
+
+**Pesos y viajes del hogar (se conserva del modelo anterior; pesos SUPUESTO, se confirman pesando):** botellón de 19 L lleno 19,75 kg; juego de 3 cartuchos 0,9 kg; sobre 60 g; filtro en su caja 3 kg.
+
+| Un hogar, un año | Botellón (5 a 6 por quincena, estimación de Tulio) | Filtro, año 1 | Filtro, año 2 en adelante |
 |---|---|---|---|
-| Filtro de ultrafiltración de 6 etapas | $119,99 | 20% | **$24,00** |
-| Filtro de ósmosis de 8 etapas | $329,99 | 20% | **$66,00** |
-| Kit de 3 cartuchos | $18,99 | 50% | **$9,50** |
-| Instalación por plomero | $40 a $60 (Tulio) | 30% | $12 a $18 |
-| Cambio de cartucho por plomero | $30 (Tulio) | 30% | $9 |
-
-Notas:
-
-- Tulio calcula el margen **sobre estos precios de referencia**. Pero dijo que Grimuca vende **más barato que la competencia**. Si el precio de venta baja 10% bajo la referencia y el costo no cambia, el margen de $24 baja a unos $12 (la mitad). **Pendiente: precios internos de Grimuca (costo y precio de venta).**
-- El kit de $18,99 es de referencia. Las membranas de ósmosis cuestan más ($30 a $76 en el catálogo que Tulio describió), así que para ósmosis el margen de cartuchos probablemente es mayor, pero el precio por juego es otro. Se usa $18,99 para todo hasta tener el catálogo completo.
-- Catálogo (Tulio): 64 referencias; rangos de ósmosis $175 a $390, ultrafiltración bajo fregadero $112 a $176, cartuchos $2,70 a $76. El archivo completo no ha llegado.
-- Proveedor: Oasis. No se usa la línea Aqual.
-- **Margen y frecuencia reales del cartucho (50% y 3 meses) están por confirmar** (Tulio).
-
----
-
-## 3. Embudo por cada 100 sobres, y el segundo mercado
-
-| De cada 100 sobres (Tulio) | Hogares | Qué compran | Margen de Grimuca (referencia) |
-|---|---|---|---|
-| Compran filtro | 10 | Filtro (queda con cartuchos puestos), instalación con plomero | $24 a $66 + $12 a $18 de plomero |
-| Ya tienen filtro | 30 | Cartuchos (la app dice cuál y cuándo) | $9,50 por juego, y vuelven cada 3 meses |
-| Solo se informan | 60 | Nada | $0 (el sobre ya se pagó solo) |
-
-**Segundo mercado (Tulio):** los hogares que ya tienen filtro y no saben cuándo cambiarlo ni qué cartucho comprar. La app les avisa el recambio y el cartucho correcto. En el modelo son los **30 de cada 100**. Es el supuesto de Tulio más importante y el menos probado: nadie ha vendido este sobre todavía. **El piloto lo mide** (sección 9).
-
-**Captación:** 150 hogares al mes por tienda (Tulio), unos 5 por día de atención (26 días). Cada hogar captado compra un sobre.
-
-**Meta de hogares que actúan:** 15 filtros + 45 que compran cartuchos = **60 hogares nuevos por tienda al mes** con compra (no 60 filtros).
-
-**Canales (Tulio):** mostrador de Mañongo y San Diego, a domicilio, y mostradores de farmacias y supermercados aliados. Cliente ideal: madres y padres de clase media y media alta en Valencia, preocupados por el agua que toman sus hijos.
-
----
-
-## 4. Verificación de las cuentas de Tulio
-
-Tomé sus datos y rehice cada número. Casi todo cuadra; va lo que no.
-
-**Cálculos de Tulio, por tienda al mes, con 150 hogares captados:**
-
-| Concepto | Tulio | Mi cálculo con sus datos | Cuadra |
-|---|---|---|---|
-| Sobres | ~$1.050 | Ingreso: 150 × $9 = **$1.350**. Margen: 150 × ($9 − ~$2 de fábrica) = ~$1.050 | Sí, **pero $1.050 es margen sin envío ni importación, no ingreso**. El ingreso es $1.350 |
-| Filtros | $360 a $990 | 10% de 150 = **15 filtros** × $24 (ultrafiltración) = $360 · 15 × $66 (ósmosis) = $990 | Sí. Son 15 filtros por tienda al mes, no 60 |
-| Cartuchos | ~$427 | 30% de 150 = 45 hogares × $9,50 (50% de $18,99) = **$427** | Sí |
-| Plomero | $180 a $270 | 15 instalaciones × ($40 a $60 × 30%) = 15 × $12 = $180 · 15 × $18 = $270 | Sí |
-| Suma antes del almacenista | no la dice | $1.050 + $360 + $427 + $180 = **$2.017** · $1.050 + $990 + $427 + $270 = **$2.737** | |
-| Descontado el almacenista ($360) | $1.650 a $2.450 | **$1.657 a $2.377** | **Extremo bajo cuadra. El alto no: $2.450 pide $73 más** |
-
-**Al mes 12 (Tulio):**
-
-| Cifra de Tulio | Mi cálculo | Cuadra |
-|---|---|---|
-| ~720 hogares con filtro por tienda | 60 hogares nuevos al mes × 12 = **720**. Pero son 180 que **compraron filtro a Grimuca** (15 × 12) y **540 que ya tenían filtro** (45 × 12) | Sí, **si "con filtro" incluye al 30% que ya lo tenía**. Conviene decirlo así. Con el arranque gradual (40%, 60%, 80% en los meses 1 a 3), son **648** por tienda |
-| ~240 cambios al mes | 720 hogares ÷ cambio cada 3 meses = **240** | Sí, es el promedio de largo plazo con **cero abandono**. Mes a mes, el mes 12 trae 180 recambios de cohortes anteriores más 45 primeras compras = **225** (o 213 con el arranque gradual) |
-| ~$2.280 de margen mensual por tienda | 240 × $9,50 = **$2.280** | Sí. Pero es **solo el margen de cartuchos**. Con 213 a 225 cambios serían **$2.020 a $2.140** |
-| ~$6.840 las 3 tiendas | 3 × $2.280 = $6.840 | Sí |
-| Piloto: $9.000 en ventas contra $1.540 a $2.040 de costo | 1.000 × $9 = $9.000. Costo en fábrica: 1.000 unidades caen en el escalón de 500 a 1.999 ($1,90 + $0,04) = **$1.940** | $9.000 sí. **$1.540 solo se alcanza con 2.000 unidades o más; en 1.000 el costo es $1.940** |
-| 450 hogares al mes: se vende en unos dos meses | 1.000 ÷ 450 = **2,2 meses** | Sí, si se capta 150 por tienda desde el primer día. Con arranque gradual es en el mes 4 |
-
-**Tres diferencias que importan:**
-
-1. **El $1.050 de los sobres es margen, no ingreso**, y es antes de envío, importación y empaque. Mi cuenta con esos costos (SUPUESTO) lo baja a unos $710 por tienda.
-2. **El extremo alto, $2.450, debería ser $2.377** con sus propios números. Diferencia de $73, sin consecuencia grande, pero conviene corregirlo antes de presentarlo.
-3. **Los $2.280 al mes 12 suponen que nadie deja de comprar cartuchos.** Es el supuesto más fuerte del modelo. Si la mitad abandona el cambio de cartucho, son $1.140, y el mes 12 deja de ser el motor.
-
-**Lo que Tulio no había restado y yo sí (SUPUESTO, por tienda al mes):**
-
-| Concepto | Monto | Origen |
-|---|---|---|
-| Importación y empaque | −$150 (150 × $1,00) | SUPUESTO |
-| Envío (50% de 150 a $2,50) | −$188 | SUPUESTO |
-| Pasarela (1% de ventas de $4.000 a $7.150) | −$40 a −$72 | SUPUESTO |
-| Responsable de logística ($400 al mes entre 3 tiendas) | −$133 | SUPUESTO |
-| **Resultado primer mes, por tienda** | **$1.147 a $1.835** (contra $1.657 a $2.377 de Tulio) | |
-
-Si todos los sobres fueran a domicilio, el envío es −$375 y el rango baja a **$960 a $1.650**.
-
----
-
-## 5. Punto de equilibrio por tienda
-
-**Costos fijos por tienda al mes:** almacenista **$360** (Tulio) + responsable de logística **$133** (SUPUESTO: $400 al mes entre las tres) = **$493**.
-
-**Lo que deja cada sobre captado el primer mes** (sin contar recambios posteriores; SUPUESTO donde se indica):
-
-| | Mezcla 70% ultrafiltración y 30% ósmosis (SUPUESTO) | Solo ultrafiltración | Conversión a la mitad, solo ultrafiltración |
-|---|---|---|---|
-| Sobre, margen (50% a domicilio) | $4,72 | $4,72 | $4,72 |
-| Filtros, margen incluye comisión de plomero | $4,98 | $3,78 | $1,89 |
-| Cartuchos primeros | $2,79 | $2,79 | $1,40 |
-| **Por sobre captado** | **$12,49** | **$11,29** | **$8,01** |
-| **Sobres al mes por tienda para cubrir $493** | **40** | **44** | **62** |
-| Hogares por día (26 días) | 1,5 | 1,7 | 2,4 |
-
-- **Solo el sobre**, sin filtros ni cartuchos, cubre los $493 con **105 sobres por tienda al mes** (4 por día).
-- La meta de Tulio, **150 hogares**, es más de tres veces el punto de equilibrio. Esa holgura es la que protege al modelo.
-- Los recambios (cada 3 meses) bajan el equilibrio con el tiempo: cada hogar captado vuelve cuatro veces por año.
-
----
-
-## 6. Escenarios y qué variable tumba el modelo
-
-**Tres escenarios, las 3 tiendas, 12 meses** (flujo mes a mes en la sección 7):
-
-| | **Base (cifras de Tulio)** | **Conservador (mitad de captación y de conversión)** |
-|---|---|---|
-| Hogares captados por tienda al mes | 150 | 75 |
-| De cada 100 sobres | 10 filtro · 30 cartuchos · 60 informan | 5 filtro · 15 cartuchos · 80 informan |
-| Tipo de filtro | 70% ultrafiltración, 30% ósmosis (SUPUESTO) | 100% ultrafiltración |
-| Abandono de cambio de cartucho | 0% (Tulio) | 0% |
-| Sobres vendidos en el año | 4.860 | 2.430 |
-| Filtros vendidos | 486 | 122 |
-| Juegos de cartuchos vendidos | 4.050 | 1.013 |
-| Ventas del año | $216.900 | $57.500 |
-| Egresos del año (sin inversión ni lote) | $146.900 | $46.800 |
-| **Resultado del año 1** | **+$70.000** | **+$10.700** |
-| Caja al cierre (tras $4.440 de inversión y lote) | **+$65.500** | **+$6.200** |
-| Hueco máximo de caja | −$4.440 (mes 0) | −$4.940 (mes 2) |
-| Caja positiva desde el mes | **3** | **8** |
-| Neto mensual al mes 12 (3 tiendas) | +$8.830 | +$1.490 |
-
-"Ventas" suma el precio completo de los filtros y de los cartuchos más la comisión de plomero. "Egresos" incluye el costo de filtros y cartuchos (80% y 50% del precio de referencia), sobres, envío, pasarela y fijos.
-
-**¿Qué variable tumba el modelo?** Probé una por una, contra el base y contra el conservador:
-
-| Cambio | Caja al cierre, base | Caja al cierre, conservador |
-|---|---|---|
-| Tal cual | $65.500 | $6.200 |
-| Todos los sobres a domicilio ($2,50) | $59.500 | $3.200 |
-| Precio del filtro 10% bajo la referencia | $56.700 | $4.800 |
-| Cero recambios después del primero (abandono total) | $41.400 | $200 |
-| Nadie de los "ya tienen filtro" compra cartuchos | $33.900 | −$1.700 |
-| Conversión a la mitad | $34.600 | (ya incluida) |
-| **Captación a la mitad (75 por tienda)** | **$23.100** | (ya incluida) |
-| Captación de 50 por tienda | $9.000 | −$2.300 |
-| Captación de 30 por tienda | −$2.400 | −$9.100 |
-
-**Conclusión:** ninguna variable sola tumba el base. El modelo se rompe por la **captación**: con la conversión de Tulio, la caja del año 1 cierra en cero con unos **34 hogares al mes por tienda**; con la mitad de conversión, con unos **57**. La meta es 150. Después viene la combinación **conversión baja + abandono del recambio**, que deja el conservador en cero. Por eso el piloto debe medir **cuántos hogares por tienda y cuántos de cada 100 compran qué**.
-
-**No incluido (SUPUESTO que no tiene dato):** publicidad. Tulio no dio presupuesto; la captación es por QR, mostrador y aliados. Si se pagara $1,50 por sobre vendido, el año 1 base cuesta $7.300 más y sigue positivo. Ese $1,50 es optimista. A partir de los planes de medios del curso del asesor (casos de otros rubros, no Valencia; ver `auditoria-asesor.md`), Business estima $3,50 a $5,50 por sobre vendido. Con $4,00 en todos los sobres, el año 1 base cuesta $19.400 más y cierra con $46.100 de caja; el conservador cuesta $9.700 más y cierra en −$3.500. El tope sano es 20% a 30% del ticket: $1,80 a $2,70 por sobre.
-
----
-
-## 7. Flujo de caja a 12 meses · las 3 tiendas
-
-Supuestos del flujo (SUPUESTO salvo donde dice Tulio):
-
-- Arranque gradual: 40%, 60% y 80% de la captación en los meses 1, 2 y 3; 100% desde el mes 4.
-- Mes 0: inversión inicial $1.500 (video, impresos, capacitación) más el lote del piloto, 1.000 sobres pagados por adelantado a $1,94 + $1,00 = **$2.940**.
-- Hogares que ya tienen filtro: compran un juego al captarlos y luego cada 3 meses (Tulio). Hogares que compran filtro: primer cambio 3 meses después.
-- Fijos (3 tiendas): 3 almacenistas × $360 (Tulio) + $400 de responsable de logística (SUPUESTO) = $1.480 al mes.
-- No se cuentan IVA, devoluciones, inventario de filtros y cartuchos comprado por adelantado ni plazos de cobro.
-
-### Escenario base (cifras de Tulio)
-
-| Mes | Sobres | Filtros | Juegos de cartuchos | Ventas | Egresos | Neto | Caja acumulada |
-|---|---|---|---|---|---|---|---|
-| 0 | | | | | $4.440 | −$4.440 | −$4.440 |
-| 1 | 180 | 18 | 54 | $6.209 | $4.912 | +$1.297 | −$3.143 |
-| 2 | 270 | 27 | 81 | $9.314 | $6.628 | +$2.686 | −$457 |
-| 3 | 360 | 36 | 108 | $12.419 | $8.344 | +$4.074 | +$3.617 |
-| 4 | 450 | 45 | 207 | $16.890 | $11.522 | +$5.368 | +$8.985 |
-| 5 | 450 | 45 | 243 | $17.574 | $12.429 | +$5.145 | +$14.130 |
-| 6 | 450 | 45 | 279 | $18.258 | $12.778 | +$5.480 | +$19.610 |
-| 7 | 450 | 45 | 387 | $20.309 | $13.824 | +$6.485 | +$26.094 |
-| 8 | 450 | 45 | 423 | $20.992 | $14.173 | +$6.820 | +$32.914 |
-| 9 | 450 | 45 | 459 | $21.676 | $14.521 | +$7.155 | +$40.069 |
-| 10 | 450 | 45 | 567 | $23.727 | $15.567 | +$8.160 | +$48.228 |
-| 11 | 450 | 45 | 603 | $24.411 | $15.916 | +$8.495 | +$56.723 |
-| 12 | 450 | 45 | 639 | $25.094 | $16.265 | +$8.830 | +$65.552 |
-
-Los cartuchos suben cada trimestre porque cada cohorte vuelve a cambiar. Por eso el neto crece aunque los sobres no.
-
-### Escenario conservador (mitad de captación y de conversión)
-
-| Mes | Sobres | Filtros | Juegos de cartuchos | Ventas | Egresos | Neto | Caja acumulada |
-|---|---|---|---|---|---|---|---|
-| 0 | | | | | $4.440 | −$4.440 | −$4.440 |
-| 1 | 90 | 5 | 14 | $1.674 | $2.169 | −$495 | −$4.935 |
-| 2 | 135 | 7 | 20 | $2.511 | $2.513 | −$2 | −$4.937 |
-| 3 | 180 | 9 | 27 | $3.348 | $2.857 | +$490 | −$4.447 |
-| 4 | 225 | 11 | 52 | $4.526 | $3.376 | +$1.150 | −$3.297 |
-| 5 | 225 | 11 | 61 | $4.697 | $3.463 | +$1.234 | −$2.063 |
-| 6 | 225 | 11 | 70 | $4.868 | $3.786 | +$1.083 | −$980 |
-| 7 | 225 | 11 | 97 | $5.381 | $4.473 | +$907 | −$73 |
-| 8 | 225 | 11 | 106 | $5.552 | $4.561 | +$991 | +$919 |
-| 9 | 225 | 11 | 115 | $5.723 | $4.648 | +$1.075 | +$1.994 |
-| 10 | 225 | 11 | 142 | $6.235 | $4.909 | +$1.326 | +$3.320 |
-| 11 | 225 | 11 | 151 | $6.406 | $4.996 | +$1.410 | +$4.730 |
-| 12 | 225 | 11 | 160 | $6.577 | $5.084 | +$1.494 | +$6.223 |
-
-**Lectura honesta:** con las cifras de Tulio el modelo gana dinero desde el mes 1 y la caja es positiva en el mes 3. Eso depende de tres cosas que nadie ha probado todavía: 150 hogares por tienda al mes, que 3 de cada 10 ya tengan filtro y compren cartuchos, y que los hogares sigan cambiando cada 3 meses. Con la mitad de todo sigue en positivo, pero delgado (mes 8). Los números son una hipótesis para el piloto, no un resultado.
-
----
-
-## 8. Botellón contra filtro (estimación de Tulio)
-
-**Consumo y precio del botellón (estimación de Tulio, no hay medición):**
-
-- 5 a 6 botellones por quincena = **10 a 12 al mes**.
-- Unos **$2 cada uno**, hasta **$4 con delivery**.
-- Gasto: **$20 a $24 al mes** (a $2) o **$40 a $48 al mes** (a $4). Al año, **$240 a $288 sin delivery y $480 a $576 con delivery.** Tulio dice "hasta $576 al año": cuadra (12 al mes × $4 × 12 meses).
-- Contexto público: la recarga de 20 L en Venezuela se reportó entre $0,50 y $2,50 (Bloomberg Línea, 2022), y de $0,50 a $1,10 en Caracas (El Diario, 2024). Los $2 de Tulio caen dentro de ese rango; los $4 con delivery quedan por encima de lo publicado, así que son su estimación.
-
-**Costo de la alternativa (precios de referencia de mercado, no de Grimuca; SUPUESTO la instalación en $50):**
-
-| | Ultrafiltración 6 etapas | Ósmosis 8 etapas |
-|---|---|---|
-| Sobre | $9,00 | $9,00 |
-| Filtro (referencia) | $119,99 | $329,99 |
-| Instalación con plomero (promedio) | $50 | $50 |
-| 3 juegos de cartuchos en el año (meses 3, 6 y 9) | $56,97 | $56,97 |
-| **Primer año** | **$235,96** | **$445,96** |
-| Segundo año: 4 juegos de cartuchos | $75,96 | $75,96 |
-
-El filtro trae sus primeros cartuchos. Para ósmosis el precio del juego es otro; se usa $18,99 hasta tener catálogo. Si el hogar hace el cambio solo, con el video de la app, no paga plomero; si lo pide, son $30 cada vez.
-
-**Comparación, familia con 10 a 12 botellones al mes:**
-
-| Botellón al año | Ultrafiltración, año 1 | Ahorro año 1 | Ahorro año 2 |
-|---|---|---|---|
-| $240 ($20 al mes, 10 a $2) | $236 | $4 | $164 |
-| $288 ($24 al mes, 12 a $2) | $236 | $52 | $212 |
-| $480 ($40 al mes, 10 a $4 con delivery) | $236 | $244 | $404 |
-| $576 ($48 al mes, 12 a $4 con delivery) | $236 | $340 | $500 |
-
-Con ósmosis ($446 el primer año) el ahorro del primer año es $34 a $130 solo si se compara contra delivery; contra recarga sin delivery, **no se paga el primer año**.
-
-**En cuánto tiempo se paga** (inversión de sobre + filtro + plomero de $50; luego $6,33 al mes de cartuchos, que es $18,99 cada 3 meses):
-
-| Botellón al mes | Ultrafiltración | Ósmosis |
-|---|---|---|
-| $20 | 13 meses | 28 meses |
-| $24 | 10 meses | 22 meses |
-| $40 (con delivery) | 5 meses | 12 meses |
-| $48 (con delivery) | 4 meses | 9 meses |
-
-**Lo que dice la tabla:**
-
-- Para quien ya paga delivery, el filtro de ultrafiltración se paga en 4 a 5 meses.
-- Para quien busca su recarga a $2, se paga en 10 a 13 meses y el argumento deja de ser solo dinero: es **menos botellones**, menos carga y saber cuándo cambiar el cartucho.
-- El filtro necesita agua en el grifo o tanque. Donde no llega agua, no reemplaza el suministro.
-- Grimuca vende más barato que la referencia (Tulio): estas cifras son un techo para el costo del hogar.
-- La comparación es de costo y de carga. Ni el sobre ni el filtro certifican el agua.
-
----
-
-## 9. Piloto de 1.000 sobres
-
-| | Cifra | Origen |
-|---|---|---|
-| Sobres | 1.000 | Tulio |
-| Ventas | $9.000 | Tulio |
-| Costo en fábrica | **$1.940** (escalón de 500 a 1.999: $1,94). A $1,54 solo desde 2.000 | Tulio (precios), cuenta de Business |
-| Importación y empaque | $1.000 | SUPUESTO |
-| Lote pagado por adelantado | **$2.940** | |
-| Margen antes de envío y fijos | $6.060 | |
-| Envío si el 50% va a domicilio | −$1.250 | SUPUESTO |
-| Hogares que debería traer | ~100 compran filtro, ~300 compran cartuchos, ~600 se informan | Tulio |
-| Tiempo para venderlo | 2,2 meses con 450 hogares al mes; mes 4 con arranque gradual | Tulio, cuenta de Business |
-
-**El piloto es la prueba del modelo.** Al terminar se sabe: cuántos de cada 100 compran filtro, cuántos ya tenían, cuántos hogares reales llegan por tienda al mes, qué porcentaje pide domicilio y cuánto cuesta el envío de verdad. Con eso se corrigen las 5 cifras que más mueven la caja.
-
-**Capital de trabajo que el flujo no cuenta (inferencia de Business, ver `auditoria-asesor.md`):** el hueco de caja de $4.440 a $4.940 no incluye inventario de filtros ni de cartuchos. Si se compraran por adelantado los ~100 filtros y ~300 juegos de cartuchos que debería traer el piloto, a 80% y 50% del precio de referencia, la caja que hay que tener lista sube a unos $15.000 (todo ultrafiltración) o $20.000 (mezcla 70/30). Para el piloto se propone vender el filtro contra anticipo del cliente y comprarlo a Oasis al recibirlo, y mantener solo unas dos semanas de cartuchos.
-
----
-
-## KPI del piloto
-
-Seis indicadores, medidos cada semana con una reunión de 30 minutos. Los porcentajes se calculan sobre sobres vendidos, como los cuenta Tulio (de cada 100). Origen de las metas: **Tulio** donde dice Tulio; **SUPUESTO** donde es de Business y se recalibra con los primeros 100 sobres. Un porcentaje con menos de 30 sobres detrás no se interpreta.
-
-| KPI | Cómo se mide con lo que la app ya registra | Meta | Umbral de alarma |
-|---|---|---|---|
-| **1. Sobres por tienda por semana** (variable que tumba el modelo) | `pedidos` con tipo sobre, por `tienda_id` y `fecha`. Se lleva con desviación productiva: meta semanal 35, el déficit pasa a la semana siguiente | 35 por semana, 150 al mes (Tulio) | Menos de 20 durante dos semanas seguidas (cerca del equilibrio de 62 a 68 al mes) |
-| **2. Conversión sobre→filtro** | Hogares con un pedido de filtro dentro de 30 días de su primera `medicion` ÷ sobres vendidos. Hoy `pedidos.tipo` solo tiene sobre y cartucho: en el piloto se anota el filtro en hoja con `hogar_id` | 10 de cada 100 (Tulio) | Menos de 5 (la conversión a la mitad lleva el equilibrio a 62) |
-| **3. Conversión sobre→cartucho** | Hogares con pedido de cartucho dentro de 30 días de su primera `medicion` ÷ sobres vendidos. Se separa por `origen_agua` y `tipo_filtro` para ver si los que ya tienen filtro son 30 de cada 100 | 30 de cada 100 (Tulio) | Menos de 15 (si nadie compra, la caja base baja de $65.500 a $33.900) |
-| **4. Tasa de recambio a 90 días** | De los hogares con compra de cartucho o filtro hace 90 a 105 días, los que repiten pedido de cartucho dentro de ese plazo. La primera lectura completa llega en el mes 4; antes se usa `fecha_ultimo_cambio` de los hogares que ya tenían filtro | 70% (SUPUESTO; el modelo de Tulio usa 100%) | Menos de 50% (la caja base baja a unos $53.400) |
-| **5. Costo por sobre vendido, por canal** | (comisión del aliado + gasto en anuncios + incentivos del canal) ÷ sobres del canal. Pide un campo `canal` en el hogar, con un QR distinto por mostrador, farmacia, supermercado, lista de clientes por WhatsApp y anuncio | $1,80 o menos (20% de $9) | Más de $2,70 (30% de $9): se pausa el canal |
-| **6. Margen por tienda** | Ventas (`pedidos` × `cartuchos.precio_usd` y precios de filtro) − costo de lo vendido − envío − pasarela − captación − $493 de fijos | $1.150 o más al mes con 150 sobres (modelo, primer mes) | Negativo después del mes 3 |
-
-**Dato de apoyo, fuera de los seis:** activación = hogares con `medicion` dentro de 7 días del despacho del sobre ÷ sobres despachados. Meta 80% y alarma 60% (SUPUESTO). Un sobre sin medición no puede convertir, así que este número explica por qué fallan los KPI 2 y 3.
-
-**Faltan en los datos de la app:** el campo `canal` del hogar, el tipo filtro en `pedidos` y el monto de cada pedido. Mientras no estén, se llevan en una hoja con `hogar_id` y no se espera a la app.
-
-**Regla de decisión al cerrar el piloto (SUPUESTO):** si los KPI 1, 2 y 3 están en meta, se compra el siguiente lote y se abre publicidad pagada con tope de $2,70 por sobre. Si falla uno, se corrige ese canal u oferta y se repite con 300 sobres. Si fallan el 1 y el 3 a la vez, no se compra más inventario.
-
----
-
-## Experimentos del piloto
-
-Tres pruebas que cuestan tiempo del almacenista y no dinero (la prueba de anuncios tiene un tope de $100). Cada una tiene su criterio antes de empezar.
-
-| Experimento | Qué se compara | Cómo se corre | Criterio de éxito |
-|---|---|---|---|
-| **1. Precio visible contra "Cotizar por WhatsApp"** | Tarjeta de cartuchos con precio y botón de pedir, contra la tarjeta que pide escribir por WhatsApp para cotizar | Semanas alternas en las tres tiendas durante tres semanas, para que no pese la tienda. Se mide pedidos de cartucho ÷ hogares con producto sugerido. La exhibición de precios en divisas se confirma antes con el abogado (`puede-y-no-puede-decir.md`, reglas para publicidad) | Precio visible logra 1,3 veces o más los pedidos de la otra versión, con al menos 60 hogares en cada una. Si hay menos, no se concluye |
-| **2. Costo por sobre en cuatro canales** | Mostrador con QR, farmacia o supermercado aliado, mensaje a la lista de clientes de Grimuca por WhatsApp, y un anuncio de prueba con tope de $100 | Tres semanas, un QR distinto por canal. Se anota la comisión pactada, el gasto del anuncio y las horas | Al menos dos canales con costo de $2,70 o menos por sobre y 10 o más sobres por semana. El anuncio solo se escala si vende 37 sobres o más con sus $100 (CAC de $2,70) |
-| **3. Recambio con recordatorio manual** | Mensaje A: recordatorio con foto del cartucho y precio. Mensaje B: lo mismo más plan anual de 4 juegos prepagados con 10% de descuento ($68,36 contra $75,96; deja $30,38 de margen contra $37,98) | El almacenista escribe por WhatsApp a los hogares cuya `fecha_ultimo_cambio` supera 90 días (no hay que esperar tres meses), mitad con cada mensaje, y vuelve a escribir a los 2 días con un dato nuevo | A: 25% o más compra dentro de 14 días. B: 10% o más toma el plan. Si ninguno llega, el recordatorio por sí solo no sostiene el mes 12 del modelo |
-
----
-
-## 10. Por qué esto es logística
-
-**La idea:** hoy el agua de tomar viaja todas las quincenas en botellones. Con el filtro, lo que viaja es un cartucho cada 3 meses, cuando la medición y el calendario lo piden.
-
-**Pesos (SUPUESTO, se confirman pesando):** botellón de 19 L lleno 19,75 kg (19 kg de agua más ~0,75 kg de envase); juego de 3 cartuchos 0,9 kg; sobre 60 g; filtro en su caja 3 kg.
-
-### Un hogar, un año (botellón según la estimación de Tulio)
-
-| | Botellón | Filtro, año 1 | Filtro, año 2 en adelante |
-|---|---|---|---|
-| Qué se mueve | 120 a 144 botellones llenos (5 a 6 por quincena) | 1 sobre, 1 filtro, 3 juegos de cartuchos | 4 juegos de cartuchos |
+| Qué se mueve | 120 a 144 botellones llenos | 1 sobre, 1 filtro, 3 juegos de cartuchos | 4 juegos de cartuchos |
 | Kilos | **2.370 a 2.844 kg** | **5,8 kg** | **3,6 kg** |
-| Viajes | **24** (uno por quincena, cargando 99 a 118 kg cada vez) | **5** (sobre, filtro y 3 recambios) | **4** (uno por recambio) |
-| Cuándo | Todas las quincenas, haga falta o no | Cuando toca el cartucho | Cuando toca el cartucho |
+| Viajes | **24** | **5** | **4** |
 
-Reducción de kilos: **99,8%**. Reducción de viajes: **79%** el primer año y **83%** desde el segundo.
+Reducción de kilos: **99,8%**. Reducción de viajes: **79%** el primer año y **83%** desde el segundo. El ahorro de kilos y viajes es del hogar y de la ciudad. Lo que Grimuca mueve en el año 1 base de las tres tiendas propias es 5,4 toneladas (`modelo-v2-tres-tiendas.md`).
 
-### 1.000 hogares
+---
 
-| | Botellón | Filtro + cartuchos, año 1 | Filtro, año 2 en adelante |
+## 4. El sobre: costo, margen y las dos versiones
+
+**Qué trae (Tulio):** 1 tira multiparámetro, 1 prueba de bacterias en frasco, tabla de colores impresa, QR al video. Precio **$9**. El primer paso del cliente es escanear el QR; el pago en la app es solo para quien lo pide a domicilio.
+
+| Componente de fábrica (Tulio) | Costo |
+|---|---|
+| Frasco de bacterias, 10 a 499 unidades / 500 a 1.999 / desde 2.000 | $2,00 / $1,90 / $1,50 |
+| Tira HORYZON | ~$0,04 |
+| **Sobre en fábrica** | **$2,04 / $1,94 / $1,54** según volumen |
+
+Lo que se suma hasta la puerta (SUPUESTO, pendiente de Tulio): importación y empaque $1,00 por sobre en la versión A; envío a domicilio $2,50 por entrega (SAMA Logística 3 por cotizar); pasarela 2% de lo que se paga en la app (Cobrix por cotizar). La versión B reemplaza todo el costo puesto en Venezuela por $4,00 (sección 0).
+
+**El sobre se paga solo en ambas versiones:** deja $3,38 (A) o $2,38 (B) a domicilio, y $6,06 o $5,00 con retiro.
+
+---
+
+## 5. Las tres líneas de ingreso y su economía
+
+| Línea | Cómo funciona | Precio | Margen del operador |
 |---|---|---|---|
-| Kilos al año | 2.370 a 2.844 toneladas | 5,8 toneladas | 3,6 toneladas |
-| Viajes al año | 24.000 | 5.000 | 4.000 |
-| Kilos por semana | 46 a 55 toneladas | 111 kg | 69 kg |
+| **1. Sobre de $9 al cliente final** | La familia lo pide a domicilio en la app y paga con la pasarela (50% de los sobres, SUPUESTO tomado del modelo anterior) | $9 (Tulio) | $3,38 (A) · $2,38 (B) |
+| **2. Membresía de la ferretería** | Cuota mensual por estar en la red y recibir familias asignadas. 1 a 3 meses gratis al entrar | **$30 al mes (SUPUESTO; rango $20 a $50)** | $30 (100%) |
+| **3. Sobres al mayor** | Grimuca importa el sobre y lo vende a la ferretería, que lo revende a $9 en su mostrador (el otro 50%) | **$5,50 (SUPUESTO; rango $5,00 a $6,00)**, flete al comercio $0,25 (SUPUESTO) | $2,31 (A) · $1,25 (B) |
+| *Siguiente paso: comisión por transacción* | Porcentaje de las ventas de filtros y cartuchos que pasan por la plataforma | Sin definir | Fuera del cálculo |
+| *Siguiente paso: plan premium* | Prioridad de asignación de familias | Sin definir | Fuera del cálculo |
 
-### Lo que mueve Grimuca (escenario base, año 1)
+**Por una ferretería a volumen completo (40 familias al mes, escenario base):**
 
-- 4.860 sobres (292 kg), 486 filtros (1.458 kg) y 4.050 juegos de cartuchos (3.645 kg): **5,4 toneladas en todo el año**, entre las 3 tiendas.
-- Si los 486 hogares que compran filtro dejaran el botellón (SUPUESTO; si la mitad, la mitad), dejarían de moverse **1.150 a 1.380 toneladas** de agua en botellón.
-- Al mes 12: 450 sobres, 45 filtros y 639 juegos de cartuchos: unos **740 kg al mes**, 250 kg por tienda. Cabe en un estante. Son unos **8 despachos de cartuchos por tienda por día**.
-
-**Aclaratoria:** Grimuca no reparte botellones hoy. El ahorro de kilos y viajes es del hogar y de la ciudad, no un costo que Grimuca se quite. Lo que Grimuca resuelve:
-
-- **Las 3 tiendas son los almacenes de despacho.** No hace falta galpón ni flota.
-- **Demanda prevista.** Cada medición y cada fecha de último cambio dicen cuándo toca el próximo recambio; el operador compra solo lo que va a salir.
-- **Envíos agrupados.** El delivery de última milla recoge por zona; si varios hogares cambian cartucho la misma semana, sale una ruta.
-- **Retiro en tienda** para filtro y cartuchos (Tulio): el cliente decide.
-
----
-
-## 11. Aliados y equipo mínimo
-
-**Aliados (Tulio):**
-
-| Aliado | Para qué | Pendiente |
+| | Con sobre a $2,94 | Con sobre a $4,00 |
 |---|---|---|
-| SAMA Logística 3 (Valencia) | Última milla, rastreo, cobro contra entrega, mismo día | **Tarifa** y cobertura en Naguanagua y San Diego |
-| Cobrix | Pasarela: links de pago con Pago Móvil, transferencia, Zelle y Binance Pay | **Costos** |
-| Oasis | Proveedor de filtros y cartuchos | Precios internos de Grimuca |
-| Plomeros o técnicos | Instalación y cambio de cartucho; Grimuca se queda con el 30% | Quién y cómo se contacta |
-| Farmacias y supermercados aliados | Mostrador para vender el sobre | Condiciones |
+| Membresía | $30,0 | $30,0 |
+| 20 sobres al mayor × margen | $46,2 | $25,0 |
+| 20 sobres de $9 a domicilio × margen | $67,6 | $47,6 |
+| **Aporte de la red por ferretería al mes** | **$143,8** | **$102,6** |
+| Lado empresa (membresía + mayor) | 53% | 54% |
 
-**Equipo mínimo (Tulio):** un **responsable de logística** + un **almacenista por tienda** ($360 al mes cada uno) + el delivery. El costo del responsable ($400 al mes entre las tres) es SUPUESTO.
+En el escenario conservador (20 familias al mes y membresía de $20) el aporte es **$76,9** (A) y **$56,3** (B).
 
-**Tiendas (grimuca.com):** Mañongo (Naguanagua), Big Low (San Diego) y CC CEM (San Diego). Horario lunes a viernes 8:30 a.m. a 4:30 p.m., sábados 9:00 a.m. a 2:00 p.m. WhatsApp compartido: +58 414-4409396.
+**Lectura honesta:** con la membresía a $30 y 40 familias al mes, el sobre aporta la mayor parte del margen y la membresía un quinto (21% con $2,94, 29% con $4,00). Para que el lado empresa pese más hay tres palancas: subir la membresía (a $50 la ferretería sigue pagando 18% de su margen del primer mes), llevar más sobres al mostrador de la ferretería en vez de a domicilio (con 30% a domicilio, el lado empresa pasa a 68% del margen con el sobre a $2,94) y activar el plan premium. Se decide con Tulio.
 
-**Fuera del hackatón:** el WhatsApp posterior a la compra (recordatorio, sugerencia y pago). En la demo el recordatorio va dentro de la app y el bot se presenta como siguiente paso. En la app, el video de cambio de cartucho y el módulo opcional de plomero son deseados.
+Quien más gana de estas palancas es la ferretería: el sobre en mostrador le deja $3,50 y le trae a la familia a la tienda.
+
+**Quién hace qué en la entrega:** Grimuca opera la red y despacha en Carabobo desde sus tres tiendas; en otros estados entra una ferretería aliada por estado, y la última milla la hacen operadores que ya tienen red (SAMA Logística 3 en Valencia; en otros estados, por buscar).
 
 ---
 
-## 12. Potencial en Latinoamérica
+## 6. Supuestos de la red (para que Tulio corrija)
+
+| Supuesto | Base | Conservador | Origen |
+|---|---|---|---|
+| **Ferreterías que entran por mes** | 1 por mes en los meses 1 a 4, 2 por mes en los meses 5 a 12: **20 en el año** | 1 por mes en los meses 3 a 12: **10 en el año** | SUPUESTO |
+| **Meses gratis** | 2 | 3 | SUPUESTO (propuesta de Leonardo: 1 a 3) |
+| **Pagan al terminar el periodo gratis** | **70%** | **40%** | SUPUESTO. Las que no pagan salen de la red |
+| **Membresía al mes** | **$30** | **$20** | SUPUESTO |
+| **Familias asignadas por ferretería al mes, a volumen completo** | **40** (150 por tienda propia, Tulio) | **20** | SUPUESTO |
+| **Arranque de cada ferretería** | 40%, 70% y 100% del volumen en sus meses 1, 2 y 3 | igual | SUPUESTO |
+| **Sobres al mayor por ferretería al mes, a volumen completo** | **20** (la mitad de las familias) | **10** | SUPUESTO |
+| Precio al mayor del sobre | $5,50 | $5,50 | SUPUESTO |
+| Sobres a domicilio | 50% | 50% | SUPUESTO |
+| Costo del sobre puesto en Venezuela | $2,94 o $4,00 | $2,94 o $4,00 | Modelo anterior o asesoría (sección 0) |
+| Envío $2,50 · pasarela 2% · flete al comercio $0,25 por sobre | igual | igual | SUPUESTO |
+| Fijos de la red: responsable de la red $400 + plataforma $50 al mes | $450 | $450 | SUPUESTO ($400 viene del responsable de logística del modelo anterior) |
+| Costo de dar de alta una ferretería (visita, material, muestras) | $100 | $100 | SUPUESTO |
+| Mes 0: material y capacitación $1.500 + lote de 1.000 sobres | $4.440 (A) · $5.500 (B) | igual | SUPUESTO + sección 0 |
+| Cada familia compra un sobre | sí | sí | Tulio |
+| Margen de la ferretería en filtro y cartucho | 20% y 50% | 20% y 50% | Tulio (para Grimuca como comercio) |
+
+No se cuentan IVA, devoluciones, comisión de la ferretería por sobres vendidos fuera del mayor ni los ingresos de las tres tiendas propias de Grimuca (sección 9).
+
+---
+
+## 7. Flujo de caja de la red a 12 meses
+
+Es el flujo del operador: cobra membresías, vende sobres al mayor y al cliente final, y paga sobres, envío, pasarela, fijos y altas. Los egresos de los meses 8 y 9 suben porque el lote inicial de 1.000 sobres se agota y desde ahí se compra sobre a sobre.
+
+### Escenario base (20 ferreterías entran, 70% pagan, 2 meses gratis, $30, 40 familias)
+
+| Mes | Ferreterías activas | Pagando | Sobres | Ingresos | Egresos (A) | Neto (A) | Caja (A, $2,94) | Caja (B, $4,00) |
+|---|---|---|---|---|---|---|---|---|
+| 0 | | | | | $4.440 | −$4.440 | −$4.440 | −$5.500 |
+| 1 | 1,0 | 0 | 16 | $116 | $573 | −$457 | −$4.897 | −$5.957 |
+| 2 | 2,0 | 0 | 44 | $319 | $614 | −$295 | −$5.193 | −$6.253 |
+| 3 | 2,7 | 0,7 | 72 | $543 | $655 | −$112 | −$5.305 | −$6.365 |
+| 4 | 3,4 | 1,4 | 100 | $767 | $696 | +$70 | −$5.235 | −$6.295 |
+| 5 | 5,1 | 2,1 | 144 | $1.107 | $861 | +$246 | −$4.989 | −$6.049 |
+| 6 | 6,8 | 2,8 | 200 | $1.534 | $943 | +$591 | −$4.398 | −$5.458 |
+| 7 | 8,2 | 4,2 | 256 | $1.982 | $1.025 | +$957 | −$3.441 | −$4.501 |
+| 8 | 9,6 | 5,6 | 312 | $2.430 | $1.530 | +$900 | −$2.541 | −$3.754 |
+| 9 | 11,0 | 7,0 | 368 | $2.878 | $2.271 | +$607 | −$1.934 | −$3.537 |
+| 10 | 12,4 | 8,4 | 424 | $3.326 | $2.518 | +$808 | −$1.126 | −$3.178 |
+| 11 | 13,8 | 9,8 | 480 | $3.774 | $2.764 | +$1.010 | −$116 | −$2.677 |
+| 12 | 15,2 | 11,2 | 536 | $4.222 | $3.011 | +$1.211 | **+$1.094** | **−$2.035** |
+
+Neto y egresos en la versión A; en la B los egresos suben $1,06 por cada sobre comprado y el efecto está en la última columna. Año 1: ingresos $22.998, 2.952 sobres. Margen del año 1 por línea (versión A / B): membresía $1.596 / $1.596; mayor $3.410 / $1.845; sobre a domicilio $4.989 / $3.424. El lado empresa (membresía y mayor) es la mitad del margen en las dos versiones.
+
+### Escenario conservador (10 ferreterías entran, 40% pagan, 3 meses gratis, $20, 20 familias)
+
+| Mes | Ferreterías activas | Pagando | Sobres | Ingresos | Egresos (A) | Neto (A) | Caja (A, $2,94) | Caja (B, $4,00) |
+|---|---|---|---|---|---|---|---|---|
+| 0 | | | | | $4.440 | −$4.440 | −$4.440 | −$5.500 |
+| 1 | 0 | 0 | 0 | $0 | $450 | −$450 | −$4.890 | −$5.950 |
+| 2 | 0 | 0 | 0 | $0 | $450 | −$450 | −$5.340 | −$6.400 |
+| 3 | 1,0 | 0 | 8 | $58 | $562 | −$504 | −$5.844 | −$6.904 |
+| 4 | 2,0 | 0 | 22 | $160 | $582 | −$423 | −$6.266 | −$7.326 |
+| 5 | 3,0 | 0 | 42 | $304 | $612 | −$307 | −$6.573 | −$7.633 |
+| 6 | 3,4 | 0,4 | 50 | $370 | $623 | −$253 | −$6.826 | −$7.886 |
+| 7 | 3,8 | 0,8 | 58 | $436 | $635 | −$198 | −$7.025 | −$8.085 |
+| 8 | 4,2 | 1,2 | 66 | $502 | $647 | −$144 | −$7.169 | −$8.229 |
+| 9 | 4,6 | 1,6 | 74 | $568 | $658 | −$90 | −$7.259 | −$8.319 |
+| 10 | 5,0 | 2,0 | 82 | $634 | $670 | −$36 | −$7.294 | −$8.354 |
+| 11 | 5,4 | 2,4 | 90 | $700 | $682 | +$19 | −$7.276 | −$8.336 |
+| 12 | 5,8 | 2,8 | 98 | $766 | $694 | +$73 | **−$7.203** | **−$8.263** |
+
+El lote inicial de 1.000 sobres no se termina en el año (se venden unos 590): quedan unos 410 sobres en inventario que no se cuentan como ingreso.
+
+**Lectura:**
+
+- **El año 1 de la red es de inversión.** El capital que hay que poner antes de que la red se pague es de **$5.300 a $6.400** en el base (hueco máximo en el mes 3) y de **$7.300 a $8.400** en el conservador (mes 10).
+- **La operación mensual pasa a positivo en el mes 4 (base) y en el mes 11 (conservador).** Al cerrar el año 1, la red base opera con +$1.211 al mes y crece con cada ferretería que entra.
+- **Año 2, base:** las 14 ferreterías que se quedan (70% de 20), a volumen completo, aportan 14 × $144 = $2.013 al mes (A) o 14 × $103 = $1.436 (B) contra $450 de fijos: **+$1.563 o +$986 al mes**. Con una ferretería por estado (23, cálculo): +$2.857 o +$1.910 al mes.
+- **No se suman** a las cifras de la red las de las tres tiendas propias (sección 9).
+
+---
+
+## 8. Punto de equilibrio y qué tumba el modelo
+
+### Punto de equilibrio, en ferreterías que pagan
+
+Fijos de la red $450 al mes (SUPUESTO). Se cuentan ferreterías pagando y a volumen completo.
+
+| Escenario | Aporte por ferretería | **Ferreterías para cubrir $450** |
+|---|---|---|
+| Base, sobre a $2,94 | $143,8 | **4** (3,1) |
+| Base, sobre a $4,00 | $102,6 | **5** (4,4) |
+| Conservador, sobre a $2,94 | $76,9 | **6** (5,9) |
+| Conservador, sobre a $4,00 | $56,3 | **8** (8,0) |
+| Solo con la membresía, a $30 | $30 | **15** |
+| Solo con la membresía, a $20 | $20 | **23** |
+
+Con la membresía sola harían falta 15 a 23 ferreterías: los sobres son lo que acerca el equilibrio a 4 o 5.
+
+### Qué variable tumba el modelo
+
+Caja del año 1, escenario base, cambiando una variable a la vez:
+
+| Cambio | Con $2,94 | Con $4,00 |
+|---|---|---|
+| Tal cual | +$1.094 | −$2.035 |
+| **20 familias por ferretería al mes en vez de 40** | **−$3.105** | **−$4.669** |
+| 60 familias por ferretería al mes | +$5.294 | +$600 |
+| **Solo la mitad de las ferreterías entra (10)** | −$2.903 | −$4.467 |
+| El doble de ferreterías entra (40) | +$17.083 | +$7.696 |
+| Pagan 40% al terminar el periodo gratis (en vez de 70%) | −$2.184 | −$4.347 |
+| Pagan 100% | +$4.373 | +$277 |
+| Membresía de $20 | +$562 | −$2.567 |
+| Membresía de $50 | +$2.158 | −$971 |
+| Sin membresía | −$502 | −$3.631 |
+| Sobre al mayor a $5,00 / a $6,00 | +$356 / +$1.832 | −$2.773 / −$1.297 |
+| Periodo gratis de 1 mes / de 3 meses | +$1.042 / +$1.305 | −$1.927 / −$2.028 |
+| 100% de los sobres a domicilio | +$2.674 | −$455 |
+| 30% de los sobres a domicilio | +$463 | −$2.666 |
+| 40% pagan y 20 familias a la vez | −$5.086 | −$6.167 |
+
+**Conclusión:**
+
+1. **La variable que tumba el modelo es el volumen de familias medidas que la red le entrega a cada ferretería.** Mueve a la vez el margen de los sobres y la razón para pagar la membresía. Para que el año 1 cierre en cero se necesitan unas **35 familias al mes por ferretería con el sobre a $2,94 y unas 55 con $4,00**. La ferretería recupera la membresía con 5 familias, así que la membresía por sí sola no frena la compra; lo que la frena es que lleguen pocas.
+2. **La segunda es cuántas ferreterías entran**, y la tercera cuántas pagan al terminar el periodo gratis.
+3. **El periodo gratis casi no mueve el resultado** (±$200), porque la ferretería en periodo gratis igual compra sobres. Puede ser de 3 meses sin costo importante.
+4. **La diferencia entre $2,94 y $4,00 en el sobre vale $3.100 de caja al año en el base**, y cambia de signo el año 1.
+5. **Llevar sobres al mostrador de la ferretería** sube el peso del lado empresa pero baja la caja del operador (cada sobre al mayor deja menos que uno a domicilio). Es una decisión de negocio que se toma sabiendo ese costo.
+
+---
+
+## 9. Grimuca como comercio de Carabobo (lo que no cambia)
+
+Grimuca es el comercio de Carabobo y opera la red. Sus tres tiendas (Mañongo, Big Low y CC CEM) siguen con la economía del modelo anterior, que Tulio aportó y Business verificó (`modelo-v2-tres-tiendas.md`): 150 hogares al mes por tienda, 10 de cada 100 sobres compran filtro con 20% de margen, 30 compran cartuchos con 50% de margen y el recambio es cada 3 meses.
+
+| Las tres tiendas propias, año 1 | Con $2,94 | Con $4,00 (estimación) |
+|---|---|---|
+| Caja al cierre, base | +$65.500 | unos +$60.300 |
+| Caja al cierre, conservador | +$6.200 | unos +$3.600 |
+
+El valor con $4,00 es una estimación de Business: $1,06 más por cada uno de los 4.860 y 2.430 sobres del año. Esas cifras son una hipótesis para el piloto de 1.000 sobres, no un resultado. **No se suman a la red**: comparten el lote de sobres y el responsable de logística, y sumarlas contaría dos veces esos costos. En Carabobo, la asignación por cercanía vale para Grimuca y para cualquier ferretería aliada que entre.
+
+---
+
+## 10. Botellón contra filtro (se conserva)
+
+Estimación de Tulio, sin medición: 5 a 6 botellones por quincena (10 a 12 al mes), unos $2 cada uno y hasta $4 con delivery. Son $240 a $288 al año sin delivery y $480 a $576 con delivery.
+
+| Costo del filtro (referencia de mercado, no de Grimuca; instalación SUPUESTO $50) | Ultrafiltración 6 etapas | Ósmosis 8 etapas |
+|---|---|---|
+| Sobre + filtro + plomero | $9 + $119,99 + $50 | $9 + $329,99 + $50 |
+| 3 juegos de cartuchos en el año ($18,99 cada uno, referencia) | $56,97 | $56,97 |
+| **Primer año** | **$236** | **$446** |
+| Segundo año | $76 | $76 |
+
+Con delivery, la ultrafiltración se paga en 4 a 5 meses; con recarga a $2, en 10 a 13. Como Grimuca vende más barato que la referencia (Tulio), son techos. El filtro necesita agua en el grifo o en el tanque. La comparación es de costo y de carga: ni el sobre ni el filtro certifican el agua.
+
+---
+
+## 11. Expansión: una ferretería por estado
+
+- **Carabobo:** Grimuca es el comercio y opera la red.
+- **Otros estados:** entra una ferretería aliada por estado. Con una, el estado queda cubierto para la asignación por cercanía. En la demo hay dos comercios de demostración (Barquisimeto, Lara, y Maracay, Aragua), rotulados así.
+- **Última milla:** operadores que ya tienen red. SAMA Logística 3 cubre Valencia (tarifa y cobertura en Naguanagua y San Diego por confirmar); en otros estados no hay operador confirmado.
+- **Para otros países** cambian el catálogo y la tabla de la tira, ambos configurables. Datos de mercado:
 
 | Dato | Cifra | Fuente |
 |---|---|---|
-| Venezuela: hogares | ~9 millones, 3,1 personas en promedio | ENCOVI 2025 (UCAB, may 2026) |
+| Venezuela: hogares | ~9 millones | ENCOVI 2025 (UCAB, may 2026) |
 | Venezuela: reciben agua todos los días | 27% | OVSP, citado por El Diario, abr 2022 |
-| Venezuela: dicen que el agua llega con mal olor o color | 47% | OVSP, citado por El Diario, abr 2022 |
-| Valencia | Ciudad donde más se compra agua embotellada, según el OVSP | El Diario, abr 2022 |
-| México: hogares que compran agua embotellada | 98%, 51 compras al año; el garrafón es 98% del volumen | Kantar Worldpanel, datos 2017 |
+| México: hogares que compran agua embotellada | 98% | Kantar Worldpanel, datos 2017 |
 | República Dominicana: hogares con agua de botellón | 84,3% | ONE, Censo 2022, vía Revista Mercado, ago 2026 |
-| Mercado de purificadores en Latinoamérica | $2.500 millones en 2025, crece 6,7% al año | Global Market Insights |
+| Mercado de purificadores en Latinoamérica | $2.500 millones en 2025 | Global Market Insights |
 
-Recarga de 20 L por país (Bloomberg Línea, oct 2022): Venezuela $0,50 a $2,50; República Dominicana $0,66 a $1,60; México $2,30 a $2,50; Argentina $4,14; Perú $5,00; Panamá ~$5,50. Donde la recarga es más cara, el filtro se paga más rápido.
+---
 
-**Por qué se repite en otra ciudad:** la tira cuesta centavos y viaja en un sobre; la app lee la foto, recomienda el cartucho y arma el despacho; el almacén es una tienda que ya existe; lo que cambia por país es el catálogo y la tabla de la tira, ambos configurables.
+## 12. Pendientes y preguntas
+
+**Para Tulio, en orden de peso (los cuatro primeros corrigen el modelo):**
+
+1. **Precio de la membresía** que pagaría una ferretería (supuesto $30, rango $20 a $50). ¿Cuánto cobraría usted a una ferretería que conoce?
+2. **Precio al mayor del sobre** (supuesto $5,50).
+3. **Cuántas ferreterías entrarían** en los primeros 12 meses y cuáles conoce por nombre (supuesto 20 base, 10 conservador).
+4. **Cuántas pagarían al terminar el periodo gratis** (supuesto 70% y 40%).
+5. Costo real del sobre puesto en Venezuela ($2,94 o $4,00; la pregunta de fondo va a Leonardo).
+6. Los cuatro datos de Grimuca para la cifra logística: dinero en inventario de filtros y cartuchos, días de rotación, veces al mes que falta una pieza, entregas por semana y su costo.
+7. Si las ferreterías aliadas comprarían también filtros y cartuchos a Grimuca u Oasis (sería una cuarta línea de ingreso, fuera del cálculo).
+8. Tarifa de SAMA y cobertura, costos de Cobrix, precios internos de Grimuca, catálogo completo y comisión de farmacias y supermercados (de la versión anterior; siguen pendientes).
+
+**Para Leonardo:** el $4,00 contra el $2,94 (sección 0), y si se prefiere llevar más sobres al mostrador de la ferretería aunque baje la caja del operador.
 
 ---
 
@@ -460,53 +378,22 @@ Recarga de 20 L por país (Bloomberg Línea, oct 2022): Venezuela $0,50 a $2,50;
 
 | Riesgo | Qué pasa | Qué se hace |
 |---|---|---|
-| Captación menor a ~34 a 57 hogares por tienda al mes | La caja del año 1 no cierra | El piloto de 1.000 sobres lo mide; ajustar canales antes de más inventario |
-| Los "30 que ya tienen filtro" resultan menos | Se pierde el motor de cartuchos | Medir en el mostrador; ofrecer el recordatorio de cambio también a clientes que ya tiene Grimuca |
-| Abandono del cambio cada 3 meses | Los $2.280 del mes 12 bajan | Recordatorio en la app, kit con descuento si se paga por adelantado |
-| Precio del filtro por debajo de la referencia | El margen de 20% baja con el precio | Confirmar costo y precio interno antes de fijar la oferta |
-| Envío más caro que $2,50 | Se come el margen del sobre | Retiro en tienda como opción principal |
-| La tira se lee mal o llega dañada | Reposición | Foto junto a la tabla; carga manual; sobre sellado |
-| Afirmaciones de salud | Riesgo legal y de confianza | La app no certifica el agua; aviso fijo: "no certifica que el agua sea apta para tomar"; plomo, cobre y bacterias se confirman con laboratorio |
-| Permisos para importar y vender pruebas de agua | Sin fuente verificada | Confirmar con abogado (lo lleva el Asesor legal) |
+| Pocas familias medidas por ferretería | La ferretería no recupera la membresía y no renueva | Medir en el piloto cuántas familias llegan por zona; asignar a las ferreterías primero donde hay más hogares |
+| Ninguna ferretería ha pagado | La membresía es un supuesto | Periodo gratis de 1 a 3 meses; primer cobro solo después de que la ferretería vea sus primeras familias |
+| La ferretería se queda con la familia y deja de pagar | Pérdida de la membresía | La asignación y la fecha de recambio viven en la plataforma; el plan premium y la comisión crecen con el uso |
+| Grimuca es operador y comercio a la vez | Desconfianza de una ferretería aliada en Carabobo | Regla de asignación por cercanía y por existencias, visible en el panel (en la demo la asignación por distancia real queda fuera) |
+| La tira falla o se lee mal | Reposición del sobre | La app no adivina: pide repetir la foto o cargar los colores a mano |
+| Afirmaciones sobre salud | Riesgo legal y de confianza | Medición orientativa; aviso fijo; plomo y cobre "posible presencia, confirma con un laboratorio" |
+| Permisos para importar y vender pruebas de agua | Sin fuente verificada | Confirmar con el abogado antes de vender sobres al mayor |
+| Costo del sobre a $4,00 | La caja del año 1 base pasa a negativo | Decidir la cifra (sección 0); subir el precio al mayor o la membresía |
 
 ---
 
-## 14. Pendientes de Tulio, en orden de peso
+## 14. Fuentes
 
-1. **Tarifa de envío** de SAMA Logística 3 y cobertura en Naguanagua y San Diego. (SUPUESTO $2,50.)
-2. **Costos de la pasarela** (Cobrix). (SUPUESTO 2% sobre lo pagado en la app.)
-3. **Importación y empaque.** (SUPUESTO $1,00 por sobre.)
-4. **Precios internos de Grimuca:** costo y precio de venta de filtros y cartuchos; y confirmar el 50% de margen y los 3 meses del cartucho.
-5. **Archivo completo del catálogo con precios** (64 referencias).
-6. **Tira física e instrucciones del frasco.**
-7. Si los **$1.050** de sobres son margen (como indica la cuenta) y de dónde sale el **$2.450** (la suma da $2.377).
-8. Si "720 hogares con filtro" incluye al 30% que ya tenía filtro (así cuadra).
-9. Cuántos sobres van a domicilio y cuántos se retiran.
-10. Cuántos clientes entran por día a cada tienda (para ver si 5 sobres por día de atención es razonable).
-11. Qué comisión cobrarían farmacias y supermercados aliados por vender el sobre (hoy no está en ningún costo).
-12. Cada cuánto se cambia cada etapa del filtro según Oasis; el modelo supone 3 meses para todo el juego, y las membranas de ósmosis suelen durar más.
-
----
-
-## 15. Fuentes
-
-Documentos del equipo:
-
-- Correos de Tulio, sáb 21 nov, 8:38, 8:49 y 8:52 p.m.: `insumos-tulio/2026-11-21_2052_modelo-tiendas-lema-y-cifras.md`.
-- Correo de Tulio, 8:12 p.m.: `insumos-tulio/2026-11-21_2012_producto-y-onboarding.md`.
-- `HANDOFF-hackaton.md`, secciones 2 y 3.
-
-Precios de referencia (consultados por Tulio; no son precios de Grimuca): Oasis en Mundo JAB (ultrafiltración de 6 etapas $119,99; ósmosis de 8 etapas $329,99; kit de 3 cartuchos $18,99). Frasco y tira: Shenzhen Hongyi y HORYZON, en Alibaba.
-
-Fuentes públicas (consultadas el 21 nov 2026):
-
-- Recarga y botellón sellado en Caracas: [El Diario, 22 mar 2024](https://eldiario.com/2024/03/22/cuales-son-precios-tanques-botellones-cisternas-caracas/).
-- Botellón de 20 L ($0,50 a $2,50) y precios por país: [Bloomberg Línea, 27 oct 2022](https://www.bloomberglinea.com/2022/10/27/el-agua-en-venezuela-es-realmente-una-de-las-mas-caras-de-la-region/).
-- OVSP: [El Diario, 9 abr 2022](https://eldiario.com/2022/04/09/estados-acceso-agua-por-tuberias-en-venezuela/).
-- ENCOVI 2025: [presentación UCAB, 7 may 2026 (PDF)](https://elucabista.com/wp-content/uploads/2023/01/ENCOVI-2025_presentacion_UCAB-07-05-2026.pdf), tomado del resumen del buscador.
-- México: [Kantar Worldpanel, 20 mar 2018](https://www.kantar.com/latin-america/inspiracion/consumo-masivo/consumo-agua-embotellada).
-- República Dominicana: [Revista Mercado, 19 ago 2026](https://revistamercado.do/money-invest/daily-news/el-pais-del-botellon-cuanto-gastan-las-familias-en-rd-al-comprar-el-agua-que-toman/).
-- Purificadores en Latinoamérica: [Global Market Insights](https://www.gminsights.com/es/industry-analysis/latin-america-water-purifier-market).
-- Prueba de bacterias al detal, Pro-Lab BA110 ($10,99 a $14,98): [Walmart](https://www.walmart.com/ip/Pro-Lab-Water-Bacteria-Test-Kit-BA110/21903076), tomado del resumen del buscador.
-
-Sin fuente (SUPUESTO): importación y empaque, envío, parte a domicilio, mezcla de filtros, responsable de logística, pasarela, pesos de cartuchos y envases, precios y márgenes internos de Grimuca.
+- Correos de Tulio, sáb 21 nov, 8:12, 8:38, 8:49 y 8:52 p.m.: `insumos-tulio/`.
+- Decisión de la red de comercios: `docs/decisiones/contrato-red.md`.
+- Modelo anterior con cuentas verificadas: `docs/negocio/modelo-v2-tres-tiendas.md` y `auditoria-asesor.md`.
+- Precios de referencia (consultados por Tulio, no son precios de Grimuca): Oasis en Mundo JAB (ultrafiltración $119,99; ósmosis $329,99; kit de 3 cartuchos $18,99). Frasco y tira: Shenzhen Hongyi y HORYZON, en Alibaba.
+- Fuentes públicas: OVSP vía El Diario (9 abr 2022); ENCOVI 2025 (UCAB); Kantar Worldpanel (2018); Revista Mercado (19 ago 2026); Global Market Insights.
+- Sin fuente (SUPUESTO): todo lo marcado así en la sección 6, el capital de trabajo del piloto de $15.000 a $20.000 y el ejemplo de rotación de 90 días.

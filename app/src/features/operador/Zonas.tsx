@@ -4,6 +4,7 @@ import type { AlertaZona, UrbanizacionMapa } from '../../lib/tipos';
 import { useServicios } from './contexto';
 import { nombreTienda } from './estadoPedidos';
 import { useDatos } from './useDatos';
+import { usePanel } from './panel';
 import { nombreParametro, tiendaDeZona } from './datosZonas';
 import { MapaHexagonos, TrazoAlerta, TrazoTienda, type VistaMapa } from './MapaHexagonos';
 import { NOMBRE_ESTADO, RANGOS_CLIENTES, puntosHex } from './mapaHex';
@@ -122,6 +123,7 @@ function Detalle({ u }: { u: UrbanizacionMapa | undefined }) {
 
 export function Zonas({ token, version, alNoAutorizado }: Props) {
   const servicios = useServicios();
+  const { base } = usePanel();
   const { datos, estado, reintentar } = useDatos<DatosZonas>(
     async () => {
       const [alertas, mapa] = await Promise.all([
@@ -145,6 +147,7 @@ export function Zonas({ token, version, alNoAutorizado }: Props) {
   const enAlerta = mapa.filter((u) => u.alerta).length;
   const porCaptar = tablero.filter((u) => u.estado === 'sin_clientes').length;
   const detalle = mapa.find((u) => u.id === elegida);
+  const sinHogares = mapa.every((u) => u.hogares === 0);
 
   return (
     <div className="g-pila g-pila--amplia">
@@ -168,7 +171,12 @@ export function Zonas({ token, version, alNoAutorizado }: Props) {
 
       {datos && (
         <>
-          {tablero.length > 0 && (
+          {sinHogares && (
+            <EstadoVacio titulo="Este comercio todavía no tiene hogares en el mapa de Carabobo">
+              Cuando sus clientes se registren y midan, sus urbanizaciones aparecen aquí.
+            </EstadoVacio>
+          )}
+          {!sinHogares && tablero.length > 0 && (
             <>
               <BandaCifras
                 etiqueta="Cifras del mapa"
@@ -225,7 +233,7 @@ export function Zonas({ token, version, alNoAutorizado }: Props) {
                   {z.parametros.length > 0 && <> Lo que más se repite: {z.parametros.map(nombreParametro).join(', ')}.</>}
                 </p>
                 <p>Revisa el inventario de Grimuca {nombreTienda(tiendaDeZona(z.zona))}, que es la que atiende esa zona.</p>
-                <Boton variante="secundario" a="/operador/inventario">
+                <Boton variante="secundario" a={`${base}/inventario`}>
                   Ver inventario
                 </Boton>
               </Aviso>

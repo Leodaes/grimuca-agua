@@ -1,28 +1,24 @@
 # Modelo de negocio en una página · Grimuca Agua
 
-Texto para la lámina del modelo de negocio del deck. Seis cifras, las de la lista final. Lo que va debajo de la línea no se proyecta.
+Texto para la lámina del modelo del deck. Seis cifras, las de la lista final. Lo que va debajo de la línea no se proyecta. Versión 3, red de ferreterías (21 nov, noche).
 
 ---
 
-**Cliente.** Padres y madres de clase media y media alta de Valencia, preocupados por el agua que toman sus hijos. Un segundo grupo son los hogares que ya tienen filtro y no saben cuándo cambiarlo.
+**Cliente.** La ferretería paga. La familia entra por la medición de su agua y genera la señal que le llega a la ferretería: un hogar medido, con su perfil y con la necesidad identificada.
 
-**Problema.** Muchas familias dependen del botellón, no ven nunca una medición del agua de su casa y no saben cuándo cambiar el cartucho de su filtro.
+**Problema.** La ferretería compra, almacena y despacha repuestos a ciegas, porque nadie en la cadena conoce la fecha de cambio de cada cartucho. El hogar, por su parte, no mide el agua que toma y no sabe cuándo cambiar el filtro.
 
-**Oferta.** Un sobre de **$9** con tira reactiva, prueba casera de bacterias, tabla de colores y un video. La app lee la foto, explica el resultado en palabras simples y recomienda el cartucho que corresponde. Después vienen el filtro, el plomero y los cartuchos de reposición.
+**Oferta.** Grimuca opera una red de ferreterías. Cada familia mide su agua con un sobre de **$9**, y el sistema la asigna al comercio más cercano que tiene el producto. La ferretería recibe clientes ya medidos, inventario contra demanda prevista, recambios con fecha y un técnico que reporta con foto. Para la ferretería, esos clientes dejan unos **$280** al mes de margen en producto y sobres.
 
-**Canales.** Mostrador de las tiendas de Grimuca con un QR, farmacias y supermercados aliados, y despacho a domicilio. Sin publicidad pagada hasta que el piloto muestre cuánto compra cada hogar.
+**Ingresos.** Tres líneas. (1) El sobre de $9 al cliente final. (2) La membresía mensual de la ferretería, de **$30** al mes con 1 a 3 meses gratis de entrada. (3) Sobres que Grimuca importa y vende al mayor a la ferretería a **$5,50**. Siguiente paso: comisión por transacción y plan premium con prioridad de asignación.
 
-**Ingresos.** El sobre se paga solo. El filtro se vende con poco margen y más barato que la competencia. La ganancia está en los cartuchos, que el hogar vuelve a comprar cada trimestre, y en una comisión por cada visita del plomero. En la experiencia de Tulio, **4 de cada 10** hogares que compran el sobre terminan comprando un filtro o cartuchos.
+**Logística.** Lo que deja de existir es el pedido sorpresa. Con la medición y la fecha del último cambio, cada cartucho tiene fecha y referencia conocidas con semanas de anticipación. De ahí salen tres ahorros: compra al proveedor contra demanda prevista, asignación al comercio más cercano que sí tiene la pieza, y entregas y visitas técnicas agrupadas por urbanización y por semana.
 
-**Costos.** Un sobre cuesta menos de la cuarta parte de su precio en fábrica. A eso se suman importación, empaque y envío, la pasarela de pagos, un almacenista por tienda y un responsable de logística.
+**Red y expansión.** Grimuca es el comercio de Carabobo y opera la red. En otros estados entra una ferretería aliada por estado, y con una por estado ese estado queda cubierto. La última milla la hacen operadores que ya tienen red.
 
-**Punto de equilibrio.** Cada tienda cubre sus costos fijos con **40 a 44 sobres al mes**, una cifra que la meta de Tulio multiplica por más de tres. Al cerrar el primer año las tres tiendas suman entre **$6.200 y $65.500** de caja, según capte la mitad o la totalidad de los hogares previstos.
+**Punto de equilibrio y aporte.** Cada ferretería deja a la red entre **$103 y $144** al mes, y **4 a 5 ferreterías** que paguen cubren los costos fijos de la red.
 
-**Por qué es logística.** El hogar deja de recibir botellones cada quincena y pasa a recibir un cartucho cuando toca. Un hogar mueve **99,8% menos kilos** al año con filtro que con botellón. Las tiendas funcionan como almacenes de despacho, el operador ve la demanda de cartuchos por zona antes de que ocurra y las entregas salen agrupadas por ruta.
-
-**Potencial regional.** La tira viaja en un sobre y la app se adapta a cada país con un catálogo y una tabla propios. El mercado de purificadores de agua en Latinoamérica es de **$2.500 millones**, y en República Dominicana y México la mayoría de los hogares ya compra agua en botellón o embotellada.
-
-**Lo que la app no dice.** La app orienta con una medición casera y no certifica el agua. Cada resultado lleva el aviso fijo.
+**Lo que la app no dice.** La app orienta con una medición casera y no certifica el agua. Cada resultado lleva el aviso fijo. Hoy no hay ninguna ferretería aliada real: la demo usa comercios de demostración rotulados así.
 
 ---
 
@@ -31,10 +27,12 @@ Texto para la lámina del modelo de negocio del deck. Seis cifras, las de la lis
 | Cifra | Origen |
 |---|---|
 | $9 el sobre | Tulio |
-| 4 de cada 10 hogares compran filtro o cartuchos | Tulio (10 compran filtro y 30 cartuchos de cada 100 sobres); no está medido, el piloto de 1.000 sobres lo mide |
-| 40 a 44 sobres al mes por tienda | Cuenta de Business con fijos de $493 (almacenista de Tulio y logística SUPUESTO); con la mitad de conversión son 62; la meta de Tulio es 150 |
-| $6.200 y $65.500 de caja a 12 meses | Cuentas de Business: conservador (mitad de captación y conversión) y base (cifras de Tulio); hipótesis sin venta real |
-| 99,8% menos kilos | Botellón de 2.370 a 2.844 kg al año (estimación de Tulio, pesos SUPUESTOS) contra 5,8 kg con filtro |
-| $2.500 millones | Global Market Insights, 2025 (mercado de purificadores en Latinoamérica) |
+| $30 de membresía al mes | **SUPUESTO** de Business (rango razonado $20 a $50); Tulio lo corrige |
+| $5,50 el sobre al mayor | **SUPUESTO** de Business (rango $5,00 a $6,00); Tulio lo corrige |
+| $280 de margen mensual para la ferretería | Cálculo de Business: 40 familias asignadas al mes (SUPUESTO); de cada 100 sobres, 10 compran filtro y 30 cartuchos (Tulio); márgenes de 20% y 50% sobre precios de referencia (Tulio y Oasis en Mundo JAB); sobre vendido en mostrador con $3,50 de margen. Con la mitad de volumen y de conversión son $88 |
+| $103 a $144 al mes por ferretería para la red | Cálculo de Business, escenario base, 40 familias al mes por ferretería (SUPUESTO). **$144 con el sobre a $2,94** (modelo anterior) y **$103 con el sobre a $4,00** (dicho en la asesoría): la cifra del sobre está pendiente de Leonardo (`modelo.md`, sección 0) |
+| 4 a 5 ferreterías que pagan | Cálculo de Business: fijos de la red de $450 al mes (SUPUESTO) ÷ $144 o $103. En el escenario conservador son 6 a 8 |
 
-Para el orador: si preguntan por publicidad, el tope es $1,80 a $2,70 por sobre y con $4,00 el escenario conservador queda en pérdida (`auditoria-asesor.md`).
+Para el orador, si preguntan por el ahorro logístico: la única cifra de industria que existe hoy es el capital de trabajo del piloto, de $15.000 a $20.000 si el inventario se compra por adelantado, contra unas dos semanas de cartuchos si se compra contra demanda prevista (SUPUESTO de Business; `modelo.md`, sección 3). La frase con los datos reales de Grimuca queda para completar: "Grimuca tiene $[DATO DE TULIO] en inventario de filtros y cartuchos, que rota cada [DATO DE TULIO] días; comprando contra demanda prevista baja a [CÁLCULO]". Mientras no lleguen los datos, el ejemplo de orden de magnitud dice que con 90 días de rotación (SUPUESTO) y 639 juegos de cartuchos al mes, el dinero parado baja de unos $18.200 a unos $2.800.
+
+También para el orador: la red sola no recupera su inversión en el año 1 en el escenario conservador (caja de −$7.203 a −$8.263), y en el base queda entre +$1.094 y −$2.035. La variable que lo tumba es el volumen de familias medidas por ferretería al mes: con 35 a 55 el año 1 cierra en cero, y la meta supuesta es 40.

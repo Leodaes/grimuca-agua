@@ -1,6 +1,4 @@
-import { expect, test, type Page, type TestInfo } from '@playwright/test';
-import path from 'node:path';
-import fs from 'node:fs';
+import { expect, test } from '@playwright/test';
 import {
   AVISO_FIJO,
   AVISO_SOLO_LECTURA,
@@ -8,7 +6,6 @@ import {
   SIN_PIN,
   SOLO_LECTURA,
   crearHogar,
-  hogarInventado,
   marca,
   obtenerTira,
   planDeValores,
@@ -18,14 +15,12 @@ import {
   accion,
   elegirEnLista,
   elegirNivel,
-  elegirOpcion,
   entrarAlPanel,
-  esperarPantalla,
-  marcarCasilla,
   sembrarDispositivo,
-  textosDePantalla,
 } from './apoyo/pagina';
 import { CONTEXTO_MOVIL, REGION } from './apoyo/dispositivos';
+import { llenarPerfil } from './apoyo/perfil';
+import { escucharConsola, guardarRegistro, revisar, tiempos } from './apoyo/revision';
 
 /**
  * Compuertas 2 y 3 · capturas y revisión en vivo de cada pantalla.
@@ -39,142 +34,8 @@ import { CONTEXTO_MOVIL, REGION } from './apoyo/dispositivos';
  * Nada de esto falla la prueba por un hallazgo cosmético: se anota con expect.soft y en el JSON.
  */
 
-const CARPETA = path.resolve(__dirname, '../../docs/calidad/capturas');
-fs.mkdirSync(CARPETA, { recursive: true });
-
-interface Hallazgo {
-  pantalla: string;
-  tipo: string;
-  detalle: string;
-}
-const hallazgos: Hallazgo[] = [];
-const erroresConsola: Array<{ pantalla: string; texto: string }> = [];
-const tiempos: Record<string, number> = {};
-
-function guardarRegistro(testInfo: TestInfo, nombre: string) {
-  // Un archivo por prueba: si el proceso se reinicia tras una falla, no se pierde lo anterior.
-  const corto = testInfo.title.replace(/[^\p{L}\p{N}]+/gu, '-').slice(0, 40).toLowerCase();
-  const archivo = path.join(CARPETA, `revision-${nombre}-${corto}.json`);
-  fs.writeFileSync(archivo, JSON.stringify({ prueba: testInfo.title, estado: testInfo.status, hallazgos, erroresConsola, tiempos }, null, 2), 'utf8');
-  hallazgos.length = 0;
-  erroresConsola.length = 0;
-  for (const clave of Object.keys(tiempos)) delete tiempos[clave];
-  testInfo.annotations.push({ type: 'registro', description: archivo });
-}
-
-function escucharConsola(page: Page, pantalla: () => string) {
-  page.on('console', (mensaje) => {
-    if (mensaje.type() === 'error') erroresConsola.push({ pantalla: pantalla(), texto: mensaje.text().slice(0, 300) });
-  });
-  page.on('pageerror', (error) => erroresConsola.push({ pantalla: pantalla(), texto: `pageerror: ${error.message.slice(0, 300)}` }));
-}
-
-/** Revisa la pantalla actual y guarda su captura de página completa. */
-async function revisar(page: Page, archivo: string, opciones: { movil?: boolean } = { movil: true }) {
-  await esperarPantalla(page);
-  await page.waitForTimeout(400);
-  const pantalla = archivo.replace(/\.png$/, '');
-
-  // 1. Palabra prohibida.
-  const texto = await textosDePantalla(page);
-  if (/potable/i.test(texto)) hallazgos.push({ pantalla, tipo: 'potable', detalle: 'La pantalla dice "potable"' });
-  expect.soft(texto, `${pantalla} dice "potable"`).not.toMatch(/potable/i);
-
-  // Las imágenes diferidas (loading=lazy) se cargan bajando la página.
-  await page.evaluate(async () => {
-    // La captura de página completa no dispara la carga diferida: se fuerza antes de revisar.
-    document.querySelectorAll('img[loading="lazy"]').forEach((img) => img.setAttribute('loading', 'eager'));
-    for (let y = 0; y < document.body.scrollHeight; y += 600) {
-      window.scrollTo(0, y);
-      await new Promise((r) => setTimeout(r, 80));
-    }
-    window.scrollTo(0, 0);
-  });
-  await page.waitForTimeout(600);
-
-  const datos = await page.evaluate(() => {
-    const ancho = document.documentElement.clientWidth;
-    const desborde = document.documentElement.scrollWidth - ancho;
-    const anchos: string[] = [];
-    if (desborde > 1) {
-      document.querySelectorAll('body *').forEach((el) => {
-        const r = el.getBoundingClientRect();
-        if (r.right > ancho + 1 && r.width > 0 && anchos.length < 5) {
-          anchos.push(`${el.tagName.toLowerCase()}.${(el as HTMLElement).className || ''} (derecha ${Math.round(r.right)} px)`);
-        }
-      });
-    }
-    const rotas = Array.from(document.images)
-      .filter((img) => img.complete && img.naturalWidth === 0 && img.getBoundingClientRect().width >= 0)
-      .map((img) => img.currentSrc || img.src);
-    const sinCargar = Array.from(document.images)
-      .filter((img) => !img.complete)
-      .map((img) => img.currentSrc || img.src);
-    const barra = document.querySelector('.g-barra-inferior');
-    const altoBarra = barra ? barra.getBoundingClientRect().height : 0;
-    const botones = Array.from(document.querySelectorAll('main button, main a.g-boton, main .g-boton, main [role="button"]'))
-      .filter((el) => (el as HTMLElement).offsetParent !== null)
-      .map((el) => {
-        const r = el.getBoundingClientRect();
-        return { texto: ((el as HTMLElement).innerText || el.getAttribute('aria-label') || '').trim().slice(0, 60), alto: Math.round(r.height), ancho: Math.round(r.width) };
-      });
-    return { desborde, anchos, rotas, sinCargar, altoBarra, botones };
-  });
-
-  if (opciones.movil && datos.desborde > 1) {
-    hallazgos.push({ pantalla, tipo: 'desborde', detalle: `${datos.desborde} px de más. ${datos.anchos.join('; ')}` });
-  }
-  for (const src of datos.rotas) hallazgos.push({ pantalla, tipo: 'imagen rota', detalle: src });
-  for (const src of datos.sinCargar) hallazgos.push({ pantalla, tipo: 'imagen sin cargar', detalle: src });
-  if (opciones.movil) {
-    for (const b of datos.botones) {
-      if (b.alto < 44) hallazgos.push({ pantalla, tipo: 'botón < 44 px', detalle: `"${b.texto}" mide ${b.alto} px de alto` });
-    }
-  }
-
-  // 2. Botones tapados por la barra inferior: se lleva cada botón al fondo de la vista y se mira
-  //    qué elemento queda encima de su centro.
-  if (opciones.movil && datos.altoBarra > 0) {
-    const tapados = await page.evaluate(() => {
-      const res: string[] = [];
-      const botones = Array.from(document.querySelectorAll('main button, main a.g-boton, main .g-boton')).filter(
-        (el) => (el as HTMLElement).offsetParent !== null,
-      );
-      // Al llegar al final de la página, el último botón no debe quedar debajo de la barra.
-      window.scrollTo(0, document.body.scrollHeight);
-      for (const el of botones) {
-        const r = el.getBoundingClientRect();
-        if (r.bottom <= 0 || r.top >= window.innerHeight) continue;
-        const cx = r.left + r.width / 2;
-        const cy = Math.min(r.top + r.height / 2, window.innerHeight - 1);
-        const arriba = document.elementFromPoint(cx, cy);
-        if (arriba && !el.contains(arriba) && arriba.closest('.g-barra-inferior')) {
-          res.push(((el as HTMLElement).innerText || '').trim().slice(0, 60));
-        }
-      }
-      window.scrollTo(0, 0);
-      return res;
-    });
-    for (const t of tapados) hallazgos.push({ pantalla, tipo: 'tapado por la barra', detalle: `"${t}" queda debajo de la barra inferior al final de la página` });
-  }
-
-  await page.screenshot({ path: path.join(CARPETA, archivo), fullPage: true, scale: 'css' });
-}
-
-async function llenarPerfil(page: Page, nombre: string) {
-  const perfil = hogarInventado();
-  await page.getByRole('textbox', { name: /c[oó]mo te llamas/i }).fill(nombre);
-  await elegirOpcion(page, /zona/i, /naguanagua/i);
-  await page.getByLabel(/^\s*tanque/i).first().check();
-  await page.getByLabel(/cu[aá]ntos viven/i).first().fill('4');
-  await page.getByRole('group', { name: /tienen filtro/i }).getByLabel(/^s[ií]$/i).check();
-  await elegirEnLista(page.getByRole('combobox', { name: /etapas/i }).first(), /^\s*3\b/);
-  await page.getByLabel(/cu[aá]ndo cambiaron/i).first().fill(perfil.fecha_ultimo_cambio);
-  await page.getByRole('group', { name: /turbia o amarilla/i }).getByLabel(/^s[ií]$/i).check();
-  await page.getByRole('textbox', { name: /whatsapp/i }).fill(perfil.whatsapp);
-  await marcarCasilla(page.getByRole('checkbox', { name: /acepto/i }).first());
-}
-
+// Pasada 2: la revisión y el registro viven en apoyo/revision.ts (los usa también 07).
+// El perfil se llena con apoyo/perfil.ts (urbanización, mascotas, último cambio cerrado, WhatsApp +58).
 test.describe('Revisión en vivo · teléfono', () => {
   test.skip(({ isMobile }) => !isMobile, 'Las capturas del cliente son en el teléfono.');
   test.skip(() => SOLO_LECTURA, AVISO_SOLO_LECTURA);
@@ -196,10 +57,27 @@ test.describe('Revisión en vivo · teléfono', () => {
     await expect(page).toHaveURL(/\/perfil\?ya=1/);
     actual = '02-perfil';
     await revisar(page, '02-perfil-vacio.png');
-    await llenarPerfil(page, `Prueba Calidad ${m} con sobre`);
+    await llenarPerfil(page, { nombre: `Prueba Calidad ${m} con sobre`, urbanizacion: /^\s*otra\s*$/i, mascotas: true });
     await revisar(page, '03-perfil-lleno.png');
     await page.getByRole('button', { name: /^\s*continuar\s*$/i }).click();
-    await expect(page, '"Continuar" con ?ya=1 debe llevar a /medir').toHaveURL(/\/medir\/?$/);
+    // Con filtro: primero "Mi filtro" y después sigue a /medir.
+    await expect(page, 'Con filtro y ?ya=1 debe ir a /mi-filtro?sigue=/medir').toHaveURL(/\/mi-filtro\?sigue=%2Fmedir/);
+    actual = '03b-mi-filtro';
+    await expect(page.getByRole('button', { name: /tomar una foto de mi filtro/i })).toBeVisible();
+    await expect(page.getByRole('button', { name: /elegir una foto del tel[eé]fono/i })).toBeVisible();
+    await revisar(page, '03b-mi-filtro-inicio.png');
+    await page.getByRole('link', { name: /c[aá]rgalo a mano/i }).first().click();
+    await expect(page).toHaveURL(/\/mi-filtro\/manual\?sigue=%2Fmedir/);
+    actual = '03c-mi-filtro-manual';
+    await page.getByRole('group', { name: /c[oó]mo es tu filtro/i }).getByLabel(/^\s*tres vasos/i).check();
+    await page.getByRole('group', { name: /c[oó]mo son los cartuchos/i }).getByLabel(/^\s*corto y delgado/i).check();
+    await revisar(page, '03c-mi-filtro-manual.png');
+    await page.getByRole('button', { name: /guardar mi filtro/i }).click();
+    await expect(page.getByRole('heading', { name: /guardamos tu filtro/i })).toBeVisible({ timeout: 15_000 });
+    actual = '03d-mi-filtro-guardado';
+    await revisar(page, '03d-mi-filtro-guardado.png');
+    await accion(page, /^\s*continuar\s*$/i).click();
+    await expect(page, '"Continuar" tras guardar el filtro debe llevar a /medir').toHaveURL(/\/medir\/?$/);
 
     actual = '04-medir';
     await expect(page.getByRole('button', { name: /^\s*tomar la foto\s*$/i })).toBeVisible();
@@ -268,7 +146,7 @@ test.describe('Revisión en vivo · teléfono', () => {
     await accion(page, /pedir el sobre a domicilio/i).click();
     await expect(page).toHaveURL(/\/perfil\/?$/);
     actual = '15-perfil-domicilio';
-    await llenarPerfil(page, `Prueba Calidad ${m} domicilio`);
+    await llenarPerfil(page, { nombre: `Prueba Calidad ${m} domicilio`, filtro: false });
     await page.getByRole('button', { name: /^\s*continuar\s*$/i }).click();
     await expect(page).toHaveURL(/\/envio/);
 
@@ -335,8 +213,14 @@ test.describe('Revisión en vivo · teléfono', () => {
         await page.goto('/bacterias');
         actual = archivo;
         await page.getByRole('button', { name: /ya llen[eé] el frasco/i }).click();
-        await expect(page.getByRole('button', { name: boton })).toBeVisible();
+        // Pasada 2: antes de 48 h no deja reportar; solo con "Saltar la espera (demostración)".
+        const saltar = page.getByRole('link', { name: /saltar la espera \(demostraci[oó]n\)/i });
+        await expect(saltar, 'Antes de 48 h debe ofrecer "Saltar la espera (demostración)"').toBeVisible();
+        await expect(page.getByRole('button', { name: boton }), 'Antes de 48 h no se puede reportar').toHaveCount(0);
         if (archivo.startsWith('21')) await revisar(page, '20-bacterias-pendiente.png');
+        await saltar.click();
+        await expect(page.getByRole('button', { name: boton })).toBeVisible();
+        if (archivo.startsWith('21')) await revisar(page, '20b-bacterias-saltar-espera.png');
         await page.getByRole('button', { name: boton }).click();
         await expect(page.getByText(archivo.startsWith('21') ? /el frasco cambi[oó] de color/i : /el frasco no cambi[oó] de color/i).first()).toBeVisible();
         await revisar(page, archivo);

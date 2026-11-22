@@ -170,7 +170,7 @@ describe('mediciones', () => {
     expect(rows[0].semaforo_por_parametro).toEqual({ ph: 'verde', nitrato: 'rojo', dureza: 'sin_dato', plomo: 'sin_dato' });
 
     expect(e.emitidos.slice(antes)).toEqual([
-      { tipo: 'medicion_nueva', datos: { hogar_id: hogar.id, zona: 'Naguanagua', semaforo: 'rojo' } },
+      { tipo: 'medicion_nueva', datos: { hogar_id: hogar.id, zona: 'Naguanagua', semaforo: 'rojo', comercio_id: 'grimuca' } },
     ]);
 
     const leida = await e.app.inject({ method: 'GET', url: `/api/mediciones/${medicion.id}` });

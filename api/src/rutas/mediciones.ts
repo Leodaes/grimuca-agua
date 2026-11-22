@@ -1,7 +1,8 @@
 // Mediciones: por foto (lectura con el servicio de visión) o cargadas a mano.
 import { randomUUID } from 'node:crypto';
 import type { FastifyInstance } from 'fastify';
-import { CLAVES_PARAMETRO, type Evaluacion, type Hogar, type Medicion, type Nivel, type ValoresMedicion } from '../tipos';
+import { COMERCIO_PRINCIPAL, comercioDeTienda } from './plataforma';
+import { CLAVES_PARAMETRO, tiendaSugerida, type Evaluacion, type Hogar, type Medicion, type Nivel, type ValoresMedicion } from '../tipos';
 import { buscarHogar, filaAMedicion, listarCatalogo, perfilDe } from './datos';
 import { datosInvalidos, ErrorHttp, noEncontrado } from './errores';
 import { esquemaMedicionManual, esquemaUuid, esquemaValores } from './esquemas';
@@ -60,9 +61,13 @@ export async function rutasMediciones(app: FastifyInstance): Promise<void> {
       hogar,
       marcasExcluidas: config.marcasExcluidas,
     });
+    // El aviso va solo al comercio del hogar (el de su tienda; sin tienda, la sugerida por su zona).
+    const comercioId = await comercioDeTienda(bd, hogar.tienda_id ?? tiendaSugerida(hogar.zona)).catch(
+      () => COMERCIO_PRINCIPAL,
+    );
     await eventos.publicar({
       tipo: 'medicion_nueva',
-      datos: { hogar_id: hogar.id, zona: hogar.zona, semaforo: nueva.evaluacion.semaforo },
+      datos: { hogar_id: hogar.id, zona: hogar.zona, semaforo: nueva.evaluacion.semaforo, comercio_id: comercioId },
     });
     return nueva;
   }

@@ -44,6 +44,13 @@ const RUTAS_SIN_PERFIL = [
   '/resultados',
   '/bacterias',
   '/lista',
+  // Pasada 2: pantallas nuevas.
+  '/catalogo',
+  '/tutoriales',
+  '/tutoriales/sedimentos',
+  '/experto',
+  '/mi-filtro',
+  '/mi-filtro/manual',
   '/operador',
   '/una-ruta-que-no-existe',
 ];
@@ -63,6 +70,15 @@ function rutasConHogar(cliente: ClienteDePrueba): string[] {
     `/pedido/${cliente.pedido.id}`,
     '/bacterias',
     '/tiendas',
+    '/catalogo',
+    '/tutoriales',
+    '/tutoriales/sedimentos',
+    '/tutoriales/carbon',
+    '/tutoriales/membrana',
+    '/tutoriales/cuando',
+    '/experto',
+    '/mi-filtro',
+    '/mi-filtro/manual',
   ];
 }
 

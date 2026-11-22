@@ -1,0 +1,41 @@
+{
+  "prueba": "catálogo: carga, filtra por tipo, busca por código y agrega a mi lista",
+  "estado": "passed",
+  "hallazgos": [],
+  "erroresConsola": [],
+  "tiempos": {
+    "catalogoCargaSegundos": 5.703
+  },
+  "notas": {
+    "catalogo": {
+      "totalPantalla": 80,
+      "totalApi": 80
+    },
+    "fotosCatalogo": {
+      "total": 16,
+      "cargadas": 2,
+      "sinFoto": 0,
+      "rotas": [],
+      "pendientes": [
+        "https://grimuca.com/wp-content/uploads/2025/08/OPW-100GPD-8TN.png",
+        "https://grimuca.com/wp-content/uploads/2025/08/OPW-200GPD-8TN.png",
+        "https://grimuca.com/wp-content/uploads/2025/08/OPW-RO-100H-1.png",
+        "https://grimuca.com/wp-content/uploads/2025/08/CMB-T1054V34F.png",
+        "https://grimuca.com/wp-content/uploads/2025/08/OPW-ALMB-10BX.png",
+        "https://grimuca.com/wp-content/uploads/2025/08/OPW-RSSU5-1.png",
+        "https://grimuca.com/wp-content/uploads/2025/08/OPW-PP-20A0P1.png",
+        "https://grimuca.com/wp-content/uploads/2025/08/OPW-PP20A022.png",
+        "https://grimuca.com/wp-content/uploads/2025/08/OPW-PP20BFL02-1.png",
+        "https://grimuca.com/wp-content/uploads/2025/08/OPW-PP20AUF2.png",
+        "https://grimuca.com/wp-content/uploads/2025/08/OPW-ALMB-10A.png",
+        "https://grimuca.com/wp-content/uploads/2025/08/OPW-GACSU5.png",
+        "https://grimuca.com/wp-content/uploads/2025/08/OPW-10IUFQCR.png",
+        "https://grimuca.com/wp-content/uploads/2025/08/OPW-20LLRFC.png"
+      ]
+    },
+    "catalogoCartuchos": {
+      "pantalla": "18 productos",
+      "api": 18
+    }
+  }
+}
