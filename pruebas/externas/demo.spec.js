@@ -39,8 +39,11 @@ async function fillForm(page) {
   for (const input of await page.locator('input:visible[type=text], input:visible:not([type]), input:visible[type=tel], input:visible[type=number], input:visible[type=date], textarea:visible').all()) {
     if (await input.inputValue()) continue;
     const type = await input.getAttribute('type');
-    const hint = ((await input.getAttribute('name')) || (await input.getAttribute('aria-label')) || '').toLowerCase();
+    const hint = ((await input.getAttribute('name')) || (await input.getAttribute('aria-label'))
+      || (await input.evaluate(e => e.labels?.[0]?.innerText || '')) || '').toLowerCase();
+    // Phone split into operator select + 7-digit number since the 9:12 a.m. onboarding change.
     await input.fill(type === 'date' ? '2026-08-01' : type === 'number' ? '3'
+      : /n[uú]mero/.test(hint) ? '5550199'
       : /whats|tel/.test(hint) || type === 'tel' ? '04141234567'
       : /direc/.test(hint) ? 'Calle Prueba 123, Naguanagua' : NOMBRE_PRUEBA);
   }
@@ -120,7 +123,8 @@ test('recorrido completo del cliente y, con PIN, el pedido en vivo en Despacho',
   // Each run creates real orders in the production database. Skipped with SOLO_LECTURA=1,
   // and always from midnight on (agreed with the orchestrator so the pre-demo cleanup holds).
   test.skip(process.env.SOLO_LECTURA === '1', 'SOLO_LECTURA=1: se salta el recorrido para no crear pedidos de prueba.');
-  test.skip(despuesDeMedianoche(), 'Después de la medianoche no se crean pedidos en el sitio publicado.');
+  // RECORRIDO=1: Leonardo asked for a daytime run (Sun 22 nov morning); the order is named NOMBRE_PRUEBA for cleanup.
+  test.skip(despuesDeMedianoche() && process.env.RECORRIDO !== '1', 'Después de la medianoche no se crean pedidos en el sitio publicado.');
   test.setTimeout(180_000);
   const snap = async (p, name) => p.screenshot({ path: testInfo.outputPath(`${name}.png`), fullPage: true });
 
@@ -195,6 +199,9 @@ test('recorrido completo del cliente y, con PIN, el pedido en vivo en Despacho',
   await fillForm(page);
   await clickText(page, /Confirmar pedido|Confirmar|Hacer pedido/i, 'confirmar pedido');
   await expect(page, 'Confirmar no lleva a /pedido').toHaveURL(/\/pedido\//, { timeout: 20_000 });
+  // The order page loads with placeholders first; wait for the real content before judging it.
+  await page.waitForLoadState('networkidle').catch(() => {});
+  await expect(page.locator('main [class*="esqueleto"], main [aria-busy="true"]'), 'El pedido se queda cargando').toHaveCount(0, { timeout: 15_000 }).catch(() => {});
   await checkPageRules(page);
   await snap(page, 'pedido');
 

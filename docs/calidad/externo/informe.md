@@ -4,6 +4,34 @@ Pruebas de navegador contra https://agua.oydo.app, hechas desde una máquina dis
 
 Cómo correrlas: `cd pruebas/externas && npm install && npx playwright install chromium && npx playwright test`. Revisión del repositorio: `node pruebas/externas/revisar-repo.js` desde la raíz.
 
+## Pasada 21 · dom 22 nov, 9:45 a.m. · recorrido completo de día
+
+Leonardo pidió repetir de día el recorrido que crea pedidos. Se probó contra la versión publicada `index-85nErh1R.js`, que corresponde al último commit del orquestador: `c9b47f9`, de las 9:35 a.m. El sitio responde.
+
+| | Teléfono | Escritorio |
+|---|---|---|
+| Recorrido completo, de la bienvenida a «Pedido recibido» | Funciona | Funciona |
+| Revisiones de solo lectura | 24 de 24 entre los dos | |
+| Revisión del repositorio | OK, 511 archivos | |
+
+- **Pedido en vivo en el panel:** no se verificó. Hace falta el PIN, y esta revisión no lo escribe en el sitio publicado.
+- **Pedidos creados:** tres, todos a nombre de «Prueba Calidad externa» (en el teléfono, por ejemplo, el N.º 150). El orquestador dijo que los limpia al restablecer la demo.
+- **Ajuste a las pruebas:** el perfil nuevo pide la operadora y el número de 7 dígitos por separado, y las pruebas se adaptaron a eso. La pantalla del pedido muestra primero un esqueleto, así que ahora la prueba espera a que cargue antes de tomar la captura.
+
+### Fallas
+
+**Rompe la demo:** ninguna.
+
+**Confunde**
+
+- En el teléfono, la pantalla de resultado mide unos 8.400 px de alto, unas diez pantallas de scroll. El veredicto queda arriba, pero la lista de productos se repite: aparece en «Tu agua, casilla por casilla» y otra vez en «Lo que te recomendamos». Ver `capturas/pasada21-telefono-resultado.png`.
+
+**Cosmético**
+
+- «Cotizar por WhatsApp» mide 26 px de alto en el teléfono, en `/mi-filtro/manual`, y aparece 4 veces. El mínimo es 44 px. Ya estaba anotado en la pasada 20.
+
+Capturas: `capturas/pasada21-{telefono,escritorio}-{resultado,pedido}.png`. La de `pasada21-telefono-pedido.png` muestra el pedido recibido, la burbuja de WhatsApp simulado, «No se cobra nada ahora» y el enlace «mira cómo cambiarlo».
+
 ## Pasada 20 · dom 22 nov, 5:20 a.m. · INFORME DE LA MAÑANA
 
 ### Veredicto
