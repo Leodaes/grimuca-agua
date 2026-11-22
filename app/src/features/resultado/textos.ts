@@ -1,17 +1,46 @@
 // Textos y utilidades compartidas de resultado y pedido.
 // Los textos marcados LITERAL vienen de docs/legal/textos.md y no se reescriben.
-import type { Nivel } from '../../lib/tipos';
+import type { ClaveParametro, Nivel } from '../../lib/tipos';
 
-/** Número de WhatsApp de la tienda (solo dígitos, con código de país). Vacío → se enlaza a /tiendas. */
-export const WHATSAPP_TIENDA = '';
+/** Número público de WhatsApp de las tiendas (solo dígitos, con código de país). Vacío → se enlaza a /tiendas. */
+export const WHATSAPP_TIENDA: string = '584144409396';
 
-/** Palabra de cada nivel del semáforo (aprobada por legal). */
+/** El mismo número, escrito para leerlo en pantalla. */
+export const WHATSAPP_TIENDA_VISIBLE = '+58 414-4409396';
+
+/** Palabra visible de cada nivel del semáforo: el color tal cual (Tulio). */
 export const PALABRA_NIVEL: Record<Nivel, string> = {
-  verde: 'En rango',
-  amarillo: 'Para vigilar',
-  rojo: 'Fuera de rango',
+  verde: 'Verde',
+  amarillo: 'Amarillo',
+  rojo: 'Rojo',
   sin_dato: 'Sin lectura',
 };
+
+/** Qué mide cada indicador, en una frase fija (texto de Tulio, con ajuste legal en cobre y plomo). */
+export const QUE_MIDE: Record<ClaveParametro, string> = {
+  cloro_libre: 'Es lo que se usa para desinfectar el agua. Si hay mucho, cambia el sabor y el olor.',
+  ph: 'Dice si el agua está ácida o alcalina. Si se sale del rango, daña las tuberías y cambia el sabor.',
+  dureza: 'Es el sarro. Mancha la grifería, tapa la ducha y gasta los equipos.',
+  alcalinidad: 'Muestra qué tan estable es el agua. Si está fuera de rango, se forma sarro o corrosión.',
+  hierro: 'Es lo que deja el agua amarilla y mancha la ropa y el baño.',
+  cobre: 'Vienen de las tuberías viejas. Con esto no se juega.',
+  plomo: 'Vienen de las tuberías viejas. Con esto no se juega.',
+  nitrato: 'Vienen de la tierra, de abonos o del pozo séptico. Es una señal de alerta de contaminación.',
+  nitrito: 'Vienen de la tierra, de abonos o del pozo séptico. Es una señal de alerta de contaminación.',
+};
+
+/** Pie del resultado, debajo del aviso fijo. */
+export const PIE_ORIENTACION =
+  'Esta prueba es una orientación, no un análisis de laboratorio, y no certifica que el agua sea apta para tomar.';
+
+/** Explicación bajo el título de la prueba de bacterias. */
+export const BACTERIAS_EXPLICACION = 'El resultado sale en 48 horas.';
+
+/** Recordatorio de recambio del cartucho dentro de la app. */
+export function textoRecambio(dias: number): string {
+  if (dias <= 0) return 'Ya te toca cambiar el cartucho';
+  return `Te toca cambiar el cartucho en ${dias} ${dias === 1 ? 'día' : 'días'}`;
+}
 
 /** Resumen en una frase según el peor nivel. Nunca dice que el agua está bien para tomar. */
 export const RESUMEN_NIVEL: Record<Nivel, { titulo: string; frase: string }> = {
@@ -73,10 +102,11 @@ export function traducirCorrige(claves: string[]): string {
   return `${palabras.slice(0, -1).join(', ')} y ${palabras[palabras.length - 1]}`;
 }
 
-/** Enlace para cotizar un producto. Sin número de tienda, lleva a /tiendas. */
-export function enlaceCotizar(nombre: string): { interno: boolean; destino: string } {
+/** Enlace para cotizar un producto por WhatsApp con su nombre y código. Sin número, lleva a /tiendas. */
+export function enlaceCotizar(nombre: string, codigo?: string | null): { interno: boolean; destino: string } {
   if (!WHATSAPP_TIENDA) return { interno: true, destino: '/tiendas' };
-  const texto = encodeURIComponent(`Hola, quiero cotizar: ${nombre}`);
+  const producto = codigo ? `${nombre} (código ${codigo})` : nombre;
+  const texto = encodeURIComponent(`Hola, quiero cotizar: ${producto}`);
   return { interno: false, destino: `https://wa.me/${WHATSAPP_TIENDA}?text=${texto}` };
 }
 

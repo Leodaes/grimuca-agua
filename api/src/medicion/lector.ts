@@ -15,7 +15,15 @@ export type ResultadoLectura = LecturaTira;
 export const TIEMPO_LIMITE_MS = 40_000;
 export const MINIMO_LECTURAS = 3;
 const NOMBRE_HERRAMIENTA = 'registrar_lectura';
-const VERSION_API = '2023-06-01';
+/** Cabeceras adicionales que exija el servicio de visión, como JSON en VISION_CABECERAS (por ejemplo, la versión de su API). */
+function cabecerasExtra(): Record<string, string> {
+  try {
+    const crudo = process.env.VISION_CABECERAS;
+    return crudo ? (JSON.parse(crudo) as Record<string, string>) : {};
+  } catch {
+    return {};
+  }
+}
 // Margen para que el servicio pueda razonar antes de registrar la lectura sin quedarse corto.
 const MAXIMO_TOKENS = 4096;
 const TIPOS_ADMITIDOS = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
@@ -280,7 +288,7 @@ export async function leerTira(
       method: 'POST',
       headers: {
         'x-api-key': clave,
-        'anthropic-version': VERSION_API,
+        ...cabecerasExtra(),
         'content-type': 'application/json',
       },
       body: JSON.stringify(construirPeticion(imagen, tipo, modelo, tiraEnUso)),

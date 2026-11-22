@@ -51,6 +51,7 @@ describe('leerTira', () => {
     vi.stubEnv('VISION_API_URL', URL_PRUEBA);
     vi.stubEnv('VISION_API_KEY', 'clave-de-prueba');
     vi.stubEnv('VISION_MODELO', 'modelo-de-prueba');
+    vi.stubEnv('VISION_CABECERAS', JSON.stringify({ 'servicio-version': '1' }));
     vi.stubEnv('VISION_FORZAR_HERRAMIENTA', '');
     vi.spyOn(console, 'warn').mockImplementation(() => {});
   });

@@ -1,6 +1,7 @@
 import { Cargando, TarjetaTienda } from '../../components/grimuca';
 import { api } from '../../lib/api';
 import { hogarId } from '../../lib/sesion';
+import { WHATSAPP_TIENDA, WHATSAPP_TIENDA_VISIBLE } from '../resultado/textos';
 import { ErrorConReintento, PaginaAlta, useCarga } from './comun';
 
 export function Tiendas() {
@@ -11,6 +12,17 @@ export function Tiendas() {
     <PaginaAlta>
       <h1 className="g-h1">Nuestras tiendas</h1>
       <p>Retira tus cartuchos o pregunta lo que necesites en la tienda que te quede más cerca.</p>
+      <p>
+        WhatsApp de las tiendas:{' '}
+        <a
+          className="g-enlace"
+          href={`https://wa.me/${WHATSAPP_TIENDA}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {WHATSAPP_TIENDA_VISIBLE}
+        </a>
+      </p>
       {carga.cargando && <Cargando variante="esqueleto" texto="Un momento…" lineas={6} />}
       {carga.error && <ErrorConReintento mensaje={carga.error} onReintentar={carga.reintentar} />}
       {carga.datos?.map((t) => (

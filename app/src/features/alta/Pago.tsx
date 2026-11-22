@@ -136,7 +136,7 @@ export function Pago() {
       )}
 
       <Boton anchoCompleto cargando={enviando} textoCargando="Registrando tu pedido…" onClick={pagar}>
-        {errorPago ? 'Intentar otra vez' : 'Simular pago de $9'}
+        Simular pago de $9
       </Boton>
 
       <p style={{ fontSize: '0.9em' }}>

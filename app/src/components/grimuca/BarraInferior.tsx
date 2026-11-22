@@ -3,13 +3,13 @@ import { Icono } from './Icono';
 import type { NombreIcono } from './Icono';
 import { unir } from './utilidades';
 
-/** Enlace de WhatsApp con número marcador; se reemplaza cuando llegue el real. */
-export const WHATSAPP_MARCADOR = 'https://wa.me/580000000000';
+/** Enlace de WhatsApp de las tiendas Grimuca (número público del negocio). */
+export const WHATSAPP_MARCADOR = 'https://wa.me/584144409396';
 
 export interface PropsBarraInferior {
   /** Destino de "Resultados" (por defecto "/resultado/ultimo"). */
   rutaResultados?: string;
-  /** Enlace wa.me de "WhatsApp" (por defecto, el número marcador). */
+  /** Enlace wa.me de "WhatsApp" (por defecto, el de las tiendas). */
   enlaceWhatsApp?: string;
   /** Cantidad de artículos en Mi lista; con 0 no se muestra el contador. */
   cantidadLista?: number;

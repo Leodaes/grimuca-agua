@@ -95,11 +95,16 @@ async function sigueSinRecargar(page: Page): Promise<boolean> {
   return page.evaluate(() => (window as any).e2eSinRecargar === true);
 }
 
-/** Texto de cada fila pendiente: se sube desde el botón mientras el contenedor tenga un solo botón "Despachado". */
+/**
+ * Texto de cada fila pendiente. La fila es el <li> o <tr> que contiene el botón; si no hay,
+ * se sube desde el botón mientras el contenedor tenga un solo botón "Despachado".
+ */
 async function filasPendientes(page: Page): Promise<Array<{ indice: number; texto: string }>> {
   return botonesDespachado(page).evaluateAll((botones) => {
     const esDespachar = (elemento: Element) => /despachad|despachar/i.test(elemento.textContent ?? '');
     return botones.map((boton, indice) => {
+      const marcada = boton.closest('li, tr, [role="listitem"], [role="row"]');
+      if (marcada) return { indice, texto: (marcada as HTMLElement).innerText ?? '' };
       let fila: Element = boton;
       while (
         fila.parentElement &&

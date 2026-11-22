@@ -183,7 +183,7 @@ export function PaginaMedir() {
             titulo={estado.sinConexion ? 'No hay conexión' : 'No se pudo leer la foto'}
             accion={
               <Boton anchoCompleto onClick={leer}>
-                Intentar otra vez
+                Leer mi tira
               </Boton>
             }
           >

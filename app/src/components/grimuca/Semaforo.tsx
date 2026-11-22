@@ -6,9 +6,9 @@ export type NivelSemaforo = 'verde' | 'amarillo' | 'rojo' | 'sin_dato';
 
 /** Palabra que acompaña a cada color; se cambia aquí y cambia en toda la app. */
 export const PALABRA_SEMAFORO: Record<NivelSemaforo, string> = {
-  verde: 'En rango',
-  amarillo: 'Para vigilar',
-  rojo: 'Fuera de rango',
+  verde: 'Verde',
+  amarillo: 'Amarillo',
+  rojo: 'Rojo',
   sin_dato: 'Sin lectura',
 };
 

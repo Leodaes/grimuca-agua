@@ -16,11 +16,14 @@ import {
 } from '../../components/grimuca';
 import {
   PALABRA_NIVEL,
+  PIE_ORIENTACION,
+  QUE_MIDE,
   RESUMEN_NIVEL,
   SUGERIDO_EJEMPLO,
   enlaceCotizar,
   formatearFecha,
   mensajeError,
+  textoRecambio,
   traducirCorrige,
 } from './textos';
 
@@ -121,6 +124,7 @@ function Resultado({ medicion }: { medicion: Medicion }) {
       </div>
 
       <AvisoTira />
+      <p className="g-apagado">{PIE_ORIENTACION}</p>
 
       <section className="g-pila" aria-labelledby="titulo-casillas">
         <h2 className="g-h3" id="titulo-casillas">
@@ -146,12 +150,12 @@ function Resultado({ medicion }: { medicion: Medicion }) {
         </section>
       )}
 
-      {evaluacion.diasParaRecambio !== null && (
-        <Aviso titulo="Tu cartucho">
-          {evaluacion.diasParaRecambio <= 0
-            ? 'Ya te toca cambiar el cartucho.'
-            : `Te toca cambiar el cartucho en unos ${evaluacion.diasParaRecambio} días.`}
-        </Aviso>
+      {typeof evaluacion.diasParaRecambio === 'number' && (
+        <AvisoRecambio
+          dias={evaluacion.diasParaRecambio}
+          destino={sugeridos.length > 0 ? '#titulo-sugeridos' : '/lista'}
+          etiqueta={sugeridos.length > 0 ? 'Ver productos sugeridos' : 'Ver mi lista'}
+        />
       )}
 
       <Sugeridos sugeridos={sugeridos} />
@@ -168,6 +172,24 @@ function Resultado({ medicion }: { medicion: Medicion }) {
   );
 }
 
+/** Recordatorio de recambio dentro de la app (sin mensajes por WhatsApp). */
+export function AvisoRecambio({ dias, destino, etiqueta }: { dias: number; destino: string; etiqueta: string }) {
+  return (
+    <Aviso titulo="Tu cartucho" tono={dias <= 0 ? 'atencion' : 'info'}>
+      {textoRecambio(dias)}.{' '}
+      {destino.startsWith('#') ? (
+        <a className="g-enlace" href={destino}>
+          {etiqueta}
+        </a>
+      ) : (
+        <Link className="g-enlace" to={destino}>
+          {etiqueta}
+        </Link>
+      )}
+    </Aviso>
+  );
+}
+
 function FilaResultado({ parametro }: { parametro: ResultadoParametro }) {
   const hayValor = parametro.valor !== null && parametro.valor !== undefined;
   return (
@@ -177,6 +199,11 @@ function FilaResultado({ parametro }: { parametro: ResultadoParametro }) {
           {parametro.nombre}{' '}
           {parametro.orientativo && <Insignia tono="aviso">Orientativo</Insignia>}
         </p>
+        {QUE_MIDE[parametro.clave] && (
+          <p className="g-apagado" style={{ fontSize: '0.875em', margin: 0 }}>
+            {QUE_MIDE[parametro.clave]}
+          </p>
+        )}
         <p className="g-fila-parametro__valor">
           {hayValor ? `${parametro.valor}${parametro.unidad ? ` ${parametro.unidad}` : ''}` : 'No se pudo leer'}
         </p>
@@ -232,7 +259,7 @@ function Sugeridos({ sugeridos }: { sugeridos: Cartucho[] }) {
       </p>
       {sugeridos.slice(0, 3).map((cartucho, indice) => {
         const yaEsta = enLista.has(cartucho.codigo);
-        const cotizar = enlaceCotizar(cartucho.nombre);
+        const cotizar = enlaceCotizar(cartucho.nombre, cartucho.codigo);
         const lineaCodigo = [cartucho.marca, cartucho.codigo].filter(Boolean).join(' · ');
         return (
           <article className="g-tarjeta-producto" key={cartucho.codigo}>

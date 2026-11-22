@@ -112,6 +112,32 @@ export async function elegirOpcion(page: Page, pregunta: RegExp, opcion: RegExp)
   await candidato.click();
 }
 
+/**
+ * Elige el nivel de una casilla en la carga manual. Acepta las dos formas posibles:
+ * un grupo de chips por casilla (fieldset con el nombre del parámetro como leyenda y un botón
+ * por nivel, con coma decimal) o una lista desplegable con el nombre del parámetro como etiqueta.
+ * Devuelve false si la pantalla no tiene esa casilla.
+ */
+export async function elegirNivel(page: Page, nombreParametro: string, valor: number): Promise<boolean> {
+  const nombre = palabra(nombreParametro);
+
+  const grupo = page.getByRole('group', { name: nombre }).or(page.getByRole('radiogroup', { name: nombre })).first();
+  if (await grupo.count()) {
+    // 0,5 o 0.5; "50" no puede confundirse con "500" ni con "50,5".
+    const numero = escapar(String(valor)).replace('\\.', '[.,]');
+    const nivel = new RegExp(`^\\s*${numero}(?!\\d|[.,]\\d)`);
+    await grupo.getByRole('button', { name: nivel }).or(grupo.getByRole('radio', { name: nivel })).first().click();
+    return true;
+  }
+
+  const lista = page.getByRole('combobox', { name: nombre }).first();
+  if (await lista.count()) {
+    await elegirEnLista(lista, valor);
+    return true;
+  }
+  return false;
+}
+
 /** Marca una casilla de verificación; si el control nativo está tapado, usa el teclado. */
 export async function marcarCasilla(casilla: Locator): Promise<void> {
   try {
@@ -170,7 +196,10 @@ async function escribirEnSecreto(page: Page, campo: Locator, secreto: string): P
   await sesion.send('Input.insertText', { text: secreto });
   await sesion.detach();
   const largo = await campo.evaluate((elemento) => (elemento as HTMLInputElement).value.length);
-  expect(largo, 'El campo del PIN no recibió el texto').toBe(secreto.length);
+  expect(
+    largo,
+    'El campo del PIN no recibió el texto completo (si el campo solo acepta dígitos, el PIN debe ser numérico)',
+  ).toBe(secreto.length);
 }
 
 /** Entra al panel del operador por la interfaz, con el PIN del entorno. */
@@ -187,11 +216,12 @@ export async function entrarAlPanel(page: Page): Promise<void> {
 
 /** Abre una pestaña del panel del operador (Resumen, Despacho, Inventario o Zonas). */
 export async function abrirPestana(page: Page, nombre: 'Resumen' | 'Despacho' | 'Inventario' | 'Zonas'): Promise<void> {
-  const exacto = new RegExp(`^\\s*${nombre}\\s*$`, 'i');
+  // La pestaña puede llevar un contador: "Despacho (2 nuevos)".
+  const empiezaCon = new RegExp(`^\\s*${nombre}(\\s|$)`, 'i');
   await page
-    .getByRole('link', { name: exacto })
-    .or(page.getByRole('tab', { name: exacto }))
-    .or(page.getByRole('button', { name: exacto }))
+    .getByRole('link', { name: empiezaCon })
+    .or(page.getByRole('tab', { name: empiezaCon }))
+    .or(page.getByRole('button', { name: empiezaCon }))
     .first()
     .click();
   await expect(page).toHaveURL(new RegExp(`/operador/${nombre.toLowerCase()}`));

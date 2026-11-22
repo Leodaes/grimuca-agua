@@ -11,6 +11,7 @@ import {
 import {
   accion,
   elegirEnLista,
+  elegirNivel,
   elegirOpcion,
   esperarPantalla,
   leerGuardado,
@@ -46,19 +47,20 @@ import {
  * | /envio          | Dirección                | textbox        | Dirección…                                                   |
  * | /envio          | Botón principal          | button o link  | Seguir al pago · Continuar al pago                           |
  * | /pago           | Rótulo                   | texto          | Simulación                                                   |
- * | /pago           | Botón principal          | button         | Pagar $9 (simulación)                                        |
+ * | /pago           | Botón principal          | button         | Pagar $9 (simulación) · Simular pago de $9                   |
  * | /pago (pagado)  | Botón de la demo         | button o link  | Ya me llegó el sobre                                         |
  * | /medir          | Enlace de respaldo       | link o button  | …colores a mano · Prefiero anotar los colores yo mismo       |
- * | /medir/manual   | Una lista por casilla    | combobox       | nombre del parámetro (viene de /api/config/tira)             |
+ * | /medir/manual   | Un grupo por casilla     | group + button | leyenda = nombre del parámetro (de /api/config/tira); un chip|
+ * |                 |                          | (o combobox)   | por nivel, con coma decimal: 0 · 0,5 · 50                    |
  * | /medir/manual   | Botón principal          | button         | Ver mi resultado                                             |
  * | /resultado/:id  | Aviso fijo               | texto literal  | Esta tira no mide todo. Un buen resultado no significa…      |
  * | /resultado/:id  | Fila por parámetro       | listitem       | nombre + palabra del semáforo                                |
  * | /resultado/:id  | Palabras del semáforo    | texto          | Bien/En rango · Atención/Para vigilar · Alerta/Fuera de rango|
- * | /resultado/:id  | Producto sugerido        | button         | Agregar a mi lista                                           |
+ * | /resultado/:id  | Producto sugerido        | button         | Agregar a mi lista (después: Agregado · … quedó en tu lista) |
  * | barra inferior  | Acceso a la lista        | link           | Mi lista                                                     |
  * | /lista          | Modalidad                | chip (button)  | Retiro en tienda · Lo retiro en la tienda                    |
  * | /lista          | Tienda                   | combobox/chips | …tienda… → Mañongo                                           |
- * | /lista          | Botón principal          | button         | Confirmar pedido · Pedir                                     |
+ * | /lista          | Botón principal          | button         | Confirmar pedido · Hacer pedido · Pedir                      |
  * | /pedido/:id     | Confirmación             | texto          | Pedido recibido · Tu pedido ya está en la tienda · Listo, …  |
  *
  * Claves del dispositivo que se leen: localStorage `agua.hogar_id` y `agua.lista`.
@@ -80,7 +82,7 @@ const T = {
   direccion: /direcci[oó]n/i,
   seguirAlPago: /(seguir|continuar)\s+al\s+pago/i,
   simulacion: /simulaci[oó]n/i,
-  pagar: /pagar/i,
+  pagar: /pagar|simular (el )?pago/i,
   yaLlegoElSobre: /ya me lleg[oó] el sobre/i,
   cargaManual: /colores\s+(a mano|yo mismo|t[uú] mismo)/i,
   verResultado: /ver mi resultado/i,
@@ -88,7 +90,7 @@ const T = {
   nivelAmarillo: /atenci[oó]n|para vigilar/i,
   nivelRojo: /alerta|fuera de rango/i,
   agregarALista: /agregar a mi lista/i,
-  agregado: /agregado a tu lista|en tu lista/i,
+  agregado: /agregado a tu lista|qued[oó] en tu lista|en tu lista/i,
   miLista: /mi lista/i,
   retiro: /retir/i,
   tienda: /tienda/i,
@@ -207,18 +209,18 @@ test.describe('Compuerta 2 · recorrido del cliente con carga manual', () => {
       valoresElegidos = plan.valores;
       expect(claveRoja, 'La tira configurada debe traer al menos una casilla que pueda dar rojo').toBeTruthy();
 
+      // El botón aparece cuando ya cargaron las casillas de la tira.
+      await expect(page.getByRole('button', { name: T.verResultado }).first()).toBeVisible();
+
       for (const parametro of tira) {
         const valor = plan.valores[parametro.clave];
         if (valor === undefined) continue;
-        const lista = page.getByRole('combobox', { name: palabra(parametro.nombre) }).first();
-        const esLaRoja = parametro.clave === claveRoja;
-        if (esLaRoja) await expect(lista, `Falta la lista de "${parametro.nombre}"`).toBeVisible();
-        if (await lista.isVisible().catch(() => false)) {
-          await elegirEnLista(lista, valor);
-        } else {
-          expect.soft(false, `No hay una lista con la etiqueta "${parametro.nombre}" en la carga manual`).toBe(true);
-          delete valoresElegidos[parametro.clave];
-        }
+        const elegido = await elegirNivel(page, parametro.nombre, valor);
+        if (elegido) continue;
+        const mensaje = `La carga manual no tiene la casilla "${parametro.nombre}" (ni grupo de chips ni lista)`;
+        if (parametro.clave === claveRoja) expect(elegido, mensaje).toBe(true);
+        else expect.soft(elegido, mensaje).toBe(true);
+        delete valoresElegidos[parametro.clave];
       }
 
       await sinPalabraProhibida(page, '/medir/manual', false);

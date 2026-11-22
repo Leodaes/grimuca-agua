@@ -5,7 +5,7 @@ Este documento es el acuerdo entre los equipos de Plataforma, Medición, Cliente
 ## Reglas de trabajo
 
 - Monorepo con espacios de trabajo de npm: `api/` y `app/`. Las dependencias ya están instaladas. **Nadie ejecuta `npm install`**: si falta una librería, se resuelve sin ella o se avisa al orquestador.
-- Node no está en el PATH del sistema. En Bash: `export PATH="/c/Users/lede4/Valenhack/herramientas/node:$PATH"`. En PowerShell: `$env:Path = "C:\Users\lede4\Valenhack\herramientas\node;" + $env:Path`.
+- Node puede no estar en el PATH del sistema: usa la instalación local del equipo antes de correr npm.
 - Comandos: `npm run test -w api`, `npm run test -w app`, `npm run revisar -w api` (tipos), `npm run revisar -w app`, `npm run build` (front).
 - No hay Docker ni Postgres en la PC de desarrollo. Las pruebas de la API usan `pg-mem` o dobles; nunca dependen de una base real.
 - La API corre con `tsx` (sin compilar). TypeScript con `moduleResolution: Bundler`: imports sin extensión.

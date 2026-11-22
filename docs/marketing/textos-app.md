@@ -1,6 +1,9 @@
 # Textos de la app · Grimuca Agua
 
-Borrador de Marketing para validar con Tulio. Listos para pegar.
+Versión 2 (21 nov, noche): aplica las decisiones de Tulio (lema, promesa, semáforo con sus palabras, flujo con QR, tiendas reales). Detalle en `cambios-tulio.md`. Listos para pegar.
+
+**Lema definitivo:** Saber qué tomas empieza en casa
+**Promesa:** Menos botellones: mide tu agua y cambia el cartucho cuando toca
 
 **Cómo leer este archivo**
 - Lo que va entre `{llaves}` lo pone la app (nombre, tienda, número).
@@ -13,6 +16,8 @@ Borrador de Marketing para validar con Tulio. Listos para pegar.
 - Plomo y cobre: siempre "posible presencia, confirma con un laboratorio".
 - La prueba de bacterias no certifica el agua, salga como salga.
 - Aviso fijo, literal, en cada resultado: **"Esta tira no mide todo. Un buen resultado no significa que el agua sea apta para tomar."**
+- Pie del resultado (además del aviso fijo): **"Esta prueba es una orientación, no un análisis de laboratorio, y no certifica que el agua sea apta para tomar."**
+- Sin "agua de calidad" ni "permanente" en ningún texto.
 
 ---
 
@@ -22,6 +27,7 @@ Borrador de Marketing para validar con Tulio. Listos para pegar.
 |---|---|
 | Nombre en el encabezado | Grimuca Agua |
 | Barra inferior | Medir · Resultados · Tiendas · WhatsApp · Mi lista |
+| Lema (pie de la bienvenida y de la pantalla de tiendas) | Saber qué tomas empieza en casa |
 | Botón seguir | Continuar |
 | Botón volver | Atrás |
 | Botón guardar | Guardar |
@@ -36,15 +42,18 @@ Borrador de Marketing para validar con Tulio. Listos para pegar.
 
 | Elemento | Texto |
 |---|---|
-| Título | Descubre la calidad del agua de tu casa |
-| Línea fija bajo el título | Medición orientativa con tira. No es un análisis de laboratorio. |
-| Subtítulo | Te mandamos un sobre con la prueba, la haces tú mismo y en minutos te decimos qué marcó la tira y qué hacer. |
+| Título (lema) | Saber qué tomas empieza en casa |
+| Subtítulo (promesa) | Menos botellones: mide tu agua y cambia el cartucho cuando toca. |
+| Línea fija bajo el subtítulo | Medición orientativa con tira. No es un análisis de laboratorio. |
+| Explicación del sobre | El sobre trae una tira y una prueba de bacterias. Lo compras en el mostrador de Grimuca Mañongo o San Diego, o en las farmacias y supermercados aliados, o te lo llevamos a la casa. |
 | Beneficio 1 | **Mides en tu casa.** Una tira, una gota por casilla y una foto. |
 | Beneficio 2 | **Te lo explicamos claro.** Verde, amarillo o rojo, casilla por casilla. |
-| Beneficio 3 | **Te decimos qué cartucho va.** Y sale de la tienda Grimuca que te quede más cerca. |
-| Botón | Empezar |
-| Enlace secundario | Ya me llegó el sobre |
+| Beneficio 3 | **Te decimos cuándo cambiar el cartucho.** Y cuál va. |
+| Botón principal (camino A) | Ya tengo mi sobre |
+| Botón secundario (camino B) | Pedir el sobre a domicilio ($9) |
 | Pie | Grimuca · Mañongo · Big Low · CC CEM |
+
+> Los dos caminos. **A, "Ya tengo mi sobre":** escanear el QR del sobre (sección 5) → perfil del hogar (sección 2) → medir (sección 6). **B, "Pedir el sobre a domicilio ($9)":** perfil del hogar → envío del sobre (sección 3) → pago simulado (sección 4) → cuando llega el sobre, escanear su QR → medir. El pago dentro de la app es solo del camino B.
 
 ---
 
@@ -89,7 +98,7 @@ Borrador de Marketing para validar con Tulio. Listos para pegar.
 | Elemento | Texto |
 |---|---|
 | Título | ¿A dónde te mandamos el sobre? |
-| Subtítulo | Sale de la tienda Grimuca más cercana a tu zona. |
+| Subtítulo | Sale de la tienda Grimuca más cercana a tu zona. Solo para quien pide el sobre a domicilio. |
 | Campo dirección | Dirección de entrega |
 | Ayuda dirección | Urbanización, calle, casa o edificio y apartamento. |
 | Campo referencia | Punto de referencia (opcional) |
@@ -111,7 +120,7 @@ Borrador de Marketing para validar con Tulio. Listos para pegar.
 
 | Elemento | Texto |
 |---|---|
-| Título | Pide tu sobre |
+| Título | Pide tu sobre a domicilio |
 | Etiqueta corta (visible arriba) | SIMULACIÓN · No se cobra nada |
 | Rótulo fijo (completo, arriba del botón) | Pago simulado. Esto es una demostración: no se cobra nada, no se piden datos de tarjeta ni de banco y no se envía un sobre real. |
 | Resumen: producto | Sobre de medición Grimuca Agua |
@@ -123,16 +132,32 @@ Borrador de Marketing para validar con Tulio. Listos para pegar.
 | Confirmación: línea fija | Pago simulado registrado. No se hizo ningún cobro. |
 | Confirmación: título | Listo, {nombre}. Tu sobre está pedido. |
 | Confirmación: detalle | Pedido N.º {numero} · Sale de Grimuca {tienda} |
-| Confirmación: qué sigue | Cuando te llegue, abre la app y toca "Ya me llegó el sobre". |
+| Confirmación: qué sigue | Cuando te llegue, abre la app y escanea el QR del sobre. |
 | Botón | Entendido |
-| Botón de la demo | Ya me llegó el sobre (saltar la espera) |
+| Botón de la demo | Ya me llegó el sobre (saltar la espera): lleva a escanear el QR |
 | Error | No se pudo registrar el pedido. No se cobró nada. Intenta otra vez. |
 
 > Nota legal: esta pantalla no lleva campos de tarjeta, banco, cédula ni pago móvil, ni de adorno. Si el equipo sí va a mandar sobres reales, del rótulo se quita solo "y no se envía un sobre real".
 
 ---
 
-## 5. "Ya me llegó el sobre"
+## 5. Escanea el QR del sobre (primer paso para medir)
+
+| Elemento | Texto |
+|---|---|
+| Título | Escanea el QR de tu sobre |
+| Subtítulo | Está en la parte de atrás del sobre. Así sabemos que es tu sobre y te llevamos paso a paso. |
+| Botón | Abrir la cámara |
+| Escaneando | Buscando el código… |
+| Código leído | Listo, es tu sobre. |
+| Error: no se leyó | No pudimos leer el código. Acércalo un poco y con buena luz, o escríbelo a mano. |
+| Enlace de respaldo (propuesto) | Escribir el código del sobre |
+| Error: código no válido | Ese código no es de un sobre Grimuca. Revisa que lo hayas escrito bien. |
+| Sin permiso de cámara | La app no tiene permiso para usar la cámara. Actívalo en los ajustes del teléfono o escribe el código a mano. |
+| ¿Dónde lo consigo? | ¿No tienes sobre? Lo compras en el mostrador de Grimuca Mañongo o San Diego, o en farmacias y supermercados aliados. También puedes pedirlo a domicilio ($9). |
+| Botón: pedirlo | Pedir el sobre a domicilio ($9) |
+
+**Pantalla de preparación (después de escanear)**
 
 | Elemento | Texto |
 |---|---|
@@ -145,7 +170,7 @@ Borrador de Marketing para validar con Tulio. Listos para pegar.
 | Botón principal | Empezar a medir |
 | Botón secundario | Ver el video primero |
 | Nota de bacterias | La prueba de bacterias va aparte y tarda 48 horas. Te la explicamos al final. |
-| Todavía no llega | ¿Aún no te llega? Tu sobre sale de Grimuca {tienda}. |
+| Todavía no llega (solo si lo pidió a domicilio) | ¿Aún no te llega? Tu sobre sale de Grimuca {tienda}. |
 
 ---
 
@@ -240,13 +265,17 @@ Borrador de Marketing para validar con Tulio. Listos para pegar.
 
 > Esta tira no mide todo. Un buen resultado no significa que el agua sea apta para tomar.
 
-**Etiqueta por casilla**
+**Pie del resultado (debajo del aviso fijo, mismo tamaño de letra)**
+
+> Esta prueba es una orientación, no un análisis de laboratorio, y no certifica que el agua sea apta para tomar.
+
+**Etiqueta por casilla (las palabras son los colores, decisión de Tulio)**
 
 | Estado | Etiqueta |
 |---|---|
-| Verde | En rango |
-| Amarillo | Para vigilar |
-| Rojo | Fuera de rango |
+| Verde | Verde |
+| Amarillo | Amarillo |
+| Rojo | Rojo |
 | No leída | No se pudo leer |
 | No viene en la tira | Esta tira no la mide |
 
@@ -265,19 +294,31 @@ Borrador de Marketing para validar con Tulio. Listos para pegar.
 | Botón | Medir otra vez |
 | Enlace a bacterias | Falta tu prueba de bacterias. Repórtala a las 48 horas. |
 
-**Qué es cada casilla, en palabras de mostrador (provisional: lo ajusta el Especialista de agua)**
+**Qué mide cada casilla (frases de Tulio, van junto a cada indicador; el Especialista de agua las revisa)**
 
-| Casilla | Qué es |
+| Casilla | Qué mide |
 |---|---|
-| pH | Qué tan ácida o alcalina sale el agua. |
-| Dureza | Cuánta cal trae. Es la que deja sarro en ollas, grifos y duchas. |
-| Cloro | El cloro que le queda al agua del tratamiento. |
-| Alcalinidad | Lo que ayuda a que el pH no cambie de golpe. |
-| Nitrato | Algo que no debería salir alto. Si sale, vale la pena confirmarlo con un laboratorio. |
-| Nitrito | Igual que el nitrato: si sale alto, confírmalo con un laboratorio. |
-| Hierro | El que pone el agua amarilla y mancha la ropa y las pocetas. |
-| Plomo | Posible presencia. Confirma con un laboratorio. |
-| Cobre | Posible presencia. Confirma con un laboratorio. |
+| Cloro | Es lo que se usa para desinfectar el agua. Si hay mucho, cambia el sabor y el olor. |
+| pH | Dice si el agua está ácida o alcalina. Si se sale del rango, daña las tuberías y cambia el sabor. |
+| Dureza | Es el sarro. Mancha la grifería, tapa la ducha y gasta los equipos. |
+| Alcalinidad | Muestra qué tan estable es el agua. Si está fuera de rango, se forma sarro o corrosión. |
+| Hierro | Es lo que deja el agua amarilla y mancha la ropa y el baño. |
+| Cobre y plomo | Vienen de las tuberías viejas. Con esto no se juega. *(Adaptado por legal: Tulio añadía "si sale en rojo, toca filtrar". Ver abajo.)* |
+| Nitrato y nitrito | Vienen de la tierra, de abonos o del pozo séptico. Es una señal de alerta de contaminación. |
+| Bacterias (frasco aparte) | El resultado sale en 48 horas. Cuando lo reportes, te mostramos el texto de la sección 14. |
+
+**Cobre y plomo: qué dice la app (literal de legal)**
+- Junto al indicador: "Vienen de las tuberías viejas. Con esto no se juega."
+- Hallazgo en amarillo o rojo: "Posible presencia de plomo (o cobre). Una tira casera no lo confirma. Confirma con un laboratorio."
+- Nunca "toca filtrar" para plomo o cobre. Lo que sí se puede: la línea de precaución de arriba y, solo si la ficha del fabricante lo dice, "pensado para reducir…".
+
+**Recordatorio del cartucho (dentro de la app, en la demo)**
+
+| Elemento | Texto |
+|---|---|
+| Tarjeta | Te avisamos aquí cuándo toca cambiar el cartucho. |
+| Frecuencia de referencia (estimación de Tulio) | Los cartuchos se cambian más o menos cada 3 meses. |
+| Siguiente paso, marcado como "Próximamente" | Recordatorio por WhatsApp. |
 
 **Productos sugeridos**
 
@@ -323,9 +364,9 @@ Borrador de Marketing para validar con Tulio. Listos para pegar.
 |---|---|
 | Título | ¿Cómo lo quieres recibir? |
 | Opción 1 | Lo retiro en la tienda |
-| Opción 1: ayuda | Escoge la que te quede más cómoda. |
+| Opción 1: ayuda | Escoge la que te quede más cómoda. También retiras ahí el filtro y los cartuchos. |
 | Tiendas | Grimuca Mañongo · Grimuca Big Low · Grimuca CC CEM |
-| Horario | Horario: {horario} |
+| Horario | Lunes a viernes de 8:30 a. m. a 4:30 p. m. · Sábados de 9:00 a. m. a 2:00 p. m. · Domingos cerrado |
 | Opción 2 | Que me lo lleven a la casa |
 | Opción 2: ayuda | Sale de Grimuca {tienda}, la más cercana a {zona}. |
 | Dirección | Dirección de entrega |
@@ -371,6 +412,8 @@ Borrador de Marketing para validar con Tulio. Listos para pegar.
 | Resultado: cambió (rojo o amarillo) | El frasco cambió de color. Eso indica posible presencia de bacterias coliformes en la muestra. Es una prueba casera orientativa, no un análisis de laboratorio. Por precaución, hierve el agua antes de tomarla y confirma el resultado con un laboratorio. Si alguien en casa se siente mal, consulta a un médico. |
 | Resultado: sigue igual (azul o gris, nunca verde ni con ícono de aprobado) | El frasco no cambió de color. La prueba no detectó bacterias coliformes en esta muestra. Esto no certifica el agua ni significa que sea apta para tomar: es una prueba casera orientativa, depende de cómo se tomó la muestra y no detecta virus, parásitos ni otros contaminantes. Si quieres certeza, pide un análisis de laboratorio. |
 | Aviso fijo de esta pantalla (debajo de ambos resultados) | Esta tira no mide todo. Un buen resultado no significa que el agua sea apta para tomar. |
+| Pie del resultado (debajo del aviso fijo, en ambos casos) | Esta prueba es una orientación, no un análisis de laboratorio, y no certifica que el agua sea apta para tomar. |
+| Explicación junto al indicador de bacterias | El resultado sale en 48 horas. |
 | Invitación a la tienda (aparte, debajo; solo si cambió) | ¿Quieres orientación? Pasa por la tienda o escríbenos por WhatsApp y lo vemos contigo. |
 | Sugerencia de lámpara UV (tarjeta aparte, debajo; solo si cambió) | Opción para consultar en tienda: lámpara UV, pensada para reducir bacterias según el fabricante. No significa que el agua quede apta para tomar. Sigue hirviendo el agua y confirma con un laboratorio. |
 | Reportada | Prueba reportada el {fecha}. Gracias. |
@@ -391,8 +434,8 @@ Borrador de Marketing para validar con Tulio. Listos para pegar.
 | Resultados, sin mediciones | Todavía no has medido tu agua. Cuando lo hagas, aquí queda guardado. |
 | Resultados: botón | Medir mi agua |
 | Medir, sin perfil | Primero cuéntanos de tu casa. Es un minuto. |
-| Medir, sin sobre pedido | Para medir necesitas el sobre. Pídelo y te lo mandamos. |
-| Tiendas | Grimuca Mañongo · Grimuca Big Low · Grimuca CC CEM |
+| Medir, sin sobre | Para medir necesitas el sobre. Escanea su QR, o pídelo a domicilio ($9). |
+| Tiendas | Ver la sección 16 |
 | Pedidos, sin pedidos | No tienes pedidos todavía. |
 | Mi lista vacía | Tu lista está vacía. Mide tu agua y te decimos qué cartucho te sirve. |
 
@@ -414,7 +457,38 @@ Borrador de Marketing para validar con Tulio. Listos para pegar.
 
 ---
 
-## 16. Panel del operador
+## 16. Tiendas (`/tiendas`)
+
+Datos tomados de grimuca.com por Tulio. WhatsApp compartido de las tres tiendas.
+
+| Elemento | Texto |
+|---|---|
+| Título | Nuestras tiendas |
+| Subtítulo | Aquí compras el sobre, y retiras filtros y cartuchos. |
+| Horario (común) | Lunes a viernes de 8:30 a. m. a 4:30 p. m. · Sábados de 9:00 a. m. a 2:00 p. m. · Domingos cerrado |
+| Tienda 1 | **Grimuca Mañongo** (Naguanagua). C.C. Profesional Paseo Orquídea, local A-3, Av. Salvador Feo La Cruz. |
+| Tienda 2 | **Grimuca Big Low** (San Diego). C.C. Big Low Center, nivel 1, nave F, locales 1–3 y 35–37, calle 101, diagonal al terminal. |
+| Tienda 3 | **Grimuca CC CEM** (San Diego). C.C. CEM I, nivel 1, local 06, Av. Don Julio Centeno, frente al Big Low. |
+| WhatsApp | Escríbenos por WhatsApp: +58 414-4409396 (es el mismo para las tres tiendas). |
+| Botón | Escribir por WhatsApp |
+| Dónde comprar el sobre | El sobre también se vende en el mostrador de Mañongo y San Diego, y en farmacias y supermercados aliados. |
+| Pie | Saber qué tomas empieza en casa |
+
+> Nota: el botón solo abre una conversación de WhatsApp con la tienda. La app no envía mensajes ni recordatorios por WhatsApp (queda como siguiente paso).
+
+---
+
+## 17. Siguiente paso (marcado "Próximamente", no funciona en la demo)
+
+| Elemento | Texto |
+|---|---|
+| Recordatorio | Próximamente: te avisamos por WhatsApp cuándo toca cambiar el cartucho. |
+| Video | Próximamente: un video corto para que cambies tú mismo el cartucho. |
+| Plomero | Próximamente: pide un plomero o técnico para instalar o cambiar el cartucho. Es un servicio con costo. |
+
+---
+
+## 18. Panel del operador
 
 **Entrada**
 

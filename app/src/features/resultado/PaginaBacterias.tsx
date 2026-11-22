@@ -6,6 +6,7 @@ import type { Cartucho, PruebaBacterias } from '../../lib/tipos';
 import { Aviso, AvisoTira, Boton, Cargando, EstadoVacio } from '../../components/grimuca';
 import {
   BACTERIAS_ANTES,
+  BACTERIAS_EXPLICACION,
   BACTERIAS_CAMBIO,
   BACTERIAS_SIN_CAMBIO,
   BACTERIAS_TITULO,
@@ -76,6 +77,7 @@ export function PaginaBacterias() {
   return (
     <main id="contenido" className="g-pantalla__contenido g-pila" tabIndex={-1}>
       <h1 className="g-h1">{BACTERIAS_TITULO}</h1>
+      <p>{BACTERIAS_EXPLICACION}</p>
 
       {estado.tipo === 'cargando' && <Cargando texto="Un momento…" />}
       {estado.tipo === 'sin_hogar' && (
@@ -191,7 +193,7 @@ function Reportada({ prueba }: { prueba: Prueba }) {
             <p>{TEXTO_UV}</p>
             <ul className="g-pila">
               {sugeridos.map((cartucho) => {
-                const cotizar = enlaceCotizar(cartucho.nombre);
+                const cotizar = enlaceCotizar(cartucho.nombre, cartucho.codigo);
                 return (
                   <li key={cartucho.codigo}>
                     <p className="g-tarjeta-producto__nombre">{cartucho.nombre}</p>

@@ -7,8 +7,8 @@
 #   bash infra/desplegar.sh --reiniciar-datos --confirmo  despliega y vuelve a sembrar la base de la demo
 #
 # Variables de entorno:
-#   SERVIDOR      usuario@host del servidor (por defecto root@agua.oydo.app)
-#   LLAVE         llave privada de SSH (por defecto $HOME/.ssh/grimuca_agua_ed25519)
+#   SERVIDOR      usuario@host del servidor (obligatoria)
+#   LLAVE         llave privada de SSH (obligatoria)
 #   URL_PUBLICA   dirección pública que se verifica al final (por defecto https://agua.oydo.app)
 #   OPCIONES_SSH  opciones extra para ssh, separadas por espacios (opcional)
 #
@@ -17,8 +17,8 @@
 
 set -euo pipefail
 
-SERVIDOR="${SERVIDOR:-root@agua.oydo.app}"
-LLAVE="${LLAVE:-$HOME/.ssh/grimuca_agua_ed25519}"
+SERVIDOR="${SERVIDOR:?Define SERVIDOR (usuario@host)}"
+LLAVE="${LLAVE:?Define LLAVE (ruta de la llave privada de SSH)}"
 URL_PUBLICA="${URL_PUBLICA:-https://agua.oydo.app}"
 
 MODO="desplegar"

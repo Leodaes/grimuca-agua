@@ -294,7 +294,7 @@ export function Perfil() {
         )}
 
         <Boton type="submit" anchoCompleto cargando={enviando} textoCargando="Un momento…">
-          {errorEnvio ? 'Intentar otra vez' : 'Continuar'}
+          Continuar
         </Boton>
       </form>
     </PaginaAlta>

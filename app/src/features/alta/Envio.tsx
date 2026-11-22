@@ -7,20 +7,14 @@ import { hogarId } from '../../lib/sesion';
 import type { Hogar, Tienda } from '../../lib/tipos';
 import { ErrorConReintento, mensajeDeError, OpcionesRadio, PaginaAlta, tiendaSugerida, useCarga } from './comun';
 
-const TIENDAS_RESPALDO: Tienda[] = [
-  { id: 'manongo', nombre: 'Grimuca Mañongo', horario: '', direccion: null },
-  { id: 'biglow', nombre: 'Grimuca Big Low', horario: '', direccion: null },
-  { id: 'cem', nombre: 'Grimuca CC CEM', horario: '', direccion: null },
-];
-
 export function Envio() {
   const id = hogarId();
   const navegar = useNavigate();
   const carga = useCarga<{ hogar: Hogar; tiendas: Tienda[] }>(async () => {
     const hogar = await api.obtenerHogar(id as string);
-    // Si fallan las tiendas, se deja elegir con la lista fija.
-    const tiendas = await api.tiendas().catch(() => TIENDAS_RESPALDO);
-    return { hogar, tiendas: tiendas.length ? tiendas : TIENDAS_RESPALDO };
+    // Si fallan las tiendas, se sigue con la sugerida por zona (sin datos inventados).
+    const tiendas = await api.tiendas().catch(() => [] as Tienda[]);
+    return { hogar, tiendas };
   }, Boolean(id));
 
   const [direccion, setDireccion] = useState('');
@@ -108,7 +102,7 @@ export function Envio() {
             <h2 className="g-h2">Tu sobre sale de</h2>
             <TarjetaTienda
               nombre={elegida.nombre}
-              horario={elegida.horario || undefined}
+              horario={elegida.horario ? `Horario: ${elegida.horario}` : undefined}
               direccion={elegida.direccion ?? undefined}
               seleccionada
               extra={elegida.id === sugerida ? <Insignia tono="azul">Más cercana</Insignia> : undefined}
@@ -116,14 +110,20 @@ export function Envio() {
           </div>
         )}
 
+        {tiendas.length > 0 && (
         <OpcionesRadio
           pregunta="Tienda de donde sale tu sobre"
           ayuda="Ya elegimos la más cercana a tu zona. Si prefieres otra, cámbiala aquí."
           nombre="tienda_id"
-          opciones={tiendas.map((t) => ({ valor: t.id, etiqueta: t.nombre }))}
+          opciones={tiendas.map((t) => ({
+            valor: t.id,
+            etiqueta: t.nombre,
+            ayuda: [t.direccion, t.horario ? `Horario: ${t.horario}` : null].filter(Boolean).join(' · ') || undefined,
+          }))}
           valor={tiendaId}
           onCambio={setTiendaId}
         />
+        )}
 
         <section className="g-pila" aria-labelledby="que-te-llega">
           <h2 className="g-h2" id="que-te-llega">
@@ -145,7 +145,7 @@ export function Envio() {
         )}
 
         <Boton type="submit" anchoCompleto cargando={enviando} textoCargando="Un momento…">
-          {errorEnvio ? 'Intentar otra vez' : 'Continuar al pago'}
+          Continuar al pago
         </Boton>
       </form>
     </PaginaAlta>

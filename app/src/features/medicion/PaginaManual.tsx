@@ -4,6 +4,7 @@ import { Aviso, Boton, Cargando, Chip, EstadoVacio } from '../../components/grim
 import { api, ErrorApi } from '../../lib/api';
 import { hogarId } from '../../lib/sesion';
 import type { ClaveParametro, ParametroTira, ValoresMedicion } from '../../lib/tipos';
+import { QUE_MIDE } from '../resultado/textos';
 import { SinHogar } from './SinHogar';
 
 type Carga =
@@ -116,6 +117,11 @@ export function PaginaManual() {
                 {parametro.nombre}
                 {parametro.unidad ? <span className="g-apagado"> ({parametro.unidad})</span> : null}
               </legend>
+              {QUE_MIDE[parametro.clave] && (
+                <p className="g-apagado" style={{ fontSize: '0.875em', margin: '0 0 8px' }}>
+                  {QUE_MIDE[parametro.clave]}
+                </p>
+              )}
               <div className="g-chips">
                 {parametro.niveles.map((nivel) => (
                   <Chip

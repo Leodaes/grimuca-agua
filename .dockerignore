@@ -5,7 +5,6 @@
 .git
 .gitattributes
 .gitignore
-.claude
 
 # Dependencias y compilados: se generan dentro de la imagen
 **/node_modules

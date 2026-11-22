@@ -118,7 +118,7 @@ describe('/medir', () => {
     await userEvent.click(await screen.findByRole('button', { name: 'Leer mi tira' }));
 
     expect(await screen.findByText('No hay conexión')).toBeInTheDocument();
-    await userEvent.click(screen.getByRole('button', { name: 'Intentar otra vez' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Leer mi tira' }));
     expect(await screen.findByText('Resultado de med-1')).toBeInTheDocument();
     expect(apiSimulada.medirConFoto).toHaveBeenCalledTimes(2);
   });
