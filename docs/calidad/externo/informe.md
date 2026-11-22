@@ -4,6 +4,42 @@ Pruebas de navegador contra https://agua.oydo.app, hechas desde una máquina dis
 
 Cómo correrlas: `cd pruebas/externas && npm install && npx playwright install chromium && npx playwright test`. Revisión del repositorio: `node pruebas/externas/revisar-repo.js` desde la raíz.
 
+## Pasada 2 · sáb 21 nov, 8:38 p.m.
+
+**Resumen:** el esqueleto del monorepo ya está en main (`3d097c4`, 8:34 p.m.), pero la URL pública sigue sirviendo la página provisional. Las rutas de la app existen en el código y están vacías, incluida la del operador. El recorrido de la demo todavía no se puede probar en la URL pública.
+
+| Revisión | Teléfono (375 px) | Escritorio |
+|---|---|---|
+| La página carga | Sí (provisional) | Sí (provisional) |
+| No dice «potable» | Cumple | Cumple |
+| Botones de 44 px o más | No hay botones todavía | No aplica |
+| Recorrido completo en teléfono | **No:** la app no está publicada | — |
+| Pedido en vivo en el panel sin recargar | **No:** `/operador` da 404 | **No:** `/operador` da 404 |
+| Aviso fijo en el resultado | No probado | No probado |
+
+**Repositorio:** 56 archivos revisados. No hay `.github/workflows`, secretos, archivos `.env` ni teléfonos reales, y «potable» no aparece en el código de `app/`, `api/` ni `db/`. Todavía faltan `LICENCIAS.md` y `.env.example`, que el HANDOFF exige (sección 4).
+
+**Señales de vida del orquestador:** último commit suyo el sáb a las 8:34 p.m. El sitio responde, pero aún con la página provisional.
+
+**Ajustes a las pruebas en esta pasada:**
+- La prueba del panel ahora acepta el PIN del operador (HANDOFF §3) desde la variable `PANEL_PIN`. El PIN nunca se escribe en el repo.
+- `revisar-repo.js` ya no marca los números de ejemplo (0414 123 4567), y solo busca «potable» en código, porque la documentación nombra la palabra para prohibirla.
+
+### Fallas abiertas
+
+**Rompe la demo**
+- Ninguna todavía. Lo que falla es esperado: la app no está publicada.
+
+**Confunde**
+- **Aqual:** el HANDOFF dice que no se usa la línea Aqual, pero el catálogo de `insumos/catalogo/` la incluye porque así lo pidió el encargo. Hay que filtrar por Oasis antes de llevarlo a la base. Quedó anotado en `insumos/catalogo/NOTAS.md`.
+- **Faltan `LICENCIAS.md` y `.env.example`**, que el jurado revisa.
+- **No se sabe la ruta del panel:** las pruebas usan `/operador` hasta que exista la ruta real.
+
+**Cosmético**
+- Nada nuevo.
+
+Captura: `capturas/pasada2-panel-telefono.png` (404 del panel).
+
 ## Pasada 1 · sáb 21 nov, 8:30 p.m. (hora de Caracas)
 
 **Resumen:** la app todavía no está publicada. La raíz responde 200 con la página provisional «Sitio en construcción». El recorrido de la demo no se puede probar aún.

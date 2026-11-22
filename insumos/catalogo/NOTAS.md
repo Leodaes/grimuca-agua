@@ -2,6 +2,8 @@
 
 Extraído el sáb 21 nov 2026, 9:00 p.m. (hora de Caracas). Archivo: `catalogo_grimuca_agua.csv`. Para regenerarlo: `node insumos/catalogo/extraer.js` desde la raíz.
 
+> **Aviso:** `HANDOFF-hackaton.md` dice que **la línea Aqual no se usa** (secciones 2 y 11). Este archivo trae Aqual porque así lo pidió el encargo. Antes de cargar el catálogo en `semilla_cartuchos.sql`, filtren `marca = Oasis`, salvo que Tulio diga otra cosa.
+
 ## De dónde sale cada dato
 
 Todo sale de la API pública de la tienda de grimuca.com (`/wp-json/wc/store/v1/products`), la misma que alimenta la web. No se usó ninguna credencial ni sesión iniciada, y todas las consultas fueron de solo lectura.

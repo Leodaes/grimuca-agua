@@ -26,8 +26,11 @@ for (const f of files) {
   if (/(^|\/)\.env(\.|$)/.test(f) && !f.endsWith('.example')) problems.push(`Archivo de entorno versionado: ${f}`);
   if (!textExt.test(path.basename(f))) continue;
   const body = fs.readFileSync(path.join(root, f), 'utf8');
-  for (const [re, label] of secretRes) if (re.test(body)) problems.push(`${label} en ${f}`);
-  if (/potable/i.test(body) && !f.startsWith('docs/')) problems.push(`La palabra "potable" aparece en ${f}`);
+  // Obvious placeholder numbers (0414 123 4567, 0412 000 0000) are fine.
+  const scrubbed = body.replace(/\b0?4\d\d[-\s]?(123[-\s]?4567|000[-\s]?0000|555[-\s]?\d{4})\b/g, '');
+  for (const [re, label] of secretRes) if (re.test(scrubbed)) problems.push(`${label} en ${f}`);
+  // Docs name the word to forbid it; only shipped code counts.
+  if (/potable/i.test(body) && /^(app|api|db)\//.test(f)) problems.push(`La palabra "potable" aparece en ${f}`);
 }
 
 if (problems.length) { console.log('PROBLEMAS:\n- ' + problems.join('\n- ')); process.exitCode = 1; }
