@@ -120,7 +120,20 @@ test('recorrido completo del cliente y, con PIN, el pedido en vivo en Despacho',
   await fillForm(page); await checkTapTargets(page, testInfo);
   await clickText(page, /Guardar y seguir|^Continuar/i, 'perfil del hogar');
 
+  // Households with a filter get an extra step (photo of the filter, or by hand).
+  await page.waitForURL(/\/(mi-filtro|envio)/, { timeout: 15_000 }).catch(() => {});
+  if (/\/mi-filtro/.test(page.url())) {
+    await clickText(page, /a mano/i, 'mi filtro: cargar a mano');
+    await fillForm(page); await checkTapTargets(page, testInfo);
+    await clickText(page, /^Continuar|Guardar|Seguir|Listo/i, 'mi filtro');
+    // Confirmation screen "Listo, guardamos tu filtro" with its own Continuar.
+    await expect(page.getByRole('heading', { level: 1, name: /guardamos tu filtro/i }), 'No confirma que guardó el filtro').toBeVisible({ timeout: 15_000 });
+    await checkTapTargets(page, testInfo);
+    await clickText(page, /^Continuar$/i, 'filtro guardado');
+  }
   await expect(page, 'El perfil no lleva a /envio').toHaveURL(/\/envio/);
+  await expect(page.getByRole('textbox', { name: /Direcci/i }), 'La pantalla de envío no muestra el campo de dirección').toBeVisible({ timeout: 15_000 });
+  await page.waitForLoadState('networkidle').catch(() => {});
   await fillForm(page); await checkTapTargets(page, testInfo);
   await clickText(page, /Seguir al pago|^Continuar/i, 'dirección');
 

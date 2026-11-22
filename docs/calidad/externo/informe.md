@@ -4,6 +4,45 @@ Pruebas de navegador contra https://agua.oydo.app, hechas desde una máquina dis
 
 Cómo correrlas: `cd pruebas/externas && npm install && npx playwright install chromium && npx playwright test`. Revisión del repositorio: `node pruebas/externas/revisar-repo.js` desde la raíz.
 
+## Pasada 5 · sáb 21 nov, 9:52 p.m.
+
+**Resumen:** ya está publicado el despliegue con foto del filtro, mascotas, mapa por urbanización, tutoriales y «contrata a un experto» (`93bb76c`). **El recorrido completo del cliente funciona en teléfono y en escritorio**, incluido el paso nuevo del filtro. El pedido en vivo en Despacho no lo verifica esta revisión: lo certificó la Calidad interna (Compuerta 3, `8a57cae`).
+
+| Revisión | Teléfono (375 px) | Escritorio |
+|---|---|---|
+| La bienvenida carga | Sí | Sí |
+| No dice «potable» | Cumple en todas las pantallas | Cumple |
+| Recorrido completo del cliente | **Sí** | **Sí** |
+| Paso nuevo «Cuéntanos qué filtro tienes» (carga a mano) | Sí; sugiere 4 cartuchos | Sí |
+| Semáforo por parámetro y aviso fijo literal | Sí | Sí |
+| Producto sugerido y pedido | Sí («Listo, tu pedido ya está en la tienda») | Sí |
+| Controles de 44 px o más | **No:** «Cotizar por WhatsApp» mide 26 px | No aplica |
+| Panel del operador carga y pide PIN | Sí | Sí |
+| Pedido en vivo en Despacho sin recargar | Certificado por la Calidad interna | Certificado por la Calidad interna |
+
+**Repositorio:** 292 archivos revisados, sin hallazgos.
+
+**Señales de vida del orquestador:** último commit a las 9:39 p.m. (`d7a57f7`). El sitio responde. No hay alerta.
+
+**Ajustes a las pruebas:** cubren el paso nuevo `/mi-filtro`: «Cárgalo a mano» → «Listo, guardamos tu filtro» → «Continuar». Además esperan a que cargue la pantalla de envío antes de escribir la dirección. Los pedidos de esta pasada se llaman «Prueba Calidad externa».
+
+**Capturas:** `capturas/pasada5-resultado-telefono.png` y `capturas/pasada5-pedido-telefono.png`.
+
+### Fallas abiertas
+
+**Rompe la demo**
+- Ninguna.
+
+**Confunde**
+- **«Cotizar por WhatsApp» sigue midiendo 26 px de alto** en teléfono. Ahora aparece también en la pantalla «Listo, guardamos tu filtro» (4 veces) y en el resultado (3 veces). El orquestador lo anunció para el próximo despliegue.
+
+**Cosmético**
+- Los textos de la especificación siguen sin coincidir con los de la app. No se volvió a revisar: está anunciado para el próximo despliegue.
+
+**Resueltas desde la pasada 4**
+- ~~Cartuchos sugeridos sin foto~~: ahora cada tarjeta muestra la foto del producto.
+- ~~Pedidos «Prueba Calidad» en producción~~: el orquestador los borró.
+
 ## Nota · sáb 21 nov, 9:40 p.m.
 
 - **Compuerta 3 certificada por la Calidad interna**, no por esta revisión. El pedido aparece en Despacho sin recargar en menos de medio segundo; la evidencia está en `docs/calidad/informe-compuertas-1-3.md` (`8a57cae`). Esta revisión no la repite porque no usa el PIN en el sitio publicado.
