@@ -162,7 +162,12 @@ describe('pestaña Zonas: tablero de hexágonos', () => {
 
     // Avisar a los vecinos: solo muestra el WhatsApp simulado con el texto aprobado, sin nombrar hogares.
     await usuario.click(screen.getByRole('button', { name: 'Avisar a los vecinos de la zona' }));
-    expect(screen.getByText('Varios hogares de tu zona reportaron resultados fuera de rango. Te sugerimos medir tu agua.')).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'Hola, vecina o vecino de Naguanagua. Te escribe Grimuca Mañongo, la ferretería de tu zona. Esta semana varios hogares de Naguanagua midieron su agua con nosotros y en algunos salió fuera de rango, sobre todo en nitrato.',
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getByText(/Eso no dice nada de tu casa: para saberlo hay que medir\..*responde BAJA\.\)/)).toBeInTheDocument();
     expect(screen.getByText('Enviado (simulado)')).toBeInTheDocument();
     expect(screen.getByText(/en la demo no se envía un WhatsApp real/)).toBeInTheDocument();
   });

@@ -128,12 +128,27 @@ function Leyenda({ vista, forma }: { vista: VistaMapa; forma: FormaMapa }) {
   );
 }
 
-/** Texto aprobado por Legal (docs/legal/riesgos.md, M3): sin nombrar hogares y sin decir "contaminada". */
-export const MENSAJE_AVISO_VECINOS =
-  'Varios hogares de tu zona reportaron resultados fuera de rango. Te sugerimos medir tu agua.';
+/** "nitrato", "nitrato y plomo", "nitrato, cloro libre y plomo". */
+function enumerar(lista: string[]): string {
+  if (lista.length <= 1) return lista.join('');
+  return `${lista.slice(0, -1).join(', ')} y ${lista[lista.length - 1]}`;
+}
+
+/**
+ * Aviso a vecinos en dos burbujas (aprobado por Leonardo, 22 nov; revisado contra docs/legal/riesgos.md M3):
+ * no nombra hogares, no dice "contaminada", aclara que no dice nada de la casa de quien lo recibe y trae la baja.
+ */
+export function mensajesAvisoVecinos(zona: string, tienda: string, parametros: string[]): [string, string] {
+  const cuales = parametros.length > 0 ? `, sobre todo en ${enumerar(parametros)}.` : '.';
+  return [
+    `Hola, vecina o vecino de ${zona}. Te escribe Grimuca ${tienda}, la ferretería de tu zona. Esta semana varios hogares de ${zona} midieron su agua con nosotros y en algunos salió fuera de rango${cuales}`,
+    'Eso no dice nada de tu casa: para saberlo hay que medir. El sobre cuesta $9 con envío y tienes el resultado de la tira en 5 minutos. ¿Te apartamos uno esta semana? Responde SÍ. (Para no recibir más avisos, responde BAJA.)',
+  ];
+}
 
 /** Aviso a los vecinos de una zona en alerta: en la demo solo muestra el WhatsApp simulado, no envía nada. */
-function AvisarVecinos({ zona }: { zona: string }) {
+function AvisarVecinos({ zona, parametros }: { zona: string; parametros: string[] }) {
+  const tienda = nombreTienda(tiendaDeZona(zona));
   const [enviado, setEnviado] = useState(false);
   if (!enviado) {
     return (
@@ -144,7 +159,11 @@ function AvisarVecinos({ zona }: { zona: string }) {
   }
   return (
     <div className="g-pila" role="status">
-      <WhatsAppSimulado de={`Grimuca ${nombreTienda(tiendaDeZona(zona))}`} para={`Vecinos de ${zona}`} mensaje={MENSAJE_AVISO_VECINOS} />
+      <WhatsAppSimulado
+        de={`Grimuca ${tienda}`}
+        para={`Vecinos de ${zona}`}
+        mensaje={mensajesAvisoVecinos(zona, tienda, parametros.map(nombreParametro))}
+      />
       <p>
         <strong>Enviado (simulado)</strong> solo a los hogares de {zona} que aceptaron recibir avisos. No se nombra a ningún hogar.
       </p>
@@ -367,7 +386,7 @@ export function Zonas({ token, version, alNoAutorizado }: Props) {
                 <Boton variante="secundario" a={`${base}/inventario`}>
                   Ver inventario
                 </Boton>
-                <AvisarVecinos key={z.zona} zona={z.zona} />
+                <AvisarVecinos key={z.zona} zona={z.zona} parametros={z.parametros} />
               </Aviso>
             ))
           )}
