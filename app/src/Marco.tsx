@@ -38,6 +38,13 @@ export function Marco() {
     };
   }, [navegar]);
 
+  // Al cambiar de pantalla, empezar arriba: si no, "Pedir el sobre" abría el formulario a media página
+  // (el navegador conserva el desplazamiento de la portada). Los enlaces con #ancla se respetan.
+  useEffect(() => {
+    if (window.location.hash) return;
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
   // Una vez por carga: confirma en segundo plano que el hogar de la sesión sigue existiendo.
   // Si no existe, `lib/api` lo olvida y emite el evento de arriba; cualquier otro error se ignora.
   useEffect(() => {

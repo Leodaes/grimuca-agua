@@ -53,7 +53,7 @@ export function BannerHero({ principal = 'pedir' }: PropsBannerHero) {
             height={1024}
           />
           <p className="p-hero__precio">
-            <span>Sobre de medición</span>
+            <span>Sobre de medición, envío incluido</span>
             <strong>$9</strong>
           </p>
         </div>
@@ -192,7 +192,7 @@ export function BannerSobre({ accion, compacto = false, conPrecio = true }: Prop
           <IlustracionSobre conPrecio={conPrecio} />
         </div>
         <div className="p-pila">
-          <p className="p-eyebrow">El sobre de $9</p>
+          <p className="p-eyebrow">Sobre de medición, envío incluido</p>
           <h2 className="p-h2" id="p-sobre-titulo">
             Qué trae el sobre
           </h2>
