@@ -47,3 +47,8 @@ Una línea por decisión: qué y por qué.
 - Deck: lámina 5 pasa a cuatro líneas de ingreso; la cuarta, estudios por zona para universidades e instituciones públicas, va rotulada SUPUESTO y sin precio. La alerta temprana va en la nota del orador de la lámina 6 (la lámina ya tiene 3 viñetas).
 - Guiones: frase de Tulio de unos 10 s en Zonas (demo en vivo y video), primera en cortarse si falta tiempo.
 - Legal: respuesta 23 de `preguntas-jurado.md`. Revisado contra `riesgos.md` M3 y `puede-y-no-puede-decir.md`: agregado y anónimo, con consentimiento aparte (la demo no lo tiene todavía), sin nombrar hogares, "medición casera orientativa", sin "potable", "certificado" ni "verificado". Mínimo de hogares por zona y encaje legal: confirmar con abogado.
+
+## 22 nov, 1:40 p.m. · Compuerta 4: la foto propone, la persona confirma (pedido de Leonardo)
+- Con la tira real mojada, la app leyó plomo 5 (a ojo, 0) y alcalinidad 0 (a ojo, entre 0 y 40); el semáforo salió amarillo. Detalle en `docs/calibracion/guia-calibracion.md`, Compuerta 4.
+- Leonardo pidió que la app no dé por buena la lectura: después de la foto se muestra lo leído para confirmar o corregir. Si no cambia nada, se usa la medición de la foto; si corrige, se guarda una medición a mano.
+- También "Corrígela a mano" en todo resultado por foto, y "Completarlas a mano" de las casillas sin lectura llega con lo leído ya marcado.

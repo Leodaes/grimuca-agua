@@ -112,3 +112,22 @@ Criterio para dar por buena la Compuerta 4: en al menos 2 de las 3 muestras, la 
 
 - Deja lista una foto buena de la tira real en el teléfono que se use en la demo, por si la luz del lugar es mala.
 - Si la foto falla en vivo: "Cargar los colores a mano" y seguir. El recorrido es el mismo.
+
+## Compuerta 4 · Resultado con la tira real (22 nov, 1:33 p.m.)
+
+Muestra de Leonardo: tira Qteeyou 8 en 1 mojada, foto de teléfono junto a la tabla impresa (foto en `insumos-tulio/tira-real/`, fuera del repo).
+
+| Casilla | A ojo (orquestador, sobre la foto) | La app | ¿Coincide? |
+|---|---|---|---|
+| Alcalinidad | entre 0 y 40 (amarillo verdoso) | 0 → amarillo | dudoso |
+| pH | 6,2 a 6,8 | 6,8 | sí |
+| Dureza | azul oscuro, no calza con la tabla | sin lectura | sin lectura (aceptable) |
+| Cobre | 0 a 0,2 | 0,2 | sí |
+| Nitrato | 0 a 10 | 10 | sí |
+| Nitrito | 0 | 0 | sí |
+| Cloro libre | 0 a 0,5 (casi blanco) | sin lectura | sin lectura (aceptable) |
+| Plomo | 0 (amarillo anaranjado) | 5 → amarillo | **no: cambia el color** |
+
+Leonardo no coincidió con el resultado. Con el criterio de la sección 3 (ningún valor equivocado que cambie el color), esta muestra **no pasa**: el plomo en 5 puso el semáforo en amarillo y disparó la recomendación de ósmosis.
+
+**Decisión y cambio (desplegado en b9f8176):** la lectura por foto ya no va directo al resultado. Después de "Leer mi tira" la persona ve "¿Esto es lo que ves en tu tira?" con lo que leyó la foto marcado; confirma ("Sí, coincide: ver mi resultado") o corrige y se guarda su corrección como medición a mano. Todo resultado por foto tiene además "¿No coincide con lo que ves en tu tira? Corrígela a mano". Para el pitch: la foto propone, la persona confirma; es un límite conocido de las tiras caseras con luz de interior.
