@@ -37,3 +37,4 @@ Una línea por decisión: qué y por qué.
 - dom 22 nov, 8:40 a.m. · Decisión de Leonardo: Big Low y CC CEM se ubican en Castillito (San Diego), según OpenStreetMap.
 - dom 22 nov, 8:40 a.m. · Decisión de Leonardo: se quitan "Con esto no se juega" (cobre y plomo) y "Calidad del agua" en el panel del comercio pasa a "Resultados de la tira".
 - dom 22 nov, 8:40 a.m. · El cliente puede cerrar sesión desde su tablero; se olvida el perfil en el teléfono y sus mediciones siguen guardadas.
+- dom 22 nov, 9:10 a.m. · Decisión de Leonardo: el video de la demo se graba a eso de las 3:00 p.m., con aviso previo para confirmar que todo está listo. Tulio presenta al jurado. Se descargó ffmpeg en la PC (compilación oficial para Windows, suma verificada) para entregar el video en MP4. Se le pidió a Tulio la clave de ElevenLabs.
