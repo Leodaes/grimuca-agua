@@ -47,11 +47,11 @@ Versión 5 (22 nov, madrugada), corregida tras el ensayo cronometrado de Calidad
 - **Teléfono:** guardado.
 - **App medida:** Despacho 0,1 s · Inventario 0,2 s · Zonas 0,7 s (el fondo del mapa, 0,4 s) · Rutas 0,7 s · Productos 0,2 s si se muestra. Total 1,7 s.
 
-> **Leonardo:** "Así ve su día una ferretería. En Despacho, lo que tiene por entregar. En Inventario ve, en rojo, lo que le va a faltar en los próximos treinta días, y en Zonas, el mapa de las urbanizaciones con más resultados fuera de rango. Así desaparece el pedido sorpresa. Grimuca reparte su surtido de agua entre tres tiendas: una de cada tres referencias casi no se mueve y una sola hace la mitad de la venta de cartuchos. Con la fecha de cada recambio se compra lo que se va a vender, los quiebres se ven antes y, en Rutas, las entregas salen agrupadas por urbanización: una ruta en vez de viajes sueltos. Ahora vean cómo le llega el dato."
+> **Leonardo:** "Así ve su día una ferretería. En Despacho, lo que tiene por entregar. En Inventario ve, en rojo, lo que le va a faltar en los próximos treinta días, y en Zonas, el mapa de las urbanizaciones donde más familias están midiendo. Así desaparece el pedido sorpresa. Grimuca reparte su surtido de agua entre tres tiendas: una de cada tres referencias casi no se mueve y una sola hace la mitad de la venta de cartuchos. Con la fecha de cada recambio se compra lo que se va a vender, los quiebres se ven antes y, en Rutas, las entregas salen agrupadas por urbanización: una ruta en vez de viajes sueltos. Ahora vean cómo le llega el dato."
 
-**Alerta por zona (unos 10 s, Tulio; va justo cuando Leonardo está en Zonas, antes de pasar a Rutas).** Laptop: en Zonas, bajar a "Alertas por zona" y tocar "Avisar a los vecinos de la zona"; aparece el WhatsApp simulado y "Enviado (simulado)".
+**Invitar a medir (unos 10 s, Tulio; va justo cuando Leonardo está en Zonas, antes de pasar a Rutas).** Laptop: en Zonas, bajar a "Zonas para invitar a medir" y tocar "Invitar a los vecinos de {urbanización} a medir"; aparece el WhatsApp simulado y "Enviado (simulado)".
 
-> **Tulio:** "Cuando varios hogares de una zona salen fuera de rango en la misma semana, la red lo detecta y avisa a los vecinos que aceptaron recibir avisos, para que midan su agua. Esos datos, agregados y sin nombres, también sirven para estudios por zona con universidades e instituciones públicas. Son mediciones caseras orientativas. Cada vecino que responde SÍ es un sobre vendido para la ferretería de su zona."
+> **Tulio:** "Cuando varias familias de una urbanización miden su agua, la ferretería invita a los vecinos que aceptaron avisos a medir la suya. Cada vecino que responde SÍ es un sobre vendido para la ferretería de su zona. Esos datos, agregados y sin nombres, también sirven para estudios por zona con universidades e instituciones."
 
 Si el bloque va largo, esta frase se corta y queda para la ronda de preguntas (`preguntas-jurado.md`, privacidad de los datos).
 
