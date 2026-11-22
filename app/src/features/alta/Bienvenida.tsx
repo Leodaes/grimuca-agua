@@ -1,172 +1,19 @@
-import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Boton } from '../../components/grimuca';
-import { api } from '../../lib/api';
+import { useSearchParams } from 'react-router-dom';
 import { hogarId } from '../../lib/sesion';
-import { AvisoRecambio } from '../resultado/PaginaResultado';
-import type { UltimoCambio } from '../../lib/tipos';
-import { PaginaAlta } from './comun';
+import { PortadaVenta } from './portada/PortadaVenta';
+import { Tablero } from './portada/Tablero';
 
-export const LEMA = 'Saber qué tomas empieza en casa';
-export const PROMESA = 'Menos botellones: mide tu agua y cambia el cartucho cuando toca';
+export { LEMA, PROMESA } from './portada/Banners';
 
-const BENEFICIOS = [
-  { titulo: 'Mides en tu casa.', detalle: 'Una tira, una gota por casilla y una foto.' },
-  { titulo: 'Te lo explicamos claro.', detalle: 'Verde, amarillo o rojo, casilla por casilla.' },
-  {
-    titulo: 'Te decimos qué cartucho va.',
-    detalle: 'Y sale de la tienda Grimuca que te quede más cerca.',
-  },
-];
-
-/** Días para el recambio según la última medición del hogar (null si no hay dato) y la respuesta del perfil. */
-function useDiasRecambio(id: string | null): { dias: number | null; ultimoCambio: UltimoCambio | null; tieneFiltro: boolean } {
-  const [dias, setDias] = useState<number | null>(null);
-  const [ultimoCambio, setUltimoCambio] = useState<UltimoCambio | null>(null);
-  const [tieneFiltro, setTieneFiltro] = useState(false);
-  useEffect(() => {
-    if (!id) return;
-    let vigente = true;
-    Promise.resolve(api.medicionesDeHogar(id))
-      .then((mediciones) => {
-        const valor = mediciones?.[0]?.evaluacion?.diasParaRecambio;
-        if (vigente && typeof valor === 'number') setDias(valor);
-      })
-      .catch(() => undefined);
-    Promise.resolve()
-      .then(() => api.obtenerHogar(id))
-      .then((hogar) => {
-        if (!vigente || !hogar) return;
-        setUltimoCambio(hogar.ultimo_cambio ?? null);
-        setTieneFiltro(Boolean(hogar.tiene_filtro));
-      })
-      .catch(() => undefined);
-    return () => {
-      vigente = false;
-    };
-  }, [id]);
-  return { dias, ultimoCambio, tieneFiltro };
-}
-
+/**
+ * Portada (/).
+ * Sin hogar en este teléfono: página de venta del sobre de $9 (con ?sobre=1, llegada desde el QR del sobre,
+ * el botón principal pasa a ser "Ya tengo mi sobre").
+ * Con hogar: tablero corto con el último resultado y los accesos.
+ */
 export function Bienvenida() {
   const id = hogarId();
-  const conHogar = Boolean(id);
-  const recambio = useDiasRecambio(id);
-  const hayAvisoRecambio = recambio.dias !== null || (recambio.tieneFiltro && recambio.ultimoCambio !== null);
-
-  return (
-    <PaginaAlta>
-      <img
-        src="/promo/saber-que-tomas.jpg"
-        alt=""
-        width={1024}
-        height={1024}
-        style={{ width: '100%', height: 'auto', display: 'block' }}
-      />
-      <p className="g-kicker">Grimuca Agua</p>
-      <h1 className="g-h1">Descubre la calidad del agua de tu casa</h1>
-      <p className="g-h3" style={{ margin: 0 }}>
-        {LEMA}
-      </p>
-      <p>
-        <strong>{PROMESA}.</strong>
-      </p>
-      <p>
-        Escanea el QR de tu sobre, haz la prueba tú mismo y en minutos te decimos qué está saliendo
-        por tu chorro y qué hacer.
-      </p>
-
-      <ul className="g-pila" style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-        {BENEFICIOS.map((b) => (
-          <li
-            key={b.titulo}
-            style={{ borderLeft: '3px solid var(--azul)', padding: '4px 12px' }}
-          >
-            <strong>{b.titulo}</strong> {b.detalle}
-          </li>
-        ))}
-      </ul>
-
-      <img
-        src="/promo/mide-entiende-filtra.jpg"
-        alt="Mide, entiende y filtra: retira en Mañongo o San Diego, o te lo llevamos."
-        width={1024}
-        height={1024}
-        loading="lazy"
-        style={{ width: '100%', height: 'auto', display: 'block' }}
-      />
-
-      {conHogar && hayAvisoRecambio && (
-        <AvisoRecambio
-          dias={recambio.dias}
-          ultimoCambio={recambio.ultimoCambio}
-          destino="/resultado/ultimo"
-          etiqueta="Ver productos sugeridos"
-        />
-      )}
-
-      {conHogar ? (
-        <div className="g-pila">
-          <Boton a="/medir" anchoCompleto>
-            Medir mi agua
-          </Boton>
-          <Boton a="/resultados" variante="secundario" anchoCompleto>
-            Ver mis resultados
-          </Boton>
-          <Boton a="/perfil" variante="secundario" anchoCompleto>
-            Pedir el sobre a domicilio ($9)
-          </Boton>
-          <Link
-            className="g-enlace"
-            to="/tutoriales"
-            style={{ minHeight: 44, display: 'inline-flex', alignItems: 'center' }}
-          >
-            Tutoriales para cambiar tu cartucho
-          </Link>
-          <Link
-            className="g-enlace"
-            to="/catalogo"
-            style={{ minHeight: 44, display: 'inline-flex', alignItems: 'center' }}
-          >
-            Productos de la tienda
-          </Link>
-          <Link
-            className="g-enlace"
-            to="/mi-filtro"
-            style={{ minHeight: 44, display: 'inline-flex', alignItems: 'center' }}
-          >
-            Mi filtro
-          </Link>
-        </div>
-      ) : (
-        <div className="g-pila">
-          <Boton a="/perfil?ya=1" anchoCompleto>
-            Ya tengo mi sobre
-          </Boton>
-          <Boton a="/perfil" variante="secundario" anchoCompleto>
-            Pedir el sobre a domicilio ($9)
-          </Boton>
-        </div>
-      )}
-      <p className="g-apagado">El sobre se consigue en las tiendas Grimuca o te lo llevamos a casa.</p>
-
-      <p className="g-apagado" style={{ fontSize: '0.9em' }}>
-        Medición orientativa con tira. No es un análisis de laboratorio.
-      </p>
-      <p className="g-apagado" style={{ fontSize: '0.9em' }}>
-        <Link className="g-enlace" to="/tiendas">
-          Grimuca · Mañongo · Big Low · CC CEM
-        </Link>
-      </p>
-      <p style={{ fontSize: '0.9em' }}>
-        <Link className="g-enlace" to="/privacidad">
-          Aviso de privacidad
-        </Link>{' '}
-        ·{' '}
-        <Link className="g-enlace" to="/terminos">
-          Términos de uso
-        </Link>
-      </p>
-    </PaginaAlta>
-  );
+  const [parametros] = useSearchParams();
+  if (id) return <Tablero id={id} />;
+  return <PortadaVenta desdeSobre={parametros.get('sobre') === '1'} />;
 }

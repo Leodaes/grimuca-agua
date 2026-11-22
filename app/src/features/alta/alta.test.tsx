@@ -10,6 +10,7 @@ vi.mock('../../lib/api', () => ({
     actualizarHogar: vi.fn(),
     tiendas: vi.fn(),
     crearPedido: vi.fn(),
+    medicionesDeHogar: vi.fn(),
   },
 }));
 
@@ -20,6 +21,9 @@ vi.mock('../../lib/sesion', () => ({
 
 import { api } from '../../lib/api';
 import { guardarHogarId, hogarId } from '../../lib/sesion';
+import { Marco } from '../../Marco';
+import { Bienvenida } from './Bienvenida';
+import { Envio } from './Envio';
 import { Pago } from './Pago';
 import { Perfil } from './Perfil';
 
@@ -264,5 +268,140 @@ describe('alta', () => {
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Listo. Tu sobre está pedido.');
     expect(screen.getByText('Gracias, Ana.')).toBeInTheDocument();
     expect(screen.getByText('Cuando el pedido salga de la tienda, su estado cambia a Despachado en la app.')).toBeInTheDocument();
+  });
+
+  it('el pago muestra el paso 3 de 3 y la ilustración del sobre (sin la foto de campaña)', async () => {
+    vi.mocked(hogarId).mockReturnValue('h-1');
+    simulada.obtenerHogar.mockResolvedValue(hogar);
+    simulada.tiendas.mockResolvedValue([]);
+    enRuta('/pago', <Pago />);
+    expect(await screen.findByRole('img', { name: /El sobre de medición con la tira/ })).toBeInTheDocument();
+    expect(screen.getByText('Paso 3 de 3: tu sobre')).toBeInTheDocument();
+    expect(document.querySelector('img[src="/promo/sobre.jpg"]')).toBeNull();
+  });
+});
+
+describe('indicador de pasos', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(hogarId).mockReturnValue(null);
+  });
+
+  it('perfil: paso 1 de 3 al pedir el sobre y 1 de 2 con ?ya=1', () => {
+    const { unmount } = enRuta('/perfil', <Perfil />);
+    expect(screen.getByText('Paso 1 de 3: tu casa')).toBeInTheDocument();
+    expect(screen.getByRole('navigation', { name: 'Avance' }).querySelector('[aria-current="step"]')).not.toBeNull();
+    unmount();
+    enRuta('/perfil?ya=1', <Perfil />);
+    expect(screen.getByText('Paso 1 de 2: tu casa')).toBeInTheDocument();
+  });
+
+  it('envío: paso 2 de 3', async () => {
+    vi.mocked(hogarId).mockReturnValue('h-1');
+    simulada.obtenerHogar.mockResolvedValue(hogar);
+    simulada.tiendas.mockResolvedValue([]);
+    enRuta('/envio', <Envio />);
+    expect(await screen.findByRole('button', { name: 'Continuar al pago' })).toBeInTheDocument();
+    expect(screen.getByText('Paso 2 de 3: a dónde va')).toBeInTheDocument();
+  });
+});
+
+describe('portada', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(hogarId).mockReturnValue(null);
+  });
+
+  function portada(ruta = '/') {
+    return render(
+      <MemoryRouter initialEntries={[ruta]}>
+        <Routes>
+          <Route element={<Marco />}>
+            <Route path="/" element={<Bienvenida />} />
+          </Route>
+        </Routes>
+      </MemoryRouter>,
+    );
+  }
+
+  function hero() {
+    return within(screen.getByRole('region', { name: /Saber qué tomas empieza en casa/ }));
+  }
+
+  it('sin hogar: página de venta con el lema, el título original y los dos caminos', () => {
+    portada();
+    const titulo = screen.getByRole('heading', { level: 1 });
+    expect(titulo).toHaveTextContent('Descubre la calidad del agua de tu casa');
+    expect(titulo).toHaveTextContent('Saber qué tomas empieza en casa');
+    expect(screen.getAllByText('Medición orientativa con tira. No es un análisis de laboratorio.').length).toBeGreaterThan(0);
+
+    const pedir = hero().getByRole('link', { name: 'Pedir el sobre a domicilio ($9)' });
+    const ya = hero().getByRole('link', { name: 'Ya tengo mi sobre' });
+    expect(pedir).toHaveAttribute('href', '/perfil');
+    expect(pedir).toHaveClass('g-boton--primario');
+    expect(ya).toHaveAttribute('href', '/perfil?ya=1');
+    expect(ya).not.toHaveClass('g-boton--primario');
+
+    // Sin barra de navegación: en su lugar, la barra fija de compra.
+    expect(screen.queryByRole('navigation', { name: 'Navegación principal' })).not.toBeInTheDocument();
+    expect(screen.getByRole('complementary', { name: 'Comprar el sobre' })).toBeInTheDocument();
+    expect(simulada.medicionesDeHogar).not.toHaveBeenCalled();
+  });
+
+  it('sin hogar: muestra las cifras de botellones, el sobre, la muestra del resultado y las dudas', () => {
+    portada();
+    expect(screen.getByRole('heading', { name: '¿Cuánto se te va en botellones?' })).toBeInTheDocument();
+    expect(screen.getByText('Hasta $576')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Qué trae el sobre' })).toBeInTheDocument();
+    expect(screen.getByText('Ejemplo')).toBeInTheDocument();
+    expect(screen.getByText('¿Es difícil hacer la prueba?')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Aviso de privacidad' })).toHaveAttribute('href', '/privacidad');
+    expect(document.body.textContent ?? '').not.toMatch(/potable|vive tranquilo/i);
+  });
+
+  it('con ?sobre=1 el botón principal pasa a ser "Ya tengo mi sobre"', () => {
+    portada('/?sobre=1');
+    expect(hero().getByRole('link', { name: 'Ya tengo mi sobre' })).toHaveClass('g-boton--primario');
+    expect(hero().getByRole('link', { name: 'Pedir el sobre a domicilio ($9)' })).not.toHaveClass('g-boton--primario');
+  });
+
+  it('con hogar: tablero con saludo, último resultado y accesos, y la barra de navegación', async () => {
+    vi.mocked(hogarId).mockReturnValue('h-1');
+    simulada.obtenerHogar.mockResolvedValue(hogar);
+    simulada.medicionesDeHogar.mockResolvedValue([
+      {
+        id: 'm-7',
+        hogar_id: 'h-1',
+        fecha: '2026-11-20T10:00:00Z',
+        origen: 'foto',
+        valores: {},
+        evaluacion: { semaforo: 'amarillo', porParametro: [], hallazgos: [], corrige: [], diasParaRecambio: null },
+        sugeridos: [],
+      },
+    ]);
+    portada();
+    expect(await screen.findByRole('heading', { level: 1, name: 'Hola, Ana' })).toBeInTheDocument();
+    expect(await screen.findByText('Amarillo')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Ver el detalle/ })).toHaveAttribute('href', '/resultado/m-7');
+    expect(screen.getByRole('link', { name: 'Medir mi agua' })).toHaveAttribute('href', '/medir');
+    for (const nombre of [
+      'Ver mis resultados',
+      'Mi filtro',
+      'Productos de la tienda',
+      'Tutoriales para cambiar tu cartucho',
+      'Pedir el sobre a domicilio ($9)',
+    ]) {
+      expect(screen.getByRole('link', { name: nombre })).toBeInTheDocument();
+    }
+    expect(screen.getByRole('navigation', { name: 'Navegación principal' })).toBeInTheDocument();
+    expect(screen.queryByRole('complementary', { name: 'Comprar el sobre' })).not.toBeInTheDocument();
+  });
+
+  it('con hogar y sin mediciones: "Aún no has medido"', async () => {
+    vi.mocked(hogarId).mockReturnValue('h-1');
+    simulada.obtenerHogar.mockResolvedValue(hogar);
+    simulada.medicionesDeHogar.mockResolvedValue([]);
+    portada();
+    expect(await screen.findByText('Aún no has medido')).toBeInTheDocument();
   });
 });

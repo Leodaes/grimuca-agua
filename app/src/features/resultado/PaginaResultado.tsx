@@ -159,6 +159,7 @@ function Resultado({ medicion }: { medicion: Medicion }) {
         <Semaforo nivel={evaluacion.semaforo} palabra={PALABRA_NIVEL[evaluacion.semaforo]} tamano="grande" />
         <h1 className="g-h1">{resumen.titulo}</h1>
         <p>{resumen.frase}</p>
+        <ResumenNiveles porParametro={evaluacion.porParametro} />
       </div>
 
       <AvisoTira />
@@ -231,6 +232,28 @@ function Resultado({ medicion }: { medicion: Medicion }) {
         </Boton>
       </nav>
     </>
+  );
+}
+
+/** Resumen en una fila: cuántas casillas salieron en Rojo, Amarillo y Verde (y sin lectura, si hay). */
+export function ResumenNiveles({ porParametro }: { porParametro: Pick<ResultadoParametro, 'nivel'>[] }) {
+  const cuenta = (nivel: Nivel) => porParametro.filter((p) => p.nivel === nivel).length;
+  const niveles: Nivel[] = ['rojo', 'amarillo', 'verde', 'sin_dato'];
+  const filas = niveles.map((nivel) => ({ nivel, n: cuenta(nivel) })).filter((f) => f.nivel !== 'sin_dato' || f.n > 0);
+  return (
+    <ul
+      aria-label="Resumen de casillas"
+      style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--s2)', margin: 0, padding: 0, listStyle: 'none' }}
+    >
+      {filas.map(({ nivel, n }) => (
+        <li key={nivel}>
+          <Semaforo
+            nivel={nivel}
+            palabra={nivel === 'sin_dato' ? `${n} sin lectura` : `${n} en ${PALABRA_NIVEL[nivel]}`}
+          />
+        </li>
+      ))}
+    </ul>
   );
 }
 

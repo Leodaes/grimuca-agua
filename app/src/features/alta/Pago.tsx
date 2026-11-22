@@ -5,6 +5,8 @@ import { api } from '../../lib/api';
 import { hogarId } from '../../lib/sesion';
 import type { Hogar, Pedido, Tienda } from '../../lib/tipos';
 import { ErrorConReintento, mensajeDeError, PaginaAlta, tiendaSugerida, useCarga } from './comun';
+import { BannerSobre } from './portada/Banners';
+import { IndicadorPasos } from './portada/IndicadorPasos';
 
 export const ROTULO_PAGO_SIMULADO =
   'Pago simulado. Esto es una demostración: no se cobra nada, no se piden datos de tarjeta ni de banco y no se envía un sobre real.';
@@ -26,6 +28,7 @@ export function Pago() {
   if (carga.cargando || (!carga.datos && !carga.error)) {
     return (
       <PaginaAlta>
+        <IndicadorPasos actual={3} total={3} nombre="tu sobre" />
         <h1 className="g-h1">Paga tu sobre</h1>
         <Cargando texto="Un momento…" />
       </PaginaAlta>
@@ -35,6 +38,7 @@ export function Pago() {
   if (carga.error || !carga.datos) {
     return (
       <PaginaAlta>
+        <IndicadorPasos actual={3} total={3} nombre="tu sobre" />
         <h1 className="g-h1">Paga tu sobre</h1>
         <ErrorConReintento mensaje={carga.error ?? 'No se pudo cargar.'} onReintentar={carga.reintentar} />
       </PaginaAlta>
@@ -48,6 +52,7 @@ export function Pago() {
   if (!hogar.direccion) {
     return (
       <PaginaAlta>
+        <IndicadorPasos actual={3} total={3} nombre="tu sobre" />
         <h1 className="g-h1">Paga tu sobre</h1>
         <Aviso tono="atencion">Antes de pagar, dinos a dónde te mandamos el sobre.</Aviso>
         <Boton a="/envio" anchoCompleto>
@@ -105,20 +110,14 @@ export function Pago() {
   return (
     <PaginaAlta>
       <Insignia tono="aviso">Simulación</Insignia>
+      <IndicadorPasos actual={3} total={3} nombre="tu sobre" />
       <h1 className="g-h1">Paga tu sobre</h1>
 
       <section className="g-pila" aria-labelledby="resumen-sobre">
         <h2 className="g-h2" id="resumen-sobre">
           Sobre de medición Grimuca Agua
         </h2>
-        <img
-          src="/promo/sobre.jpg"
-          alt="El sobre trae la tira, el frasco de la prueba de bacterias, la tabla de colores y un código QR."
-          width={1024}
-          height={1024}
-          loading="lazy"
-          style={{ width: '100%', height: 'auto', display: 'block' }}
-        />
+        <BannerSobre compacto />
         <ul>
           <li>1 tira para medir tu agua</li>
           <li>1 prueba casera de bacterias coliformes</li>

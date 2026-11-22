@@ -6,6 +6,7 @@ import { api } from '../../lib/api';
 import { hogarId } from '../../lib/sesion';
 import type { Hogar, Tienda } from '../../lib/tipos';
 import { ErrorConReintento, mensajeDeError, OpcionesRadio, PaginaAlta, tiendaSugerida, useCarga } from './comun';
+import { IndicadorPasos } from './portada/IndicadorPasos';
 
 export function Envio() {
   const id = hogarId();
@@ -35,6 +36,7 @@ export function Envio() {
   if (carga.cargando || (!carga.datos && !carga.error)) {
     return (
       <PaginaAlta>
+        <IndicadorPasos actual={2} total={3} nombre="a dónde va" />
         <h1 className="g-h1">¿A dónde te mandamos el sobre?</h1>
         <Cargando variante="esqueleto" texto="Un momento…" />
       </PaginaAlta>
@@ -44,6 +46,7 @@ export function Envio() {
   if (carga.error || !carga.datos) {
     return (
       <PaginaAlta>
+        <IndicadorPasos actual={2} total={3} nombre="a dónde va" />
         <h1 className="g-h1">¿A dónde te mandamos el sobre?</h1>
         <ErrorConReintento mensaje={carga.error ?? 'No se pudo cargar.'} onReintentar={carga.reintentar} />
       </PaginaAlta>
@@ -79,6 +82,7 @@ export function Envio() {
 
   return (
     <PaginaAlta>
+      <IndicadorPasos actual={2} total={3} nombre="a dónde va" />
       <h1 className="g-h1">¿A dónde te mandamos el sobre?</h1>
       <p>Sale de la tienda Grimuca más cercana a tu zona.</p>
 

@@ -13,6 +13,7 @@ import {
   partirTelefono,
 } from '../../lib/telefono';
 import { urbanizacionesDeZona } from '../../lib/urbanizaciones';
+import { IndicadorPasos } from './portada/IndicadorPasos';
 import { ErrorConReintento, mensajeDeError, OpcionesRadio, ORIGENES, PaginaAlta, useCarga, ZONAS } from './comun';
 
 interface Formulario {
@@ -123,6 +124,11 @@ export function Perfil() {
   const navegar = useNavigate();
   const [parametros] = useSearchParams();
   const yaTieneSobre = parametros.get('ya') === '1';
+  const indicador = yaTieneSobre ? (
+    <IndicadorPasos actual={1} total={2} nombre="tu casa" />
+  ) : (
+    <IndicadorPasos actual={1} total={3} nombre="tu casa" />
+  );
   const idExistente = hogarId();
 
   const carga = useCarga(() => api.obtenerHogar(idExistente as string), Boolean(idExistente));
@@ -186,6 +192,7 @@ export function Perfil() {
   if (carga.cargando) {
     return (
       <PaginaAlta>
+        {indicador}
         <h1 className="g-h1">Cuéntanos de tu casa</h1>
         <Cargando texto="Un momento…" />
       </PaginaAlta>
@@ -195,6 +202,7 @@ export function Perfil() {
   if (carga.error) {
     return (
       <PaginaAlta>
+        {indicador}
         <h1 className="g-h1">Cuéntanos de tu casa</h1>
         <ErrorConReintento mensaje={carga.error} onReintentar={carga.reintentar} />
       </PaginaAlta>
@@ -205,6 +213,7 @@ export function Perfil() {
 
   return (
     <PaginaAlta>
+      {indicador}
       <h1 className="g-h1">Cuéntanos de tu casa</h1>
       <p>Con esto te recomendamos lo que de verdad te sirve. Es un minuto.</p>
 
