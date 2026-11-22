@@ -295,7 +295,7 @@ export function Productos({ token, version, alNoAutorizado }: Props) {
             />
           )}
           {todos.length > 0 && (
-            <div className="op-productos-filtros" role="search" aria-label="Buscar y ordenar productos">
+            <div className="op-productos-filtros" role="search" aria-label="Filtros de productos">
               <Campo
                 etiqueta="Buscar"
                 type="search"
