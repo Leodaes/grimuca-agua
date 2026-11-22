@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { afterEach, describe, expect, it } from 'vitest';
 import { calcularMapa, type FilaHogarMapa, type FilaMedicionMapa } from './mapa';
-import { URBANIZACIONES, buscarUrbanizacion, urbanizacionesDeZona, type Urbanizacion } from './urbanizaciones';
+import { URBANIZACIONES, UBICACION_TIENDAS, buscarUrbanizacion, urbanizacionesDeZona, type Urbanizacion } from './urbanizaciones';
 import { crearEntorno, perfilDePrueba, type Entorno } from '../rutas/ayudas-prueba';
 
 const HOY = new Date('2026-11-21T12:00:00Z');
@@ -11,7 +11,7 @@ const LISTA: Urbanizacion[] = [
   { id: 'el-retobo', nombre: 'El Retobo', zona: 'Naguanagua', col: 2, fila: 1, verificada: false, lat: 10.276, lng: -68.032 },
   { id: 'la-begona', nombre: 'La Begoña', zona: 'Naguanagua', col: 3, fila: 1, verificada: true, lat: 10.26, lng: -68.022 },
   { id: 'trigal-norte', nombre: 'Trigal Norte', zona: 'Valencia norte', col: 1, fila: 5, verificada: true, lat: 10.228, lng: -67.997 },
-  { id: 'yuma-i', nombre: 'Yuma I', zona: 'San Diego', col: 8, fila: 5, verificada: true, tienda: 'biglow', lat: 10.236, lng: -67.964 },
+  { id: 'yuma-i', nombre: 'Yuma I', zona: 'San Diego', col: 8, fila: 5, verificada: true, tiendas: ['biglow'], lat: 10.236, lng: -67.964 },
 ];
 
 const hogar = (id: string, zona: string, urbanizacion: string | null): FilaHogarMapa => ({ id, zona, urbanizacion });
@@ -53,7 +53,7 @@ describe('cálculo del mapa por urbanización', () => {
     });
     expect(por.get('la-begona')).toMatchObject({ hogares: 1, hogares_con_medicion_30_dias: 0, estado: 'sin_medicion', alerta: false });
     expect(por.get('trigal-norte')).toMatchObject({ estado: 'verde', parametros: [], pedidos_pendientes: 1 });
-    expect(por.get('yuma-i')).toMatchObject({ hogares: 0, estado: 'sin_clientes', alerta: false, tienda: 'biglow' });
+    expect(por.get('yuma-i')).toMatchObject({ hogares: 0, estado: 'sin_clientes', alerta: false, tiendas: ['biglow'] });
     expect(por.get('trigal-norte')).toMatchObject({ lat: 10.228, lng: -67.997 });
   });
 
@@ -121,7 +121,7 @@ describe('lista de urbanizaciones', () => {
     expect(new Set(posiciones).size).toBe(posiciones.length);
     expect(urbanizacionesDeZona('Valencia norte')).toHaveLength(29);
     expect(urbanizacionesDeZona('Naguanagua')).toHaveLength(20);
-    expect(urbanizacionesDeZona('San Diego')).toHaveLength(21);
+    expect(urbanizacionesDeZona('San Diego')).toHaveLength(22);
     expect(buscarUrbanizacion('Valle Verde')?.zona).toBe('San Diego');
     // Valencia norte se dibuja en 3 grupos.
     expect(new Set(urbanizacionesDeZona('Valencia norte').map((u) => u.grupo))).toEqual(
@@ -147,11 +147,14 @@ describe('lista de urbanizaciones', () => {
   });
 
   it('las tres tiendas quedan marcadas', () => {
-    expect(URBANIZACIONES.filter((u) => u.tienda).map((u) => [u.id, u.tienda])).toEqual([
-      ['manongo', 'manongo'],
-      ['el-morro-ii', 'cem'],
-      ['el-morro-i', 'biglow'],
+    expect(URBANIZACIONES.filter((u) => u.tiendas?.length).map((u) => [u.id, u.tiendas])).toEqual([
+      ['manongo', ['manongo']],
+      ['castillito', ['biglow', 'cem']],
     ]);
+    // Castillito (San Diego) queda al sur de El Morro, junto a Los Magallanes y Los Jarales.
+    expect(buscarUrbanizacion('castillito')).toMatchObject({ zona: 'San Diego', col: 10, fila: 9, verificada: true, lat: 10.1927, lng: -67.9607 });
+    expect(UBICACION_TIENDAS.biglow).toMatchObject({ lat: 10.1926, lng: -67.9654 });
+    expect(UBICACION_TIENDAS.cem).toMatchObject({ lat: 10.1918, lng: -67.9648 });
     expect(buscarUrbanizacion('MAÑONGO')?.id).toBe('manongo');
   });
 

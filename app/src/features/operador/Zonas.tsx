@@ -161,10 +161,10 @@ function Detalle({ u }: { u: UrbanizacionMapa | undefined }) {
         <dd className="g-cifra">{u.pedidos_pendientes}</dd>
         <dt>Tienda que despacha</dt>
         <dd>Grimuca {nombreTienda(tiendaDeZona(u.zona))}</dd>
-        {u.tienda && (
+        {u.tiendas.length > 0 && (
           <>
             <dt>Aquí queda</dt>
-            <dd>Grimuca {nombreTienda(u.tienda)}</dd>
+            <dd>{u.tiendas.map((t) => `Grimuca ${nombreTienda(t)}`).join(' y ')}</dd>
           </>
         )}
       </dl>
@@ -240,7 +240,7 @@ export function Zonas({ token, version, alNoAutorizado }: Props) {
     <div className="g-pila g-pila--amplia">
       <div>
         <h1 className="g-h1">Zonas</h1>
-        <p>Calidad del agua por urbanización y dónde hay (o no hay) clientes.</p>
+        <p>Resultados de la tira por urbanización y dónde hay (o no hay) clientes.</p>
       </div>
 
       {estado === 'cargando' && !datos && <Cargando variante="esqueleto" lineas={4} texto="Cargando zonas…" />}
@@ -286,7 +286,7 @@ export function Zonas({ token, version, alNoAutorizado }: Props) {
 
               <div className="g-chips" role="group" aria-label="Vista del mapa">
                 <Chip activo={vista === 'calidad'} onClick={() => setVista('calidad')}>
-                  Calidad del agua
+                  Resultados de la tira
                 </Chip>
                 <Chip activo={vista === 'clientes'} onClick={() => setVista('clientes')}>
                   Clientes
@@ -300,7 +300,7 @@ export function Zonas({ token, version, alNoAutorizado }: Props) {
                 {forma === 'mapa' ? (
                   <MapaReal
                     marcas={marcas}
-                    etiqueta="Mapa de las urbanizaciones"
+                    etiqueta={vista === 'calidad' ? 'Mapa de resultados de la tira por urbanización' : 'Mapa de clientes por urbanización'}
                     claveEncaje={`${tablero.length}|${tiendas.length}`}
                     encajarEn={encaje}
                   />

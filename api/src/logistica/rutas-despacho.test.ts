@@ -188,6 +188,9 @@ describe('GET /api/operador/rutas', () => {
     expect(ids).not.toContain(retiro);
     expect(manongo.sin_ubicacion).toBe(1);
     expect(manongo.origen).toEqual({ lat: 10.234, lng: -68 });
+    // Big Low y CC CEM salen desde Castillito (San Diego).
+    expect(datos.rutas.find((r) => r.tienda_id === 'biglow')?.origen).toEqual({ lat: 10.1926, lng: -67.9654 });
+    expect(datos.rutas.find((r) => r.tienda_id === 'cem')?.origen).toEqual({ lat: 10.1918, lng: -67.9648 });
     expect(manongo.paradas[0]).toMatchObject({ orden: 1, pedidos: [expect.objectContaining({ tipo: 'sobre', detalle: 'Sobre de prueba de agua' })] });
     expect(datos.totales).toMatchObject({ entregas: 2, paradas: 2 });
     expect(JSON.stringify(datos)).not.toContain(String(deLara) + ',"tipo"');

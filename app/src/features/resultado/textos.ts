@@ -23,8 +23,8 @@ export const QUE_MIDE: Record<ClaveParametro, string> = {
   dureza: 'Es el sarro. Mancha la grifería, tapa la ducha y gasta los equipos.',
   alcalinidad: 'Muestra qué tan estable es el agua. Si está fuera de rango, se forma sarro o corrosión.',
   hierro: 'Es lo que deja el agua amarilla y mancha la ropa y el baño.',
-  cobre: 'Vienen de las tuberías viejas. Con esto no se juega.',
-  plomo: 'Vienen de las tuberías viejas. Con esto no se juega.',
+  cobre: 'Pueden venir de las tuberías. La tira solo marca una posible presencia: confirma con un laboratorio.',
+  plomo: 'Pueden venir de las tuberías. La tira solo marca una posible presencia: confirma con un laboratorio.',
   nitrato: 'Vienen de la tierra, de abonos o del pozo séptico. Es una casilla para vigilar: confírmala con un laboratorio.',
   nitrito: 'Vienen de la tierra, de abonos o del pozo séptico. Es una casilla para vigilar: confírmala con un laboratorio.',
 };

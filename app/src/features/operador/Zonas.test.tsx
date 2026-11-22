@@ -15,7 +15,7 @@ function urb(cambios: Partial<UrbanizacionMapa> & Pick<UrbanizacionMapa, 'id' | 
     en_tablero: true,
     grupo: null,
     verificada: true,
-    tienda: null,
+    tiendas: [],
     lat: 10.25,
     lng: -68.01,
     hogares: 0,
@@ -43,7 +43,7 @@ const MAPA: UrbanizacionMapa[] = [
     parametros: ['nitrato'],
     pedidos_pendientes: 2,
   }),
-  urb({ id: 'manongo', nombre: 'Mañongo', col: 1, fila: 3, tienda: 'manongo', lat: 10.234, lng: -67.998 }),
+  urb({ id: 'manongo', nombre: 'Mañongo', col: 1, fila: 3, tiendas: ['manongo'], lat: 10.234, lng: -67.998 }),
   urb({
     id: 'trigal-norte',
     nombre: 'Trigal Norte',
@@ -86,7 +86,10 @@ describe('pestaña Zonas: mapa real (por defecto)', () => {
   it('muestra un círculo por urbanización con letra y color, y la tienda; al tocarlo abre el detalle', async () => {
     const usuario = userEvent.setup();
     const { container } = montar();
-    expect(await screen.findByRole('region', { name: 'Mapa de las urbanizaciones' })).toBeInTheDocument();
+    expect(await screen.findByRole('region', { name: 'Mapa de resultados de la tira por urbanización' })).toBeInTheDocument();
+    expect(screen.getByText('Resultados de la tira por urbanización y dónde hay (o no hay) clientes.')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Resultados de la tira' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.queryByText(/calidad del agua/i)).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Mapa' })).toHaveAttribute('aria-pressed', 'true');
     expect(screen.getByRole('button', { name: 'Tablero' })).toHaveAttribute('aria-pressed', 'false');
 
@@ -109,6 +112,7 @@ describe('pestaña Zonas: mapa real (por defecto)', () => {
     await usuario.click(screen.getByRole('button', { name: 'Clientes' }));
     expect(container.querySelector('[data-id="el-retobo"] .mr-urb')).toHaveClass('mr-urb--azul-2');
     expect(container.querySelector('[data-id="el-retobo"] .mr-urb')).toHaveTextContent('4');
+    expect(screen.getByRole('region', { name: 'Mapa de clientes por urbanización' })).toBeInTheDocument();
   });
 });
 
@@ -125,7 +129,8 @@ describe('pestaña Zonas: tablero de hexágonos', () => {
     expect(within(cifras).getByText('Urbanizaciones por captar').closest('div')).toHaveTextContent('1');
 
     // Vista de calidad por defecto: letra del estado y alerta marcada.
-    const calidad = screen.getByRole('button', { name: 'Calidad del agua' });
+    const calidad = screen.getByRole('button', { name: 'Resultados de la tira' });
+    expect(screen.getByRole('group', { name: 'Mapa de resultados de la tira por urbanización' })).toBeInTheDocument();
     const clientes = screen.getByRole('button', { name: 'Clientes' });
     expect(calidad).toHaveAttribute('aria-pressed', 'true');
     expect(container.querySelector('[data-id="el-retobo"]')).toHaveClass('mapa-hex--rojo', 'mapa-hex--alerta');

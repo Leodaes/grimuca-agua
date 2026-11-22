@@ -43,7 +43,7 @@ const BIGLOW: RutaTienda = {
   ...MANONGO,
   tienda_id: 'biglow',
   tienda_nombre: 'Big Low',
-  origen: { lat: 10.193, lng: -67.965 },
+  origen: { lat: 10.1926, lng: -67.9654 },
   paradas: [{ ...MANONGO.paradas[0], urbanizacion: 'El Morro I', lat: 10.219, lng: -67.961, pedidos: [{ id: 83, tipo: 'sobre', hogar_nombre: 'Daniela F.', detalle: 'Sobre de prueba de agua' }] }],
   entregas: 1,
   sin_ubicacion: 0,

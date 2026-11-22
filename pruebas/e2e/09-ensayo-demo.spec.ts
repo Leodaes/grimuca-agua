@@ -246,7 +246,7 @@ test.describe('Ensayo de la demo · guion de 3 minutos', () => {
         return ms;
       });
 
-      await tramo('02c', 'Bloque 2 · Comercio', 'Zonas: mapa por urbanización (calidad del agua)', async (vio) => {
+      await tramo('02c', 'Bloque 2 · Comercio', 'Zonas: mapa por urbanización (resultados de la tira)', async (vio) => {
         let msMapa = 0;
         const ms = await reloj(async () => {
           await abrirPestana(comercio, 'Zonas');

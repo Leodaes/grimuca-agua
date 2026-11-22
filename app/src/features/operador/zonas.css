@@ -83,7 +83,7 @@
   stroke-linejoin: round;
 }
 
-/* Calidad del agua */
+/* Resultados de la tira */
 .mapa-hex--verde .mapa-hex__forma { fill: var(--ok-bg); stroke: var(--ok); }
 .mapa-hex--verde .mapa-hex__letra { fill: var(--ok); }
 .mapa-hex--amarillo .mapa-hex__forma { fill: var(--ambar-bg); stroke: var(--ambar); }

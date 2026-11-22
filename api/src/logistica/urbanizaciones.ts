@@ -24,8 +24,8 @@ export interface Urbanizacion {
   fila: number;
   /** false = por confirmar (sin fuente fiable). */
   verificada: boolean;
-  /** Id de la tienda que queda en esa urbanización, si hay una. */
-  tienda?: string;
+  /** Ids de las tiendas que quedan en esa urbanización, si hay alguna. */
+  tiendas?: readonly string[];
   /** Centro aproximado de la urbanización (OpenStreetMap, 3 decimales). */
   lat: number;
   lng: number;
@@ -41,13 +41,16 @@ export interface Coordenada {
 
 /**
  * Tiendas de Grimuca en el mapa de Carabobo. Todas aproximadas: Mañongo es la coordenada de la zona
- * (Av. Salvador Feo La Cruz), Big Low y CC CEM salen de sus nodos en OSM. Las tiendas de los comercios
- * aliados (otros estados) no van en este mapa.
+ * (Av. Salvador Feo La Cruz). Big Low y CC CEM quedan en Castillito, San Diego (OpenStreetMap, 2026-11-22):
+ * Big Low en el C.C. Big Low Center, diagonal al terminal de pasajeros; CC CEM en el C.C. CEM I, Av. Don Julio
+ * Centeno, frente al Big Low. Las tiendas de los comercios aliados (otros estados) no van en este mapa.
  */
 export const UBICACION_TIENDAS: Readonly<Record<string, Coordenada & { coordenada_aproximada: true }>> = {
   manongo: { lat: 10.234, lng: -68.0, coordenada_aproximada: true },
-  biglow: { lat: 10.193, lng: -67.965, coordenada_aproximada: true },
-  cem: { lat: 10.189, lng: -67.971, coordenada_aproximada: true },
+  // Aproximada, Castillito.
+  biglow: { lat: 10.1926, lng: -67.9654, coordenada_aproximada: true },
+  // Aproximada, Castillito.
+  cem: { lat: 10.1918, lng: -67.9648, coordenada_aproximada: true },
 };
 
 const N = 'Naguanagua' as const;
@@ -79,7 +82,7 @@ export const URBANIZACIONES: readonly Urbanizacion[] = [
   { id: 'las-quintas', nombre: 'Las Quintas', zona: N, col: 5, fila: 4, verificada: true, lat: 10.245, lng: -68.007 },
   { id: 'palma-real', nombre: 'Palma Real', zona: N, col: 6, fila: 4, verificada: true, lat: 10.244, lng: -67.997 },
   { id: 'ciudad-jardin-manongo', nombre: 'Ciudad Jardín Mañongo', zona: N, col: 7, fila: 4, verificada: true, lat: 10.239, lng: -67.996 },
-  { id: 'manongo', nombre: 'Mañongo', zona: N, col: 7, fila: 5, verificada: true, tienda: 'manongo', lat: 10.234, lng: -67.998 },
+  { id: 'manongo', nombre: 'Mañongo', zona: N, col: 7, fila: 5, verificada: true, tiendas: ['manongo'], lat: 10.234, lng: -67.998 },
 
   // --- Valencia norte, grupo oeste y Guataparo (columnas 0 y 1, filas 7 a 11) ---
   { id: 'prebo-iii', nombre: 'Prebo III', zona: V, grupo: OESTE, col: 1, fila: 7, verificada: true, lat: 10.214, lng: -68.032 },
@@ -117,7 +120,7 @@ export const URBANIZACIONES: readonly Urbanizacion[] = [
   { id: 'las-chimeneas', nombre: 'Las Chimeneas', zona: V, grupo: TRIGAL, col: 7, fila: 11, verificada: true, lat: 10.203, lng: -67.998 },
   { id: 'lomas-del-este', nombre: 'Lomas del Este', zona: V, grupo: TRIGAL, col: 8, fila: 11, verificada: true, lat: 10.193, lng: -67.995 },
 
-  // --- San Diego (columnas 9 a 14, filas 1 a 8) ---
+  // --- San Diego (columnas 9 a 14, filas 1 a 9) ---
   { id: 'la-cumaca', nombre: 'La Cumaca', zona: S, col: 14, fila: 1, verificada: true, lat: 10.286, lng: -67.943 },
   { id: 'lomas-de-la-hacienda', nombre: 'Lomas de la Hacienda', zona: S, col: 9, fila: 2, verificada: true, lat: 10.268, lng: -67.984 },
   { id: 'el-tulipan', nombre: 'El Tulipán', zona: S, col: 12, fila: 2, verificada: true, lat: 10.270, lng: -67.960 },
@@ -134,13 +137,15 @@ export const URBANIZACIONES: readonly Urbanizacion[] = [
   { id: 'la-esmeralda', nombre: 'La Esmeralda', zona: S, col: 10, fila: 6, verificada: true, lat: 10.229, lng: -67.971 },
   { id: 'valle-verde', nombre: 'Valle Verde', zona: S, col: 11, fila: 6, verificada: true, lat: 10.228, lng: -67.962 },
   { id: 'paso-real', nombre: 'Paso Real', zona: S, col: 13, fila: 6, verificada: false, lat: 10.232, lng: -67.950, coordenada_aproximada: true },
-  // Tiendas Big Low y CC CEM: zona industrial al sur de El Morro, ubicación aproximada.
-  { id: 'el-morro-ii', nombre: 'El Morro II', zona: S, col: 10, fila: 7, verificada: true, tienda: 'cem', lat: 10.218, lng: -67.969 },
-  { id: 'el-morro-i', nombre: 'El Morro I', zona: S, col: 11, fila: 7, verificada: true, tienda: 'biglow', lat: 10.219, lng: -67.961 },
+  { id: 'el-morro-ii', nombre: 'El Morro II', zona: S, col: 10, fila: 7, verificada: true, lat: 10.218, lng: -67.969 },
+  { id: 'el-morro-i', nombre: 'El Morro I', zona: S, col: 11, fila: 7, verificada: true, lat: 10.219, lng: -67.961 },
   { id: 'villas-de-san-diego', nombre: 'Villas de San Diego', zona: S, col: 12, fila: 7, verificada: false, lat: 10.222, lng: -67.955, coordenada_aproximada: true },
   { id: 'los-magallanes', nombre: 'Los Magallanes', zona: S, col: 10, fila: 8, verificada: true, lat: 10.212, lng: -67.969 },
   // Los Jarales es más zona comercial que residencial; por confirmar si lleva hexágono propio.
   { id: 'los-jarales', nombre: 'Los Jarales', zona: S, col: 11, fila: 8, verificada: true, lat: 10.210, lng: -67.963, coordenada_aproximada: true },
+  // Parque Comercial Industrial Castillito (OpenStreetMap, 2026-11-22), al sur de El Morro, Los Magallanes y
+  // Los Jarales. Ahí quedan las tiendas Big Low (C.C. Big Low Center) y CC CEM (C.C. CEM I).
+  { id: 'castillito', nombre: 'Castillito', zona: S, col: 10, fila: 9, verificada: true, tiendas: ['biglow', 'cem'], lat: 10.1927, lng: -67.9607 },
 ];
 
 /** Minúsculas, sin acentos ni signos: para comparar lo que escribió el cliente con la lista. */

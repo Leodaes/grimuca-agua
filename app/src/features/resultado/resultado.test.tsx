@@ -149,7 +149,8 @@ describe('PaginaResultado', () => {
     expect(screen.getAllByText('Verde').length).toBeGreaterThan(0);
     expect(screen.queryByText('En rango')).not.toBeInTheDocument();
     expect(screen.getByText('Es lo que se usa para desinfectar el agua. Si hay mucho, cambia el sabor y el olor.')).toBeInTheDocument();
-    expect(screen.getByText('Vienen de las tuberías viejas. Con esto no se juega.')).toBeInTheDocument();
+    expect(screen.getByText('Pueden venir de las tuberías. La tira solo marca una posible presencia: confirma con un laboratorio.')).toBeInTheDocument();
+    expect(document.body.textContent).not.toContain('Con esto no se juega');
     expect(screen.getByText(/Te toca cambiar el cartucho en 30 días/)).toBeInTheDocument();
     const cotizar = screen.getAllByRole('link', { name: 'Cotizar por WhatsApp' })[0];
     expect(cotizar.getAttribute('href')).toMatch(/^https:\/\/wa\.me\/584144409396\?text=.*OA-01/);

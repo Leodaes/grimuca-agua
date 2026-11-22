@@ -440,8 +440,8 @@ export interface UrbanizacionMapa {
   grupo: string | null;
   /** false = urbanización por confirmar. */
   verificada: boolean;
-  /** Id de la tienda que queda en esa urbanización (no la que despacha). */
-  tienda: string | null;
+  /** Ids de las tiendas que quedan en esa urbanización (no la que despacha); vacío si no hay. */
+  tiendas: string[];
   /** Centro aproximado de la urbanización para el mapa real; null en las "Otras de <zona>". */
   lat: number | null;
   lng: number | null;

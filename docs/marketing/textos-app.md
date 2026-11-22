@@ -306,12 +306,12 @@ Versión 3 (21 nov, noche): aplica las decisiones de Tulio (lema, promesa, semá
 | Dureza | Es el sarro. Mancha la grifería, tapa la ducha y gasta los equipos. |
 | Alcalinidad | Muestra qué tan estable es el agua. Si está fuera de rango, se forma sarro o corrosión. |
 | Hierro | Es lo que deja el agua amarilla y mancha la ropa y el baño. |
-| Cobre y plomo | Vienen de las tuberías viejas. Con esto no se juega. *(Adaptado por legal: Tulio añadía "si sale en rojo, toca filtrar". Ver abajo.)* |
+| Cobre y plomo | Pueden venir de las tuberías. La tira solo marca una posible presencia: confirma con un laboratorio. *(Decisión del dueño, 22-11-2026: sale "Con esto no se juega". Ver abajo.)* |
 | Nitrato y nitrito | Vienen de la tierra, de abonos o del pozo séptico. Es una señal de alerta de contaminación. |
 | Bacterias (frasco aparte) | El resultado sale en 48 horas. Cuando lo reportes, te mostramos el texto de la sección 14. |
 
 **Cobre y plomo: qué dice la app (literal de legal)**
-- Junto al indicador: "Vienen de las tuberías viejas. Con esto no se juega."
+- Junto al indicador: "Pueden venir de las tuberías. La tira solo marca una posible presencia: confirma con un laboratorio."
 - Hallazgo en amarillo o rojo: "Posible presencia de plomo (o cobre). Una tira casera no lo confirma. Confirma con un laboratorio."
 - Nunca "toca filtrar" para plomo o cobre. Lo que sí se puede: la línea de precaución de arriba y, solo si la ficha del fabricante lo dice, "pensado para reducir…".
 

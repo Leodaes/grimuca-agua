@@ -96,6 +96,7 @@ export function etiquetaAccesible(u: UrbanizacionMapa): string {
   const hogares = `${u.hogares} ${u.hogares === 1 ? 'hogar' : 'hogares'}`;
   const partes = [u.nombre, hogares, `estado ${NOMBRE_ESTADO[u.estado]}`];
   if (u.alerta) partes.push('en alerta');
-  if (u.tienda) partes.push('aquí queda una tienda');
+  if (u.tiendas.length === 1) partes.push('aquí queda una tienda');
+  else if (u.tiendas.length > 1) partes.push(`aquí quedan ${u.tiendas.length} tiendas`);
   return partes.join(', ');
 }

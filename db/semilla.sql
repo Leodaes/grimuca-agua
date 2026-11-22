@@ -39,7 +39,7 @@ INSERT INTO cartuchos (codigo, nombre, marca, precio_usd, corrige, es_ejemplo, f
 ON CONFLICT (codigo) DO NOTHING;
 
 -- Hogares inventados: 20 en Naguanagua, 20 en San Diego y 20 en Valencia norte, repartidos entre las tres tiendas
--- y en 31 urbanizaciones (de 70 de la lista; el resto queda "por captar").
+-- y en 31 urbanizaciones (de 71 de la lista; el resto queda "por captar").
 -- Urbanizaciones en alerta: El Naranjal, La Begoña. Sin medición reciente: Los Guayabitos, Palma Real, Las Chimeneas, La Cumaca.
 INSERT INTO hogares (id, nombre, zona, origen_agua, personas, tiene_filtro, etapas_filtro, fecha_ultimo_cambio, agua_turbia, whatsapp, direccion, tienda_id, urbanizacion, mascotas, consentimiento_fecha) VALUES
   ('00000000-0000-4000-8000-000000000001', 'Ana P.', 'Naguanagua', 'pozo', 4, false, NULL, NULL, true, '0414-555-0101', 'Calle 2, casa 5 (dato de prueba)', 'manongo', 'La Begoña', true, now() - interval '38 days 1 hours'),

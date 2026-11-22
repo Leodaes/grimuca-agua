@@ -43,7 +43,7 @@ Versión 5 (22 nov, madrugada), corregida tras el ensayo cronometrado de Calidad
 
 ### Bloque 2 · 0:25 a 0:50 · El comercio: despacho, inventario, mapa y ruta
 - **Habla:** Leonardo.
-- **Laptop:** pestaña `/comercio` de Grimuca, chip Mañongo. Despacho (los pendientes del día) → **Inventario** (insignias "Faltan N" en rojo y "Faltan N cartuchos en Mañongo para cubrir los próximos 30 días") → **Zonas** (botón "Mapa", vista "Calidad del agua"; "Urbanizaciones en alerta") → **Rutas** ("3 · rutas (una por tienda) contra 15 viajes sueltos", "Ahorro (53 %)"). La pestaña Productos queda fuera (es lo primero que se recorta).
+- **Laptop:** pestaña `/comercio` de Grimuca, chip Mañongo. Despacho (los pendientes del día) → **Inventario** (insignias "Faltan N" en rojo y "Faltan N cartuchos en Mañongo para cubrir los próximos 30 días") → **Zonas** (botón "Mapa", vista "Resultados de la tira"; "Urbanizaciones en alerta") → **Rutas** ("3 · rutas (una por tienda) contra 15 viajes sueltos", "Ahorro (53 %)"). La pestaña Productos queda fuera (es lo primero que se recorta).
 - **Teléfono:** guardado.
 - **App medida:** Despacho 0,1 s · Inventario 0,2 s · Zonas 0,7 s (el fondo del mapa, 0,4 s) · Rutas 0,7 s · Productos 0,2 s si se muestra. Total 1,7 s.
 

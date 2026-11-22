@@ -479,7 +479,8 @@ test.describe('Funciones nuevas · operador', () => {
     escucharConsola(page, () => 'zonas');
     await entrarAlPanel(page);
     await abrirPestana(page, 'Zonas');
-    const mapa = page.getByRole('group', { name: /mapa de calidad del agua por urbanizaci[oó]n/i });
+    const nombreMapa = /mapa de resultados de la tira por urbanizaci[oó]n/i;
+    const mapa = page.getByRole('group', { name: nombreMapa }).or(page.getByRole('region', { name: nombreMapa })).first();
     await expect(mapa).toBeVisible({ timeout: 20_000 });
     await expect(page.getByRole('list', { name: /leyenda del mapa/i })).toBeVisible();
     await expect(page.getByRole('heading', { name: /alertas por zona/i })).toBeVisible();
@@ -504,11 +505,12 @@ test.describe('Funciones nuevas · operador', () => {
 
     // Vista de clientes.
     await page.getByRole('group', { name: /vista del mapa/i }).getByRole('button', { name: /^\s*clientes\s*$/i }).click();
-    await expect(page.getByRole('group', { name: /mapa de clientes por urbanizaci[oó]n/i })).toBeVisible();
+    const nombreClientes = /mapa de clientes por urbanizaci[oó]n/i;
+    await expect(page.getByRole('group', { name: nombreClientes }).or(page.getByRole('region', { name: nombreClientes })).first()).toBeVisible();
     await revisar(page, '70-zonas-clientes.png', { movil: false, desborde: true });
 
     // Detalle de La Begoña (en la vista de calidad).
-    await page.getByRole('group', { name: /vista del mapa/i }).getByRole('button', { name: /calidad del agua/i }).click();
+    await page.getByRole('group', { name: /vista del mapa/i }).getByRole('button', { name: /resultados de la tira/i }).click();
     const begona = datos.find((u) => u.nombre === 'La Begoña');
     notas.laBegonaApi = begona;
     await page.getByRole('button', { name: /^La Bego[ñn]a,/ }).click();

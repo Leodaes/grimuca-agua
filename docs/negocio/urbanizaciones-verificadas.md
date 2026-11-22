@@ -147,6 +147,7 @@ Parroquia: una sola, con el mismo nombre (ES-WIKI-SD; relación OSM 10664671).
 | Los Magallanes | C | Los Magallanes | 10.212, -67.969 | OSM-SD |
 | Lomas de la Hacienda | C | Lomas de La Hacienda | 10.268, -67.984 | OSM-SD |
 | Villas de San Diego | D | ES-WIKI-SD lista "Villas San Diego" y "Villas de Alcalá" (probable misma zona); sin coordenada | sin dato | ES-WIKI-SD |
+| Castillito | C (sector) | Parque Comercial Industrial Castillito, al sur de El Morro, Los Magallanes y Los Jarales. Ahí quedan Big Low y CC CEM (hexágono propio desde el 22-11-2026, decisión del dueño) | 10.1927, -67.9607 | OpenStreetMap (Nominatim), consultado 2026-11-22; grimuca.com (dirección de las tiendas) |
 
 Faltantes confirmados en San Diego (OSM-SD, y casi todos también en ES-WIKI-SD), hasta 10:
 
@@ -216,15 +217,15 @@ Filas: F1 lat >= 10.262; F2 10.248 a 10.262; F3 10.225 a 10.248; F4 10.200 a 10.
 | F2 | | Parqueserino | Bosqueserino, Monteserino | Pueblo de San Diego (10.256, -67.954) | Las Morochas (10.255, -67.944) |
 | F3 | | La Esmeralda (10.229, -67.971) | Valle de Oro, Valle Verde, Yuma (II y III), Poblado de San Diego | | |
 | F4 | | El Morro II, Los Magallanes | El Morro I, Los Jarales | | |
-| F5 | | C.C. CEM | Big Low Center | | |
+| F5 | | | Castillito (Big Low Center, C.C. CEM) | | |
 
 Vecinas: Yuma, Valle de Oro y Valle Verde van pegadas; La Esmeralda las toca al oeste; luego El Morro I y II al sur; Los Magallanes y Los Jarales al sur de El Morro. Monteserino, Bosqueserino, Parqueserino y El Remanso forman un bloque. El Tulipán queda al norte de este bloque. El Pueblo de San Diego queda al este del bloque Monteserino. Las Morochas queda al este del Pueblo.
 
 ### Tiendas Grimuca
 - Mañongo (C.C. Profesional Paseo Orquídea, Av. Salvador Feo La Cruz): hexágono de Mañongo (Naguanagua), a ~10.234, -68.000. Es la coordenada de la zona (Distribuidor Mañongo, 10.234, -68.001, está sobre esa avenida); no encontré la coordenada exacta del centro comercial. Sin fuente.
-- Big Low (C.C. Big Low Center): ~10.193, -67.965 (la estación de servicio y el terminal Big Low Center en OSM). Cae en la zona industrial/comercial Castillito, al sur de El Morro, municipio San Diego (probable; verificar contra el límite). El hexágono más cercano es Los Jarales (~1,5 km al norte).
-- CC CEM (C.C. CEM I, Av. Don Julio Centeno): 10.189, -67.971 (nodo "C.C. CEM" en OSM). Misma zona industrial, ~600 m al suroeste de Big Low; hexágono más cercano: Los Magallanes y El Morro II, al norte. Por distancia, comparte hexágono o queda contiguo con Big Low.
-Fuente de ambos: nodos OSM (consulta Overpass por nombre); la pertenencia exacta al municipio no se verificó con polígono.
+- Big Low (C.C. Big Low Center, diagonal al terminal de pasajeros): ~10.1926, -67.9654 (aproximada, Castillito). Hexágono: Castillito (San Diego). Antes iba en El Morro I.
+- CC CEM (C.C. CEM I, Av. Don Julio Centeno, frente al Big Low): ~10.1918, -67.9648 (aproximada, Castillito). Hexágono: Castillito (San Diego). Antes iba en El Morro II.
+Fuente de ambos (2026-11-22): OpenStreetMap (Nominatim), "Parque Comercial Industrial Castillito", San Diego, en 10.1927, -67.9607, y "Terminal de Pasajeros Big Low Center" (Calle 102, Parque Comercial Industrial Castillito) en 10.1928, -67.9667; la ubicación de cada tienda dentro del parque sale de las direcciones de grimuca.com. Las rutas de despacho de Big Low y CC CEM salen desde estos puntos.
 
 ## 6. ¿Partir "Valencia norte"?
 

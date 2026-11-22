@@ -81,7 +81,7 @@ export function MapaHexagonos({ urbanizaciones, vista, elegida, alElegir }: Prop
       width={ancho}
       height={alto}
       role="group"
-      aria-label={vista === 'calidad' ? 'Mapa de calidad del agua por urbanización' : 'Mapa de clientes por urbanización'}
+      aria-label={vista === 'calidad' ? 'Mapa de resultados de la tira por urbanización' : 'Mapa de clientes por urbanización'}
     >
       {rotulos.map((r) => (
         <text key={r.texto} x={r.x} y={r.y} className="mapa-rotulo" textAnchor="middle" aria-hidden="true">
@@ -134,7 +134,7 @@ export function MapaHexagonos({ urbanizaciones, vista, elegida, alElegir }: Prop
             <text x={x} y={y + 24} textAnchor="middle" className="mapa-hex__numero" aria-hidden="true">
               {u.hogares}
             </text>
-            {u.tienda && (
+            {u.tiendas.length > 0 && (
               <g transform={`translate(${x + ANCHO_HEX / 2 - 22} ${y - RADIO + 6})`} className="mapa-hex__tienda" aria-hidden="true">
                 <circle cx={9} cy={9} r={10} />
                 <g transform="translate(2 2) scale(0.58)">
