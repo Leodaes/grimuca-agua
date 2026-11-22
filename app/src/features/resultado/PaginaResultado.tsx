@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { api } from '../../lib/api';
 import { agregarALista, hogarId, lista } from '../../lib/sesion';
@@ -8,14 +8,29 @@ import {
   Aviso,
   AvisoTira,
   Boton,
+  BotonRecordatorio,
   Cargando,
   EstadoVacio,
   Icono,
   Insignia,
   ListaParametros,
+  Pasos,
   Semaforo,
+  WhatsAppSimulado,
+  eventoProximaMedicion,
+  mensajeRecordatorioMedicion,
+  remitenteTienda,
 } from '../../components/grimuca';
 import { ChipsAtiende, CotizarWhatsApp, FotoProducto } from './Producto';
+import {
+  LINEA_FIJA_CONSECUENCIAS,
+  armarConclusion,
+  fraseCorta,
+  pasosQueHacerHoy,
+  siNoHacesNada,
+  type Consecuencia,
+  type PasoHoy,
+} from './consecuencias';
 import {
   PALABRA_NIVEL,
   PIE_ORIENTACION,
@@ -75,6 +90,33 @@ function useHogarYTienda(idHogar: string | null): { hogar: Hogar | null; tienda:
   }, [idHogar]);
   const tienda = hogar?.tienda_id ? (tiendas.find((t) => t.id === hogar.tienda_id)?.nombre ?? null) : null;
   return { hogar, tienda };
+}
+
+/** Dónde se tocó "Agregar a mi lista": el aviso "quedó en tu lista" sale junto a ese botón. */
+type LugarAgregado = 'paso' | 'sugeridos';
+
+interface EstadoLista {
+  enLista: Set<string>;
+  agregado: { nombre: string; lugar: LugarAgregado } | null;
+  agregar: (cartucho: CartuchoSugerido, lugar: LugarAgregado) => void;
+}
+
+/** Mi lista compartida entre el paso 3 de "Qué hacer hoy" y las tarjetas de "Lo que te recomendamos". */
+function useListaResultado(): EstadoLista {
+  const [enLista, setEnLista] = useState<Set<string>>(() => {
+    try {
+      return new Set(lista().map((articulo) => articulo.codigo));
+    } catch {
+      return new Set();
+    }
+  });
+  const [agregado, setAgregado] = useState<EstadoLista['agregado']>(null);
+  function agregar(cartucho: CartuchoSugerido, lugar: LugarAgregado) {
+    agregarALista({ codigo: cartucho.codigo, nombre: cartucho.nombre, cantidad: 1 });
+    setEnLista((previo) => new Set(previo).add(cartucho.codigo));
+    setAgregado({ nombre: cartucho.nombre, lugar });
+  }
+  return { enLista, agregado, agregar };
 }
 
 export function PaginaResultado() {
@@ -148,6 +190,12 @@ function Resultado({ medicion }: { medicion: Medicion }) {
   const { hogar, tienda } = useHogarYTienda(medicion.hogar_id || hogarId());
   const datos = datosDelHogar(hogar, { fecha: medicion.fecha, porParametro: evaluacion.porParametro, tienda });
   const aviso = hogar?.tiene_filtro === false ? null : avisoDeRecambio(evaluacion.diasParaRecambio, hogar?.ultimo_cambio);
+  const estadoLista = useListaResultado();
+
+  const entrada = { porParametro: evaluacion.porParametro, hogar, diasParaRecambio: evaluacion.diasParaRecambio };
+  const conclusion = armarConclusion(entrada);
+  const consecuencias = siNoHacesNada(evaluacion.porParametro);
+  const pasos = pasosQueHacerHoy({ ...entrada, hayRecomendado: sugeridos.length > 0 });
 
   return (
     <>
@@ -162,8 +210,43 @@ function Resultado({ medicion }: { medicion: Medicion }) {
         <ResumenNiveles porParametro={evaluacion.porParametro} />
       </div>
 
+      <section
+        className={`resultado-conclusion resultado-conclusion--${evaluacion.semaforo}`}
+        aria-labelledby="titulo-conclusion"
+      >
+        <h2 className="resultado-conclusion__titulo" id="titulo-conclusion">
+          Tu conclusión
+        </h2>
+        <p className="resultado-conclusion__texto">{conclusion}</p>
+      </section>
+
       <AvisoTira />
       <p className="g-apagado">{PIE_ORIENTACION}</p>
+
+      {consecuencias.length > 0 && <SiNoHacesNada consecuencias={consecuencias} />}
+
+      <section className="g-pila" aria-labelledby="titulo-que-hacer-hoy">
+        <h2 className="g-h3" id="titulo-que-hacer-hoy">
+          Qué hacer hoy
+        </h2>
+        <Pasos
+          etiqueta="Qué hacer hoy"
+          pasos={pasos.map((paso) => ({
+            titulo: paso.titulo,
+            detalle: paso.detalle,
+            contenido: (
+              <ContenidoDelPaso
+                paso={paso}
+                recomendado={sugeridos[0]}
+                datos={datos}
+                estadoLista={estadoLista}
+                hogar={hogar}
+                fechaMedicion={medicion.fecha}
+              />
+            ),
+          }))}
+        />
+      </section>
 
       <section className="g-pila" aria-labelledby="titulo-casillas">
         <h2 className="g-h3" id="titulo-casillas">
@@ -176,19 +259,6 @@ function Resultado({ medicion }: { medicion: Medicion }) {
         </ListaParametros>
       </section>
 
-      {evaluacion.hallazgos.length > 0 && (
-        <section className="g-pila" aria-labelledby="titulo-hallazgos">
-          <h2 className="g-h3" id="titulo-hallazgos">
-            Qué encontramos
-          </h2>
-          <ul className="g-pila" style={{ paddingLeft: '1.25rem', listStyle: 'disc' }}>
-            {evaluacion.hallazgos.map((hallazgo) => (
-              <li key={hallazgo}>{hallazgo}</li>
-            ))}
-          </ul>
-        </section>
-      )}
-
       {aviso && (
         <AvisoRecambio
           dias={evaluacion.diasParaRecambio}
@@ -199,7 +269,12 @@ function Resultado({ medicion }: { medicion: Medicion }) {
       )}
 
       <LineaFiltro />
-      <Sugeridos sugeridos={sugeridos} datos={datos} tieneFiltro={hogar?.tiene_filtro === true} />
+      <Sugeridos
+        sugeridos={sugeridos}
+        datos={datos}
+        tieneFiltro={hogar?.tiene_filtro === true}
+        estadoLista={estadoLista}
+      />
 
       {hogar?.tiene_filtro === false && (
         <section className="g-pila" aria-labelledby="titulo-sin-filtro">
@@ -232,6 +307,146 @@ function Resultado({ medicion }: { medicion: Medicion }) {
         </Boton>
       </nav>
     </>
+  );
+}
+
+/** "(OMS, EPA)" al final de la frase, antes del punto. */
+function conFuente(consecuencia: Consecuencia): string {
+  if (!consecuencia.fuente) return consecuencia.texto;
+  return `${consecuencia.texto.replace(/\.$/, '')} (${consecuencia.fuente}).`;
+}
+
+/** "Si no haces nada": una línea por casilla en rojo o amarillo, de la más grave a la menos grave. */
+function SiNoHacesNada({ consecuencias }: { consecuencias: Consecuencia[] }) {
+  return (
+    <section className="g-pila" aria-labelledby="titulo-si-no-haces-nada">
+      <h2 className="g-h3" id="titulo-si-no-haces-nada">
+        Si no haces nada
+      </h2>
+      <ul className="resultado-consecuencias">
+        {consecuencias.map((c) => (
+          <li className="resultado-consecuencia" key={c.clave}>
+            <p className="resultado-consecuencia__cabeza">
+              <span className="resultado-consecuencia__nombre">{c.nombre}</span>
+              <Semaforo nivel={c.nivel} palabra={PALABRA_NIVEL[c.nivel]} />
+            </p>
+            <p className="resultado-consecuencia__texto">{conFuente(c)}</p>
+            {c.nota && <p className="resultado-consecuencia__nota">{c.nota}</p>}
+          </li>
+        ))}
+      </ul>
+      <p className="g-apagado">{LINEA_FIJA_CONSECUENCIAS}</p>
+    </section>
+  );
+}
+
+/** Lo que va debajo del texto de cada paso: el primer producto, un enlace a la tienda o al catálogo. */
+function ContenidoDelPaso({
+  paso,
+  recomendado,
+  datos,
+  estadoLista,
+  hogar,
+  fechaMedicion,
+}: {
+  paso: PasoHoy;
+  recomendado: CartuchoSugerido | undefined;
+  datos: DatosMensaje;
+  estadoLista: EstadoLista;
+  hogar: Hogar | null;
+  fechaMedicion: string;
+}): ReactNode {
+  if (paso.id === 'volver_a_medir' || paso.id === 'completar') {
+    return <RecordatorioProximaMedicion hogar={hogar} fechaMedicion={fechaMedicion} />;
+  }
+  if (paso.id === 'solucion') {
+    if (!recomendado) {
+      return (
+        <Link className="g-enlace" to="/tiendas" style={ESTILO_ENLACE}>
+          Ver las tiendas
+        </Link>
+      );
+    }
+    return <RecomendadoDelPaso cartucho={recomendado} datos={datos} estadoLista={estadoLista} />;
+  }
+  if (paso.id === 'productos') {
+    return (
+      <Link className="g-enlace" to="/catalogo" style={ESTILO_ENLACE}>
+        Ir al catálogo
+      </Link>
+    );
+  }
+  if (paso.id === 'preguntar_tienda' || paso.id === 'confirmar') {
+    return (
+      <Link className="g-enlace" to="/tiendas" style={ESTILO_ENLACE}>
+        Ver las tiendas
+      </Link>
+    );
+  }
+  return null;
+}
+
+/**
+ * "Recuérdame cuándo hacer mi próxima medición": evento de calendario a esta medición + 90 días
+ * ("Medir el agua de mi casa (Grimuca Agua)", enlace a /medir) y el WhatsApp simulado de la tienda.
+ */
+function RecordatorioProximaMedicion({ hogar, fechaMedicion }: { hogar: Hogar | null; fechaMedicion: string }) {
+  const evento = eventoProximaMedicion(fechaMedicion);
+  return (
+    <div className="resultado-paso-producto">
+      <BotonRecordatorio
+        texto="Recuérdame cuándo hacer mi próxima medición"
+        evento={evento}
+        confirmacion={
+          <WhatsAppSimulado
+            variante="tarjeta"
+            de={remitenteTienda(hogar?.tienda_id)}
+            mensaje={mensajeRecordatorioMedicion(hogar?.nombre, evento.fecha)}
+          />
+        }
+      />
+    </div>
+  );
+}
+
+/** Paso 3: el primer producto con su porqué, "Agregar a mi lista" y "Cotizar por WhatsApp". */
+function RecomendadoDelPaso({
+  cartucho,
+  datos,
+  estadoLista,
+}: {
+  cartucho: CartuchoSugerido;
+  datos: DatosMensaje;
+  estadoLista: EstadoLista;
+}) {
+  const yaEsta = estadoLista.enLista.has(cartucho.codigo);
+  return (
+    <div className="resultado-paso-producto">
+      <p className="resultado-paso-producto__nombre">{cartucho.nombre}</p>
+      <PorQueTeLoRecomendamos sugerido={cartucho} />
+      <Boton
+        variante={yaEsta ? 'secundario' : 'primario'}
+        anchoCompleto
+        disabled={yaEsta}
+        icono={<Icono nombre={yaEsta ? 'check' : 'mas'} tamano={20} />}
+        onClick={() => estadoLista.agregar(cartucho, 'paso')}
+      >
+        {yaEsta ? 'Agregado' : 'Agregar a mi lista'}
+      </Boton>
+      <CotizarWhatsApp mensaje={mensajeCotizar(datos, cartucho)} />
+      {estadoLista.agregado?.lugar === 'paso' && <AvisoAgregado nombre={estadoLista.agregado.nombre} />}
+    </div>
+  );
+}
+
+function AvisoAgregado({ nombre }: { nombre: string }) {
+  return (
+    <Aviso tono="ok" rol="status">
+      {nombre} quedó en tu lista.{' '}
+      <Link className="g-enlace" to="/lista">
+        Ver mi lista
+      </Link>
+    </Aviso>
   );
 }
 
@@ -294,8 +509,12 @@ export function AvisoRecambio({
   );
 }
 
+/** Fila de una casilla: nombre, valor, semáforo y una frase corta; lo largo va en "Qué mide y por qué importa". */
 function FilaResultado({ parametro }: { parametro: ResultadoParametro }) {
   const hayValor = parametro.valor !== null && parametro.valor !== undefined;
+  const corta = fraseCorta(parametro);
+  const queMide = QUE_MIDE[parametro.clave];
+  const fraseLarga = parametro.frase && parametro.frase !== corta ? parametro.frase : null;
   return (
     <li className="g-fila-parametro">
       <div>
@@ -303,19 +522,19 @@ function FilaResultado({ parametro }: { parametro: ResultadoParametro }) {
           {parametro.nombre}{' '}
           {parametro.orientativo && <Insignia tono="aviso">Orientativo</Insignia>}
         </p>
-        {QUE_MIDE[parametro.clave] && (
-          <p className="g-apagado" style={{ fontSize: '0.875em', margin: 0 }}>
-            {QUE_MIDE[parametro.clave]}
-          </p>
-        )}
         <p className="g-fila-parametro__valor">
           {hayValor ? `${parametro.valor}${parametro.unidad ? ` ${parametro.unidad}` : ''}` : 'No se pudo leer'}
         </p>
       </div>
       <Semaforo nivel={parametro.nivel} palabra={PALABRA_NIVEL[parametro.nivel]} />
-      {parametro.frase && <p className="g-fila-parametro__frase">{parametro.frase}</p>}
-      {parametro.orientativo && (
-        <p className="g-fila-parametro__nota">Una tira casera orienta, no confirma.</p>
+      <p className="g-fila-parametro__frase">{corta}</p>
+      {(queMide || fraseLarga || parametro.orientativo) && (
+        <details className="resultado-detalle">
+          <summary>Qué mide y por qué importa</summary>
+          {queMide && <p>{queMide}</p>}
+          {fraseLarga && <p>{fraseLarga}</p>}
+          {parametro.orientativo && <p className="g-fila-parametro__nota">Una tira casera orienta, no confirma.</p>}
+        </details>
       )}
     </li>
   );
@@ -345,25 +564,14 @@ function Sugeridos({
   sugeridos,
   datos,
   tieneFiltro,
+  estadoLista,
 }: {
   sugeridos: CartuchoSugerido[];
   datos: DatosMensaje;
   tieneFiltro: boolean;
+  estadoLista: EstadoLista;
 }) {
-  const [enLista, setEnLista] = useState<Set<string>>(() => {
-    try {
-      return new Set(lista().map((articulo) => articulo.codigo));
-    } catch {
-      return new Set();
-    }
-  });
-  const [agregado, setAgregado] = useState<string | null>(null);
-
-  function agregar(cartucho: CartuchoSugerido) {
-    agregarALista({ codigo: cartucho.codigo, nombre: cartucho.nombre, cantidad: 1 });
-    setEnLista((previo) => new Set(previo).add(cartucho.codigo));
-    setAgregado(cartucho.nombre);
-  }
+  const { enLista, agregado, agregar } = estadoLista;
 
   if (sugeridos.length === 0) {
     return (
@@ -433,7 +641,7 @@ function Sugeridos({
                 anchoCompleto
                 disabled={yaEsta}
                 icono={<Icono nombre={yaEsta ? 'check' : 'mas'} tamano={20} />}
-                onClick={() => agregar(cartucho)}
+                onClick={() => agregar(cartucho, 'sugeridos')}
               >
                 {yaEsta ? 'Agregado' : 'Agregar a mi lista'}
               </Boton>
@@ -442,14 +650,7 @@ function Sugeridos({
           </article>
         );
       })}
-      {agregado && (
-        <Aviso tono="ok" rol="status">
-          {agregado} quedó en tu lista.{' '}
-          <Link className="g-enlace" to="/lista">
-            Ver mi lista
-          </Link>
-        </Aviso>
-      )}
+      {agregado?.lugar === 'sugeridos' && <AvisoAgregado nombre={agregado.nombre} />}
       <EnlaceCatalogo />
     </section>
   );

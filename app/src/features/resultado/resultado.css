@@ -82,3 +82,106 @@
 .producto-mejor {
   grid-column: 1 / -1;
 }
+
+/* "Tu conclusión": bloque destacado debajo del semáforo general; el borde toma el color del semáforo. */
+.resultado-conclusion {
+  display: grid;
+  gap: var(--s2);
+  padding: var(--s4);
+  border: 1px solid var(--linea);
+  border-left: 6px solid var(--azul);
+  border-radius: var(--r);
+  background: var(--fondo);
+}
+.resultado-conclusion--rojo {
+  border-left-color: var(--error);
+  background: var(--error-bg);
+}
+.resultado-conclusion--amarillo {
+  border-left-color: var(--ambar, var(--amarillo));
+  background: var(--ambar-bg, var(--papel));
+}
+.resultado-conclusion--verde {
+  border-left-color: var(--ok);
+}
+.resultado-conclusion__titulo {
+  margin: 0;
+  color: var(--tinta);
+  font-size: var(--t1);
+  font-weight: 700;
+}
+.resultado-conclusion__texto {
+  margin: 0;
+  color: var(--tinta);
+  font-size: var(--t1);
+  line-height: 1.45;
+}
+
+/* "Si no haces nada" */
+.resultado-consecuencias {
+  display: grid;
+  gap: var(--s3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.resultado-consecuencia {
+  display: grid;
+  gap: var(--s1);
+  padding-bottom: var(--s3);
+  border-bottom: 1px solid var(--linea);
+}
+.resultado-consecuencia__cabeza {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s2);
+  margin: 0;
+}
+.resultado-consecuencia__nombre {
+  color: var(--tinta);
+  font-weight: 700;
+}
+.resultado-consecuencia__texto {
+  margin: 0;
+  color: var(--tinta-2);
+}
+.resultado-consecuencia__nota {
+  margin: 0;
+  color: var(--apagado);
+  font-size: var(--t-1);
+}
+
+/* Paso 3 de "Qué hacer hoy": el primer producto con su porqué y sus botones. */
+.resultado-paso-producto {
+  display: grid;
+  gap: var(--s2);
+  margin-top: var(--s2);
+}
+.resultado-paso-producto__nombre {
+  margin: 0;
+  color: var(--tinta);
+  font-weight: 700;
+}
+
+/* Fila de casilla: lo largo va plegado. */
+.resultado-detalle {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: var(--s1);
+  color: var(--tinta-2);
+  font-size: var(--t-1);
+}
+.resultado-detalle > summary {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--azul);
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.resultado-detalle > p {
+  margin: 0;
+}

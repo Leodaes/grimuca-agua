@@ -1,7 +1,8 @@
 import { fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import type { Hogar, Medicion } from '../../lib/tipos';
+import type { ClaveParametro, Hogar, Medicion, Nivel } from '../../lib/tipos';
+import { LINEA_FIJA_CONSECUENCIAS } from './consecuencias';
 import { PaginaResultado } from './PaginaResultado';
 
 const sesion = vi.hoisted(() => ({
@@ -151,7 +152,12 @@ describe('PaginaResultado', () => {
     expect(screen.getByText('Es lo que se usa para desinfectar el agua. Si hay mucho, cambia el sabor y el olor.')).toBeInTheDocument();
     expect(screen.getByText('Pueden venir de las tuberías. La tira solo marca una posible presencia: confirma con un laboratorio.')).toBeInTheDocument();
     expect(document.body.textContent).not.toContain('Con esto no se juega');
-    expect(screen.getByText(/Te toca cambiar el cartucho en 30 días/)).toBeInTheDocument();
+    // El aviso "Tu cartucho" y el paso "Revisa el recambio de tu filtro" lo dicen.
+    expect(screen.getAllByText(/Te toca cambiar el cartucho en 30 días/)).toHaveLength(2);
+    // Todo en verde: "Qué hacer hoy" empieza por volver a medir, con el recordatorio de calendario.
+    const hoy = screen.getByRole('list', { name: 'Qué hacer hoy' });
+    expect(within(hoy).getByRole('heading', { name: 'Paso 1: Vuelve a medir en 3 meses' })).toBeInTheDocument();
+    expect(within(hoy).getByRole('button', { name: /Recuérdame cuándo hacer mi próxima medición/ })).toBeInTheDocument();
     const cotizar = screen.getAllByRole('link', { name: 'Cotizar por WhatsApp' })[0];
     expect(cotizar.getAttribute('href')).toMatch(/^https:\/\/wa\.me\/584144409396\?text=.*OA-01/);
     expect(screen.getAllByText('El precio te lo confirma la tienda por WhatsApp, sin compromiso.')).toHaveLength(2);
@@ -193,7 +199,7 @@ describe('PaginaResultado', () => {
     api.obtenerHogar.mockResolvedValue(hogar);
     api.tiendas.mockResolvedValue([{ id: 'manongo', nombre: 'Mañongo', horario: '', direccion: null }]);
     montar();
-    await screen.findByText(/porque tu medición dio Cloro libre/);
+    await screen.findAllByText(/porque tu medición dio Cloro libre/);
     const enlace = () => screen.getAllByRole('link', { name: 'Cotizar por WhatsApp' })[0];
     await vi.waitFor(() => expect(textoDelEnlace(enlace())).toContain('¿Tienen en Grimuca Mañongo?'));
     expect(textoDelEnlace(enlace())).toBe(
@@ -222,6 +228,78 @@ describe('PaginaResultado', () => {
     expect(screen.getByText(/Como no recuerdas el último cambio, conviene revisarlo\./)).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Cotizar el recambio' })).toHaveAttribute('href', '#titulo-sugeridos');
     expect(screen.getByRole('link', { name: '¿Dudas? Pasa por la tienda y lo vemos contigo.' })).toBeInTheDocument();
+  });
+
+  it('caso del dueño (plomo, cobre y nitrito en rojo; pH en amarillo): conclusión, consecuencias y qué hacer hoy', async () => {
+    const fila = (clave: ClaveParametro, nombre: string, unidad: string, valor: number, nivel: Nivel) => ({
+      clave,
+      nombre,
+      unidad,
+      valor,
+      nivel,
+      frase: '',
+      orientativo: clave === 'plomo' || clave === 'cobre',
+    });
+    const medicionDueno: Medicion = {
+      ...medicionVerde,
+      evaluacion: {
+        ...medicionVerde.evaluacion,
+        semaforo: 'rojo',
+        porParametro: [
+          fila('alcalinidad', 'Alcalinidad', 'mg/L', 80, 'verde'),
+          fila('dureza', 'Dureza', 'mg/L', 50, 'verde'),
+          fila('cobre', 'Cobre', 'mg/L', 2, 'rojo'),
+          fila('nitrato', 'Nitrato', 'mg/L', 0, 'verde'),
+          fila('cloro_libre', 'Cloro libre', 'mg/L', 1, 'verde'),
+          fila('plomo', 'Plomo', 'ppb', 15, 'rojo'),
+          fila('ph', 'pH', '', 6.2, 'amarillo'),
+          fila('nitrito', 'Nitrito', 'mg/L', 5, 'rojo'),
+          fila('hierro', 'Hierro', 'mg/L', 0, 'verde'),
+        ],
+      },
+    };
+    api.medicion.mockResolvedValue(medicionDueno);
+    api.obtenerHogar.mockResolvedValue({ ...hogar, mascotas: true, ultimo_cambio: 'mas_de_tres_meses' });
+    montar();
+
+    const conclusion = await screen.findByRole('region', { name: 'Tu conclusión' });
+    await vi.waitFor(() =>
+      expect(conclusion).toHaveTextContent(
+        'Tu agua necesita atención en 3 cosas: plomo, cobre y nitrito. Lo primero es no usarla para tomar ni cocinar mientras la confirmas con un laboratorio. Son 4 en casa y tienen mascotas: ellas también toman de esa agua.',
+      ),
+    );
+
+    const siNo = screen.getByRole('region', { name: 'Si no haces nada' });
+    const lineas = within(siNo).getAllByRole('listitem');
+    expect(lineas.map((l) => l.querySelector('.resultado-consecuencia__nombre')?.textContent)).toEqual(['Plomo', 'Cobre', 'Nitrito', 'pH']);
+    expect(lineas[0]).toHaveTextContent('Rojo');
+    expect(lineas[0]).toHaveTextContent('(OMS, EPA).');
+    expect(lineas[3]).toHaveTextContent('Amarillo');
+    expect(within(siNo).getByText(LINEA_FIJA_CONSECUENCIAS)).toBeInTheDocument();
+
+    const hoy = screen.getByRole('list', { name: 'Qué hacer hoy' });
+    const pasos = within(hoy).getAllByRole('heading', { level: 3 });
+    expect(pasos.map((h) => h.textContent)).toEqual([
+      'Paso 1: Protege a tu familia hoy',
+      'Paso 2: Confírmalo con un laboratorio',
+      'Paso 3: Elige la opción para tu casa',
+    ]);
+    expect(hoy).toHaveTextContent('hervir no quita el plomo ni el cobre, y el nitrito se concentra (EPA).');
+    expect(within(hoy).getByText(MOTIVO)).toBeInTheDocument();
+    expect(within(hoy).getByRole('button', { name: 'Agregar a mi lista' })).toBeInTheDocument();
+    expect(within(hoy).getByRole('link', { name: 'Cotizar por WhatsApp' })).toBeInTheDocument();
+
+    // Casillas: una frase corta y lo largo plegado; ya no está "Qué encontramos".
+    expect(screen.getByRole('heading', { name: 'Tu agua, casilla por casilla' })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Qué encontramos' })).not.toBeInTheDocument();
+    expect(screen.getAllByText('Qué mide y por qué importa').length).toBe(9);
+    expect(screen.getByRole('heading', { name: 'Lo que te recomendamos' })).toBeInTheDocument();
+    expect(
+      screen.getByText('Esta tira no mide todo. Un buen resultado no significa que el agua sea apta para tomar.'),
+    ).toBeInTheDocument();
+
+    const texto = (document.body.textContent ?? '').toLowerCase();
+    expect(texto).not.toMatch(/potable|segura|te vas a enfermar|tu agua tiene plomo/);
   });
 
   it('hogar sin filtro: puerta al filtro por WhatsApp', async () => {
