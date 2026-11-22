@@ -4,6 +4,14 @@ Pruebas de navegador contra https://agua.oydo.app, hechas desde una máquina dis
 
 Cómo correrlas: `cd pruebas/externas && npm install && npx playwright install chromium && npx playwright test`. Revisión del repositorio: `node pruebas/externas/revisar-repo.js` desde la raíz.
 
+## Pasada 13 · dom 22 nov, 1:50 a.m. (solo lectura)
+
+**Resumen:** sin cambios en la app: misma versión publicada. Pasan 23 revisiones, falla 1 (tamaño de «Medir mi agua» en `/catalogo`) y se saltan 2. Ninguna falla rompe la demo.
+
+**Repositorio:** 404 archivos, sin hallazgos.
+
+**Orquestador: ALERTA.** Su último commit fue a las 11:57 p.m., hace 113 minutos, y el sitio no cambia desde las 12:20 a.m. Se escribió `ALERTA.md` con el detalle. No se abrió issue ni se tomó el control: lo decide Leonardo en la mañana.
+
 ## Pasada 12 · dom 22 nov, 1:21 a.m. (solo lectura)
 
 **Resumen:** sin cambios: misma versión publicada (`index-t8kfX0Rf.js`). Pasan 23 revisiones, falla 1 (tamaño de «Medir mi agua» en `/catalogo`) y se saltan 2. Ninguna falla rompe la demo.
