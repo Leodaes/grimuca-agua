@@ -14,6 +14,64 @@
   font-size: var(--t1);
 }
 
+/* Inventario: una tarjeta por tienda con faltantes (al tocarla filtra esa tienda) y filas con fondo suave. */
+.inv-tarjetas {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--s3);
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+.inv-tarjeta {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  gap: var(--s1);
+  text-align: left;
+  padding: var(--s3) var(--s4);
+  border: 1px solid var(--error);
+  border-left-width: 6px;
+  background: var(--error-bg);
+  color: var(--error);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.inv-tarjeta:hover {
+  background: #fbdcd9;
+}
+.inv-tarjeta:focus-visible {
+  outline: 3px solid var(--azul);
+  outline-offset: 2px;
+}
+.inv-tarjeta--activa {
+  box-shadow: inset 0 0 0 2px var(--error);
+}
+.inv-tarjeta__numero {
+  font-family: var(--f-titulo);
+  font-size: 2.5rem;
+  font-weight: 800;
+  line-height: 1;
+}
+.inv-tabla tr.inv-falta td {
+  background: var(--error-bg);
+}
+.inv-cobertura {
+  display: block;
+  width: 64px;
+  height: 6px;
+  margin: 4px 0 0 auto;
+  background: var(--linea);
+}
+.inv-cobertura__barra {
+  display: block;
+  height: 100%;
+  background: var(--ok);
+}
+.inv-cobertura__barra--falta {
+  background: var(--error);
+}
 .op-productos-filtros {
   display: grid;
   gap: var(--s3);

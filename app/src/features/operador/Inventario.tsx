@@ -68,19 +68,29 @@ export function Inventario({ token, version, alNoAutorizado }: Props) {
           {faltantesPorTienda.length === 0 ? (
             <p>Hay inventario para cubrir los próximos 30 días.</p>
           ) : (
-            <ul className="g-pila">
+            <ul className="inv-tarjetas" aria-label="Faltantes por tienda">
               {faltantesPorTienda.map((t) => (
-                <li key={t.id} style={{ color: 'var(--error)', fontWeight: 700 }}>
-                  Faltan {t.faltan} cartuchos en {t.nombre} para cubrir los próximos 30 días.
+                <li key={t.id}>
+                  <button
+                    type="button"
+                    className={tienda === t.id ? 'inv-tarjeta inv-tarjeta--activa' : 'inv-tarjeta'}
+                    aria-pressed={tienda === t.id}
+                    onClick={() => setTienda(t.id)}
+                  >
+                    <span className="inv-tarjeta__numero" aria-hidden="true">
+                      {t.faltan}
+                    </span>
+                    <span>Faltan {t.faltan} cartuchos en {t.nombre} para cubrir los próximos 30 días.</span>
+                  </button>
                 </li>
               ))}
             </ul>
           )}
           <div style={{ overflowX: 'auto' }}>
-            <table className="g-tabla">
+            <table className="g-tabla inv-tabla">
               <thead>
                 <tr>
-                  <th scope="col">Tienda</th>
+                  {tienda === 'todas' && <th scope="col">Tienda</th>}
                   <th scope="col">Cartucho</th>
                   <th scope="col" className="g-tabla__numero">Hay</th>
                   <th scope="col" className="g-tabla__numero">Se van a pedir (30 días)</th>
@@ -90,14 +100,21 @@ export function Inventario({ token, version, alNoAutorizado }: Props) {
               <tbody>
                 {filas.map((f) => {
                   const falta = f.faltante > 0;
+                  // Cobertura: qué parte de lo que se va a pedir en 30 días ya está en la tienda.
+                  const cobertura = f.demanda_30_dias > 0 ? Math.min(1, f.stock / f.demanda_30_dias) : 1;
                   return (
-                    <tr
-                      key={`${f.tienda_id}-${f.cartucho_codigo}`}
-                      style={falta ? { color: 'var(--error)', fontWeight: 700 } : undefined}
-                    >
-                      <td>{f.tienda_nombre}</td>
+                    <tr key={`${f.tienda_id}-${f.cartucho_codigo}`} className={falta ? 'inv-falta' : undefined}>
+                      {tienda === 'todas' && <td>{f.tienda_nombre}</td>}
                       <td>{f.cartucho_nombre}</td>
-                      <td className="g-tabla__numero">{f.stock}</td>
+                      <td className="g-tabla__numero">
+                        {f.stock}
+                        <span className="inv-cobertura" aria-hidden="true">
+                          <span
+                            className={falta ? 'inv-cobertura__barra inv-cobertura__barra--falta' : 'inv-cobertura__barra'}
+                            style={{ width: `${Math.round(cobertura * 100)}%` }}
+                          />
+                        </span>
+                      </td>
                       <td className="g-tabla__numero">{f.demanda_30_dias}</td>
                       <td>
                         {falta ? (

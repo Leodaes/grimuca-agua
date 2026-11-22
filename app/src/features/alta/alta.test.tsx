@@ -150,6 +150,35 @@ describe('alta', () => {
     expect(simulada.crearHogar).toHaveBeenCalledWith(expect.objectContaining({ tiene_filtro: true }));
   });
 
+  it('si el agua sale de un filtro, no pregunta si tienen filtro y pasa directo al cartucho', async () => {
+    simulada.crearHogar.mockResolvedValue({ ...hogar, origen_agua: 'filtro', tiene_filtro: true, filtro: null });
+    const usuario = userEvent.setup();
+    render(
+      <MemoryRouter initialEntries={['/perfil?ya=1']}>
+        <Routes>
+          <Route path="/perfil" element={<Perfil />} />
+          <Route path="/mi-filtro" element={<p>Pantalla de mi filtro</p>} />
+        </Routes>
+      </MemoryRouter>,
+    );
+    await usuario.selectOptions(screen.getByLabelText('¿En qué zona vives?'), 'Naguanagua');
+    for (let i = 0; i < 4; i++) await usuario.click(screen.getByRole('button', { name: 'Una persona más' }));
+    await usuario.click(screen.getByLabelText(/^Filtro/));
+    expect(screen.queryByRole('group', { name: '¿Tienen filtro en casa?' })).not.toBeInTheDocument();
+    await usuario.click(within(screen.getByRole('group', { name: '¿El agua a veces sale turbia o amarilla?' })).getByLabelText('No'));
+    await usuario.click(within(screen.getByRole('group', { name: '¿Cuándo cambiaste el cartucho por última vez?' })).getByLabelText('No me acuerdo'));
+    await usuario.type(screen.getByLabelText('Nombre'), 'Ana');
+    await usuario.type(screen.getByLabelText(/^Apellido/), 'Pérez');
+    await usuario.selectOptions(screen.getByLabelText('Operadora'), '0414');
+    await usuario.type(screen.getByLabelText(/^Número/), '123 4567');
+    await usuario.click(screen.getByRole('checkbox'));
+    await usuario.click(screen.getByRole('button', { name: 'Continuar' }));
+    expect(await screen.findByText('Pantalla de mi filtro')).toBeInTheDocument();
+    expect(simulada.crearHogar).toHaveBeenCalledWith(
+      expect.objectContaining({ origen_agua: 'filtro', tiene_filtro: true, ultimo_cambio: 'no_me_acuerdo' }),
+    );
+  });
+
   it.each([
     ['Hace menos de un mes', 'menos_de_un_mes'],
     ['Hace más de tres meses', 'mas_de_tres_meses'],

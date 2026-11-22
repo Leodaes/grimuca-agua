@@ -93,7 +93,12 @@ describe('pestaña Zonas: mapa real (por defecto)', () => {
     expect(screen.getByRole('button', { name: 'Mapa' })).toHaveAttribute('aria-pressed', 'true');
     expect(screen.getByRole('button', { name: 'Tablero' })).toHaveAttribute('aria-pressed', 'false');
 
-    const retobo = container.querySelector('[data-id="el-retobo"]')!;
+    // Leaflet dibuja las marcas un instante después de la región: se espera a la marca (con la suite cargada no estaba aún).
+    const retobo = await vi.waitFor(() => {
+      const marca = container.querySelector('[data-id="el-retobo"]');
+      if (!marca) throw new Error('Todavía no está la marca de El Retobo.');
+      return marca;
+    });
     expect(retobo).toHaveAttribute('aria-label', expect.stringMatching(/^El Retobo, 4 hogares, estado rojo, en alerta/));
     expect(retobo.querySelector('.mr-urb')).toHaveClass('mr-urb--rojo', 'mr-urb--alerta');
     expect(retobo).toHaveTextContent('!');
