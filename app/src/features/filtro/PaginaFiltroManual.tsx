@@ -142,6 +142,8 @@ export function PaginaFiltroManual() {
             nombre="tipo_filtro"
             ayuda="Fíjate cuántos vasos tiene y si lleva un tanque al lado."
             opciones={OPCIONES_CON_DIBUJO}
+            columnas={2}
+            apiladas
             valor={tipo}
             onCambio={(v) => {
               setTipo(v);
