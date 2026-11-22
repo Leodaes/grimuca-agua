@@ -237,16 +237,20 @@ test.describe('Revisión en vivo · panel del operador', () => {
   test.describe.configure({ retries: 0 });
   test.afterEach(({}, info) => { if (info.project.name === 'escritorio') guardarRegistro(info, 'escritorio'); });
 
-  test('las 4 pestañas en 1366×768', async ({ page }) => {
+  // Pasada 2: el panel es /comercio (Grimuca, PIN_OPERADOR) y tiene 5 pestañas, con "Productos".
+  test('las 5 pestañas del comercio en 1366×768', async ({ page }) => {
     let actual = '30-operador-entrada';
     escucharConsola(page, () => actual);
-    await page.goto('/operador');
+    await page.goto('/comercio');
+    await expect(page.getByRole('heading', { level: 1, name: /panel del comercio/i })).toBeVisible();
     await revisar(page, '30-operador-entrada.png', { movil: false });
     await entrarAlPanel(page);
+    await expect(page.getByTestId('ficha-comercio'), 'El nombre del comercio arriba').toContainText(/grimuca/i);
     for (const [n, nombre] of [
       ['31', 'Despacho'],
       ['32', 'Resumen'],
       ['33', 'Inventario'],
+      ['35', 'Productos'],
       ['34', 'Zonas'],
     ] as const) {
       actual = `${n}-operador-${nombre.toLowerCase()}`;

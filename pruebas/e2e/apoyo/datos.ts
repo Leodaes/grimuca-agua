@@ -12,6 +12,21 @@ export const SIN_PIN =
   'Falta la variable de entorno PIN_OPERADOR: se saltan las pruebas del operador. ' +
   'Córrelas con PIN_OPERADOR=<el PIN de agua.env> npm run e2e';
 
+/** PIN de la red (superadmin), del técnico de Grimuca y de los comercios de demostración. Solo del entorno. */
+export const PIN_SUPERADMIN = (process.env.PIN_SUPERADMIN ?? '').trim();
+export const PIN_TECNICO = (process.env.PIN_TECNICO ?? '').trim();
+function leerPinesComercios(): Record<string, string> {
+  // JSON { "aliado-lara": "1234", … }. Al cargarlo con `. ./.env.pruebas` el shell le quita las
+  // comillas ({aliado-lara:1234,…}), así que se lee con una expresión que acepta las dos formas.
+  const crudo = process.env.PINES_COMERCIOS ?? '';
+  const salida: Record<string, string> = {};
+  for (const [, comercio, pin] of crudo.matchAll(/"?([a-z][a-z0-9-]*)"?\s*:\s*"?(\d+)"?/gi)) salida[comercio] = pin;
+  return salida;
+}
+export const PINES_COMERCIOS = leerPinesComercios();
+export const SIN_PINES_RED =
+  'Faltan PIN_SUPERADMIN, PIN_TECNICO o PINES_COMERCIOS (aliado-lara) en el entorno: se salta la red de comercios.';
+
 /** Con SOLO_LECTURA=1 no se crea nada en la base. */
 export const SOLO_LECTURA = process.env.SOLO_LECTURA === '1';
 export const AVISO_SOLO_LECTURA =

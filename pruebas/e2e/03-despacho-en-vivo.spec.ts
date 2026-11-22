@@ -20,7 +20,8 @@ import { abrirPestana, accion, elegirEnLista, entrarAlPanel, sembrarDispositivo 
 /**
  * Compuerta 3 · el momento clave de la demo.
  *
- * Contexto A (laptop, 1366×768): entra a /operador con el PIN y deja abierta la pestaña Despacho.
+ * Contexto A (laptop, 1366×768): entra a /comercio con el PIN de Grimuca (PIN_OPERADOR) y deja
+ * abierta /comercio/despacho (pasada 2: la dirección principal del panel desde la red de comercios).
  * Contexto B (teléfono, 375×812): crea un pedido.
  * Se verifica que el pedido aparece en A SIN RECARGAR en menos de 10 s y que al pulsar
  * "Despachado" sale de los pendientes.
@@ -34,12 +35,12 @@ import { abrirPestana, accion, elegirEnLista, entrarAlPanel, sembrarDispositivo 
  * TEXTOS Y ROLES QUE SE ASUMEN:
  * | Dónde               | Elemento                 | Rol              | Texto aceptado                      |
  * |---------------------|--------------------------|------------------|-------------------------------------|
- * | /operador           | Campo del PIN            | textbox (label)  | PIN                                 |
- * | /operador           | Botón                    | button           | Entrar                              |
+ * | /comercio           | Campo del PIN            | textbox (label)  | PIN                                 |
+ * | /comercio           | Botón                    | button           | Entrar                              |
  * | panel               | Pestaña                  | link/tab/button  | Despacho                            |
- * | /operador/despacho  | Botón por pedido pendiente | button         | Despachado                          |
- * | /operador/despacho  | Marca de fila nueva      | texto            | Nuevo                               |
- * | /operador/despacho  | Indicador de conexión    | texto            | En vivo                             |
+ * | /comercio/despacho  | Botón por pedido pendiente | button         | Despachado                          |
+ * | /comercio/despacho  | Marca de fila nueva      | texto            | Nuevo                               |
+ * | /comercio/despacho  | Indicador de conexión    | texto            | En vivo                             |
  * | /lista (teléfono)   | Modalidad, tienda, botón | ver 02-cliente-manual.spec.ts                          |
  *
  * Cómo se reconoce "un pedido pendiente": cada fila pendiente tiene exactamente un botón

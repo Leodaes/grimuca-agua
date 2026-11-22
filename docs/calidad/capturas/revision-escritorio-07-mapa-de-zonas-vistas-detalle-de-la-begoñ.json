@@ -5,25 +5,25 @@
     {
       "pantalla": "72-zonas-375",
       "tipo": "desborde",
-      "detalle": "59 px de más. div.g-encabezado__acciones (derecha 434 px); button.g-boton g-boton--sobreAzul (derecha 434 px); span. (derecha 409 px); div. (derecha 378 px); h1.g-h1 (derecha 378 px)"
+      "detalle": "58 px de más. div.g-encabezado__acciones (derecha 433 px); button.g-boton g-boton--sobreAzul (derecha 433 px); span. (derecha 408 px); svg.[object SVGAnimatedString] (derecha 665 px); text.[object SVGAnimatedString] (derecha 398 px)"
     }
   ],
   "erroresConsola": [],
   "tiempos": {},
   "notas": {
     "cifras": {
-      "pantalla": "Urbanizaciones con clientes 33 Urbanizaciones en alerta 4 Urbanizaciones por captar 37",
+      "pantalla": "Urbanizaciones con clientes 31 Urbanizaciones en alerta 3 Urbanizaciones por captar 39",
       "esperado": {
-        "conClientes": 33,
-        "enAlerta": 4,
-        "porCaptar": 37
+        "conClientes": 31,
+        "enAlerta": 3,
+        "porCaptar": 39
       },
-      "urbanizaciones": 72,
+      "urbanizaciones": 71,
       "enTablero": 70,
-      "hogaresTotales": 113
+      "hogaresTotales": 105
     },
     "alertasZona": [
-      "Naguanagua: 32 en rojo, alerta true",
+      "Naguanagua: 30 en rojo, alerta true",
       "San Diego: 1 en rojo, alerta false",
       "Valencia norte: 0 en rojo, alerta false"
     ],
@@ -37,9 +37,9 @@
       "grupo": null,
       "verificada": true,
       "tienda": null,
-      "hogares": 7,
-      "hogares_con_medicion_30_dias": 7,
-      "hogares_en_rojo_7_dias": 6,
+      "hogares": 4,
+      "hogares_con_medicion_30_dias": 4,
+      "hogares_en_rojo_7_dias": 3,
       "estado": "rojo",
       "alerta": true,
       "parametros": [
@@ -47,10 +47,10 @@
       ],
       "pedidos_pendientes": 3
     },
-    "laBegonaDetalle": "La Begoña | Posible problema en la zona. | Conviene revisar y avisar a los hogares. | Zona | Naguanagua | Estado | rojo | Hogares | 7 | Con medición (30 días) | 7 | En rojo (7 días) | 6 | Lo que más se repite | nitrato | Pedidos pendientes | 3 | Tienda que despacha | Grimuca Mañongo",
+    "laBegonaDetalle": "La Begoña | Posible problema en la zona. | Conviene revisar y avisar a los hogares. | Zona | Naguanagua | Estado | rojo | Hogares | 4 | Con medición (30 días) | 4 | En rojo (7 días) | 3 | Lo que más se repite | nitrato | Pedidos pendientes | 3 | Tienda que despacha | Grimuca Mañongo",
     "desborde": {
       "a1366": 0,
-      "a375": 59
+      "a375": 58
     }
   }
 }

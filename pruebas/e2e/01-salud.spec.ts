@@ -23,7 +23,10 @@ import { abrirPestana, entrarAlPanel, esperarPantalla, sembrarDispositivo, sinPa
  *   |-----------------------|----------------------------------------------------------|
  *   | Título de la portada  | h1 con /Descubre la calidad del agua de tu casa/         |
  *   | Rutas del cliente     | RUTAS_SIN_PERFIL y rutasConHogar() (contrato-api.md)     |
- *   | Pestañas del operador | Resumen, Despacho, Inventario, Zonas                     |
+ *   | Botones de la portada | "Pedir el sobre a domicilio ($9)" y "Ya tengo mi sobre"   |
+ *   |                       | (con ?sobre=1 el primero del hero es "Ya tengo mi sobre") |
+ *   | Pestañas del comercio | Despacho, Resumen, Inventario, Productos, Zonas          |
+ *   | Módulos (red)         | /modulos, /comercio, /tecnico, /red                      |
  */
 
 const TITULO_PORTADA = /Descubre la calidad del agua de tu casa/i;
@@ -52,6 +55,12 @@ const RUTAS_SIN_PERFIL = [
   '/mi-filtro',
   '/mi-filtro/manual',
   '/operador',
+  // Pasada 2 (red de comercios): portada desde el QR y los cuatro módulos.
+  '/?sobre=1',
+  '/modulos',
+  '/comercio',
+  '/tecnico',
+  '/red',
   '/una-ruta-que-no-existe',
 ];
 
@@ -97,9 +106,19 @@ test.describe('Salud del sitio', () => {
     expect(respuesta?.status(), 'La portada debe responder 200').toBe(200);
     await expect(page.getByRole('heading', { level: 1, name: TITULO_PORTADA })).toBeVisible();
     await expect.soft(page, 'El título de la pestaña debe nombrar la app').toHaveTitle(/Grimuca/i);
-    await expect.soft(page.getByRole('link', { name: /ya tengo mi sobre|pedir el sobre a domicilio|medir mi agua/i }).or(
-      page.getByRole('button', { name: /ya tengo mi sobre|pedir el sobre a domicilio|medir mi agua/i }),
-    ).first(), 'La portada debe tener el botón para arrancar').toBeVisible();
+    const hero = page.locator('.p-hero__acciones');
+    await expect(hero.getByRole('link').first(), 'Sin hogar, el botón principal es "Pedir el sobre a domicilio ($9)"').toHaveText(
+      /^\s*pedir el sobre a domicilio \(\$9\)\s*$/i,
+    );
+    await expect(hero.getByRole('link', { name: /^\s*ya tengo mi sobre\s*$/i }), 'Y el segundo, "Ya tengo mi sobre"').toBeVisible();
+  });
+
+  test('con ?sobre=1 (QR del sobre) el botón principal pasa a "Ya tengo mi sobre"', async ({ page }) => {
+    await page.goto('/?sobre=1');
+    const hero = page.locator('.p-hero__acciones');
+    await expect(hero.getByRole('link').first()).toHaveText(/^\s*ya tengo mi sobre\s*$/i);
+    await expect(hero.getByRole('link').first()).toHaveAttribute('href', /\/perfil\?ya=1/);
+    await expect(hero.getByRole('link').nth(1)).toHaveText(/pedir el sobre a domicilio/i);
   });
 });
 
@@ -164,17 +183,17 @@ test.describe('La app nunca dice "potable" · con hogar, medición y pedido', ()
 test.describe('La app nunca dice "potable" · panel del operador', () => {
   test.skip(() => !PIN_OPERADOR, SIN_PIN);
 
-  test('recorre las pestañas del operador', async ({ page }) => {
-    await page.goto('/operador');
+  test('recorre las pestañas del comercio (Grimuca)', async ({ page }) => {
+    await page.goto('/comercio');
     await esperarPantalla(page);
-    await sinPalabraProhibida(page, '/operador', false);
+    await sinPalabraProhibida(page, '/comercio', false);
 
     await entrarAlPanel(page);
-    for (const pestana of ['Resumen', 'Despacho', 'Inventario', 'Zonas'] as const) {
-      await test.step(`operador: ${pestana}`, async () => {
+    for (const pestana of ['Resumen', 'Despacho', 'Inventario', 'Productos', 'Zonas'] as const) {
+      await test.step(`comercio: ${pestana}`, async () => {
         await abrirPestana(page, pestana);
         await esperarPantalla(page);
-        await sinPalabraProhibida(page, `/operador/${pestana.toLowerCase()}`, false);
+        await sinPalabraProhibida(page, `/comercio/${pestana.toLowerCase()}`, false);
       });
     }
   });

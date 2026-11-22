@@ -23,7 +23,7 @@ import { abrirPestana, entrarAlPanel, esperarPantalla, sembrarDispositivo } from
  *   | Otros objetivos      | .g-chip, enlaces de <nav>, el resto de <button> (solo se anotan) |
  */
 
-const RUTAS_SIN_PERFIL = ['/', '/perfil', '/tiendas', '/privacidad', '/terminos', '/operador'];
+const RUTAS_SIN_PERFIL = ['/', '/?sobre=1', '/perfil', '/tiendas', '/privacidad', '/terminos', '/operador', '/comercio', '/tecnico', '/red', '/modulos'];
 
 function rutasConHogar(cliente: ClienteDePrueba): string[] {
   return [
@@ -232,17 +232,17 @@ test.describe('Accesibilidad básica · pantallas con hogar, medición y pedido'
   });
 });
 
-test.describe('Accesibilidad básica · panel del operador', () => {
+test.describe('Accesibilidad básica · panel del comercio', () => {
   test.skip(() => !PIN_OPERADOR, SIN_PIN);
 
-  test('accesibilidad de las pestañas del operador', async ({ page }) => {
+  test('accesibilidad de las pestañas del comercio', async ({ page }) => {
     await entrarAlPanel(page);
-    for (const pestana of ['Resumen', 'Despacho', 'Inventario', 'Zonas'] as const) {
-      await test.step(`accesibilidad: /operador/${pestana.toLowerCase()}`, async () => {
+    for (const pestana of ['Resumen', 'Despacho', 'Inventario', 'Productos', 'Zonas'] as const) {
+      await test.step(`accesibilidad: /comercio/${pestana.toLowerCase()}`, async () => {
         await abrirPestana(page, pestana);
         await esperarPantalla(page);
         // El panel se usa en laptop: no se miden objetivos táctiles.
-        await comprobarAccesibilidad(page, `/operador/${pestana.toLowerCase()}`, false);
+        await comprobarAccesibilidad(page, `/comercio/${pestana.toLowerCase()}`, false);
       });
     }
   });

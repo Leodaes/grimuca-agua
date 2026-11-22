@@ -1,0 +1,231 @@
+{
+  "prueba": "un mismo pedido por los cuatro módulos (a–l)",
+  "estado": "passed",
+  "hallazgos": [],
+  "erroresConsola": [
+    {
+      "pantalla": "pin-equivocado",
+      "texto": "Failed to load resource: the server responded with a status of 401 ()"
+    }
+  ],
+  "tiempos": {
+    "desdeHacerPedido": 1795318365140,
+    "pedidoEnGrimucaSegundos": 0.672,
+    "servicioEnGrimucaSegundos": 0.2,
+    "guardarReporteSegundos": 0.38
+  },
+  "notas": {
+    "marca": "MWRA6QDQM3",
+    "hogar": "Prueba Calidad MWRA6QDQM3 red",
+    "modulos": [
+      "/ · Cliente El hogar mide su agua con la tira, ve qué le conviene y pide en su ferretería. / Abrir cliente",
+      "/comercio · Comercio La ferretería despacha pedidos, revisa su inventario y carga sus propios productos. /comercio Abrir comercio",
+      "/tecnico · Técnico El técnico ve sus servicios asignados y deja la foto de cómo quedó el trabajo. /tecnico Abrir técnico",
+      "/red · Red Grimuca ve todos los comercios de la red, sus cifras por estado y da de alta uno nuevo. /red Abrir red"
+    ],
+    "cifrasRedAntes": {
+      "Comercios en la red": 3,
+      "Estados cubiertos": 3,
+      "Tiendas": 5,
+      "Hogares": 100,
+      "Mediciones del mes": 87,
+      "Pedidos del mes": 82
+    },
+    "comerciosRed": [
+      "Grimuca Valencia, Carabobo Premium Activa 3 90 30 71 0 21 de noviembre de 2026",
+      "Aliado Aragua (comercio de demostración) Demostración Maracay, Aragua Básico Vencida 1 4 0 2 0 13 de agosto de 2026",
+      "Aliado Lara (comercio de demostración) Demostración Barquisimeto, Lara Básico Periodo gratis: quedan 71 días 1 6 3 9 1 1 de noviembre de 2026"
+    ],
+    "totalesApiAntes": {
+      "comercios": 3,
+      "estados_cubiertos": 3,
+      "tiendas": 5,
+      "hogares": 100,
+      "mediciones_mes": 87,
+      "pedidos_mes": 82,
+      "pedidos_pendientes": 33
+    },
+    "tiendasLara": "Aliado Lara · Centro\n3 pendientes\nCartucho\nCartucho de sedimentos 10 pulgadas (producto de demostración) × 2 · Norelys C.\n8:16 p. m.\nBarquisimeto\nRetiro en tienda\nDespachado\nSobre\nSobre de medición · Yelitza R.\n5:16 p. m.\nBarquisimeto\nEnvío: Calle 2, casa 65 (dato de prueba)\nDespachado\nCartucho\nCart",
+    "hogarApi": {
+      "zona": "Naguanagua",
+      "urbanizacion": "El Naranjal",
+      "mascotas": true,
+      "tiene_filtro": false,
+      "whatsapp": "+584120000000",
+      "tienda_id": "manongo"
+    },
+    "primerSugerido": "Filtro de Agua por Ósmosis Inversa de 8 Etapas - 110 GPD",
+    "porqueDelPrimero": "Te recomendamos esta ósmosis inversa porque tu medición dio Nitrato en Rojo: es una señal de alerta que conviene atender. Está pensada para esa casilla. También nos dijiste que el agua sale turbia. Son 4 en casa, con mascotas, y todavía no tienen filtro.",
+    "sugeridosEnPantalla": [
+      "Filtro de Agua por Ósmosis Inversa de 8 Etapas - 110 GPD",
+      "Filtro de Agua por Ósmosis Inversa de 8 Etapas - 200 GPD",
+      "Filtro de Agua de 3 Etapas Acuarios - 100 GPD",
+      "Cartucho de sedimentos 10 pulgadas (producto de demostración)"
+    ],
+    "marcasSugeridos": [
+      "La mejor opción para tu casa ·  · Filtro de Agua por Ósmosis Inversa de 8 Etapas - 110 GPD",
+      "Filtro de Agua por Ósmosis Inversa de 8 Etapas - 200 GPD ·  · Oasis · OPW-200GPD-8TN",
+      "Filtro de Agua de 3 Etapas Acuarios - 100 GPD ·  · Oasis · OPW-RO-100H",
+      "Foto no disponible · Cartucho de sedimentos 10 pulgadas (producto de demostración) · "
+    ],
+    "fotosResultado": {
+      "total": 4,
+      "cargadas": 3,
+      "sinFoto": 1,
+      "rotas": [],
+      "pendientes": []
+    },
+    "pedidoApi": {
+      "id": 115,
+      "tipo": "cartucho",
+      "modalidad": "envio",
+      "tienda_id": "manongo",
+      "estado": "pendiente",
+      "cartucho": "OPW-100GPD-8TN"
+    },
+    "filaPedidoGrimuca": "Nuevo Cartucho Filtro de Agua por Ósmosis Inversa de 8 Etapas - 110 GPD · Prueba Calidad MWRA6QDQM3 red 11:32 p. m. Naguanagua Envío: Calle Inventada MWRA6QDQM3, casa 00, sector de prueba Despachado",
+    "contadorNuevosLara": "Nuevos: 0",
+    "direccionPrellenadaExperto": "",
+    "tiendaExperto": "manongo",
+    "filaServicioGrimuca": "Nuevo Servicio técnico Cambio de cartucho · Prueba Calidad MWRA6QDQM3 red 11:32 p. m. Naguanagua Visita: Calle Inventada MWRA6QDQM3, casa 00, sector de prueba Fecha preferida: domingo, 22 de noviembre · En la mañana Atendido",
+    "tecnicoAntes": {
+      "pendientes": 4,
+      "atendidos": 2,
+      "comercio": "Servicio técnico de Grimuca"
+    },
+    "servicioApi": {
+      "id": 116,
+      "tipo": "servicio",
+      "estado": "despachado",
+      "tienda_id": "manongo"
+    },
+    "reportesResumenAntes": "Reportes del técnico\n3",
+    "reporteAparecioSinRecargar": true,
+    "reporteGrimuca": "Atendido Cambio de cartucho · Prueba Calidad MWRA6QDQM3 red Naguanagua · Mañongo Ocultar reporte Visita: 21 de noviembre a las 11:32 p. m. Nota del técnico: Prueba Calidad MWRA6QDQM3: cambié el cartucho de sedimentos.",
+    "cifrasRedEnVivo": {
+      "Comercios en la red": 3,
+      "Estados cubiertos": 3,
+      "Tiendas": 5,
+      "Hogares": 101,
+      "Mediciones del mes": 88,
+      "Pedidos del mes": 84
+    },
+    "actividadRed": "11:32 p. m. Servicio atendido en Grimuca Mañongo · Cambio de cartucho\n11:32 p. m. Pedido nuevo en Grimuca Mañongo · Cambio de cartucho\n11:32 p. m. Pedido nuevo en Grimuca Mañongo · Filtro de Agua por Ósmosis Inversa de 8 Etapas - 110 GPD\n11:32 p. m. Medición nueva en Naguanagua",
+    "subidaEnVivo": 2,
+    "cifrasRedRecargada": {
+      "Comercios en la red": 3,
+      "Estados cubiertos": 3,
+      "Tiendas": 5,
+      "Hogares": 101,
+      "Mediciones del mes": 88,
+      "Pedidos del mes": 84
+    },
+    "filaGrimucaRed": "Grimuca Valencia, Carabobo Premium Activa 3 91 31 73 0 21 de noviembre de 2026",
+    "productosAntes": 80,
+    "camposExistencias": [
+      "Existencias en Big Low",
+      "Existencias en CC CEM",
+      "Existencias en Mañongo"
+    ],
+    "filaProducto": "Prueba Calidad producto MWRA6QDQM3 PC-PRUEBA-MWRA6QDQM3 Cargado por ti Repuesto Bacterias 0 0 0",
+    "avisoAlta": "Comercio dado de alta. Periodo gratis hasta el 21 de febrero de 2027.",
+    "cifrasTrasAlta": {
+      "Comercios en la red": 4,
+      "Estados cubiertos": 4,
+      "Tiendas": 6,
+      "Hogares": 101,
+      "Mediciones del mes": 88,
+      "Pedidos del mes": 84
+    },
+    "pinEquivocado": {
+      "comercioUi": "PIN incorrecto",
+      "red": 401,
+      "tecnico": 401
+    },
+    "aislamiento": {
+      "pedidosDeLara": 9,
+      "ajenos": 0,
+      "tiendasLara": [
+        "lara-centro"
+      ]
+    },
+    "despacharAjeno": 404,
+    "fotoAjena": 404,
+    "rutasSinPermiso": {
+      "GET /api/red/resumen": 401,
+      "POST /api/red/comercios": 401,
+      "GET /api/tecnico/servicios": 401,
+      "POST /api/tecnico/servicios/116/atender": 401,
+      "GET /api/servicios/116/foto": 401,
+      "GET /api/operador/productos": 401,
+      "GET /api/operador/reportes": 401,
+      "GET /api/red/resumen con token de comercio": 403,
+      "GET /api/operador/pedidos con token de técnico": 403,
+      "GET /api/tecnico/servicios con token de comercio": 403
+    },
+    "estadoFinalPedido": "despachado",
+    "hallazgosRevision": 0,
+    "pasos": {
+      "a": {
+        "titulo": "/modulos muestra las cuatro tarjetas y sus enlaces funcionan",
+        "estado": "PASA",
+        "detalle": "ok"
+      },
+      "b": {
+        "titulo": "Red: entra con PIN_SUPERADMIN, 3 comercios en 3 estados con su membresía, cifras",
+        "estado": "PASA",
+        "detalle": "ok"
+      },
+      "c": {
+        "titulo": "Grimuca (A) y Aliado Lara (B) abiertos en /comercio/despacho",
+        "estado": "PASA",
+        "detalle": "ok"
+      },
+      "d": {
+        "titulo": "Teléfono: portada → \"Ya tengo mi sobre\" → perfil → nitrato 50 → resultado con el porqué → pedido con envío",
+        "estado": "PASA",
+        "detalle": "ok"
+      },
+      "e": {
+        "titulo": "El pedido aparece sin recargar en Grimuca y NO en Aliado Lara",
+        "estado": "PASA",
+        "detalle": "ok"
+      },
+      "f": {
+        "titulo": "Teléfono: /experto → \"Pedir el servicio\" → en vivo en Grimuca como \"Servicio técnico\"",
+        "estado": "PASA",
+        "detalle": "ok"
+      },
+      "g": {
+        "titulo": "Técnico: ve el servicio, \"Ya fui\", foto, \"Guardar reporte\", pasa a \"Atendidos\"",
+        "estado": "PASA",
+        "detalle": "ok"
+      },
+      "h": {
+        "titulo": "Grimuca: \"Reportes del técnico\" muestra el reporte con su foto",
+        "estado": "PASA",
+        "detalle": "ok"
+      },
+      "i": {
+        "titulo": "La red refleja la actividad: pedidos del mes subieron",
+        "estado": "PASA",
+        "detalle": "ok"
+      },
+      "j": {
+        "titulo": "Grimuca → Productos → \"Guardar producto\" PC-PRUEBA-MWRA6QDQM3; aparece en la tabla",
+        "estado": "PASA",
+        "detalle": "ok"
+      },
+      "k": {
+        "titulo": "Red → \"Dar de alta\" \"Prueba Calidad Comercio\" en Zulia; aparece en la lista",
+        "estado": "PASA",
+        "detalle": "ok"
+      },
+      "l": {
+        "titulo": "Seguridad: PIN equivocado, aislamiento entre comercios y rutas sin token",
+        "estado": "PASA",
+        "detalle": "ok"
+      }
+    }
+  }
+}

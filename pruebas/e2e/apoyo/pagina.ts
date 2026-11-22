@@ -211,20 +211,35 @@ async function escribirEnSecreto(page: Page, campo: Locator, secreto: string): P
   ).toBe(secreto.length);
 }
 
-/** Entra al panel del operador por la interfaz, con el PIN del entorno. */
-export async function entrarAlPanel(page: Page): Promise<void> {
-  await page.goto('/operador');
-  const campo = page.getByLabel(/pin/i).first();
-  await expect(campo, 'No se ve el campo del PIN en /operador').toBeVisible();
-  await escribirEnSecreto(page, campo, PIN_OPERADOR);
+/**
+ * Escribe un PIN en la pantalla de entrada de un módulo (comercio, red o técnico) y pulsa "Entrar".
+ * No espera nada después: quien llama decide qué debe pasar (entrar o "PIN incorrecto").
+ */
+export async function escribirPin(page: Page, ruta: string, pin: string): Promise<void> {
+  await page.goto(ruta);
+  const campo = page.getByLabel(/^\s*pin\s*$/i).first();
+  await expect(campo, `No se ve el campo del PIN en ${ruta}`).toBeVisible();
+  await escribirEnSecreto(page, campo, pin);
   await accion(page, /^\s*entrar\s*$/i).click();
+}
+
+/**
+ * Entra al panel del comercio por la interfaz. Por defecto en /comercio (la dirección principal
+ * desde la red de comercios) con PIN_OPERADOR, que es el PIN de Grimuca. `/operador` sigue igual.
+ */
+export async function entrarAlPanel(page: Page, opciones: { base?: '/comercio' | '/operador'; pin?: string } = {}): Promise<void> {
+  const base = opciones.base ?? '/comercio';
+  await escribirPin(page, base, opciones.pin ?? PIN_OPERADOR);
   await expect(page, 'Después de entrar con el PIN debe abrirse el panel').toHaveURL(
-    /\/operador\/(resumen|despacho|inventario|zonas)/,
+    new RegExp(`${base}/(resumen|despacho|inventario|productos|zonas)`),
   );
 }
 
-/** Abre una pestaña del panel del operador (Resumen, Despacho, Inventario o Zonas). */
-export async function abrirPestana(page: Page, nombre: 'Resumen' | 'Despacho' | 'Inventario' | 'Zonas'): Promise<void> {
+export type PestanaPanel = 'Resumen' | 'Despacho' | 'Inventario' | 'Productos' | 'Zonas';
+
+/** Abre una pestaña del panel del comercio, en la misma dirección base donde se entró. */
+export async function abrirPestana(page: Page, nombre: PestanaPanel): Promise<void> {
+  const base = /\/operador(\/|$)/.test(new URL(page.url()).pathname) ? '/operador' : '/comercio';
   // La pestaña puede llevar un contador: "Despacho (2 nuevos)".
   const empiezaCon = new RegExp(`^\\s*${nombre}(\\s|$)`, 'i');
   await page
@@ -233,5 +248,5 @@ export async function abrirPestana(page: Page, nombre: 'Resumen' | 'Despacho' | 
     .or(page.getByRole('button', { name: empiezaCon }))
     .first()
     .click();
-  await expect(page).toHaveURL(new RegExp(`/operador/${nombre.toLowerCase()}`));
+  await expect(page).toHaveURL(new RegExp(`${base}/${nombre.toLowerCase()}`));
 }
