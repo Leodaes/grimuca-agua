@@ -146,14 +146,17 @@ export function mensajesAvisoVecinos(zona: string, tienda: string, parametros: s
   ];
 }
 
-/** Aviso a los vecinos de una zona en alerta: en la demo solo muestra el WhatsApp simulado, no envía nada. */
-function AvisarVecinos({ zona, parametros }: { zona: string; parametros: string[] }) {
+/**
+ * Aviso a los vecinos de una urbanización en alerta: en la demo solo muestra el WhatsApp simulado, no envía nada.
+ * `lugar` es la urbanización (lo que el vecino reconoce); `zona` es el municipio, que decide la tienda.
+ */
+function AvisarVecinos({ lugar, zona, parametros }: { lugar: string; zona: string; parametros: string[] }) {
   const tienda = nombreTienda(tiendaDeZona(zona));
   const [enviado, setEnviado] = useState(false);
   if (!enviado) {
     return (
       <Boton variante="secundario" onClick={() => setEnviado(true)}>
-        Avisar a los vecinos de la zona
+        Avisar a los vecinos de {lugar}
       </Boton>
     );
   }
@@ -161,12 +164,34 @@ function AvisarVecinos({ zona, parametros }: { zona: string; parametros: string[
     <div className="g-pila" role="status">
       <WhatsAppSimulado
         de={`Grimuca ${tienda}`}
-        para={`Vecinos de ${zona}`}
-        mensaje={mensajesAvisoVecinos(zona, tienda, parametros.map(nombreParametro))}
+        para={`Vecinos de ${lugar}`}
+        mensaje={mensajesAvisoVecinos(lugar, tienda, parametros.map(nombreParametro))}
       />
       <p>
-        <strong>Enviado (simulado)</strong> solo a los hogares de {zona} que aceptaron recibir avisos. No se nombra a ningún hogar.
+        <strong>Enviado (simulado)</strong> solo a los hogares de {lugar} que aceptaron recibir avisos. No se nombra a ningún hogar.
       </p>
+    </div>
+  );
+}
+
+/**
+ * Dentro de la alerta de un municipio: un aviso por cada urbanización en alerta, para que el WhatsApp nombre
+ * el sector que el vecino reconoce. Si ninguna urbanización llega al umbral (hogares sin urbanización), se avisa
+ * con el nombre del municipio.
+ */
+function UrbanizacionesEnAlerta({ zona, mapa, parametros }: { zona: string; mapa: UrbanizacionMapa[]; parametros: string[] }) {
+  const enAlerta = mapa.filter((u) => u.alerta && u.zona === zona && u.hogares > 0);
+  if (enAlerta.length === 0) return <AvisarVecinos key={zona} lugar={zona} zona={zona} parametros={parametros} />;
+  return (
+    <div className="g-pila">
+      {enAlerta.map((u) => (
+        <div key={u.id} className="g-pila">
+          <p style={{ margin: 0 }}>
+            <strong>{u.nombre}</strong>: {u.hogares_en_rojo_7_dias} hogares en rojo en 7 días.
+          </p>
+          <AvisarVecinos lugar={u.nombre} zona={u.zona} parametros={u.parametros} />
+        </div>
+      ))}
     </div>
   );
 }
@@ -185,6 +210,7 @@ function Detalle({ u }: { u: UrbanizacionMapa | undefined }) {
       {u.alerta && (
         <Aviso tono="error" titulo="Varios hogares de la zona reportaron resultados fuera de rango.">
           Conviene revisar y avisar a los hogares.
+          <AvisarVecinos key={u.id} lugar={u.nombre} zona={u.zona} parametros={u.parametros} />
         </Aviso>
       )}
       <dl>
@@ -386,7 +412,7 @@ export function Zonas({ token, version, alNoAutorizado }: Props) {
                 <Boton variante="secundario" a={`${base}/inventario`}>
                   Ver inventario
                 </Boton>
-                <AvisarVecinos key={z.zona} zona={z.zona} parametros={z.parametros} />
+                <UrbanizacionesEnAlerta zona={z.zona} mapa={mapa} parametros={z.parametros} />
               </Aviso>
             ))
           )}

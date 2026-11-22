@@ -161,12 +161,15 @@ describe('pestaña Zonas: tablero de hexágonos', () => {
     expect(screen.getByText(/Alerta en Naguanagua: 3 hogares en rojo/)).toBeInTheDocument();
 
     // Avisar a los vecinos: solo muestra el WhatsApp simulado con el texto aprobado, sin nombrar hogares.
-    await usuario.click(screen.getByRole('button', { name: 'Avisar a los vecinos de la zona' }));
+    // El aviso nombra la urbanización en alerta (El Retobo), no el municipio.
+    const botones = screen.getAllByRole('button', { name: 'Avisar a los vecinos de El Retobo' });
+    await usuario.click(botones[botones.length - 1]);
     expect(
       screen.getByText(
-        'Hola, vecina o vecino de Naguanagua. Te escribe Grimuca Mañongo, la ferretería de tu zona. Esta semana varios hogares de Naguanagua midieron su agua con nosotros y en algunos salió fuera de rango, sobre todo en nitrato.',
+        'Hola, vecina o vecino de El Retobo. Te escribe Grimuca Mañongo, la ferretería de tu zona. Esta semana varios hogares de El Retobo midieron su agua con nosotros y en algunos salió fuera de rango, sobre todo en nitrato.',
       ),
     ).toBeInTheDocument();
+    expect(screen.getByText(/solo a los hogares de El Retobo que aceptaron recibir avisos/)).toBeInTheDocument();
     expect(screen.getByText(/Eso no dice nada de tu casa: para saberlo hay que medir\..*responde BAJA\.\)/)).toBeInTheDocument();
     expect(screen.getByText('Enviado (simulado)')).toBeInTheDocument();
     expect(screen.getByText(/en la demo no se envía un WhatsApp real/)).toBeInTheDocument();
