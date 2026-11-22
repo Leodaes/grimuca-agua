@@ -8,6 +8,7 @@ import type { TonoInsignia } from '../../components/grimuca/Insignia';
 import type { ParadaRuta, PedidoEnParada, RutaTienda, RutasDespacho as DatosRutas } from '../../lib/tipos';
 import { useServicios } from './contexto';
 import { MapaReal, escaparHtml, type LineaMapa, type MarcaMapa } from './mapa-real/MapaReal';
+import { useRutasPorCalles } from './mapa-real/rutasPorCalles';
 import { useDatos } from './useDatos';
 import './rutas-despacho.css';
 
@@ -236,6 +237,8 @@ export function RutasDespacho({ token, version, alNoAutorizado }: Props) {
     });
     return { marcas, lineas, encaje };
   }, [rutas, tienda, elegida]);
+  // Por las calles (OSRM) en cuanto llega el trazo; mientras tanto, o si no responde, líneas rectas.
+  const lineasPorCalles = useRutasPorCalles(lineas);
 
   const t = datos?.totales;
   const rutasActivas = rutas.filter((r) => r.paradas.length > 0).length;
@@ -309,7 +312,7 @@ export function RutasDespacho({ token, version, alNoAutorizado }: Props) {
             <div className="g-pila">
               <MapaReal
                 marcas={marcas}
-                lineas={lineas}
+                lineas={lineasPorCalles}
                 etiqueta="Mapa de las rutas de despacho"
                 claveEncaje={`${tienda ?? 'todas'}|${encaje.length}`}
                 encajarEn={encaje}
