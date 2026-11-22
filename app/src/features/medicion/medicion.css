@@ -1,0 +1,29 @@
+/* Medir: en teléfono, una columna; en computadora, los pasos junto a la foto y las casillas en dos columnas. */
+.medir-casillas {
+  display: grid;
+  gap: var(--s5);
+}
+@media (min-width: 900px) {
+  .medir-acciones {
+    padding: var(--s5);
+    border: 1px solid var(--linea);
+    border-top: 4px solid var(--azul);
+    background: var(--papel);
+  }
+  .medir-texto {
+    max-width: 720px;
+  }
+  .medir-casillas {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s5) var(--s6);
+    align-items: start;
+  }
+  .medir-casillas > .g-grupo {
+    min-width: 0;
+    height: 100%;
+  }
+  .medir-enviar {
+    width: min(480px, 100%);
+    margin-left: auto;
+  }
+}
