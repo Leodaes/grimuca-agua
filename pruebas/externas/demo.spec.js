@@ -2,7 +2,15 @@
 // (routes in §1, CTA labels per screen). Text selectors on purpose: QA is independent of the markup.
 const { test, expect } = require('@playwright/test');
 
-const DISCLAIMER = 'Esta tira no mide todo. Un buen resultado no significa que el agua sea apta para tomar.';
+// Fixed name for everything this suite creates, so the cleanup can find it.
+const NOMBRE_PRUEBA = 'Prueba Calidad externa';
+
+// Sunday 22 nov, Caracas time (UTC-4), from 00:00 on.
+function despuesDeMedianoche(now = new Date()) {
+  return now.getTime() >= Date.parse('2026-11-22T00:00:00-04:00');
+}
+
+const DISCLAIMER ='Esta tira no mide todo. Un buen resultado no significa que el agua sea apta para tomar.';
 
 async function checkPageRules(page) {
   const text = (await page.locator('body').innerText()).toLowerCase();
@@ -34,7 +42,7 @@ async function fillForm(page) {
     const hint = ((await input.getAttribute('name')) || (await input.getAttribute('aria-label')) || '').toLowerCase();
     await input.fill(type === 'date' ? '2026-08-01' : type === 'number' ? '3'
       : /whats|tel/.test(hint) || type === 'tel' ? '04141234567'
-      : /direc/.test(hint) ? 'Calle Prueba 123, Naguanagua' : 'Prueba Calidad');
+      : /direc/.test(hint) ? 'Calle Prueba 123, Naguanagua' : NOMBRE_PRUEBA);
   }
   // Choice chips: pick the first option of every group that has nothing chosen yet.
   for (const group of await page.locator('[role=group]:visible, [role=radiogroup]:visible, fieldset:visible').all()) {
@@ -80,8 +88,10 @@ test('el panel del operador carga y pide PIN', async ({ page }) => {
 });
 
 test('recorrido completo del cliente y, con PIN, el pedido en vivo en Despacho', async ({ browser, baseURL }, testInfo) => {
-  // Each run creates real orders ("Prueba Calidad") in the production database, so it is opt-out.
+  // Each run creates real orders in the production database. Skipped with SOLO_LECTURA=1,
+  // and always from midnight on (agreed with the orchestrator so the pre-demo cleanup holds).
   test.skip(process.env.SOLO_LECTURA === '1', 'SOLO_LECTURA=1: se salta el recorrido para no crear pedidos de prueba.');
+  test.skip(despuesDeMedianoche(), 'Después de la medianoche no se crean pedidos en el sitio publicado.');
   test.setTimeout(180_000);
   const snap = async (p, name) => p.screenshot({ path: testInfo.outputPath(`${name}.png`), fullPage: true });
 
@@ -154,7 +164,7 @@ test('recorrido completo del cliente y, con PIN, el pedido en vivo en Despacho',
   // The key moment: the order shows up in Despacho WITHOUT reloading the panel.
   await expect.poll(async () => (await panel.locator('body').innerText()) !== before,
     { message: 'El pedido no apareció en Despacho sin recargar', timeout: 30_000 }).toBe(true);
-  await expect(panel.getByText(/Prueba Calidad/).first(), 'El pedido nuevo no se ve en Despacho').toBeVisible({ timeout: 10_000 });
+  await expect(panel.getByText(NOMBRE_PRUEBA).first(), 'El pedido nuevo no se ve en Despacho').toBeVisible({ timeout: 10_000 });
   await snap(panel, 'panel-despacho');
   await opCtx.close();
 });
