@@ -2,6 +2,9 @@
 
 .mapa-real {
   position: relative;
+  /* Encierra los z-index de Leaflet (capas 400, controles 1000) para que el mapa no tape la cabecera fija. */
+  isolation: isolate;
+  z-index: 0;
   border: 1px solid var(--linea);
   background: var(--papel);
   max-width: 100%;

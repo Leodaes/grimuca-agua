@@ -50,11 +50,11 @@ const LIMITES_POR_DEFECTO: L.LatLngBoundsExpression = [
   [10.18, -68.05],
   [10.3, -67.94],
 ];
-// Teselas de CARTO (Voyager), hechas con datos de OpenStreetMap. Las de tile.openstreetmap.org bloquean
-// las peticiones sin Referer, y el sitio manda Referrer-Policy: same-origin.
-const TESELAS = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
-const ATRIBUCION =
-  '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> © <a href="https://carto.com/attributions">CARTO</a>';
+// Teselas de OpenStreetMap. Su política exige el encabezado Referer, y el sitio manda Referrer-Policy:
+// same-origin (que lo quita en peticiones a otros dominios). Por eso la capa pide "strict-origin-when-cross-origin":
+// el navegador envía solo el origen (https://agua.oydo.app/), sin la ruta ni datos del hogar.
+const TESELAS = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+const ATRIBUCION = '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
 /** Con este número de teselas fallidas se pasa al fondo liso. */
 const MAXIMO_FALLAS = 4;
 export const AVISO_SIN_FONDO = 'Sin mapa de fondo: se muestran solo los puntos y las rutas';
@@ -111,7 +111,6 @@ export function MapaReal({ marcas, lineas = [], etiqueta, claveEncaje, encajarEn
       let fallas = 0;
       teselas = L.tileLayer(TESELAS, {
         attribution: ATRIBUCION,
-        subdomains: 'abcd',
         maxZoom: 19,
         crossOrigin: true,
         referrerPolicy: 'strict-origin-when-cross-origin',
