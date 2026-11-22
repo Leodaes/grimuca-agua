@@ -323,6 +323,29 @@ h2 { font-size: var(--title-size); font-weight: 800; line-height: 1.06; max-widt
 .semaforo-mini { display: flex; gap: .4em; font-size: clamp(.9rem, 1.4vw, 1.2rem); }
 .semaforo-mini i { width: .8em; height: .8em; border-radius: 50%; display: block; }
 
+/* La imagen del lema a la izquierda y los cuatro pasos en 2×2 a la derecha */
+.con-foto { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: clamp(.8rem, 2vw, 2rem); align-items: stretch; margin-top: clamp(1rem, 3.5vh, 2.2rem); }
+.foto-lema { height: min(58vh, 34vw); width: auto; max-height: none; aspect-ratio: 1; object-fit: cover; display: block; }
+.con-foto .pasos { grid-template-columns: 1fr 1fr; margin-top: 0; }
+.con-foto .paso { min-height: 0; }
+
+/* Lámina 1: la imagen de los botellones completa, sobre el azul de su propio fondo */
+.problema .foto-botellones { background: #0E2347; display: flex; align-items: center; }
+.problema .foto-botellones img { position: static; width: 100%; height: auto; max-height: 100%; object-fit: contain; }
+.pie-derecha { left: calc(31% + var(--slide-padding)); }
+
+/* ===========================================
+   4 · FOTOS REALES DE LA MEDICIÓN
+   =========================================== */
+.fotos-reales { display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(.5rem, 1.2vw, 1rem); margin-top: clamp(1rem, 3.5vh, 2.2rem); }
+.fotos-reales figure { display: flex; flex-direction: column; gap: .5em; min-width: 0; }
+.fotos-reales img { width: 100%; height: min(50vh, 30vw); max-height: none; object-fit: cover; display: block; }
+.fotos-reales figcaption { font-size: var(--desc-size); color: var(--tinta-2); line-height: 1.35; display: flex; gap: .5em; align-items: baseline; }
+.fotos-reales figcaption b { font-family: var(--f-titulo); font-weight: 800; color: var(--azul); }
+
+/* Lámina de la demo: la foto de la calle de ferreterías, apagada, de fondo */
+.con-fondo .fondo-foto { position: absolute; inset: 0; width: 100%; height: 100%; max-height: none; object-fit: cover; opacity: .16; filter: grayscale(1); pointer-events: none; }
+
 /* ===========================================
    3 · EL SOBRE
    =========================================== */
@@ -399,6 +422,8 @@ h2 { font-size: var(--title-size); font-weight: 800; line-height: 1.06; max-widt
 .siguiente b { display: block; font-family: var(--f-titulo); font-stretch: 108%; font-weight: 800; color: var(--azul); font-size: clamp(.9rem, 1.4vw, 1.2rem); margin-bottom: .3em; }
 .siguiente ul { list-style: none; display: flex; flex-direction: column; gap: .3em; }
 .siguiente li::before { content: "· "; color: var(--azul); font-weight: 700; }
+.dibujos { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(.4rem, .8vw, .7rem); margin-top: clamp(.5rem, 1.6vh, 1rem); }
+.dibujos img { width: 100%; max-height: min(16vh, 150px); object-fit: cover; display: block; border: 1px solid var(--linea); }
 .firma { margin-top: clamp(.8rem, 2.6vh, 1.6rem); display: flex; align-items: baseline; gap: clamp(.8rem, 2vw, 2rem); flex-wrap: wrap; }
 .firma .url { font-family: var(--f-titulo); font-stretch: 112%; font-weight: 800; color: var(--accion); font-size: clamp(1.1rem, 2.2vw, 1.9rem); }
 .firma span { font-size: var(--small-size); color: var(--apagado); }
@@ -487,7 +512,7 @@ body.con-notas .nota-orador { display: block; }
      =========================================== -->
 <section class="slide clara sin-cabecera" aria-label="Lámina 1, el problema">
   <div class="problema">
-    <div class="foto revela-img" style="--d:0"><img src="assets/calle-ferreteria.jpg" alt="Calle de ferreterías con un camión de reparto."></div>
+    <div class="foto foto-botellones revela-img" style="--d:0"><img src="assets/02-botellones.jpg" alt="¿Hasta cuándo cargando botellones? Un hombre sube una escalera con un botellón; al lado, un filtro bajo el fregadero."></div>
     <div class="derecha">
       <p class="kicker revela" style="--d:0">01 · El problema</p>
       <h2 class="revela" style="--d:1">Cada botellón es un viaje que se puede <span class="clave">evitar</span></h2>
@@ -510,7 +535,8 @@ body.con-notas .nota-orador { display: block; }
       </div>
     </div>
   </div>
-  <span class="numero">1 / 9</span>
+  <p class="pie-legal pie-derecha">Grimuca Agua ofrece mediciones caseras orientativas. No certifica agua ni reemplaza un análisis de laboratorio.</p>
+  <span class="numero">1 / 10</span>
   <aside class="nota-orador">Tulio: "En el mostrador de Grimuca nos lo preguntan todos los días: ¿este filtro me sirve?, ¿cuándo le cambio el cartucho? Nadie sabe, porque nadie mide. Y nosotros, que vendemos el cartucho, tampoco sabemos cuándo lo van a pedir." Si preguntan por el botellón: $2 cada uno, hasta $4 con delivery (estimación nuestra). No se nombra ninguna marca.</aside>
 </section>
 
@@ -522,15 +548,18 @@ body.con-notas .nota-orador { display: block; }
   <div class="slide-content">
     <p class="kicker revela" style="--d:0">02 · La solución</p>
     <h2 class="revela" style="--d:1">Mide en casa, pide en <span class="clave">un toque</span></h2>
+    <div class="con-foto">
+    <img class="foto-lema revela-img ocultar-angosto" style="--d:2" src="assets/01-saber-que-tomas.jpg" alt="Saber qué tomas empieza en casa: una madre mide el agua con una tira junto a su hija. Mide el agua de tu casa por $9.">
     <div class="pasos">
       <div class="paso revela" style="--d:2"><span class="num">01</span><b>Mide</b><span class="grande">5 minutos</span><p>Con una tira y una foto. La persona confirma lo que leyó la foto.</p></div>
       <div class="paso revela" style="--d:3"><span class="num">02</span><b>Entiende</b><span class="semaforo-mini" role="img" aria-label="Verde, amarillo y rojo"><i style="background:var(--verde)"></i><i style="background:#B7791F"></i><i style="background:var(--rojo)"></i></span><p>Un semáforo por indicador te dice qué falla, con umbrales de la OMS y la EPA.</p></div>
       <div class="paso revela" style="--d:4"><span class="num">03</span><b>Elige</b><p>La app te recomienda el cartucho correcto para tu filtro y te dice por qué.</p></div>
       <div class="paso revela" style="--d:5"><span class="num">04</span><b>Pide</b><p>El pedido llega en vivo a la ferretería más cercana, que despacha o manda a su técnico.</p></div>
     </div>
+    </div>
   </div>
   <p class="pie-legal">Grimuca Agua ofrece mediciones caseras orientativas. No certifica agua ni reemplaza un análisis de laboratorio. La prueba de bacterias tampoco certifica el agua.</p>
-  <span class="numero">2 / 9</span>
+  <span class="numero">2 / 10</span>
   <aside class="nota-orador">Tulio: "Esto lo vamos a ejecutar a largo plazo; hoy les mostramos una demo." Decir siempre, sin que lo pregunten: "La tira no mide todo y no certificamos el agua. Con plomo y cobre decimos 'posible presencia' y mandamos al laboratorio. Somos una ferretería, no un laboratorio."</aside>
 </section>
 
@@ -548,17 +577,38 @@ body.con-notas .nota-orador { display: block; }
     </div>
     <p class="retira revela" style="--d:4"><strong>$9 con envío incluido.</strong> Retira en Mañongo o San Diego, o te lo llevamos. El sobre trae tira, prueba de bacterias, tabla de colores y un QR.</p>
   </div>
-  <span class="numero">3 / 9</span>
-  <aside class="nota-orador">El precio del sobre es de Tulio. La tabla de colores de la imagen es ilustrativa. Después de esta lámina se pasa a la demo en vivo.</aside>
+  <span class="numero">3 / 10</span>
+  <aside class="nota-orador">El precio del sobre es de Tulio. La tabla de colores de la imagen es ilustrativa.</aside>
+</section>
+
+<!-- ===========================================
+     4 · ASÍ SE MIDE EN CASA (fotos reales de Leonardo, 22 nov)
+     =========================================== -->
+<section class="slide clara" aria-label="Lámina 4, así se mide en casa">
+  <div class="cabecera"><img src="assets/logo-horizontal-azul.png" alt="Grimuca"><span>Medición real</span></div>
+  <div class="slide-content">
+    <p class="kicker revela" style="--d:0">04 · Medición real</p>
+    <h2 class="revela" style="--d:1; max-width: none">Así se mide en casa, en <span class="clave">5 minutos</span></h2>
+    <div class="fotos-reales">
+      <figure class="revela-img" style="--d:2"><img src="assets/07-medicion-tomar-la-muestra.jpg" alt="Se toma la muestra de agua con el gotero."><figcaption><b>1</b> Se toma la muestra</figcaption></figure>
+      <figure class="revela-img" style="--d:3"><img src="assets/08-medicion-una-gota-por-casilla.jpg" alt="Una gota en la primera casilla de la tira."><figcaption><b>2</b> Una gota en cada casilla</figcaption></figure>
+      <figure class="revela-img" style="--d:4"><img src="assets/09-medicion-casilla-por-casilla.jpg" alt="La tira con las casillas cambiando de color, casilla por casilla."><figcaption><b>3</b> Cada casilla cambia de color</figcaption></figure>
+      <figure class="revela-img" style="--d:5"><img src="assets/10-medicion-tira-completa.jpg" alt="La tira completa con todas las casillas mojadas."><figcaption><b>4</b> Foto de la tira: la app la lee y la persona confirma</figcaption></figure>
+    </div>
+  </div>
+  <p class="pie-legal">Grimuca Agua ofrece mediciones caseras orientativas. No certifica agua ni reemplaza un análisis de laboratorio.</p>
+  <span class="numero">4 / 10</span>
+  <aside class="nota-orador">Fotos reales de la medición que hizo Leonardo el 22 de noviembre con la tira del sobre. La lectura de la foto depende de la luz: por eso la app muestra lo que leyó y la persona lo confirma o lo corrige. Después de esta lámina se pasa a la demo en vivo.</aside>
 </section>
 
 <!-- ===========================================
      4 · PUENTE A LA DEMO (la app se muestra en vivo)
      =========================================== -->
-<section class="slide oscura" aria-label="Lámina 4, demo en vivo">
+<section class="slide oscura con-fondo" aria-label="Lámina 5, demo en vivo">
+  <img class="fondo-foto" src="assets/calle-ferreteria.jpg" alt="">
   <div class="cabecera"><img src="assets/logo-horizontal-blanco.png" alt="Grimuca"><span>Demo en vivo</span></div>
   <div class="slide-content">
-    <p class="kicker revela" style="--d:0">04 · Demo</p>
+    <p class="kicker revela" style="--d:0">05 · Demo</p>
     <h2 class="revela" style="--d:1">Un mismo pedido recorre los cuatro módulos</h2>
     <div class="modulos">
       <div class="modulo revela" style="--d:2"><span class="n">1</span><b>Red</b><code>/red</code><span>Grimuca ve la red de comercios y la actividad de todos.</span></div>
@@ -571,20 +621,20 @@ body.con-notas .nota-orador { display: block; }
       <p>El pedido que se hace en el teléfono aparece solo en el despacho del comercio, sin recargar.</p>
     </div>
   </div>
-  <span class="numero">4 / 9</span>
+  <span class="numero">5 / 10</span>
   <aside class="nota-orador">Esta lámina se queda dos segundos: es la entrada a la demo en vivo. "Mejor se los mostramos." Pasar a la app real (pestaña de la Red). Si falla internet: datos móviles; si fallan los datos: clips de video.</aside>
 </section>
 
 <!-- ===========================================
      5 · RUTAS (mapa real de la app)
      =========================================== -->
-<section class="slide clara" aria-label="Lámina 5, rutas de despacho">
+<section class="slide clara" aria-label="Lámina 6, rutas de despacho">
   <div class="cabecera"><img src="assets/logo-horizontal-azul.png" alt="Grimuca"><span>Logística</span></div>
   <div class="slide-content">
     <div class="dos-col mapa-der">
       <div class="pila">
         <div>
-          <p class="kicker revela" style="--d:0">05 · Por qué es logística</p>
+          <p class="kicker revela" style="--d:0">06 · Por qué es logística</p>
           <h2 class="revela" style="--d:1">Del botellón a la <span class="clave">ruta inteligente</span></h2>
         </div>
         <div class="revela" style="--d:2">
@@ -605,20 +655,20 @@ body.con-notas .nota-orador { display: block; }
       </figure>
     </div>
   </div>
-  <span class="numero">5 / 9</span>
+  <span class="numero">6 / 10</span>
   <aside class="nota-orador">Tulio: "Una ferretería compra, almacena y despacha a ciegas. Nosotros le damos la fecha de cada cartucho." La cifra de las rutas se dice "con los datos de demostración". Dato real de Grimuca (90 días al 21 nov 2026): una de cada tres referencias casi no se mueve y una sola hace la mitad de la venta de cartuchos. Si preguntan por el ahorro: el valor está en no perder ventas por faltantes, no inmovilizar lo que no rota y agrupar entregas.</aside>
 </section>
 
 <!-- ===========================================
      6 · MAPA POR URBANIZACIÓN (sectores)
      =========================================== -->
-<section class="slide papel" aria-label="Lámina 6, mapa por urbanización">
+<section class="slide papel" aria-label="Lámina 7, mapa por urbanización">
   <div class="cabecera"><img src="assets/logo-horizontal-azul.png" alt="Grimuca"><span>Mapa por urbanización</span></div>
   <div class="slide-content">
     <div class="dos-col mapa-der">
       <div class="pila">
         <div>
-          <p class="kicker revela" style="--d:0">06 · Dónde vender</p>
+          <p class="kicker revela" style="--d:0">07 · Dónde vender</p>
           <h2 class="revela" style="--d:1">El mapa le dice a la ferretería dónde <span class="clave">vender</span></h2>
         </div>
         <div class="cifras-zona revela" style="--d:2">
@@ -638,17 +688,17 @@ body.con-notas .nota-orador { display: block; }
       </figure>
     </div>
   </div>
-  <span class="numero">6 / 9</span>
+  <span class="numero">7 / 10</span>
   <aside class="nota-orador">"Cuando varias familias de una urbanización miden su agua, la ferretería invita a los vecinos que aceptaron avisos a medir la suya. Cada vecino que responde SÍ es un sobre vendido. No nombramos hogares ni le ponemos etiqueta a la urbanización." Toldos: un toldo con dos promotores a unos $60 al día se cubre con unos 10 sobres al día (costo del toldo supuesto; cada sobre deja $6,06 sobre su costo de $2,94).</aside>
 </section>
 
 <!-- ===========================================
      7 · MODELO DE NEGOCIO
      =========================================== -->
-<section class="slide clara" aria-label="Lámina 7, modelo de negocio">
+<section class="slide clara" aria-label="Lámina 8, modelo de negocio">
   <div class="cabecera"><img src="assets/logo-horizontal-azul.png" alt="Grimuca"><span>Modelo de negocio</span></div>
   <div class="slide-content">
-    <p class="kicker revela" style="--d:0">07 · Modelo de negocio</p>
+    <p class="kicker revela" style="--d:0">08 · Modelo de negocio</p>
     <h2 class="revela" style="--d:1">Cuatro formas de ganar, <span class="clave">una sola red</span></h2>
     <div class="ingresos">
       <div class="ingreso revela" style="--d:2"><b>Sobre de medición</b><span class="precio">$9</span><span>Envío incluido. Cuesta $2,94 puesto en Venezuela.</span></div>
@@ -661,20 +711,20 @@ body.con-notas .nota-orador { display: block; }
       <div class="revela" style="--d:7"><b>35</b><span>familias por ferretería: punto de equilibrio del primer año.</span></div>
     </div>
   </div>
-  <span class="numero">7 / 9</span>
+  <span class="numero">8 / 10</span>
   <aside class="nota-orador">Tulio: "El que paga todos los meses es la ferretería. La familia entra por la medición y paga $9." En tarima: "No hay todavía ninguna ferretería aliada; la membresía, el precio al mayor y el número de ferreterías son supuestos que el piloto confirma." Si preguntan por caja: el primer año de la red es de inversión (−$3.105 con 20 familias; +$1.094 con 40); la operación mensual es positiva desde el mes 6. Con 20 familias, la ferretería gana unos $140 al mes y deja unos $87 a la red; si el sobre costara $4,00, el aporte baja a $66 y hacen falta 7 ferreterías. Membresía y precio al mayor son supuestos; los filtros al mayor son dato de Tulio.</aside>
 </section>
 
 <!-- ===========================================
      8 · MAPA COLABORATIVO Y ESTUDIOS (visión)
      =========================================== -->
-<section class="slide papel" aria-label="Lámina 8, mapa colaborativo">
+<section class="slide papel" aria-label="Lámina 9, mapa colaborativo">
   <div class="cabecera"><img src="assets/logo-horizontal-azul.png" alt="Grimuca"><span>Visión</span></div>
   <div class="slide-content">
     <div class="dos-col mapa-der">
       <div class="pila">
         <div>
-          <p class="kicker revela" style="--d:0">08 · Datos de la comunidad</p>
+          <p class="kicker revela" style="--d:0">09 · Datos de la comunidad</p>
           <h2 class="revela" style="--d:1">Hoy una zona, mañana <span class="clave">todo el país</span></h2>
         </div>
         <ul class="vinetas">
@@ -691,14 +741,14 @@ body.con-notas .nota-orador { display: block; }
     </div>
   </div>
   <p class="pie-legal">Grimuca Agua ofrece mediciones caseras orientativas. No certifica agua ni reemplaza un análisis de laboratorio.</p>
-  <span class="numero">8 / 9</span>
+  <span class="numero">9 / 10</span>
   <aside class="nota-orador">"Cada medición casera queda en un mapa por zona. Agregados y sin nombrar hogares, esos datos le sirven a una universidad o a una institución pública para ver dónde mirar primero. Son mediciones caseras orientativas, no análisis de laboratorio; solo entran los hogares que dieron su consentimiento. No tenemos todavía cliente ni precio para esta línea."</aside>
 </section>
 
 <!-- ===========================================
      9 · CIERRE
      =========================================== -->
-<section class="slide clara cierre sin-cabecera" aria-label="Lámina 9, cierre">
+<section class="slide clara cierre sin-cabecera" aria-label="Lámina 10, cierre">
   <div class="tira-foto revela-img" style="--d:0"><img src="assets/mostrador.jpg" alt="En el mostrador de una ferretería, un vendedor le entrega un cartucho de filtro a una vecina."></div>
   <div class="slide-content">
     <h2 class="revela" style="--d:1">Cada vecino que mide su agua es una venta para su <span class="clave">ferretería</span></h2>
@@ -717,10 +767,14 @@ body.con-notas .nota-orador { display: block; }
           <li>Toldos de campaña en las zonas por captar</li>
           <li>Primeras ferreterías aliadas, una por estado</li>
         </ul>
+        <div class="dibujos ocultar-bajo">
+          <img src="assets/05-toldo-campana.svg" alt="Toldo de campaña con mesa de medición en una urbanización.">
+          <img src="assets/06-punto-de-venta.svg" alt="Punto de venta portátil con sobres y código QR.">
+        </div>
       </div>
     </div>
   </div>
-  <span class="numero">9 / 9</span>
+  <span class="numero">10 / 10</span>
   <aside class="nota-orador">Tulio: "Empezamos en Valencia con tres tiendas que ya existen." Cerrar con la dirección en pantalla y los nombres. Si piden datos de la región: México, 98 % de los hogares compra agua embotellada (Kantar Worldpanel, 2017); República Dominicana, 84,3 % usa agua de botellón (ONE, Censo 2022).</aside>
 </section>
 
