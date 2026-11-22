@@ -4,6 +4,40 @@ Pruebas de navegador contra https://agua.oydo.app, hechas desde una máquina dis
 
 Cómo correrlas: `cd pruebas/externas && npm install && npx playwright install chromium && npx playwright test`. Revisión del repositorio: `node pruebas/externas/revisar-repo.js` desde la raíz.
 
+## Pasada 7 · sáb 21 nov, 10:51 p.m.
+
+**Resumen:** está publicada la portada nueva del cliente, como página de venta con foto, «Sobre de medición $9» e indicador de pasos (`ad5f2d0`). **El recorrido completo del cliente sigue funcionando en teléfono y en escritorio.** El pedido en vivo en Despacho sigue certificado por la Calidad interna.
+
+| Revisión | Teléfono (375 px) | Escritorio |
+|---|---|---|
+| Portada nueva carga, con sus dos entradas | Sí | Sí |
+| No dice «potable» | Cumple | Cumple |
+| Recorrido completo del cliente | **Sí** | **Sí** |
+| Semáforo por parámetro y aviso fijo literal | Sí | Sí |
+| Producto sugerido y pedido | Sí | Sí |
+| Controles de 44 px o más | **No:** los mismos 2 casos | No aplica |
+| Pedido en vivo en Despacho sin recargar | Certificado por la Calidad interna | Certificado por la Calidad interna |
+
+**Repositorio:** 313 archivos revisados, sin hallazgos.
+
+**Señales de vida del orquestador:** último commit a las 10:28 p.m. (`7ec6ddc`). El sitio responde. No hay alerta.
+
+**Contexto:** según el registro de decisiones (10:00 p.m.), Leonardo cambió el enfoque a una plataforma para ferreterías con cuatro módulos: cliente, comercio, técnico y red. Esta revisión sigue cubriendo el recorrido del cliente y el panel; cuando los módulos nuevos estén publicados, se suman.
+
+**Captura:** `capturas/pasada7-portada-telefono.png`.
+
+### Fallas abiertas
+
+**Rompe la demo**
+- Ninguna.
+
+**Confunde**
+- «Cotizar por WhatsApp» sigue en 26 px en «Listo, guardamos tu filtro» (4 veces).
+- «Mira cómo cambiarlo» sigue por debajo de 44 px en el resultado (teléfono).
+
+**Cosmético**
+- Ninguna nueva.
+
 ## Pasada 6 · sáb 21 nov, 10:22 p.m.
 
 **Resumen:** está publicado el despliegue con «Por qué te lo recomendamos», WhatsApp con código de país, la pregunta del último cambio de cartucho con tres opciones y el catálogo ajustado (`e279d35`, `451ba33`). **El recorrido completo del cliente funciona en teléfono y en escritorio.** El pedido en vivo en Despacho sigue certificado por la Calidad interna.
