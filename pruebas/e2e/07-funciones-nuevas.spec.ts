@@ -599,7 +599,7 @@ test.describe('Funciones nuevas · operador', () => {
     const mapa = page.getByRole('group', { name: nombreMapa }).or(page.getByRole('region', { name: nombreMapa })).first();
     await expect(mapa).toBeVisible({ timeout: 20_000 });
     await expect(page.getByRole('list', { name: /leyenda del mapa/i })).toBeVisible();
-    await expect(page.getByRole('heading', { name: /alertas por zona/i })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /zonas para invitar a medir/i })).toBeVisible();
     await page.waitForTimeout(800);
     await revisar(page, '69-zonas-calidad.png', { movil: false, desborde: true });
 
@@ -629,7 +629,8 @@ test.describe('Funciones nuevas · operador', () => {
     await page.getByRole('group', { name: /vista del mapa/i }).getByRole('button', { name: /resultados de la tira/i }).click();
     const begona = datos.find((u) => u.nombre === 'La Begoña');
     notas.laBegonaApi = begona;
-    await page.getByRole('button', { name: /^La Bego[ñn]a,/ }).click();
+    // Con muchos hogares de prueba los marcadores se enciman: se elige con el teclado (Enter abre el detalle).
+    await page.getByRole('button', { name: /^La Bego[ñn]a,/ }).press('Enter');
     const detalle = page.getByRole('complementary', { name: /detalle de la bego[ñn]a/i });
     await expect(detalle).toBeVisible();
     notas.laBegonaDetalle = (await detalle.innerText()).replace(/\n+/g, ' | ');

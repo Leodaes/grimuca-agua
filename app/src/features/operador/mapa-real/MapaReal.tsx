@@ -185,6 +185,16 @@ export function MapaReal({ marcas, lineas = [], etiqueta, claveEncaje, encajarEn
         elemento.setAttribute('data-id', m.id);
         if (m.alElegir) elemento.setAttribute('role', 'button');
         else elemento.setAttribute('aria-hidden', 'true');
+        // Con el teclado: Enter o Espacio sobre una marca enfocada la elige, como un botón.
+        // (La opción `keyboard` de Leaflet la hace enfocable, pero el Enter no siempre llega a `click`).
+        const alElegir = m.alElegir;
+        if (alElegir) {
+          elemento.addEventListener('keydown', (evento) => {
+            if (evento.key !== 'Enter' && evento.key !== ' ') return;
+            evento.preventDefault();
+            alElegir();
+          });
+        }
       }
       if (m.alElegir) marca.on('click', m.alElegir);
       if (enfocada && enfocada === m.id) elemento?.focus();
