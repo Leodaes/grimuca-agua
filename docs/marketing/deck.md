@@ -125,7 +125,7 @@ Versión 4.1 (22 nov): costo del sobre en $2,94 como base (decisión de Leonardo
 
 ## Preguntas probables del jurado y respuesta corta
 
-Las 23 respuestas con su número están en `docs/negocio/preguntas-jurado.md`. Las cuatro que más se hacen:
+Las 24 respuestas con su número están en `docs/negocio/preguntas-jurado.md`. Las cuatro que más se hacen:
 
 | Pregunta | Respuesta |
 |---|---|
