@@ -93,6 +93,29 @@ test('el panel del operador carga y pide PIN', async ({ page }) => {
   await expect(page.getByRole('textbox', { name: /PIN/i }), 'El panel no pide PIN').toBeVisible();
 });
 
+// Read-only sweep of public pages (routes from app/src/features/*/rutas.tsx). Creates nothing.
+const PAGINAS_PUBLICAS = ['/tiendas', '/catalogo', '/tutoriales', '/experto', '/modulos', '/privacidad', '/terminos'];
+for (const ruta of PAGINAS_PUBLICAS) {
+  test(`página pública ${ruta} carga y cumple las reglas fijas`, async ({ page }, testInfo) => {
+    const res = await page.goto(ruta);
+    expect(res.status()).toBeLessThan(400);
+    await expect(page.getByRole('heading', { level: 1 }).first(), `${ruta} no muestra título`).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByText(/Página no encontrada/i), `${ruta} da «Página no encontrada»`).toHaveCount(0);
+    await checkPageRules(page);
+    await checkTapTargets(page, testInfo);
+  });
+}
+
+// Each role (store, technician, network) has its own PIN.
+for (const ruta of ['/comercio', '/tecnico', '/red']) {
+  test(`panel ${ruta} carga y pide PIN`, async ({ page }) => {
+    await page.goto(ruta);
+    await expect(page.getByRole('heading', { level: 1 }).first(), `${ruta} no muestra título`).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByRole('textbox', { name: /PIN/i }), `${ruta} no pide PIN`).toBeVisible();
+    await checkPageRules(page);
+  });
+}
+
 test('recorrido completo del cliente y, con PIN, el pedido en vivo en Despacho', async ({ browser, baseURL }, testInfo) => {
   // Each run creates real orders in the production database. Skipped with SOLO_LECTURA=1,
   // and always from midnight on (agreed with the orchestrator so the pre-demo cleanup holds).
