@@ -1,85 +1,98 @@
 # Idea: centros de llenado en la red de aliados
 
 **Análisis, sin código · dom 22 nov 2026 · para Leonardo y Tulio**
-Idea de Leonardo: muchos hogares en Venezuela toman agua de botellón y no van a comprar un filtro. Por eso, además de ferreterías, la red debería tener centros de llenado con mediciones de la calidad del agua.
 Cada cifra lleva su origen: **Tulio**, **modelo** (`docs/negocio/modelo.md`) o **SUPUESTO** (lo puse yo para poder razonar; hay que corregirlo).
+
+**Decisión de Leonardo (22 nov), tras la validación del hackatón:** la mayoría de las personas consultadas dijo que solo compra botellón y que no va a cambiar a un filtro en casa. Por eso, los centros de llenado entran a la red como comercios afiliados, con tres condiciones:
+- publican sus resultados de calidad del agua;
+- venden el sobre en su mostrador;
+- al registrarse, cada cliente ve el centro con resultados públicos más cercano a su casa o a su negocio.
+
+Se descarta pedir el botellón por la app.
 
 ## 1. Para quién es y cómo cobra Grimuca
 
-**El hogar de botellón.** Compra de 10 a 12 botellones al mes, a unos $2 cada uno y hasta $4 con delivery: de $20 a $48 al mes (estimación de Tulio, sin medición). No sabe qué agua le venden, porque nadie le muestra una medición del centro. Con la idea, ve en el mapa qué centros cercanos tienen una medición reciente publicada, y puede medir su propio botellón con el sobre de $9.
+**El hogar de botellón.** Compra de 10 a 12 botellones al mes, a unos $2 cada uno y hasta $4 con delivery: de $20 a $48 al mes (estimación de Tulio, sin medición). Hoy no ve ninguna medición del agua que compra. Con esta idea, al registrarse se entera de qué centro cercano publica sus resultados, y puede comprar ahí mismo el sobre para medir su propio botellón.
 
-**El centro de llenado.** Vende un producto que no se distingue de los demás y compite por precio y cercanía. La idea le da una razón para que lo elijan: una medición hecha por un tercero, con fecha y a la vista. El material de venta lo dice así: si no puedes mejorar el precio, mejora lo que rodea al producto. Además, un centro gasta todos los meses en cartuchos, membranas y lámparas, y eso es lo que Grimuca ya vende.
+**El centro de llenado.** Vende un producto difícil de distinguir y compite por precio y cercanía. Con la idea gana tres cosas:
+- clientes que llegan desde la app;
+- una medición hecha por un tercero, con fecha y a la vista;
+- unos $3,50 por cada sobre que vende ($9 menos $5,50 al mayor; ambos precios vienen del modelo y el de $5,50 es SUPUESTO).
 
-**Grimuca.** Llega a un segmento que hoy el modelo deja fuera, porque el hogar de botellón no compra filtro. Hay tres formas de cobrar:
+Hay un argumento de venta propio: el centro que publica sus resultados también le vende al cliente la prueba para que lo compruebe por su cuenta.
 
-| Forma | Cómo | Cifra | Lectura |
-|---|---|---|---|
-| Membresía del centro con una medición al mes | Cuota fija que incluye la visita y el sobre | $20 al mes (SUPUESTO) contra un costo de $2,94 del sobre (modelo) más unos $5 de la visita (SUPUESTO): deja unos $12 | Es la más simple de cobrar y de explicar |
-| Cobro por cada medición | Pago por visita, sin cuota | $10 por medición (SUPUESTO) | Sirve para el piloto; cuesta cobrarlo seguido |
-| Comisión por recarga | Un porcentaje de cada botellón | Sin cifra | **No la recomiendo en el año 1:** el ticket es de $1 a $2, casi todo se paga en efectivo y no queda rastro en la plataforma |
-| Venta de repuestos al centro | Cartuchos, membranas y UV del sistema de tratamiento del centro | Sin dato | **Hipótesis más fuerte:** venta recurrente entre empresas con el catálogo que Grimuca ya tiene. Falta saber cuánto compra un centro (pregunta 1) |
+**Por qué el centro es buen canal para el sobre.** Una familia de botellón va al centro varias veces al mes (10 a 12 botellones según Tulio), mucho más que a una ferretería. Es una inferencia y hay que medirla en el piloto.
 
-**Comparación con la ferretería** (`modelo.md`, secciones 2 y 5):
+**Cómo cobra Grimuca:**
 
-| | Ferretería | Centro de llenado |
+| Línea | Cifra | Origen |
 |---|---|---|
-| Qué recibe | Familias medidas que compran filtros y cartuchos | Familias que buscan un centro con la medición a la vista |
-| Valor de una familia para el comercio | Unos $7 al mes entre producto y sobre (modelo) | De $20 a $24 al mes en ventas de botellones (Tulio), con un margen que no conocemos |
-| Cuota | $30 al mes (SUPUESTO) | $20 al mes con la medición incluida (SUPUESTO) |
-| Qué compra a Grimuca | Sobres al mayor a $5,50 (SUPUESTO) | Repuestos de su sistema de tratamiento (hipótesis) |
-| Riesgo principal | Que lleguen pocas familias | El sello: Grimuca pone su nombre sobre el agua de un tercero |
+| Membresía del centro, con una medición al mes incluida | $20 al mes, menos $2,94 del sobre y unos $5 de la visita: deja unos $12 | SUPUESTO, con el costo del sobre del modelo |
+| Sobres al mayor que el centro revende a $9 | Grimuca gana $2,31 por sobre (sobre a $2,94) o $1,25 (sobre a $4,00) | Modelo, sección 5 |
+| Repuestos del sistema de tratamiento del centro (cartuchos, membranas, UV) | Sin dato | Hipótesis (pregunta 2) |
+| Comisión por recarga | No se recomienda en el año 1: cada recarga es de $1 o $2 y se paga casi siempre en efectivo | — |
 
-Con 20 familias al mes, el centro vendería de $400 a $480 en botellones (20 × $20 a $24, cálculo). Es un argumento de venta fuerte, pero todavía no está probado.
+**Ejemplo por centro al mes** (cálculo; los 15 sobres son SUPUESTO): con 15 sobres vendidos, Grimuca gana $35 por los sobres y $12 por la membresía, unos **$47**. Al centro le quedan $52 por los sobres. Con el sobre a $4,00, Grimuca baja a unos $30.
 
-## 2. Cómo funcionaría la verificación
+**Comparación con la ferretería:** una ferretería del escenario base deja unos $87 al mes (modelo). Un centro deja menos, pero cuesta menos de convencer: no tiene que convencer a nadie de comprar un filtro. Además llega a las familias que, según la validación, nunca van a comprar uno.
 
-- **Quién mide.** El técnico de Grimuca, sin aviso previo, toma la muestra del grifo de despacho. Si mide el propio centro, el dato pierde valor ante el cliente.
-- **Con qué.** Con lo mismo que trae el sobre: la tira Qteeyou 8 en 1 (pH, cloro, nitrato, nitrito, dureza y metales; **no mide bacterias**) y el frasco de coliformes, que da presencia o ausencia a las 48 horas. Nada de esto es un análisis de laboratorio. Si Grimuca quiere sostener algo más, tendría que agregar un análisis de laboratorio al trimestre (costo por cotizar).
-- **Cada cuánto.** Una vez al mes. La medición queda vencida a los 35 días y deja de mostrarse (SUPUESTO).
-- **Si sale en rojo.** Se retira la medición del mapa ese mismo día y se avisa al centro, que tiene 7 días para corregir y pedir otra visita (SUPUESTO). Si el frasco cambió de color, se retira la medición y se le recomienda un laboratorio. Al cliente no se le dice que el agua del centro "salió mala". La regla legal 9 prohíbe decir que el agua de una marca de botellón está contaminada. El centro solo deja de aparecer con medición vigente.
-- **Qué ve el cliente.** Ejemplo: "Medido por Grimuca el 15 nov: 8 de 8 casillas en rango; la prueba de coliformes no cambió de color. Medición orientativa, no es un análisis de laboratorio." El aviso fijo va al lado.
-- **Señal de los hogares.** Las mediciones de botellón de los clientes que digan dónde rellenan sirven como alerta para el panel de Red, igual que la alerta de zona. No se publican por centro, porque el botellón de la casa se ensucia en el transporte y en el envase.
+## 2. Los resultados públicos: cómo se mide y qué se muestra
 
-**Riesgo legal.** Es más alto que el de la app actual. Hoy Grimuca informa al hogar sobre su propia agua. Con esta idea, Grimuca respalda el agua que vende otro negocio. Si alguien se enferma con agua de un centro marcado por Grimuca, la responsabilidad le puede llegar (confirmar con abogado). Los centros de llenado tienen sus propios permisos sanitarios, y Grimuca no debe dar a entender que los reemplaza (confirmar con abogado cuáles aplican).
+- **Quién mide.** El técnico de Grimuca, sin aviso previo, toma la muestra del grifo de despacho. Si mide el propio centro, el dato pierde valor.
+- **Con qué.** Con lo mismo que trae el sobre: la tira Qteeyou 8 en 1, que **no mide bacterias**, y el frasco de coliformes, que da presencia o ausencia a las 48 horas. Nada de esto es un análisis de laboratorio.
+- **Cada cuánto.** Una vez al mes. La medición vence a los 35 días y deja de mostrarse (SUPUESTO).
+- **Qué ve el cliente.** El nombre del centro, la distancia y la fecha de la medición, con el resultado de cada casilla. Ejemplo: "Medido por Grimuca el 15 nov: 8 de 8 casillas en rango; la prueba de coliformes no cambió de color. Medición orientativa, no es un análisis de laboratorio."
+- **Si sale fuera de rango, se puede hacer de dos formas:**
+  - (a) Publicarlo tal cual, casilla por casilla. Es lo más transparente, pero tiene el mayor riesgo legal, y muchos centros no van a querer entrar.
+  - (b) Retirar la medición ese mismo día, mostrar el centro como "medición en revisión" y darle 7 días para corregir y pedir otra visita (SUPUESTO).
 
-**Palabras a evitar** (`docs/legal/puede-y-no-puede-decir.md`): "verificado", "certificado", "aprobado", "garantizado", "potable", "segura", "agua de calidad" y "cumple la norma". La palabra "verificado" de la idea original hay que cambiarla. **Nombre propuesto: "Centro con medición publicada".** También sirve "Medido por Grimuca cada mes".
+  **Recomiendo la (b)**, porque la regla legal 9 prohíbe decir que el agua de una marca de botellón está contaminada.
+- **Las mediciones que hacen los clientes de su propio botellón no se publican por centro.** El botellón de la casa se ensucia en el envase y en el transporte. Esas mediciones solo sirven como alerta interna para Red.
+
+**Riesgo legal.** Con esta idea, Grimuca pone su nombre sobre el agua de un tercero. Si alguien se enferma con agua de un centro publicado, la responsabilidad le puede llegar (confirmar con abogado). Grimuca tampoco debe dar a entender que su medición reemplaza los permisos sanitarios del centro.
+
+**Palabras a evitar** (`docs/legal/puede-y-no-puede-decir.md`): "verificado", "certificado", "aprobado", "garantizado", "potable", "segura" y "agua de calidad". **Nombre propuesto: "Centro con resultados públicos".** También sirve "Medido por Grimuca cada mes".
 
 ## 3. Cómo encaja en la plataforma
 
-La base ya existe: el perfil del hogar tiene la opción "Botellón" (`app/src/features/alta/comun.tsx:11`; `OrigenAgua` en `api/src/tipos.ts:19`), el técnico ya marca "Ya fui" con foto y el semáforo ya evalúa la tira.
+La base ya existe:
+- el perfil tiene "Botellón" y la urbanización (`api/src/tipos.ts`, `Hogar.urbanizacion`);
+- cada urbanización tiene coordenadas (`api/src/logistica/urbanizaciones.ts`);
+- la distancia ya se calcula para las rutas (`api/src/logistica/rutas-despacho.ts`);
+- el técnico ya marca "Ya fui" con foto.
 
 | Pieza | Cambio | Tamaño |
 |---|---|---|
-| Datos | `comercios.tipo` (`ferreteria` o `centro_llenado`) y una tabla nueva de mediciones del centro (fecha, técnico, colores, frasco, foto y vigencia) | Chico |
-| `/red` | Elegir el tipo en el alta; en la lista, el estado de la medición (vigente, vencida o retirada) | Chico |
-| `/tecnico` | Un servicio nuevo, "medición de centro": cargar los colores (reusa la carga a mano), el frasco y la foto | Mediano |
-| `/` cliente | Si el hogar es de botellón: "¿Dónde rellenas?" (opcional), centros cercanos con medición vigente y el sobre para medir el propio botellón | Mediano; necesita revisión legal de cada texto |
-| `/comercio` | Un panel corto para el centro: sus mediciones y cuántos hogares lo eligieron. No usa inventario de filtros ni rutas | Chico |
-| Mapa de zonas | El centro como punto con su estado | Chico |
+| Datos | `comercios.tipo` (`ferreteria` o `centro_llenado`), la coordenada del centro (hoy solo las tiendas de Grimuca tienen) y una tabla de mediciones del centro (fecha, técnico, colores, frasco, foto, vigencia y estado) | Chico |
+| Registro del cliente | Al guardar el perfil, una tarjeta "Centro con resultados públicos más cercano", calculada desde la urbanización (si no la dio, desde la zona). Si no hay ninguno cerca: "Todavía no hay centros con resultados públicos cerca de ti". Para un hogar de botellón, esa tarjeta va primero y los filtros después | Mediano; cada texto pasa por Legal |
+| Cliente que es un negocio | Hoy el perfil es solo de hogar. Para un restaurante o una oficina haría falta un tipo de cliente (pregunta 4) | Chico, si se decide |
+| `/tecnico` | Un servicio nuevo, "medición de centro", que reusa la carga a mano de colores, el frasco y la foto | Mediano |
+| `/comercio` | Para un centro, un panel corto: sus mediciones, el inventario de sobres y cuántos clientes lo tienen como centro más cercano | Chico |
+| `/red` | Elegir el tipo en el alta y ver el estado de la medición en la lista | Chico |
+| Mapa de zonas | El centro como punto, con el estado de su medición | Chico |
 
 Total estimado: unas 2 semanas de una persona, con pruebas, más la revisión legal (SUPUESTO).
 
 ## 4. ¿Va en la demo de hoy?
 
-**Recomendación:** no va en el código, ni como pantalla ni como dato sembrado, y tampoco necesita una lámina propia. Basta una línea en la lámina de hoja de ruta y una respuesta preparada por si el jurado pregunta por las familias que no van a comprar filtro.
+**Recomendación:** no va en el código, porque las funciones se congelan a las 12:00 m. y no hay ningún centro real. Sí va en el pitch, en una línea de la hoja de ruta, junto con el hallazgo de la validación:
 
-Las razones:
-1. Las funciones se congelan a las 12:00 m.
-2. No hay ningún centro aliado real ni cifras.
-3. La palabra de la idea, "verificado", es justo la que la revisión legal prohíbe.
-4. La portada promete "Menos botellones" (`Banners.tsx:8`). Mostrar centros de llenado como aliados en el mismo recorrido confunde el mensaje.
+"La mayoría nos dijo que solo compra botellón. Por eso, el siguiente paso es sumar centros de llenado a la red, con resultados públicos de su agua y el sobre en su mostrador. Al registrarse, cada familia ve el más cercano."
 
-Línea para la lámina: "Siguiente: centros de llenado con medición mensual publicada, para las familias que siguen con botellón."
+**Cuidado en la demo:** hoy la app le sugiere filtros también a un hogar de botellón. Si el recorrido usa "Botellón", el jurado va a ver justo lo que la validación dice que esas familias no compran. Conviene grabar la demo con otro origen del agua, o explicar ese punto en voz.
+
+La promesa de la portada, "Menos botellones" (`Banners.tsx:8`), choca con esta idea. Para la demo de hoy se puede dejar, pero después hay que revisarla (pregunta 3).
 
 ## 5. Preguntas que solo pueden responder Leonardo o Tulio
 
-1. ¿Grimuca les vende hoy cartuchos, membranas o lámparas a centros de llenado? ¿A cuántos y por cuánto al mes?
-2. ¿Cuántos centros de Naguanagua y San Diego conocen por nombre? ¿Aceptarían que se publique su medición, aunque algún mes salga en rojo?
-3. ¿Se mantiene la promesa "Menos botellones" junto con esta idea? ¿O el mensaje para el hogar de botellón será otro?
-4. ¿Quién mide: un técnico de Grimuca o el centro bajo supervisión? ¿Se paga un laboratorio una vez por trimestre?
-5. ¿Cuánto pagaría un centro: $20 al mes, $10 por visita o nada, a cambio de comprar los repuestos a Grimuca?
-6. Para el abogado: ¿qué responsabilidad asume Grimuca al publicar la medición de un tercero? ¿Qué permisos sanitarios tiene que tener el centro para entrar a la red?
+1. Validación: ¿a cuántas personas se les preguntó, quiénes eran y cuántas dijeron que solo compran botellón? Ese número cambia la conversión a filtro del modelo (10% compra filtro y 30% compra cartuchos, según Tulio).
+2. ¿Grimuca les vende hoy repuestos a centros de llenado? ¿A cuántos y por cuánto al mes?
+3. ¿Se mantiene "Menos botellones" como promesa principal, o el mensaje cambia para el cliente de botellón?
+4. ¿El cliente que es un negocio (restaurante, oficina) entra en esta versión?
+5. Si un centro sale fuera de rango, ¿se publica tal cual (a) o se retira y se revisa (b)?
+6. ¿Cuántos centros de Naguanagua y San Diego conocen? ¿Cuánto pagarían: $20 al mes con la medición incluida, o solo comprar sobres al mayor?
+7. Para el abogado: ¿qué responsabilidad asume Grimuca al publicar la medición de un tercero? ¿Qué permisos tiene que tener el centro para entrar a la red?
 
 ---
 
-**Otras cosas vistas, sin trabajar:** `modelo.md` sección 4 todavía nombra la tira HORYZON, aunque la tira real es Qteeyou. En el encargo, "sobre de $2,94" es el costo; el cliente paga $9.
+**Otras cosas vistas, sin trabajar:** `modelo.md` sección 4 todavía nombra la tira HORYZON, aunque la tira real es Qteeyou. En el encargo original, "sobre de $2,94" es el costo; el cliente paga $9.

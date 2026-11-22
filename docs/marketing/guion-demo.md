@@ -55,6 +55,8 @@ Versión 5 (22 nov, madrugada), corregida tras el ensayo cronometrado de Calidad
 
 Si el bloque va largo, esta frase se corta y queda para la ronda de preguntas (`preguntas-jurado.md`, privacidad de los datos).
 
+**Siguiente paso, solo si sobra tiempo o en preguntas (no es función de la demo):** con la vista "Clientes" de Zonas en pantalla, Tulio: "Las urbanizaciones punteadas no tienen clientes todavía. Ahí la ferretería pone un toldo unos días, mide en vivo el agua que traen los vecinos y vende el sobre. El mapa le dice dónde." Apoyo visual en la lámina 6 (`05-toldo-campana.svg`).
+
 ### Bloque 3 · 0:50 a 1:35 · El teléfono del cliente: mide, entiende y pide
 - **Habla:** Leonardo.
 - **Laptop:** `/comercio`, Despacho quieto (chip Mañongo).

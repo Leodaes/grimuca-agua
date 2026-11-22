@@ -24,7 +24,7 @@ Versión 4.1 (22 nov): costo del sobre en $2,94 como base (decisión de Leonardo
 - Lámina 3: cuatro capturas, una por módulo (detalle abajo). **Las de `/red`, `/tecnico` y la pestaña Productos de `/comercio` no existen todavía**: se toman cuando la migración `008_red_de_comercios.sql` esté desplegada.
 - Lámina 4: `33-operador-inventario.png` y `34-operador-zonas.png`.
 - Lámina 5: sin imagen; tabla de las cuatro líneas de ingreso.
-- Lámina 6: mapa de Venezuela con estados cubiertos (la Red lo muestra como cifra) y `01-saber-que-tomas.jpg` de fondo.
+- Lámina 6: mapa de Venezuela con estados cubiertos (la Red lo muestra como cifra) y `01-saber-que-tomas.jpg` de fondo; abajo, `05-toldo-campana.svg` y `06-punto-de-venta.svg` en pequeño.
 
 **Qué pilar del jurado trabaja cada lámina:** 1 y 2 producto; 3 calidad técnica y producto; 4 innovación y logística; 5 modelo de negocio; 6 modelo e innovación.
 
@@ -113,11 +113,13 @@ Versión 4.1 (22 nov): costo del sobre en $2,94 como base (decisión de Leonardo
 
 - Grimuca es el comercio de Carabobo y opera la red; en otros estados entran ferreterías aliadas, una por estado.
 - La Red muestra comercios, plan, periodo gratis y cifras de toda la red; el alta de un comercio nuevo se hace en pantalla.
-- Siguiente: piloto de 1.000 sobres en Carabobo, primeras ferreterías aliadas y comisión por transacción. Fuera de la demo: cuentas por usuario y cobro real.
+- Siguiente: piloto de 1.000 sobres en Carabobo, toldos de campaña en las urbanizaciones que el mapa marca sin clientes y primeras ferreterías aliadas.
+
+**Ilustraciones pequeñas en la lámina, abajo a la derecha:** `05-toldo-campana.svg` (toldo con mesa de medición) y `06-punto-de-venta.svg` (mostrador portátil con sobres y QR). Son dibujos propios con la paleta de Grimuca, sin marcas de terceros.
 
 **Lema en pantalla, abajo:** Clientes que llegan sabiendo qué necesitan · Saber qué tomas empieza en casa
 
-**Nota del orador (Tulio):** "Empezamos en Valencia con tres tiendas que ya existen." Alerta temprana (no cabe como cuarta viñeta, va aquí): "Cuando varios hogares de una zona salen fuera de rango en la misma semana, la red lo detecta y avisa a los vecinos que aceptaron recibir avisos, para que midan su agua. No nombramos hogares y no decimos que el agua esté contaminada." En la demo hay dos comercios de demostración (Barquisimeto y Maracay), rotulados así. Datos de la región con fuente, si piden (`modelo.md` sección 11): México, 98% de los hogares compra agua embotellada (Kantar Worldpanel, 2017); República Dominicana, 84,3% usa agua de botellón (ONE, Censo 2022). Cerrar con la dirección `agua.oydo.app` en pantalla y los nombres: Leonardo Dávila y Tulio Dávila.
+**Nota del orador (Tulio):** "Empezamos en Valencia con tres tiendas que ya existen." Alerta temprana (no cabe como cuarta viñeta, va aquí): "Cuando varios hogares de una zona salen fuera de rango en la misma semana, la red lo detecta y avisa a los vecinos que aceptaron recibir avisos, para que midan su agua. No nombramos hogares y no decimos que el agua esté contaminada." Toldos de campaña: "Las urbanizaciones punteadas del mapa no tienen clientes todavía. Ahí la ferretería aliada pone un toldo unos días, mide en vivo el agua que traen los vecinos y vende el sobre. El mapa le dice dónde ponerlo." Si preguntan si se paga: un toldo con dos promotores a unos $60 al día se cubre con unos 10 sobres al día, porque cada sobre deja $6,06 sobre el costo de $2,94 (SUPUESTO el costo del toldo; cálculo); el piloto mide cuántos salen de verdad. Después, comisión por transacción. Fuera de la demo: cuentas por usuario y cobro real. En la demo hay dos comercios de demostración (Barquisimeto y Maracay), rotulados así. Datos de la región con fuente, si piden (`modelo.md` sección 11): México, 98% de los hogares compra agua embotellada (Kantar Worldpanel, 2017); República Dominicana, 84,3% usa agua de botellón (ONE, Censo 2022). Cerrar con la dirección `agua.oydo.app` en pantalla y los nombres: Leonardo Dávila y Tulio Dávila.
 
 ---
 
