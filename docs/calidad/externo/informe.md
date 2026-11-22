@@ -4,6 +4,12 @@ Pruebas de navegador contra https://agua.oydo.app, hechas desde una máquina dis
 
 Cómo correrlas: `cd pruebas/externas && npm install && npx playwright install chromium && npx playwright test`. Revisión del repositorio: `node pruebas/externas/revisar-repo.js` desde la raíz.
 
+## Pasada 15 · dom 22 nov, 2:50 a.m. (solo lectura)
+
+**Resumen:** sin cambios desde la pasada 14: misma versión publicada (`index-CbGoXz-a.js`). **Pasan las 24 revisiones de lectura, sin fallas**, y se saltan 2 (el recorrido que crea pedidos). Ninguna falla rompe la demo.
+
+**Repositorio:** 405 archivos, sin hallazgos. **Orquestador:** último commit a la 1:55 a.m., hace 55 minutos. El sitio responde. No hay alerta.
+
 ## Pasada 14 · dom 22 nov, 2:20 a.m. (solo lectura)
 
 **Resumen:** el orquestador volvió con un despliegue a la 1:55 a.m.: botones de 44 px en el catálogo y en el aviso de recambio, README con los cuatro módulos, guía de calibración de la tira y bloqueos al día (`a724202`). **Pasan las 24 revisiones de lectura, sin fallas.** Se saltan 2: el recorrido que crea pedidos, por el acuerdo de no crear pedidos después de la medianoche.
