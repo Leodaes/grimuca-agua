@@ -48,9 +48,14 @@ for (const p of productos) {
     if (esLamparaUv) { corrige = ['bacterias']; recomendable = true; }
     else recomendable = false; // sin confirmar qué trata: no se sugiere
   } else if (p.corrige !== 'no_aplica') {
-    corrige = [...new Set(p.corrige.split('|').flatMap((c) => equivalencias[c] ?? []))];
+    // "osmosis_inversa" en el catálogo marca también piezas y postfiltros que solo acompañan a un equipo de ósmosis.
+    // Solo el equipo completo se toma como opción para nitrato, nitrito, plomo, cobre y dureza.
+    const etiquetas = p.corrige.split('|').filter((c) => c !== 'osmosis_inversa' || p.categoria === 'sistema_osmosis_inversa');
+    corrige = [...new Set(etiquetas.flatMap((c) => equivalencias[c] ?? []))];
   }
   if (corrige.length === 0) recomendable = false;
+  // Equipos de capacidad comercial (1200 GPD, 2000 L/h): están en el catálogo, pero no se sugieren a un hogar.
+  if (/1200 GPD|2000 L\/h/i.test(p.nombre)) recomendable = false;
   const categoria = esLamparaUv ? 'lampara_uv' : p.categoria;
   lineas.push(
     `  (${sql(p.sku)}, ${sql(p.nombre)}, ${sql(p.marca)}, NULL, ARRAY[${corrige.map(sql).join(', ')}]::text[], false, ${sql(p.url_foto)}, ${vidaUtil[p.categoria] ?? 'NULL'}, ${sql(categoria)}, ${recomendable}, ${sql(p.url_producto)}, ${p.disponibilidad === 'disponible'})`,
