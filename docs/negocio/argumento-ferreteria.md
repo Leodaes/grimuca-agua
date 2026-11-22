@@ -16,7 +16,7 @@ Se prioriza a la ferretería que ya vende filtros o cartuchos y tiene un dueño 
 
 ## Qué problema le resuelve
 
-La ferretería vende filtros a ciegas: no sabe qué agua tiene la casa del comprador, qué cartucho le toca ni cuándo vuelve. Compra repuestos sin saber qué se va a pedir y se encuentra con el pedido sorpresa, o con dinero parado en estante. Con la medición del hogar y la fecha del último cambio, cada cartucho tiene referencia y fecha conocidas con semanas de anticipación.
+La ferretería vende filtros a ciegas: no sabe qué agua tiene la casa del comprador, qué cartucho le toca ni cuándo vuelve. Compra repuestos sin saber qué se va a pedir y se encuentra con el pedido sorpresa, o con dinero parado en estante. En Grimuca, con tres tiendas, una de cada tres referencias de agua casi no se mueve y una sola hace la mitad de la venta de cartuchos (dato de Grimuca, 90 días al 21 nov 2026): surtido disperso, venta concentrada. Con la medición del hogar y la fecha del último cambio, cada cartucho tiene referencia y fecha conocidas con semanas de anticipación: se compra lo que se va a vender, los quiebres se ven antes y las entregas salen agrupadas por urbanización. El valor no está en el tamaño del inventario, que en dólares es pequeño, sino en no perder ventas por faltantes y no dejar dinero parado en lo que no rota.
 
 ## Qué recibe
 
@@ -31,7 +31,7 @@ La ferretería vende filtros a ciegas: no sabe qué agua tiene la casa del compr
 - **Membresía de $30 al mes (SUPUESTO; rango $20 a $50)**, con 1 a 3 meses gratis al entrar.
 - **Sobres al mayor a $5,50 (SUPUESTO)**; los vende a $9 y le quedan $3,50 por sobre.
 
-**La cuenta que se hace con el dueño:** con 40 familias asignadas al mes (SUPUESTO), entre filtros, cartuchos y sobres la ferretería gana unos **$280 al mes** (cálculo de Business con márgenes de 20% en filtros y 50% en cartuchos, de Tulio, sobre precios de referencia; los suyos pueden ser otros). Con 5 familias al mes ya cubre los $30. Con la mitad de volumen y de conversión son unos $88.
+**La cuenta que se hace con el dueño:** con 20 familias asignadas al mes (SUPUESTO; antes se decía 40, y 40 queda como meta), entre filtros, cartuchos y sobres la ferretería gana unos **$140 al mes** (cálculo de Business con márgenes de 20% en filtros y 50% en cartuchos, de Tulio, sobre precios de referencia; los suyos pueden ser otros). Con 5 familias al mes ya cubre los $30. Con 40 familias serían unos $280; con 10 y la mitad de conversión, unos $44.
 
 ## El periodo gratis
 
@@ -39,7 +39,7 @@ Los primeros 1 a 3 meses no pagan membresía. Se compra el sobre al mayor y se v
 
 ## Las 4 objeciones más probables
 
-**1. "Está caro" o "¿cuánto cuesta?"** Se pregunta: "¿Caro comparado con qué?" Después: "Si hoy le llegaran 40 familias medidas al mes, ¿cuánto vale eso para usted?" La membresía es el 11% del margen de ese primer mes (cálculo) y se cubre con 5 familias; los primeros meses no paga. Si lo que pesa es el pago mensual, se baja el volumen de sobres al mayor antes de bajar el precio.
+**1. "Está caro" o "¿cuánto cuesta?"** Se pregunta: "¿Caro comparado con qué?" Después: "Si hoy le llegaran 20 familias medidas al mes, ¿cuánto vale eso para usted?" La membresía es el 21% del margen de ese mes (cálculo) y se cubre con 5 familias; los primeros meses no paga. Si lo que pesa es el pago mensual, se baja el volumen de sobres al mayor antes de bajar el precio.
 
 **2. "Yo ya vendo filtros, no necesito esto."** "Perfecto, usted ya tiene el mostrador. Lo que no tiene es la medición de cada casa ni la fecha en que le toca el cartucho. ¿Cuántos de sus clientes de filtro vuelven por el recambio a tiempo?" El panel muestra los hogares de su zona con recambio próximo. Si el dueño tiene la respuesta y le funciona, se acepta y se le dice.
 

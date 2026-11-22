@@ -80,10 +80,11 @@ Versión 4 (21 nov, noche), enfoque B2B2C por decisión de Leonardo: Grimuca ope
 **Título:** Lo que deja de existir es el pedido sorpresa
 
 - Con la medición y la fecha del último cambio, cada cartucho tiene fecha y referencia conocidas con semanas de anticipación.
-- Tres ahorros: compra al proveedor contra demanda prevista; asignación al comercio más cercano que sí tiene la pieza; entregas y visitas técnicas agrupadas por urbanización y por semana.
+- Surtido disperso, venta concentrada: una de cada tres referencias casi no se mueve y una sola hace la mitad de la venta de cartuchos (dato de Grimuca, 90 días al 21 nov 2026).
+- Qué cambia: se compra contra fechas de recambio conocidas; los quiebres se ven antes; las entregas y visitas técnicas se agrupan por urbanización y por semana.
 - Última milla con operadores que ya tienen red; la foto del filtro evita el cartucho equivocado y la segunda visita.
 
-**Nota del orador (Tulio):** "Una ferretería compra, almacena y despacha a ciegas. Nosotros le damos la fecha de cada cartucho." Cifra de industria, solo como supuesto: comprar por adelantado el inventario del piloto pide $15.000 a $20.000 de capital de trabajo, contra unas dos semanas de cartuchos si se compra contra demanda prevista (supuesto de Business). **Cuando Tulio entregue sus datos, completar:** "Grimuca tiene $[DATO DE TULIO] en inventario de filtros y cartuchos, que rota cada [DATO DE TULIO] días; comprando contra demanda prevista baja a [CÁLCULO]". Mientras tanto, ejemplo de orden de magnitud, rotulado supuesto: con 90 días de rotación y 639 juegos al mes, el dinero parado baja de unos $18.200 a unos $2.800. Un hogar con filtro mueve unos 6 kg al año contra 2.370 a 2.844 kg en botellones (estimación de Tulio y pesos supuestos). SAMA Logística 3 cubre Valencia, con tarifas por cotizar; en otros estados todavía no hay operador confirmado.
+**Nota del orador (Tulio):** "Una ferretería compra, almacena y despacha a ciegas. Nosotros le damos la fecha de cada cartucho." Frase pública con el dato real de Grimuca (90 días al 21 nov 2026): "Grimuca reparte su surtido de agua entre tres tiendas: una de cada tres referencias casi no se mueve y una sola hace la mitad de la venta de cartuchos. Con la fecha de cada recambio se compra lo que se va a vender y las entregas salen agrupadas por urbanización." Honestidad si preguntan por el ahorro: en dólares el inventario de agua de una ferretería es pequeño; el valor está en no perder ventas por faltantes, no inmovilizar lo que no rota y agrupar entregas. No se afirma un ahorro de industria. Supuesto ilustrativo, rotulado así: bajar el inventario de unos 70 a unos 35 días de venta lo reduce a la mitad. Un hogar con filtro mueve unos 6 kg al año contra 2.370 a 2.844 kg en botellones (estimación de Tulio y pesos supuestos). SAMA Logística 3 cubre Valencia, con tarifas por cotizar; en otros estados todavía no hay operador confirmado.
 
 ---
 
@@ -92,10 +93,10 @@ Versión 4 (21 nov, noche), enfoque B2B2C por decisión de Leonardo: Grimuca ope
 **Título:** Tres líneas de ingreso, y la ferretería es la que paga
 
 - **Sobre de $9** al cliente final (Tulio). **Membresía de la ferretería: $30 al mes con 1 a 3 meses gratis (SUPUESTO).** **Sobres al mayor a $5,50 (SUPUESTO).**
-- La ferretería recibe unos $280 al mes en margen de las familias asignadas (cálculo con márgenes de Tulio y 40 familias, supuesto) y recupera la membresía con 5 familias.
-- Cada ferretería deja a la red entre $103 y $144 al mes (cálculo; el rango depende del costo del sobre, $4,00 o $2,94, por decidir); 4 a 5 ferreterías pagando cubren los fijos de la red. Siguiente paso: comisión por transacción y plan premium.
+- La ferretería recibe unos $140 al mes en margen de las familias asignadas (cálculo con márgenes de Tulio y 20 familias, supuesto; $280 con las 40 de la meta) y recupera la membresía con 5 familias.
+- Cada ferretería deja a la red entre $66 y $87 al mes (cálculo con 20 familias; el rango depende del costo del sobre, $4,00 o $2,94, por decidir); 6 a 7 ferreterías pagando cubren los fijos de la red. Siguiente paso: comisión por transacción y plan premium.
 
-**Nota del orador (Tulio):** "El que paga todos los meses es la ferretería. La familia entra por la medición y paga $9." Honestidad en tarima: "No hay todavía ninguna ferretería aliada; la membresía, el precio al mayor y el número de ferreterías son supuestos que el piloto confirma." Si preguntan por caja: el primer año de la red es de inversión (base +$1.094 con el sobre a $2,94 y −$2.035 con $4,00); la operación mensual es positiva desde el mes 4. La variable que lo tumba es cuántas familias medidas le llegan a cada ferretería al mes: con 35 a 55 el año 1 cierra en cero. Las tres tiendas propias de Carabobo siguen con su economía (hipótesis de Tulio: +$65.500 en el base del modelo anterior).
+**Nota del orador (Tulio):** "El que paga todos los meses es la ferretería. La familia entra por la medición y paga $9." Honestidad en tarima: "No hay todavía ninguna ferretería aliada; la membresía, el precio al mayor y el número de ferreterías son supuestos que el piloto confirma." Si preguntan por caja: el primer año de la red es de inversión (base de 20 familias: −$3.105 con el sobre a $2,94 y −$4.669 con $4,00; con las 40 de la meta, +$1.094 y −$2.035); la operación mensual es positiva desde el mes 6. Grimuca vende hoy del orden de un centenar de cartuchos al mes, así que 40 familias por ferretería es meta de crecimiento y no continuidad. La variable que lo tumba es cuántas familias medidas le llegan a cada ferretería al mes: con 35 a 56 el año 1 cierra en cero. Las tres tiendas propias de Carabobo siguen con su economía (hipótesis de Tulio: +$65.500 en el base del modelo anterior).
 
 ---
 
@@ -120,8 +121,8 @@ Las 21 respuestas con su número están en `docs/negocio/preguntas-jurado.md`. L
 
 | Pregunta | Respuesta |
 |---|---|
-| ¿Por qué pagaría una ferretería? | Recibe familias ya medidas y inventario contra demanda; con 40 familias al mes gana unos $280 y paga $30 (cálculo, supuestos). |
-| ¿Cuál es el problema logístico? | Se compra, almacena y despacha a ciegas; la fecha de cada cartucho elimina el pedido sorpresa. |
+| ¿Por qué pagaría una ferretería? | Recibe familias ya medidas y inventario contra demanda; con 20 familias al mes gana unos $140 y paga $30 (cálculo, supuestos). |
+| ¿Cuál es el problema logístico? | Surtido disperso y venta concentrada: una de cada tres referencias casi no se mueve y una hace la mitad de la venta de cartuchos; la fecha de cada cartucho permite comprar lo que se vende, ver los quiebres antes y agrupar entregas. |
 | ¿Quién es el cliente? | La familia entra por la medición y paga $9; la ferretería paga cada mes. |
 | ¿Certifican el agua? | No. Orientamos con una medición casera y despachamos el cartucho correcto. |
 

@@ -42,7 +42,7 @@ Versión 4 (21 nov, noche), enfoque B2B2C: la demo **abre en el lado empresa** (
 - **Laptop:** pestaña `/comercio` de Grimuca Mañongo. Despacho vacío → Inventario (faltantes en rojo) → mapa por urbanización → un segundo en la pestaña Productos.
 - **Teléfono:** guardado.
 
-> **Leonardo:** "Así ve su día una ferretería. El despacho está vacío. En Inventario ve, en rojo, lo que le va a faltar en los próximos treinta días, y en el mapa, las urbanizaciones con más resultados fuera de rango. Y desde Productos carga lo que tiene. Así desaparece el pedido sorpresa: cada cartucho tiene fecha y referencia con semanas de anticipación, y se compra contra demanda prevista. Ahora vean cómo le llega el dato."
+> **Leonardo:** "Así ve su día una ferretería. El despacho está vacío. En Inventario ve, en rojo, lo que le va a faltar en los próximos treinta días, y en el mapa, las urbanizaciones con más resultados fuera de rango. Y desde Productos carga lo que tiene. Así desaparece el pedido sorpresa. Grimuca reparte su surtido de agua entre tres tiendas: una de cada tres referencias casi no se mueve y una sola hace la mitad de la venta de cartuchos. Con la fecha de cada recambio se compra lo que se va a vender, los quiebres se ven antes y las entregas salen agrupadas por urbanización, una ruta en vez de viajes sueltos. Ahora vean cómo le llega el dato."
 
 ### Bloque 3 · 0:50 a 1:35 · El teléfono del cliente: mide, entiende y pide
 - **Habla:** Leonardo.
