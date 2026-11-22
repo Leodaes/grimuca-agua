@@ -95,3 +95,11 @@
   color: var(--apagado);
   font-size: var(--t-1);
 }
+/* Enlace a la navegación hasta la parada (orden de la ruta). */
+.tec-llegar {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-weight: 700;
+  color: var(--azul);
+}

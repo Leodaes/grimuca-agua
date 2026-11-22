@@ -202,6 +202,8 @@ export function cartuchosParaFiltro(
         a.porMedida - b.porMedida ||
         a.porGpd - b.porGpd ||
         b.aciertos - a.aciertos ||
+        // A igualdad de criterio, primero los que tienen foto.
+        Number(!a.producto.foto_url) - Number(!b.producto.foto_url) ||
         (a.producto.codigo < b.producto.codigo ? -1 : a.producto.codigo > b.producto.codigo ? 1 : 0),
     );
 

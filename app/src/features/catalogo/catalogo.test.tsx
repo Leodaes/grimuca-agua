@@ -94,6 +94,15 @@ describe('PaginaCatalogo', () => {
     await usuario.click(screen.getByRole('button', { name: 'Repuestos y otros' }));
     expect(nombresVisibles()).toEqual(['Atesador plástico']);
     expect(screen.queryByText(/Pensado para:/)).not.toBeInTheDocument();
+    // Sin hogar en la sesión, el catálogo general.
+    expect(api.cartuchos).toHaveBeenCalledWith(null);
+  });
+
+  it('con hogar en la sesión pide el catálogo de ese hogar (general más los de su comercio)', async () => {
+    sesion.hogarId.mockReturnValue('hogar-1');
+    montar();
+    expect(await screen.findByText('6 productos')).toBeInTheDocument();
+    expect(api.cartuchos).toHaveBeenCalledWith('hogar-1');
   });
 
   it('busca por código y muestra el vacío si no hay coincidencias', async () => {

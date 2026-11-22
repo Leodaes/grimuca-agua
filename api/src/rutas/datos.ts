@@ -168,10 +168,22 @@ export async function existeTienda(bd: Consultable, id: string): Promise<boolean
 const COLUMNAS_CARTUCHO =
   'codigo, nombre, marca, precio_usd, corrige, es_ejemplo, foto_url, categoria, url_producto, disponible, recomendable';
 
-export async function listarCatalogo(bd: Consultable): Promise<CartuchoCatalogo[]> {
-  const { rows } = await bd.query(`SELECT ${COLUMNAS_CARTUCHO} FROM cartuchos ORDER BY codigo`);
+/**
+ * Catálogo que ve un cliente: el general (`comercio_id` nulo) más, con `comercioId`, los productos que cargó ese
+ * comercio. Los productos de un comercio no salen a los clientes de otro. Sin `comercioId`, solo el general.
+ */
+export async function listarCatalogo(bd: Consultable, comercioId?: string | null): Promise<CartuchoCatalogo[]> {
+  const { rows } = comercioId
+    ? await bd.query(
+        `SELECT ${COLUMNAS_CARTUCHO} FROM cartuchos WHERE comercio_id IS NULL OR comercio_id = $1 ORDER BY codigo`,
+        [comercioId],
+      )
+    : await bd.query(`SELECT ${COLUMNAS_CARTUCHO} FROM cartuchos WHERE comercio_id IS NULL ORDER BY codigo`);
   return rows.map(filaACartucho);
 }
+
+/** A igualdad de criterio, los productos con foto van antes que los sin foto (menor es mejor). */
+export const sinFoto = (cartucho: Pick<Cartucho, 'foto_url'>): number => (cartucho.foto_url ? 0 : 1);
 
 export async function buscarCartucho(bd: Consultable, codigo: string): Promise<CartuchoCatalogo | null> {
   const { rows } = await bd.query(`SELECT ${COLUMNAS_CARTUCHO} FROM cartuchos WHERE codigo = $1`, [codigo]);
@@ -240,7 +252,7 @@ export interface CriterioSugeridos {
 /**
  * Productos para una medición de la tira: recomendables, disponibles y que corrigen algo de lo hallado.
  * Orden: (a) con filtro en casa, primero los cartuchos de recambio; sin filtro, primero filtros y ósmosis;
- * (b) los que corrigen más hallazgos; (c) código. Máximo 4.
+ * (b) los que corrigen más hallazgos; (c) los que tienen foto; (d) código. Máximo 4.
  * Los equipos de desinfección no salen aquí: van con la prueba de bacterias.
  */
 export function sugerirCartuchos(catalogo: CartuchoCatalogo[], criterio: CriterioSugeridos): Cartucho[] {
@@ -287,6 +299,7 @@ function ordenarCandidatos(catalogo: CartuchoCatalogo[], criterio: CriterioSuger
       (a, b) =>
         a.preferido - b.preferido ||
         b.aciertos - a.aciertos ||
+        sinFoto(a.cartucho) - sinFoto(b.cartucho) ||
         (a.cartucho.codigo < b.cartucho.codigo ? -1 : a.cartucho.codigo > b.cartucho.codigo ? 1 : 0),
     );
 }
@@ -301,6 +314,7 @@ export function sugerirDesinfeccion(catalogo: CartuchoCatalogo[]): Cartucho[] {
         cartucho.disponible &&
         cartucho.corrige.includes('bacterias'),
     )
+    .sort((a, b) => sinFoto(a) - sinFoto(b))
     .slice(0, MAXIMO_SUGERIDOS)
     .map(aCartuchoPublico);
 }

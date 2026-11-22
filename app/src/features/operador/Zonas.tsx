@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Aviso, BandaCifras, Boton, Cargando, Chip, EstadoVacio } from '../../components/grimuca';
 import type { AlertaZona, UrbanizacionMapa } from '../../lib/tipos';
 import { useServicios } from './contexto';
@@ -7,8 +7,38 @@ import { useDatos } from './useDatos';
 import { usePanel } from './panel';
 import { nombreParametro, tiendaDeZona } from './datosZonas';
 import { MapaHexagonos, TrazoAlerta, TrazoTienda, type VistaMapa } from './MapaHexagonos';
-import { NOMBRE_ESTADO, RANGOS_CLIENTES, puntosHex } from './mapaHex';
+import { LETRA_ESTADO, NOMBRE_ESTADO, RANGOS_CLIENTES, etiquetaAccesible, puntosHex, tonoClientes } from './mapaHex';
+import { MapaReal, escaparHtml, type MarcaMapa } from './mapa-real/MapaReal';
+import { UBICACION_TIENDAS } from './urbanizaciones';
 import './zonas.css';
+
+/** Mapa real (por defecto) o el tablero de hexágonos de siempre. */
+type FormaMapa = 'mapa' | 'tablero';
+
+const TRAZO_TIENDA =
+  '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 4h15L21 9.5H3L4.5 4z"/><path d="M4.5 9.5V20h15V9.5"/><path d="M10 20v-5.5h4V20"/></svg>';
+
+/** Clase del círculo de una urbanización en el mapa real (mismos estados que el tablero). */
+function claseCirculo(u: UrbanizacionMapa, vista: VistaMapa): string {
+  if (u.estado === 'sin_clientes') return 'mr-urb--vacio';
+  if (vista === 'clientes') return `mr-urb--azul-${tonoClientes(u.hogares) ?? 0}`;
+  const base = u.estado === 'sin_medicion' ? 'mr-urb--sin-medicion' : `mr-urb--${u.estado}`;
+  return u.alerta ? `${base} mr-urb--alerta` : base;
+}
+
+/** Diámetro según los hogares: las urbanizaciones sin clientes quedan chicas. */
+function diametro(hogares: number): number {
+  return hogares <= 0 ? 16 : 22 + Math.min(hogares, 8) * 3;
+}
+
+/** Muestra de la leyenda del mapa real: un círculo con la clase del estado. */
+function MuestraCirculo({ clase, letra }: { clase: string; letra?: string }) {
+  return (
+    <span className={`mr-urb ${clase}`} style={{ width: 24, height: 24, display: 'inline-grid' }} aria-hidden="true">
+      {letra}
+    </span>
+  );
+}
 
 interface Props {
   token: string;
@@ -54,7 +84,29 @@ function MuestraIcono({ tipo }: { tipo: 'tienda' | 'alerta' }) {
   );
 }
 
-function Leyenda({ vista }: { vista: VistaMapa }) {
+function Leyenda({ vista, forma }: { vista: VistaMapa; forma: FormaMapa }) {
+  if (forma === 'mapa') {
+    return (
+      <ul className="mapa-leyenda" aria-label="Leyenda del mapa">
+        {vista === 'calidad' ? (
+          <>
+            <li><MuestraCirculo clase="mr-urb--verde" letra="V" /> Verde (V)</li>
+            <li><MuestraCirculo clase="mr-urb--amarillo" letra="A" /> Amarillo (A)</li>
+            <li><MuestraCirculo clase="mr-urb--rojo" letra="R" /> Rojo (R)</li>
+            <li><MuestraCirculo clase="mr-urb--sin-medicion" letra="–" /> Sin medición en 30 días (–)</li>
+            <li><MuestraCirculo clase="mr-urb--rojo mr-urb--alerta" letra="!" /> Alerta: 3 o más hogares en rojo en 7 días (!)</li>
+          </>
+        ) : (
+          RANGOS_CLIENTES.map((rango, i) => (
+            <li key={rango}><MuestraCirculo clase={`mr-urb--azul-${i}`} /> {rango}</li>
+          ))
+        )}
+        <li><MuestraCirculo clase="mr-urb--vacio" /> Por captar (sin clientes)</li>
+        <li><MuestraIcono tipo="tienda" /> Tienda Grimuca</li>
+        <li>El tamaño del círculo crece con los hogares</li>
+      </ul>
+    );
+  }
   return (
     <ul className="mapa-leyenda" aria-label="Leyenda del mapa">
       {vista === 'calidad' ? (
@@ -80,7 +132,7 @@ function Detalle({ u }: { u: UrbanizacionMapa | undefined }) {
   if (!u) {
     return (
       <aside className="mapa-detalle" aria-live="polite">
-        <p className="g-apagado">Toca o enfoca un hexágono para ver el detalle de la urbanización.</p>
+        <p className="g-apagado">Toca o enfoca una urbanización del mapa para ver su detalle.</p>
       </aside>
     );
   }
@@ -123,7 +175,7 @@ function Detalle({ u }: { u: UrbanizacionMapa | undefined }) {
 
 export function Zonas({ token, version, alNoAutorizado }: Props) {
   const servicios = useServicios();
-  const { base } = usePanel();
+  const { base, tiendas } = usePanel();
   const { datos, estado, reintentar } = useDatos<DatosZonas>(
     async () => {
       const [alertas, mapa] = await Promise.all([
@@ -136,18 +188,53 @@ export function Zonas({ token, version, alNoAutorizado }: Props) {
     alNoAutorizado,
   );
   const [vista, setVista] = useState<VistaMapa>('calidad');
+  const [forma, setForma] = useState<FormaMapa>('mapa');
   const [elegida, setElegida] = useState<string | null>(null);
 
   const filas = [...(datos?.alertas ?? [])].sort((a, b) => b.hogares_en_rojo_7_dias - a.hogares_en_rojo_7_dias);
   const alertas = filas.filter((z) => z.alerta);
-  const mapa = datos?.mapa ?? [];
-  const tablero = mapa.filter((u) => u.en_tablero);
+  const mapa = useMemo(() => datos?.mapa ?? [], [datos]);
+  const tablero = useMemo(() => mapa.filter((u) => u.en_tablero), [mapa]);
   const otras = mapa.filter((u) => !u.en_tablero);
   const conClientes = tablero.filter((u) => u.hogares > 0).length;
   const enAlerta = mapa.filter((u) => u.alerta).length;
   const porCaptar = tablero.filter((u) => u.estado === 'sin_clientes').length;
   const detalle = mapa.find((u) => u.id === elegida);
   const sinHogares = mapa.every((u) => u.hogares === 0);
+
+  // Mapa real: un círculo por urbanización (color, letra y tamaño) y las tiendas del comercio en Carabobo.
+  const marcas = useMemo<MarcaMapa[]>(() => {
+    const lista: MarcaMapa[] = [];
+    for (const u of tablero) {
+      if (u.lat === null || u.lng === null) continue;
+      const d = diametro(u.hogares);
+      const letra = vista === 'calidad' ? (u.alerta ? '!' : LETRA_ESTADO[u.estado]) : u.hogares > 0 ? String(u.hogares) : '';
+      lista.push({
+        id: u.id,
+        lat: u.lat,
+        lng: u.lng,
+        html: `<span class="mr-urb ${claseCirculo(u, vista)}${elegida === u.id ? ' mr-urb--elegida' : ''}">${escaparHtml(letra)}</span>`,
+        tamano: [d, d],
+        etiqueta: etiquetaAccesible(u),
+        alElegir: () => setElegida(u.id),
+      });
+    }
+    for (const t of tiendas) {
+      const ubicacion = UBICACION_TIENDAS[t.id];
+      if (!ubicacion) continue;
+      lista.push({
+        id: `tienda-${t.id}`,
+        lat: ubicacion.lat,
+        lng: ubicacion.lng,
+        html: `<span class="mr-tienda"><span class="mr-tienda__icono">${TRAZO_TIENDA}</span><span class="mr-tienda__nombre">${escaparHtml(t.nombre)}</span></span>`,
+        tamano: [30, 30],
+        etiqueta: `Tienda ${t.nombre}`,
+        encima: true,
+      });
+    }
+    return lista;
+  }, [tablero, tiendas, vista, elegida]);
+  const encaje = useMemo(() => marcas.map((m) => [m.lat, m.lng] as [number, number]), [marcas]);
 
   return (
     <div className="g-pila g-pila--amplia">
@@ -187,6 +274,16 @@ export function Zonas({ token, version, alNoAutorizado }: Props) {
                 ]}
               />
 
+              <div className="zonas-controles">
+              <div className="g-chips" role="group" aria-label="Forma del mapa">
+                <Chip activo={forma === 'mapa'} onClick={() => setForma('mapa')}>
+                  Mapa
+                </Chip>
+                <Chip activo={forma === 'tablero'} onClick={() => setForma('tablero')}>
+                  Tablero
+                </Chip>
+              </div>
+
               <div className="g-chips" role="group" aria-label="Vista del mapa">
                 <Chip activo={vista === 'calidad'} onClick={() => setVista('calidad')}>
                   Calidad del agua
@@ -195,13 +292,23 @@ export function Zonas({ token, version, alNoAutorizado }: Props) {
                   Clientes
                 </Chip>
               </div>
+              </div>
 
-              <Leyenda vista={vista} />
+              <Leyenda vista={vista} forma={forma} />
 
               <div className="mapa-disposicion">
-                <div className="mapa-lienzo">
-                  <MapaHexagonos urbanizaciones={tablero} vista={vista} elegida={elegida} alElegir={setElegida} />
-                </div>
+                {forma === 'mapa' ? (
+                  <MapaReal
+                    marcas={marcas}
+                    etiqueta="Mapa de las urbanizaciones"
+                    claveEncaje={`${tablero.length}|${tiendas.length}`}
+                    encajarEn={encaje}
+                  />
+                ) : (
+                  <div className="mapa-lienzo">
+                    <MapaHexagonos urbanizaciones={tablero} vista={vista} elegida={elegida} alElegir={setElegida} />
+                  </div>
+                )}
                 <Detalle u={detalle} />
               </div>
 

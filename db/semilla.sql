@@ -5,8 +5,8 @@
 -- Lo aplica `npm run migrar -w api -- --semilla`, solo si la tabla hogares está vacía.
 -- Las fechas son relativas a now(): la semilla siempre queda "reciente".
 -- Contenido: 3 comercios (Grimuca y 2 aliados "de demostración"), 5 tiendas, 70 hogares
--- (60 de Grimuca), 98 mediciones, 93 pedidos
--- (10 pendientes de Grimuca, 3 del aliado de Lara y 4 servicios técnicos),
+-- (60 de Grimuca), 98 mediciones, 99 pedidos
+-- (16 pendientes de Grimuca, 3 del aliado de Lara y 4 servicios técnicos),
 -- 37 filas de stock y 5 pruebas de bacterias.
 -- Los PIN de cada comercio, del técnico y de la red van en el entorno del servidor, nunca aquí.
 
@@ -17,6 +17,9 @@ INSERT INTO tiendas (id, nombre, horario, direccion) VALUES
   ('cem', 'CC CEM', 'Lunes a viernes de 8:30 a.m. a 4:30 p.m. Sábados de 9:00 a.m. a 2:00 p.m.', 'C.C. CEM I, nivel 1, local 06, Av. Don Julio Centeno, San Diego')
 ON CONFLICT (id) DO NOTHING;
 UPDATE tiendas SET comercio_id = 'grimuca' WHERE comercio_id IS NULL;
+
+-- Grimuca es el comercio más antiguo de la red (la migración 008 lo crea con la fecha del día en que corre).
+UPDATE comercios SET fecha_alta = now() - interval '400 days' WHERE id = 'grimuca';
 
 -- Comercios aliados INVENTADOS (comercio de demostración). Grimuca ya lo crea la migración 008.
 -- membresia_usd va nulo: el precio de la membresía todavía no está fijado.
@@ -349,7 +352,7 @@ INSERT INTO stock (tienda_id, cartucho_codigo, cantidad) VALUES
   ('aragua-centro', 'OPW-RSSU5', 0),
   ('aragua-centro', 'EMUV-11W', 1);
 
--- Pedidos: historial despachado y, al final, los 10 pendientes (sobres y cartuchos).
+-- Pedidos: historial despachado y, al final, los 16 pendientes (sobres y cartuchos).
 INSERT INTO pedidos (hogar_id, tipo, cartucho_codigo, cantidad, modalidad, direccion, pago, tienda_id, estado, fecha, fecha_despacho) VALUES
   ('00000000-0000-4000-8000-000000000001', 'sobre', NULL, 1, 'envio', 'Calle 2, casa 5 (dato de prueba)', 'simulado', 'manongo', 'despachado', now() - interval '38 days', now() - interval '37 days'),
   ('00000000-0000-4000-8000-000000000002', 'sobre', NULL, 1, 'envio', 'Calle 3, casa 6 (dato de prueba)', 'simulado', 'manongo', 'despachado', now() - interval '64 days', now() - interval '63 days'),
@@ -427,12 +430,18 @@ INSERT INTO pedidos (hogar_id, tipo, cartucho_codigo, cantidad, modalidad, direc
   ('00000000-0000-4000-8000-000000000068', 'sobre', NULL, 1, 'envio', 'Calle 9, casa 72 (dato de prueba)', 'simulado', 'aragua-centro', 'despachado', now() - interval '44 days', now() - interval '43 days'),
   ('00000000-0000-4000-8000-000000000069', 'sobre', NULL, 1, 'envio', 'Avenida 7, edificio G, apartamento 7 (dato de prueba)', 'simulado', 'aragua-centro', 'despachado', now() - interval '22 days', now() - interval '21 days'),
   ('00000000-0000-4000-8000-000000000070', 'sobre', NULL, 1, 'envio', 'Calle 11, casa 74 (dato de prueba)', 'simulado', 'aragua-centro', 'despachado', now() - interval '54 days', now() - interval '53 days'),
-  ('00000000-0000-4000-8000-000000000030', 'cartucho', 'OPW-CTOSU5', 1, 'envio', 'Avenida 3, edificio C, apartamento 4 (dato de prueba)', 'no_aplica', 'cem', 'pendiente', now() - interval '30 hours', NULL),
   ('00000000-0000-4000-8000-000000000019', 'sobre', NULL, 1, 'retiro', NULL, 'simulado', 'cem', 'pendiente', now() - interval '26 hours', NULL),
+  ('00000000-0000-4000-8000-000000000018', 'cartucho', 'OPW-RSSU5', 1, 'envio', 'Avenida 5, edificio E, apartamento 1 (dato de prueba)', 'no_aplica', 'cem', 'pendiente', now() - interval '22 hours', NULL),
   ('00000000-0000-4000-8000-000000000003', 'cartucho', 'OPW-100GPD-8TN', 1, 'envio', 'Avenida 4, edificio D, apartamento 4 (dato de prueba)', 'no_aplica', 'manongo', 'pendiente', now() - interval '20 hours', NULL),
-  ('00000000-0000-4000-8000-000000000052', 'cartucho', 'OPW-GACSU5', 1, 'envio', 'Calle 5, casa 56 (dato de prueba)', 'no_aplica', 'cem', 'pendiente', now() - interval '15 hours', NULL),
+  ('00000000-0000-4000-8000-000000000004', 'cartucho', 'OPW-CTOSU5', 1, 'envio', 'Calle 5, casa 8 (dato de prueba)', 'no_aplica', 'manongo', 'pendiente', now() - interval '18 hours', NULL),
+  ('00000000-0000-4000-8000-000000000021', 'cartucho', 'OPW-GACSU5', 1, 'envio', 'Avenida 1, edificio A, apartamento 4 (dato de prueba)', 'no_aplica', 'manongo', 'pendiente', now() - interval '15 hours', NULL),
+  ('00000000-0000-4000-8000-000000000013', 'cartucho', 'OPW-PP20A022', 1, 'envio', 'Calle 2, casa 17 (dato de prueba)', 'no_aplica', 'biglow', 'pendiente', now() - interval '14 hours', NULL),
   ('00000000-0000-4000-8000-000000000041', 'cartucho', 'OPW-RSSU5', 1, 'retiro', NULL, 'no_aplica', 'biglow', 'pendiente', now() - interval '12 hours', NULL),
+  ('00000000-0000-4000-8000-000000000026', 'sobre', NULL, 1, 'envio', 'Calle 3, casa 30 (dato de prueba)', 'simulado', 'manongo', 'pendiente', now() - interval '11 hours', NULL),
+  ('00000000-0000-4000-8000-000000000009', 'sobre', NULL, 1, 'envio', 'Avenida 3, edificio C, apartamento 1 (dato de prueba)', 'simulado', 'manongo', 'pendiente', now() - interval '9 hours', NULL),
   ('00000000-0000-4000-8000-000000000012', 'cartucho', 'OPW-RSSU5', 1, 'retiro', NULL, 'no_aplica', 'biglow', 'pendiente', now() - interval '8 hours', NULL),
+  ('00000000-0000-4000-8000-000000000040', 'cartucho', 'OPW-PP20BFL02', 1, 'envio', 'Calle 5, casa 44 (dato de prueba)', 'no_aplica', 'manongo', 'pendiente', now() - interval '7 hours', NULL),
+  ('00000000-0000-4000-8000-000000000016', 'sobre', NULL, 1, 'envio', 'Calle 5, casa 20 (dato de prueba)', 'simulado', 'cem', 'pendiente', now() - interval '6 hours', NULL),
   ('00000000-0000-4000-8000-000000000014', 'sobre', NULL, 1, 'envio', 'Calle 3, casa 18 (dato de prueba)', 'simulado', 'biglow', 'pendiente', now() - interval '5 hours', NULL),
   ('00000000-0000-4000-8000-000000000033', 'sobre', NULL, 1, 'envio', 'Avenida 6, edificio F, apartamento 7 (dato de prueba)', 'simulado', 'manongo', 'pendiente', now() - interval '4 hours', NULL),
   ('00000000-0000-4000-8000-000000000001', 'cartucho', 'OPW-PP20A022', 2, 'retiro', NULL, 'no_aplica', 'manongo', 'pendiente', now() - interval '3 hours', NULL),

@@ -71,8 +71,9 @@ export function PaginaCatalogo() {
   useEffect(() => {
     let vigente = true;
     setEstado({ tipo: 'cargando' });
+    // Con el hogar de la sesión: el catálogo general más los productos del comercio de su tienda.
     api
-      .cartuchos()
+      .cartuchos(hogarId())
       .then((productos) => {
         if (vigente) setEstado({ tipo: 'listo', productos });
       })

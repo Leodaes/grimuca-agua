@@ -155,3 +155,10 @@
   flex-wrap: wrap;
   gap: var(--s2);
 }
+
+/* Interruptor Mapa / Tablero y vista Calidad / Clientes en una sola fila cuando cabe. */
+.zonas-controles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s3) var(--s6);
+}

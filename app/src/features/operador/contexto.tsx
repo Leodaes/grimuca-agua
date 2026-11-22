@@ -9,6 +9,7 @@ import type {
   Pedido,
   ProductoComercio,
   ResumenTienda,
+  RutasDespacho,
   ServicioConReporte,
   UrbanizacionMapa,
   Yo,
@@ -40,6 +41,8 @@ export interface ServiciosOperador {
   zonas(token: string): Promise<AlertaZona[]>;
   /** Mapa por urbanización. Opcional para que los dobles viejos de las pruebas sigan sirviendo. */
   mapa?(token: string): Promise<UrbanizacionMapa[]>;
+  /** Rutas de despacho por tienda. Opcional, como el mapa. */
+  rutas?(token: string): Promise<RutasDespacho>;
   // Red de comercios (opcionales: sin ellos el panel trabaja como Grimuca con sus tres tiendas).
   /** Comercio y tiendas del token. */
   yo?(token: string): Promise<Yo>;

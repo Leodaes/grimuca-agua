@@ -8,10 +8,10 @@ const HOY = new Date('2026-11-21T12:00:00Z');
 const haceDias = (d: number) => new Date(HOY.getTime() - d * 86_400_000).toISOString();
 
 const LISTA: Urbanizacion[] = [
-  { id: 'el-retobo', nombre: 'El Retobo', zona: 'Naguanagua', col: 2, fila: 1, verificada: false },
-  { id: 'la-begona', nombre: 'La Begoña', zona: 'Naguanagua', col: 3, fila: 1, verificada: true },
-  { id: 'trigal-norte', nombre: 'Trigal Norte', zona: 'Valencia norte', col: 1, fila: 5, verificada: true },
-  { id: 'yuma-i', nombre: 'Yuma I', zona: 'San Diego', col: 8, fila: 5, verificada: true, tienda: 'biglow' },
+  { id: 'el-retobo', nombre: 'El Retobo', zona: 'Naguanagua', col: 2, fila: 1, verificada: false, lat: 10.276, lng: -68.032 },
+  { id: 'la-begona', nombre: 'La Begoña', zona: 'Naguanagua', col: 3, fila: 1, verificada: true, lat: 10.26, lng: -68.022 },
+  { id: 'trigal-norte', nombre: 'Trigal Norte', zona: 'Valencia norte', col: 1, fila: 5, verificada: true, lat: 10.228, lng: -67.997 },
+  { id: 'yuma-i', nombre: 'Yuma I', zona: 'San Diego', col: 8, fila: 5, verificada: true, tienda: 'biglow', lat: 10.236, lng: -67.964 },
 ];
 
 const hogar = (id: string, zona: string, urbanizacion: string | null): FilaHogarMapa => ({ id, zona, urbanizacion });
@@ -54,6 +54,7 @@ describe('cálculo del mapa por urbanización', () => {
     expect(por.get('la-begona')).toMatchObject({ hogares: 1, hogares_con_medicion_30_dias: 0, estado: 'sin_medicion', alerta: false });
     expect(por.get('trigal-norte')).toMatchObject({ estado: 'verde', parametros: [], pedidos_pendientes: 1 });
     expect(por.get('yuma-i')).toMatchObject({ hogares: 0, estado: 'sin_clientes', alerta: false, tienda: 'biglow' });
+    expect(por.get('trigal-norte')).toMatchObject({ lat: 10.228, lng: -67.997 });
   });
 
   it('dos hogares en rojo no llegan a alerta; el amarillo no cuenta como rojo', () => {
@@ -129,6 +130,20 @@ describe('lista de urbanizaciones', () => {
     expect(URBANIZACIONES.filter((u) => !u.verificada).map((u) => u.id).sort()).toEqual(
       ['campo-solo', 'el-retobo', 'la-entrada', 'paso-real', 'sabana-del-medio', 'terrazas-de-paramacay', 'trigal-centro', 'villas-de-san-diego'],
     );
+  });
+
+  it('cada urbanización tiene coordenada en Carabobo (las inferidas, marcadas aproximadas)', () => {
+    for (const u of URBANIZACIONES) {
+      expect(u.lat).toBeGreaterThan(10.17);
+      expect(u.lat).toBeLessThan(10.31);
+      expect(u.lng).toBeGreaterThan(-68.06);
+      expect(u.lng).toBeLessThan(-67.93);
+    }
+    // Las que no tienen nodo propio en OSM.
+    for (const id of ['el-retobo', 'trigal-centro', 'yuma', 'los-jarales', 'paso-real']) {
+      expect(buscarUrbanizacion(id)?.coordenada_aproximada).toBe(true);
+    }
+    expect(buscarUrbanizacion('mañongo')?.coordenada_aproximada).toBeUndefined();
   });
 
   it('las tres tiendas quedan marcadas', () => {

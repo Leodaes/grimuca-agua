@@ -11,6 +11,7 @@ const api = vi.hoisted(() => ({
   obtenerHogar: vi.fn(),
   crearPedido: vi.fn(),
   actualizarHogar: vi.fn(),
+  pedidosDeHogar: vi.fn(),
 }));
 
 vi.mock('../../lib/sesion', () => sesion);
@@ -40,6 +41,7 @@ beforeEach(() => {
   api.obtenerHogar.mockResolvedValue({ id: 'hogar-1', tienda_id: 'biglow', direccion: 'Calle 5, casa 8' });
   api.crearPedido.mockResolvedValue({ id: 77 });
   api.actualizarHogar.mockResolvedValue({ id: 'hogar-1' });
+  api.pedidosDeHogar.mockResolvedValue([]);
 });
 
 describe('tutoriales', () => {
@@ -117,6 +119,30 @@ describe('contratar a un experto', () => {
       tienda_id: 'biglow',
     });
     expect(await screen.findByText('Confirmación del pedido')).toBeInTheDocument();
+  });
+
+  it('si el hogar no tiene dirección, usa la del último pedido con envío y su tienda', async () => {
+    api.obtenerHogar.mockResolvedValue({ id: 'hogar-1', zona: 'Naguanagua', tienda_id: null, direccion: null });
+    api.pedidosDeHogar.mockResolvedValue([
+      { id: 9, modalidad: 'envio', direccion: 'Av. Principal, casa 3', tienda_id: 'biglow', tienda_nombre: 'Big Low' },
+      { id: 8, modalidad: 'envio', direccion: 'Dirección vieja', tienda_id: 'manongo' },
+    ]);
+    montar('/experto');
+    expect(await screen.findByLabelText(/Dirección/)).toHaveValue('Av. Principal, casa 3');
+    expect(screen.getByLabelText(/Tienda que coordina/)).toHaveValue('biglow');
+  });
+
+  it('sin dirección guardada ni pedidos con envío, el campo queda vacío y es obligatorio', async () => {
+    const usuario = userEvent.setup();
+    api.obtenerHogar.mockResolvedValue({ id: 'hogar-1', zona: 'Naguanagua', tienda_id: 'manongo', direccion: null });
+    montar('/experto');
+    const direccion = await screen.findByLabelText(/Dirección/);
+    expect(direccion).toHaveValue('');
+    expect(direccion).toBeRequired();
+    expect(screen.getByLabelText(/Tienda que coordina/)).toHaveValue('manongo');
+    await usuario.click(screen.getByRole('button', { name: 'Pedir el servicio' }));
+    expect(screen.getByText('Escribe la dirección donde vamos a hacer el servicio.')).toBeInTheDocument();
+    expect(api.crearPedido).not.toHaveBeenCalled();
   });
 
   it('sin hogar en sesión manda a llenar los datos', () => {

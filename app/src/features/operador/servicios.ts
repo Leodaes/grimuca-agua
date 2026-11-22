@@ -14,6 +14,7 @@ export const serviciosReales: ServiciosOperador = {
   inventario: (token) => api.inventario(token),
   zonas: (token) => api.zonas(token),
   mapa: (token) => api.mapa(token),
+  rutas: (token) => api.rutas(token),
   yo: (token) => api.yo(token),
   productos: (token) => api.productosComercio(token),
   crearProducto: (token, datos) => api.crearProducto(datos, token),

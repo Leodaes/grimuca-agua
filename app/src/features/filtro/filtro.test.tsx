@@ -110,6 +110,8 @@ describe('/mi-filtro', () => {
       expect.objectContaining({ codigo: 'SED-10' }),
     ]);
     expect(screen.getByRole('link', { name: 'Corregir' })).toHaveAttribute('href', '/mi-filtro/manual?sigue=%2Fmedir');
+    // Identificar no guarda: solo "Sí, es este" guarda.
+    expect(apiSimulada.guardarFiltro).not.toHaveBeenCalled();
 
     await userEvent.click(screen.getByRole('button', { name: 'Sí, es este' }));
     expect(await screen.findByText('Estás en /medir')).toBeInTheDocument();
@@ -118,7 +120,24 @@ describe('/mi-filtro', () => {
       etapas: 3,
       medida: '10x2.5',
       modelo_codigo: null,
+      origen: 'foto',
+      detalle: { marca_visible: 'Oasis', modelo_visible: null, confianza: 'media', observaciones: null },
     });
+  });
+
+  it('"Corregir" abre la carga manual precargada con lo identificado, sin guardarlo', async () => {
+    apiSimulada.identificarFiltro.mockResolvedValue({ estado: 'ok', filtro, cartuchos: [cartucho] });
+    const { container } = abrir('/mi-filtro');
+    const entrada = container.querySelector<HTMLInputElement>('input[type="file"][capture]')!;
+    fireEvent.change(entrada, { target: { files: [new File(['x'], 'filtro.jpg', { type: 'image/jpeg' })] } });
+    await screen.findByRole('heading', { level: 1, name: '¿Es este tu filtro?' });
+
+    await userEvent.click(screen.getByRole('link', { name: 'Corregir' }));
+    expect(await screen.findByRole('heading', { level: 1, name: 'Carga tu filtro a mano' })).toBeInTheDocument();
+    expect(screen.getByLabelText(/Tres vasos/)).toBeChecked();
+    expect(screen.getByRole('spinbutton', { name: /etapas/ })).toHaveValue(3);
+    expect(apiSimulada.filtroDeHogar).toHaveBeenCalledTimes(1); // solo el de /mi-filtro: la carga manual usa lo identificado
+    expect(apiSimulada.guardarFiltro).not.toHaveBeenCalled();
   });
 
   it('foto que no se reconoce: muestra el motivo y ofrece repetir o cargar a mano', async () => {

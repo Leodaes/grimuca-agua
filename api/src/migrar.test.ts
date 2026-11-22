@@ -259,7 +259,7 @@ describe('db/semilla.sql (datos de demostración)', () => {
     expect(porZona.get('Valencia norte') ?? 0).toBeLessThan(3);
   });
 
-  it('trae stock en las tres tiendas de Grimuca (con faltantes) y de 8 a 12 pedidos pendientes mezclados', async () => {
+  it('trae stock en las tres tiendas de Grimuca (con faltantes) y de 8 a 18 pedidos pendientes mezclados (con envíos para las rutas)', async () => {
     const DE_GRIMUCA = "tienda_id IN ('manongo', 'biglow', 'cem')";
     const stock = await bd.query(`SELECT tienda_id, cantidad FROM stock WHERE ${DE_GRIMUCA}`);
     expect(new Set(stock.rows.map((fila) => fila.tienda_id)).size).toBe(3);
@@ -277,7 +277,9 @@ describe('db/semilla.sql (datos de demostración)', () => {
       `SELECT tipo, pago, cartucho_codigo, modalidad, direccion FROM pedidos WHERE estado = 'pendiente' AND tipo <> 'servicio' AND ${DE_GRIMUCA}`,
     );
     expect(pendientes.rows.length).toBeGreaterThanOrEqual(8);
-    expect(pendientes.rows.length).toBeLessThanOrEqual(12);
+    expect(pendientes.rows.length).toBeLessThanOrEqual(18);
+    // Rutas de despacho: 12 o más con envío (8 de Mañongo y 4 de San Diego).
+    expect(pendientes.rows.filter((fila) => fila.modalidad === 'envio').length).toBeGreaterThanOrEqual(12);
     expect(pendientes.rows.some((fila) => fila.tipo === 'sobre')).toBe(true);
     expect(pendientes.rows.some((fila) => fila.tipo === 'cartucho')).toBe(true);
     for (const fila of pendientes.rows) {
@@ -288,7 +290,7 @@ describe('db/semilla.sql (datos de demostración)', () => {
   });
 
   it('la API responde sobre la semilla: despacho del operador y resultado de un hogar', { timeout: 30_000 }, async () => {
-    const entorno = await crearEntorno({ bd });
+    const entorno = await crearEntorno({ bd, conLogistica: true });
     try {
       const cabeceras = await entorno.entrarComoOperador();
       const pendientes = await entorno.app.inject({ method: 'GET', url: '/api/operador/pedidos', headers: cabeceras });
@@ -327,6 +329,12 @@ describe('db/semilla.sql (datos de demostración)', () => {
         ]),
       );
       expect(estados).toEqual({ grimuca: ['activa', 60], 'aliado-lara': ['periodo_gratis', 6], 'aliado-aragua': ['vencida', 4] });
+      // Grimuca es el comercio más antiguo de la red (no aparece como recién dado de alta).
+      const altas = Object.fromEntries(
+        (resumen.json().comercios as Array<{ id: string; fecha_alta: string }>).map((c) => [c.id, Date.parse(c.fecha_alta)]),
+      );
+      expect(Date.now() - altas.grimuca).toBeGreaterThan(300 * 86_400_000);
+      expect(altas.grimuca).toBeLessThan(Math.min(altas['aliado-lara'], altas['aliado-aragua']));
       // Grimuca no ve los pedidos del aliado de Lara.
       expect(lista.every((p) => p.comercio_nombre === 'Grimuca')).toBe(true);
       // El técnico tiene sus 3 servicios pendientes.
@@ -337,6 +345,12 @@ describe('db/semilla.sql (datos de demostración)', () => {
         headers: { authorization: `Bearer ${tecnico.json().token}` },
       });
       expect(servicios.json()).toHaveLength(3);
+      expect(servicios.json().every((s: { orden_ruta: number | null }) => typeof s.orden_ruta === 'number')).toBe(true);
+      // Rutas de despacho: 12 envíos y 3 servicios en las tres tiendas; la ruta ahorra frente a los viajes sueltos.
+      const rutas = await entorno.app.inject({ method: 'GET', url: '/api/operador/rutas', headers: cabeceras });
+      const { totales } = rutas.json();
+      expect(totales.entregas).toBe(15);
+      expect(totales.distancia_ruta_km).toBeLessThan(totales.distancia_viajes_sueltos_km);
     } finally {
       await entorno.app.close();
     }

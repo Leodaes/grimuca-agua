@@ -16,6 +16,7 @@ import type {
   FiltroServicios,
   ProductoComercio,
   ResumenRed,
+  RutasDespacho,
   ServicioConReporte,
   Yo,
 } from './tipos';
@@ -181,7 +182,9 @@ export const api = {
 
   // --- Catálogo y configuración ---
   tiendas: () => pedir<Tienda[]>('/tiendas'),
-  cartuchos: () => pedir<Cartucho[]>('/cartuchos'),
+  /** Con `hogarId`, el catálogo general más los productos del comercio de su tienda; sin él, solo el general. */
+  cartuchos: (hogarId?: string | null) =>
+    pedir<Cartucho[]>(hogarId ? `/cartuchos?hogar_id=${encodeURIComponent(hogarId)}` : '/cartuchos'),
   configTira: () => pedir<ParametroTira[]>('/config/tira'),
 
   // --- Hogar ---
@@ -253,6 +256,8 @@ export const api = {
   zonas: (token?: string) => pedirComoOperador<AlertaZona[]>('/operador/zonas', { token }),
   /** Mapa de hexágonos: una entrada por urbanización, más las "Otras de <zona>" (`en_tablero: false`). */
   mapa: (token?: string) => pedirComoOperador<UrbanizacionMapa[]>('/operador/mapa', { token }),
+  /** Rutas de despacho: una por tienda del comercio, con las entregas pendientes agrupadas por urbanización. */
+  rutas: (token?: string) => pedirComoOperador<RutasDespacho>('/operador/rutas', { token }),
 
   // --- Plataforma: comercio ---
   /** Respuesta completa de la entrada del comercio (`operadorEntrar` sigue sirviendo y trae los mismos campos). */

@@ -100,6 +100,8 @@ export function calcularMapa(
         grupo: u.grupo ?? null,
         verificada: u.verificada,
         tienda: u.tienda ?? null,
+        lat: u.lat,
+        lng: u.lng,
       },
       hogares: [],
     });
@@ -126,6 +128,8 @@ export function calcularMapa(
           grupo: null,
           verificada: true,
           tienda: null,
+          lat: null,
+          lng: null,
         },
         hogares: [],
       };

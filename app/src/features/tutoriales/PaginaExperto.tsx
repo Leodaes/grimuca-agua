@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Aviso, Boton, Campo, Cargando, EstadoVacio } from '../../components/grimuca';
 import { api } from '../../lib/api';
 import { hogarId } from '../../lib/sesion';
-import type { MomentoDia, ServicioTecnico, Tienda } from '../../lib/tipos';
+import { tiendaSugerida, type MomentoDia, type Pedido, type ServicioTecnico, type Tienda } from '../../lib/tipos';
 import { OpcionesRadio } from '../alta/comun';
 import { mensajeError } from '../resultado/textos';
 import { NOMBRE_MOMENTO, OPCIONES_SERVICIO, TEXTO_PRECIOS_SERVICIO } from './contenido';
@@ -35,6 +35,7 @@ export function PaginaExperto() {
   const [tiendaId, setTiendaId] = useState(TIENDA_POR_DEFECTO);
   const [nota, setNota] = useState('');
   const [tiendas, setTiendas] = useState<Tienda[]>([]);
+  const [nombreTienda, setNombreTienda] = useState<string | null>(null);
   const [cargando, setCargando] = useState(Boolean(idHogar));
   const [enviando, setEnviando] = useState(false);
   const [errores, setErrores] = useState<Errores>({});
@@ -43,12 +44,27 @@ export function PaginaExperto() {
   useEffect(() => {
     if (!idHogar) return;
     let vigente = true;
-    Promise.all([api.obtenerHogar(idHogar).catch(() => null), api.tiendas().catch(() => [] as Tienda[])])
-      .then(([hogar, lista]) => {
+    const conRespaldo = <T,>(pedir: () => Promise<T>, siFalla: T) =>
+      Promise.resolve()
+        .then(pedir)
+        .catch(() => siFalla);
+    Promise.all([
+      conRespaldo(() => api.obtenerHogar(idHogar), null),
+      conRespaldo(() => api.tiendas(), [] as Tienda[]),
+      conRespaldo(() => api.pedidosDeHogar(idHogar), [] as Pedido[]),
+    ])
+      .then(([hogar, lista, pedidos]) => {
         if (!vigente) return;
-        setTiendas(lista);
-        if (hogar?.direccion) setDireccion(hogar.direccion);
-        if (hogar?.tienda_id) setTiendaId(hogar.tienda_id);
+        setTiendas(Array.isArray(lista) ? lista : []);
+        // Dirección: la guardada en el hogar; si no hay, la del último pedido con envío (la de "Mi lista").
+        // Sin ninguna, el campo queda vacío y es obligatorio.
+        const ultimoEnvio = (Array.isArray(pedidos) ? pedidos : []).find((p) => p.modalidad === 'envio' && p.direccion);
+        const guardada = hogar?.direccion?.trim() || ultimoEnvio?.direccion?.trim() || '';
+        if (guardada) setDireccion(guardada);
+        // Tienda: la del hogar; si no tiene, la del último pedido o la sugerida por su zona.
+        const tienda = hogar?.tienda_id ?? ultimoEnvio?.tienda_id ?? (hogar?.zona ? tiendaSugerida(hogar.zona) : null);
+        if (tienda) setTiendaId(tienda);
+        if (ultimoEnvio?.tienda_id === tienda && ultimoEnvio?.tienda_nombre) setNombreTienda(ultimoEnvio.tienda_nombre);
       })
       .finally(() => vigente && setCargando(false));
     return () => {
@@ -99,10 +115,13 @@ export function PaginaExperto() {
     }
   }
 
-  const opcionesTienda =
-    tiendas.length > 0
-      ? tiendas.map((t) => ({ valor: t.id, etiqueta: `Grimuca ${t.nombre}` }))
-      : [{ valor: tiendaId, etiqueta: 'Grimuca (la de tu zona)' }];
+  // La tienda del hogar siempre está entre las opciones (aunque no sea de la lista de Grimuca).
+  const opcionesTienda = tiendas.some((t) => t.id === tiendaId)
+    ? tiendas.map((t) => ({ valor: t.id, etiqueta: `Grimuca ${t.nombre}` }))
+    : [
+        { valor: tiendaId, etiqueta: nombreTienda ?? (tiendas.length > 0 ? 'Tu tienda' : 'Grimuca (la de tu zona)') },
+        ...tiendas.map((t) => ({ valor: t.id, etiqueta: `Grimuca ${t.nombre}` })),
+      ];
 
   return (
     <main id="contenido" className="g-pantalla__contenido g-pila" tabIndex={-1}>

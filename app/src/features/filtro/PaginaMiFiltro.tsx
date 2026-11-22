@@ -86,11 +86,19 @@ export function PaginaMiFiltro() {
     setConfirmando(true);
     setErrorConfirmar(null);
     try {
+      // La foto solo identifica: el filtro se guarda aquí, cuando la persona lo confirma.
       await api.guardarFiltro(hogar, {
         tipo: filtro.tipo,
         etapas: filtro.etapas,
         medida: filtro.medida,
         modelo_codigo: filtro.modelo_codigo,
+        origen: 'foto',
+        detalle: {
+          marca_visible: filtro.marca_visible,
+          modelo_visible: filtro.modelo_visible,
+          confianza: filtro.confianza,
+          observaciones: filtro.observaciones,
+        },
       });
       navegar(destino);
     } catch (error) {
@@ -177,7 +185,16 @@ export function PaginaMiFiltro() {
           <Boton anchoCompleto cargando={confirmando} textoCargando="Guardando…" onClick={() => void confirmar(filtro)}>
             Sí, es este
           </Boton>
-          <Boton variante="secundario" anchoCompleto a={rutaManual}>
+          {/* "Corregir" abre la carga manual con lo identificado (que aún no está guardado). */}
+          <Boton
+            variante="secundario"
+            anchoCompleto
+            a={rutaManual}
+            onClick={(evento) => {
+              evento.preventDefault();
+              navegar(rutaManual, { state: { filtro } });
+            }}
+          >
             Corregir
           </Boton>
         </div>

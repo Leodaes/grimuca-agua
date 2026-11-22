@@ -11,6 +11,7 @@ import { ContextoPanel, NOMBRE_PLAN } from './panel';
 import type { DatosPanel } from './panel';
 import { Productos } from './Productos';
 import { Resumen } from './Resumen';
+import { RutasDespacho } from './RutasDespacho';
 import { usePedidosEnVivo } from './usePedidosEnVivo';
 import { Zonas } from './Zonas';
 import './comercio.css';
@@ -179,6 +180,7 @@ function PanelConSesion({ base, token, alSalir }: { base: string; token: string;
               <Chip a={`${base}/resumen`}>Resumen</Chip>
               <Chip a={`${base}/inventario`}>Inventario</Chip>
               <Chip a={`${base}/productos`}>Productos</Chip>
+              <Chip a={`${base}/rutas`}>Rutas</Chip>
               <Chip a={`${base}/zonas`}>Zonas</Chip>
             </nav>
           </Encabezado>
@@ -206,6 +208,7 @@ function PanelConSesion({ base, token, alSalir }: { base: string; token: string;
             <Route path="resumen" element={<Resumen {...propsDatos} />} />
             <Route path="inventario" element={<Inventario {...propsDatos} />} />
             <Route path="productos" element={<Productos {...propsDatos} />} />
+            <Route path="rutas" element={<RutasDespacho {...propsDatos} />} />
             <Route path="zonas" element={<Zonas {...propsDatos} />} />
             <Route path="*" element={<Navigate to="despacho" replace />} />
           </Routes>

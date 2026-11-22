@@ -1,0 +1,125 @@
+/* Mapa real (Leaflet) de las pestañas Rutas y Zonas. Solo tokens de tokens.css y grimuca.css. */
+
+.mapa-real {
+  position: relative;
+  border: 1px solid var(--linea);
+  background: var(--papel);
+  max-width: 100%;
+}
+.mapa-real__lienzo {
+  height: 380px;
+  width: 100%;
+  background: var(--papel);
+  font-family: var(--f-texto);
+}
+@media (min-width: 768px) {
+  .mapa-real__lienzo { height: 520px; }
+}
+.mapa-real .leaflet-container { background: var(--papel); }
+.mapa-real .leaflet-control-attribution {
+  font-size: 12px;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--tinta);
+}
+.mapa-real .leaflet-control-attribution a { color: var(--azul); }
+
+.mapa-real__aviso {
+  position: absolute;
+  z-index: 1000;
+  top: var(--s2);
+  left: 56px;
+  right: var(--s2);
+  margin: 0;
+  padding: var(--s1) var(--s3);
+  background: var(--fondo);
+  border: 1px solid var(--borde-control);
+  font-size: var(--t-1);
+  color: var(--tinta);
+}
+
+/* Marcas: sin el fondo ni el borde que Leaflet pone a los divIcon. */
+.mapa-real__marca { background: none; border: 0; }
+.mapa-real__marca[role='button'] { cursor: pointer; }
+.mapa-real__marca:focus-visible { outline: 3px solid var(--foco); outline-offset: 2px; }
+
+/* Tienda: cuadro azul con el icono y el nombre al lado. */
+.mr-tienda {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+.mr-tienda__icono {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  background: var(--azul);
+  border: 2px solid var(--blanco);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+}
+.mr-tienda__icono svg { width: 20px; height: 20px; fill: none; stroke: var(--blanco); stroke-width: 2.2; stroke-linejoin: round; }
+.mr-tienda__nombre {
+  padding: 1px 5px;
+  background: var(--azul-900);
+  color: var(--blanco);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* Parada numerada: círculo blanco con borde del color de su ruta. */
+.mr-parada {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: var(--fondo);
+  border: 3px solid currentColor;
+  font-weight: 800;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+.mr-parada span { color: var(--tinta); }
+.mr-parada--elegida { background: var(--amarillo); box-shadow: 0 0 0 3px var(--tinta); }
+
+/* Líneas de ruta: color Y estilo de trazo distintos por tienda (nunca solo el color). */
+.mapa-real__linea { fill: none; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; stroke-opacity: 0.9; }
+.mr-ruta--0 { stroke: var(--azul); color: var(--azul); }
+.mr-ruta--1 { stroke: var(--accion); color: var(--accion); stroke-dasharray: 10 7; }
+.mr-ruta--2 { stroke: var(--turquesa-700); color: var(--turquesa-700); stroke-dasharray: 2 8; stroke-width: 5; }
+.mr-ruta--3 { stroke: var(--ok); color: var(--ok); stroke-dasharray: 14 5 2 5; }
+.mr-ruta--4 { stroke: var(--azul-900); color: var(--azul-900); stroke-dasharray: 6 4; }
+.mr-ruta--atenuada { stroke-opacity: 0.25; }
+
+/* Muestra del trazo en la leyenda y en los chips. */
+.mr-muestra { display: inline-block; vertical-align: middle; }
+.mr-muestra line { stroke-width: 4; stroke-linecap: round; }
+
+/* Urbanización en la vista Mapa de Zonas: círculo con la letra del estado. */
+.mr-urb {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 2px solid var(--borde-control);
+  background: var(--linea);
+  color: var(--tinta);
+  font-weight: 800;
+  font-size: 12px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+}
+.mr-urb--verde { background: var(--ok-bg); border-color: var(--ok); color: var(--ok); }
+.mr-urb--amarillo { background: var(--ambar-bg); border-color: var(--ambar); color: var(--ambar); }
+.mr-urb--rojo { background: var(--error-bg); border-color: var(--error); color: var(--error); }
+.mr-urb--sin-medicion { background: var(--linea); border-color: var(--apagado); color: var(--tinta); }
+.mr-urb--vacio { background: rgba(255, 255, 255, 0.6); border: 2px dashed var(--apagado); box-shadow: none; }
+.mr-urb--alerta { border-width: 4px; }
+.mr-urb--azul-0 { background: var(--azul-50); border-color: var(--azul); color: var(--azul); }
+.mr-urb--azul-1 { background: var(--azul-100); border-color: var(--azul); color: var(--azul); }
+.mr-urb--azul-2 { background: var(--azul); border-color: var(--azul-900); color: var(--blanco); }
+.mr-urb--azul-3 { background: var(--azul-900); border-color: var(--azul-900); color: var(--blanco); }
+.mr-urb--elegida { box-shadow: 0 0 0 3px var(--tinta); }

@@ -21,5 +21,16 @@ export {
 export type { FilaUltimaMedicion } from './alertas';
 export { DIAS_MEDICION_RECIENTE, calcularMapa, mapaUrbanizaciones } from './mapa';
 export type { FilaHogarMapa, FilaMedicionMapa } from './mapa';
-export { URBANIZACIONES, buscarUrbanizacion, urbanizacionesDeZona } from './urbanizaciones';
-export type { Urbanizacion } from './urbanizaciones';
+export { URBANIZACIONES, UBICACION_TIENDAS, buscarUrbanizacion, urbanizacionesDeZona } from './urbanizaciones';
+export type { Coordenada, Urbanizacion } from './urbanizaciones';
+export {
+  FACTOR_CALLE,
+  calcularRutas,
+  distanciaKm,
+  haversineKm,
+  ordenarParadas,
+  ordenServicios,
+  rutasDespacho,
+  ubicacionDelHogar,
+} from './rutas-despacho';
+export type { PedidoParaRuta } from './rutas-despacho';

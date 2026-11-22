@@ -48,7 +48,7 @@ describe('rutas del filtro del hogar', () => {
     expect(respuesta.json()).toEqual({ filtro: null, cartuchos: [] });
   });
 
-  it('foto → identifica (modo simulado), guarda en el hogar y devuelve cartuchos compatibles', async () => {
+  it('foto → identifica (modo simulado) y devuelve cartuchos compatibles SIN guardar; "Sí, es este" guarda', async () => {
     vi.stubEnv('LECTOR_SIMULADO', '1');
     const formulario = formularioFoto({}, jpeg);
     const respuesta = await entorno.app.inject({
@@ -70,11 +70,49 @@ describe('rutas del filtro del hogar', () => {
     expect(codigos).toEqual(expect.arrayContaining(['SED-10', 'CTO-10', 'RES-10']));
     expect(codigos).not.toContain('SED-20G');
 
+    // Antes de confirmar, el hogar sigue sin filtro registrado.
+    const antes = await entorno.app.inject({ method: 'GET', url: `/api/hogares/${hogarId}/filtro` });
+    expect(antes.json().filtro).toBeNull();
+    const { rows: sinGuardar } = await entorno.bd.query('SELECT filtro_tipo, filtro_origen FROM hogares WHERE id = $1', [hogarId]);
+    expect(sinGuardar[0]).toMatchObject({ filtro_tipo: null });
+
+    // "Sí, es este": PUT con lo identificado, origen 'foto' y el detalle leído en la etiqueta.
+    const confirmado = await entorno.app.inject({
+      method: 'PUT',
+      url: `/api/hogares/${hogarId}/filtro`,
+      payload: {
+        tipo: cuerpo.filtro.tipo,
+        etapas: cuerpo.filtro.etapas,
+        medida: cuerpo.filtro.medida,
+        modelo_codigo: cuerpo.filtro.modelo_codigo,
+        origen: 'foto',
+        detalle: {
+          marca_visible: cuerpo.filtro.marca_visible,
+          modelo_visible: cuerpo.filtro.modelo_visible,
+          confianza: cuerpo.filtro.confianza,
+          observaciones: cuerpo.filtro.observaciones,
+        },
+      },
+    });
+    expect(confirmado.statusCode).toBe(200);
+    expect(confirmado.json().filtro).toMatchObject({ origen: 'foto', confianza: cuerpo.filtro.confianza, medida: '10x2.5' });
     const hogar = (await entorno.app.inject({ method: 'GET', url: `/api/hogares/${hogarId}` })).json();
     expect(hogar.etapas_filtro).toBe(3);
     expect(hogar.filtro.medida).toBe('10x2.5');
     const { rows } = await entorno.bd.query('SELECT filtro_origen, filtro_detalle FROM hogares WHERE id = $1', [hogarId]);
     expect(rows[0].filtro_origen).toBe('foto');
+  });
+
+  it('foto con ?guardar=1 guarda de una vez (comportamiento anterior)', async () => {
+    vi.stubEnv('LECTOR_SIMULADO', '1');
+    const respuesta = await entorno.app.inject({
+      method: 'POST',
+      url: `/api/hogares/${hogarId}/filtro/foto?guardar=1`,
+      ...formularioFoto({}, jpeg),
+    });
+    expect(respuesta.json().estado).toBe('ok');
+    const despues = await entorno.app.inject({ method: 'GET', url: `/api/hogares/${hogarId}/filtro` });
+    expect(despues.json().filtro).toMatchObject({ origen: 'foto', medida: '10x2.5' });
   });
 
   it('foto que no muestra un filtro → no_identificado (200) y no guarda', async () => {
@@ -139,7 +177,7 @@ describe('rutas del filtro del hogar', () => {
 
   it('PUT que solo confirma lo de la foto conserva el origen foto; si corrige pasa a manual', async () => {
     vi.stubEnv('LECTOR_SIMULADO', '1');
-    await entorno.app.inject({ method: 'POST', url: `/api/hogares/${hogarId}/filtro/foto`, ...formularioFoto({}, jpeg) });
+    await entorno.app.inject({ method: 'POST', url: `/api/hogares/${hogarId}/filtro/foto?guardar=1`, ...formularioFoto({}, jpeg) });
     const confirma = await entorno.app.inject({
       method: 'PUT',
       url: `/api/hogares/${hogarId}/filtro`,

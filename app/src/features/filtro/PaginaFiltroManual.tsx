@@ -1,9 +1,9 @@
 import { useEffect, useState, type FormEvent } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useLocation, useSearchParams } from 'react-router-dom';
 import { Aviso, Boton, Campo } from '../../components/grimuca';
 import { api, ErrorApi } from '../../lib/api';
 import { hogarId } from '../../lib/sesion';
-import type { MedidaCartucho, ModeloFiltro, RespuestaFiltro, TipoFiltro } from '../../lib/tipos';
+import type { FiltroHogar, MedidaCartucho, ModeloFiltro, RespuestaFiltro, TipoFiltro } from '../../lib/tipos';
 import { OpcionesRadio } from '../alta/comun';
 import { SinHogar } from '../medicion/SinHogar';
 import { CartuchosQueNecesita, FichaFiltro } from './Piezas';
@@ -11,11 +11,19 @@ import { destinoSeguro, OPCIONES_MEDIDA, OPCIONES_TIPO } from './textos';
 
 const MENSAJE_FALLA = 'No se pudo guardar. Intenta otra vez.';
 
+function filtroDelEstado(estado: unknown): FiltroHogar | null {
+  const filtro = (estado as { filtro?: unknown } | null)?.filtro;
+  return filtro && typeof filtro === 'object' && typeof (filtro as FiltroHogar).tipo === 'string' ? (filtro as FiltroHogar) : null;
+}
+
 /** /mi-filtro/manual: carga o corrección a mano del filtro. Acepta `?sigue=<ruta interna>`. */
 export function PaginaFiltroManual() {
   const [parametros] = useSearchParams();
   const destino = destinoSeguro(parametros.get('sigue'));
   const hogar = hogarId();
+  // "Corregir" desde la foto trae el filtro identificado en el estado de la navegación.
+  const ubicacion = useLocation();
+  const identificado = filtroDelEstado(ubicacion.state);
 
   const [tipo, setTipo] = useState('');
   const [etapas, setEtapas] = useState('');
@@ -37,22 +45,27 @@ export function PaginaFiltroManual() {
         if (vigente && Array.isArray(lista)) setModelos(lista);
       })
       .catch(() => undefined);
-    // Para corregir: se parte de lo que ya está registrado.
-    api
-      .filtroDeHogar(hogar)
-      .then((respuesta) => {
-        const filtro = respuesta?.filtro;
-        if (!vigente || !filtro) return;
-        setTipo(OPCIONES_TIPO.some((o) => o.valor === filtro.tipo) ? filtro.tipo : 'otro');
-        setEtapas(filtro.etapas ? String(filtro.etapas) : '');
-        setMedida(filtro.medida ?? '');
-        setModelo(filtro.modelo_codigo ?? '');
-      })
-      .catch(() => undefined);
+    const precargar = (filtro: FiltroHogar) => {
+      setTipo(OPCIONES_TIPO.some((o) => o.valor === filtro.tipo) ? filtro.tipo : 'otro');
+      setEtapas(filtro.etapas ? String(filtro.etapas) : '');
+      setMedida(filtro.medida ?? '');
+      setModelo(filtro.modelo_codigo ?? '');
+    };
+    // Para corregir: se parte de lo identificado en la foto (sin guardar) o, si no viene, de lo registrado.
+    if (identificado) {
+      precargar(identificado);
+    } else {
+      api
+        .filtroDeHogar(hogar)
+        .then((respuesta) => {
+          if (vigente && respuesta?.filtro) precargar(respuesta.filtro);
+        })
+        .catch(() => undefined);
+    }
     return () => {
       vigente = false;
     };
-  }, [hogar]);
+  }, [hogar, identificado]);
 
   if (!hogar) return <SinHogar titulo="Mi filtro" />;
 

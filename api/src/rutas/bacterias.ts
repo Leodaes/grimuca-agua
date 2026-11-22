@@ -6,14 +6,18 @@ import { codigoPg } from '../bd';
 import type { PruebaBacterias } from '../tipos';
 import { buscarHogar, filaABacterias, listarCatalogo, sugerirDesinfeccion } from './datos';
 import { noEncontrado } from './errores';
+import { catalogoDelHogar } from './plataforma';
 import { esquemaHogarId, esquemaReporteBacterias } from './esquemas';
 
 export async function rutasBacterias(app: FastifyInstance): Promise<void> {
   const { bd } = app.contexto;
 
+  /** Los sugeridos salen del catálogo que ve el hogar (el general más los productos del comercio de su tienda). */
   async function armar(fila: Record<string, unknown>): Promise<PruebaBacterias> {
-    const sugeridos = fila.resultado === 'cambio' ? sugerirDesinfeccion(await listarCatalogo(bd)) : [];
-    return filaABacterias(fila, sugeridos);
+    if (fila.resultado !== 'cambio') return filaABacterias(fila, []);
+    const hogar = await buscarHogar(bd, String(fila.hogar_id));
+    const catalogo = hogar ? await catalogoDelHogar(bd, hogar) : await listarCatalogo(bd);
+    return filaABacterias(fila, sugerirDesinfeccion(catalogo));
   }
 
   async function buscar(hogarId: string): Promise<Record<string, unknown> | null> {

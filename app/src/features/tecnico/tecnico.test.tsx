@@ -85,6 +85,8 @@ describe('/tecnico', () => {
     api.tecnicoServicios.mockResolvedValue([
       servicio(1),
       servicio(2, { servicio: 'instalacion_filtro', hogar_nombre: 'Familia Rojas' }),
+      // Cerrado por la tienda desde Despacho, sin reporte del técnico: no va en Atendidos.
+      servicio(3, { estado: 'despachado', fecha_despacho: '2026-11-21T15:00:00Z', hogar_nombre: 'Cerrado por la tienda' }),
     ]);
     api.atenderServicio.mockImplementation(async (id: number) =>
       servicio(id, {
@@ -117,6 +119,24 @@ describe('/tecnico', () => {
     expect(atendidos).toHaveTextContent('Hogar 1');
     expect(screen.getByRole('button', { name: 'Pendientes (1)' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Atendidos (1)' })).toHaveAttribute('aria-pressed', 'true');
+    expect(atendidos).not.toHaveTextContent('Cerrado por la tienda');
+  });
+
+  it('cada pendiente muestra su parada de la ruta y "Cómo llegar", en el orden de la ruta', async () => {
+    api.tecnicoServicios.mockResolvedValue([
+      servicio(1, { orden_ruta: 2, destino_ruta: { lat: 10.26, lng: -68.022 }, hogar_nombre: 'Segundo' }),
+      servicio(2, { orden_ruta: 1, destino_ruta: { lat: 10.245, lng: -68.007 }, hogar_nombre: 'Primero' }),
+    ]);
+    montar();
+    const lista = await screen.findByRole('list', { name: 'Servicios pendientes' });
+    const tarjetas = within(lista).getAllByRole('listitem');
+    expect(within(tarjetas[0]).getByText('Parada 1')).toBeInTheDocument();
+    expect(within(tarjetas[0]).getByText('Primero')).toBeInTheDocument();
+    expect(within(tarjetas[0]).getByRole('link', { name: /Cómo llegar/ })).toHaveAttribute(
+      'href',
+      'https://www.google.com/maps/dir/?api=1&destination=10.245,-68.007',
+    );
+    expect(within(tarjetas[1]).getByText('Parada 2')).toBeInTheDocument();
   });
 
   it('sin servicios muestra el estado vacío; si falla, ofrece reintentar', async () => {

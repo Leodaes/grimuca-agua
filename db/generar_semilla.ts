@@ -6,6 +6,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { evaluarAgua } from '../api/src/medicion/index';
 import { calcularMapa, type FilaMedicionMapa } from '../api/src/logistica/mapa';
+import { calcularRutas, detalleDePedido, type PedidoParaRuta } from '../api/src/logistica/rutas-despacho';
 import { buscarUrbanizacion, URBANIZACIONES } from '../api/src/logistica/urbanizaciones';
 import type { Nivel, OrigenAgua, PerfilHogar, ValoresMedicion } from '../api/src/tipos';
 
@@ -163,6 +164,9 @@ const ARAGUA = 'aragua-centro';
 const BQTO = 'Barquisimeto';
 const MCY = 'Maracay';
 
+/** Grimuca entró a la red hace 400 días: es el comercio más antiguo (en /red no debe verse como el más nuevo). */
+const DIAS_ALTA_GRIMUCA = 400;
+
 /** Comercios: [id, nombre, estado, ciudad, plan, alta hace cuántos días, fin del periodo gratis (SQL)]. */
 const COMERCIOS_ALIADOS: Array<[string, string, string, string, 'basico' | 'premium', number, string]> = [
   // Alta hace 20 días con 3 meses gratis: el periodo sigue vigente.
@@ -223,17 +227,29 @@ const SERVICIOS: Array<
 // Todos los códigos de este archivo existen en el catálogo (db/semilla_cartuchos.sql).
 
 /** Pedidos pendientes: [n.º de hogar, tipo, código, cantidad, modalidad, hace cuántas horas] */
+// Rutas de despacho (pestaña "Rutas"): 8 envíos de Mañongo en 6 urbanizaciones de Naguanagua y Valencia norte
+// (Mañongo, Las Quintas, La Begoña, El Naranjal, Trigal Norte y Trigal Sur) y 4 de las tiendas de San Diego.
+// Los de retiro no entran a la ruta.
 const PENDIENTES: Array<[number, 'sobre' | 'cartucho', string | null, number, 'retiro' | 'envio', number]> = [
+  // Mañongo, con envío
   [6, 'sobre', null, 1, 'envio', 2],
-  [1, 'cartucho', 'OPW-PP20A022', 2, 'retiro', 3],
-  [14, 'sobre', null, 1, 'envio', 5],
-  [12, 'cartucho', 'OPW-RSSU5', 1, 'retiro', 8],
+  [40, 'cartucho', 'OPW-PP20BFL02', 1, 'envio', 7],
   [3, 'cartucho', 'OPW-100GPD-8TN', 1, 'envio', 20],
-  [19, 'sobre', null, 1, 'retiro', 26],
-  [30, 'cartucho', 'OPW-CTOSU5', 1, 'envio', 30],
+  [9, 'sobre', null, 1, 'envio', 9],
   [33, 'sobre', null, 1, 'envio', 4],
+  [4, 'cartucho', 'OPW-CTOSU5', 1, 'envio', 18],
+  [21, 'cartucho', 'OPW-GACSU5', 1, 'envio', 15],
+  [26, 'sobre', null, 1, 'envio', 11],
+  // Big Low y CC CEM, con envío
+  [14, 'sobre', null, 1, 'envio', 5],
+  [13, 'cartucho', 'OPW-PP20A022', 1, 'envio', 14],
+  [16, 'sobre', null, 1, 'envio', 6],
+  [18, 'cartucho', 'OPW-RSSU5', 1, 'envio', 22],
+  // Retiro en tienda
+  [1, 'cartucho', 'OPW-PP20A022', 2, 'retiro', 3],
+  [12, 'cartucho', 'OPW-RSSU5', 1, 'retiro', 8],
+  [19, 'sobre', null, 1, 'retiro', 26],
   [41, 'cartucho', 'OPW-RSSU5', 1, 'retiro', 12],
-  [52, 'cartucho', 'OPW-GACSU5', 1, 'envio', 15],
 ];
 
 /** Existencias por tienda. Los ceros y los números bajos son los faltantes que debe mostrar el inventario. */
@@ -454,6 +470,35 @@ if (conClientes.length < 28 || conClientes.length > 32) {
 }
 if (enAlerta.join('|') !== 'El Naranjal|La Begoña') throw new Error(`Urbanizaciones en alerta inesperadas: ${enAlerta.join(', ')}`);
 if (sinMedicion.length < 3 || sinMedicion.length > 4) throw new Error(`Sin medición reciente: ${sinMedicion.join(', ')}`);
+// Rutas de despacho (mismo cálculo que GET /api/operador/rutas). Los ids son de mentira: solo sirven para contar.
+const paraRuta: PedidoParaRuta[] = [
+  ...PENDIENTES.filter((p) => p[4] === 'envio').map(([n, tipo, codigo, cantidad]) => ({ n, tipo, codigo, cantidad })),
+  ...SERVICIOS.filter((s) => s[5] === null).map(([n]) => ({ n, tipo: 'servicio' as const, codigo: null, cantidad: 1 })),
+].map(({ n, tipo, codigo, cantidad }, i) => {
+  const hogar = HOGARES[n - 1];
+  return {
+    id: i + 1,
+    tipo,
+    tienda_id: hogar.tienda,
+    hogar_id: idHogar(n),
+    hogar_nombre: hogar.nombre,
+    zona: hogar.zona,
+    urbanizacion: hogar.urbanizacion,
+    detalle: detalleDePedido({ tipo, cantidad, cartucho_codigo: codigo }),
+  };
+});
+const envioDe = (tiendas: string[]) => PENDIENTES.filter((p) => p[4] === 'envio' && tiendas.includes(HOGARES[p[0] - 1].tienda));
+const urbanizacionesManongo = new Set(envioDe([MAN]).map((p) => HOGARES[p[0] - 1].urbanizacion));
+if (envioDe([MAN]).length < 8 || urbanizacionesManongo.size < 5 || urbanizacionesManongo.size > 6) {
+  throw new Error('Mañongo lleva 8 o más envíos pendientes en 5 o 6 urbanizaciones.');
+}
+if (envioDe([BIG, CEM]).length < 4) throw new Error('Las tiendas de San Diego llevan 4 o más envíos pendientes.');
+const rutas = calcularRutas(TIENDAS.map(([id, nombre]) => ({ id, nombre })), paraRuta);
+if (rutas.totales.distancia_ruta_km > rutas.totales.distancia_viajes_sueltos_km) {
+  throw new Error('La ruta salió más larga que los viajes sueltos.');
+}
+const resumenRutas = rutas.rutas.map((r) => `${r.tienda_nombre}: ${r.entregas} entregas en ${r.paradas.length} paradas`).join('; ');
+
 if (TODOS_LOS_HOGARES.some((hogar) => hogar.serie.length < 1 || hogar.serie.length > 4)) {
   throw new Error('Cada hogar lleva de 1 a 4 mediciones.');
 }
@@ -478,6 +523,9 @@ INSERT INTO tiendas (id, nombre, horario, direccion) VALUES
 ${TIENDAS.map((tienda) => `  (${tienda.map(txt).join(', ')})`).join(',\n')}
 ON CONFLICT (id) DO NOTHING;
 UPDATE tiendas SET comercio_id = 'grimuca' WHERE comercio_id IS NULL;
+
+-- Grimuca es el comercio más antiguo de la red (la migración 008 lo crea con la fecha del día en que corre).
+UPDATE comercios SET fecha_alta = ${hace(DIAS_ALTA_GRIMUCA)} WHERE id = 'grimuca';
 
 -- Comercios aliados INVENTADOS (comercio de demostración). Grimuca ya lo crea la migración 008.
 -- membresia_usd va nulo: el precio de la membresía todavía no está fijado.
@@ -531,5 +579,6 @@ console.log(
     `(${PENDIENTES.length} pendientes), ${filasStock.length} filas de stock. ` +
     `Rojos recientes por zona: ${JSON.stringify(Object.fromEntries(rojosRecientesPorZona))}. ` +
     `Urbanizaciones con clientes: ${conClientes.length}; en alerta: ${enAlerta.join(', ')}; sin medición: ${sinMedicion.join(', ')}.\n` +
+    `Rutas: ${JSON.stringify(rutas.totales)} (${resumenRutas}).\n` +
     `Estados: ${conClientes.map((u) => `${u.nombre}=${u.estado}`).join(', ')}`,
 );

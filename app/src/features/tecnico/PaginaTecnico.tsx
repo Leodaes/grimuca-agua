@@ -181,10 +181,21 @@ function TarjetaPendiente({
     <li className="tec-tarjeta">
       <div className="tec-tarjeta__cabecera">
         <Insignia tono="azul">Pendiente</Insignia>
+        {typeof s.orden_ruta === 'number' && <Insignia tono="oscuro">Parada {s.orden_ruta}</Insignia>}
         <span className="g-apagado">N.º {s.id}</span>
       </div>
       <h2 className="g-h3 tec-tarjeta__titulo">{nombreServicio(s.servicio)}</h2>
       <Datos s={s} />
+      {s.destino_ruta && (
+        <a
+          className="tec-llegar"
+          href={`https://www.google.com/maps/dir/?api=1&destination=${s.destino_ruta.lat},${s.destino_ruta.lng}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Cómo llegar<span className="g-solo-lector"> (abre otra pestaña)</span>
+        </a>
+      )}
       {abierto ? (
         children
       ) : (
@@ -272,9 +283,16 @@ function TecnicoConSesion({ token, alSalir }: { token: string; alSalir: () => vo
   const nombreComercio = servicios?.find((s) => s.comercio_nombre)?.comercio_nombre;
   const pendientes = (servicios ?? [])
     .filter((s) => s.estado === 'pendiente')
-    .sort((a, b) => (a.fecha_preferida ?? '').localeCompare(b.fecha_preferida ?? '') || a.id - b.id);
+    // En el orden de la ruta (Parada 1, 2…); los que no tienen parada, al final por fecha preferida.
+    .sort(
+      (a, b) =>
+        (a.orden_ruta ?? Infinity) - (b.orden_ruta ?? Infinity) ||
+        (a.fecha_preferida ?? '').localeCompare(b.fecha_preferida ?? '') ||
+        a.id - b.id,
+    );
   const atendidos = (servicios ?? [])
-    .filter((s) => s.estado !== 'pendiente')
+    // Solo los que cerró el técnico con su reporte; los que la tienda cerró desde Despacho no son de él.
+    .filter((s) => s.estado !== 'pendiente' && s.reporte !== null)
     .sort((a, b) => Date.parse(b.reporte?.fecha_visita ?? b.fecha_despacho ?? b.fecha) - Date.parse(a.reporte?.fecha_visita ?? a.fecha_despacho ?? a.fecha));
 
   const miniaturaDe = (s: ServicioConReporte) =>

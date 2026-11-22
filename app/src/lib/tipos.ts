@@ -282,17 +282,24 @@ export interface RespuestaFiltro {
   cartuchos: CartuchoDelFiltro[];
 }
 
-/** POST /api/hogares/:id/filtro/foto (200 en ambos casos). */
+/** POST /api/hogares/:id/filtro/foto (200 en ambos casos). Solo identifica: no guarda en el hogar. */
 export type ResultadoFotoFiltro =
   | { estado: 'ok'; filtro: FiltroHogar; cartuchos: CartuchoDelFiltro[] }
   | { estado: 'no_identificado'; motivo: string };
 
-/** Cuerpo de PUT /api/hogares/:id/filtro. */
+/** Cuerpo de PUT /api/hogares/:id/filtro. Con `origen: 'foto'` confirma lo identificado en la foto. */
 export interface EntradaFiltro {
   tipo: TipoFiltro;
   etapas?: number | null;
   medida?: MedidaCartucho | null;
   modelo_codigo?: string | null;
+  origen?: 'foto' | 'manual';
+  detalle?: {
+    marca_visible?: string | null;
+    modelo_visible?: string | null;
+    confianza?: ConfianzaFiltro | null;
+    observaciones?: string | null;
+  } | null;
 }
 
 /** GET /api/filtros/modelos: equipos del catálogo para el selector manual. */
@@ -435,6 +442,9 @@ export interface UrbanizacionMapa {
   verificada: boolean;
   /** Id de la tienda que queda en esa urbanización (no la que despacha). */
   tienda: string | null;
+  /** Centro aproximado de la urbanización para el mapa real; null en las "Otras de <zona>". */
+  lat: number | null;
+  lng: number | null;
   hogares: number;
   hogares_con_medicion_30_dias: number;
   /** Solo parámetros de salud: cobre, nitrato, nitrito, plomo, cloro_libre. */
@@ -570,9 +580,65 @@ export interface ReporteServicio {
 /** En el contrato se llama `ServicioTecnico` (ese nombre ya es la unión de arriba): un pedido de servicio con su reporte. */
 export interface ServicioConReporte extends Pedido {
   reporte: ReporteServicio | null;
+  /** Solo en GET /api/tecnico/servicios: número de parada en la ruta de su tienda (null si el hogar no tiene ubicación). */
+  orden_ruta?: number | null;
+  /** Solo en GET /api/tecnico/servicios: centro de la urbanización de esa parada (para "Cómo llegar"). */
+  destino_ruta?: { lat: number; lng: number } | null;
 }
 
 export type FiltroServicios = 'pendiente' | 'atendido' | 'todos';
+
+// --- Rutas de despacho (GET /api/operador/rutas) ---
+// Distancias APROXIMADAS: línea recta (haversine) por un factor de calle de 1,3, en km con un decimal.
+
+export interface PedidoEnParada {
+  id: number;
+  tipo: 'sobre' | 'cartucho' | 'servicio';
+  hogar_nombre: string;
+  /** Qué se lleva: "Sobre de prueba", el nombre del cartucho o el servicio técnico. */
+  detalle: string;
+}
+
+export interface ParadaRuta {
+  /** 1, 2, 3… en el orden de la ruta. */
+  orden: number;
+  urbanizacion: string;
+  lat: number;
+  lng: number;
+  pedidos: PedidoEnParada[];
+  distancia_desde_anterior_km: number;
+}
+
+export interface RutaTienda {
+  tienda_id: string;
+  tienda_nombre: string;
+  /** Ubicación de la tienda; null si la tienda no tiene coordenada (comercios aliados). */
+  origen: { lat: number; lng: number } | null;
+  paradas: ParadaRuta[];
+  entregas: number;
+  /** Ida y vuelta: tienda → paradas en orden → tienda. */
+  distancia_ruta_km: number;
+  /** Ida y vuelta tienda ↔ hogar por cada pedido. */
+  distancia_viajes_sueltos_km: number;
+  ahorro_km: number;
+  ahorro_porcentaje: number;
+  /** Pedidos que no entran a la ruta porque el hogar no tiene urbanización conocida. */
+  sin_ubicacion: number;
+  /** Por qué la ruta viene vacía (tienda sin coordenada), si aplica. */
+  motivo?: string;
+}
+
+export interface RutasDespacho {
+  rutas: RutaTienda[];
+  totales: {
+    entregas: number;
+    paradas: number;
+    distancia_ruta_km: number;
+    distancia_viajes_sueltos_km: number;
+    ahorro_km: number;
+    ahorro_porcentaje: number;
+  };
+}
 
 // --- Otros ---
 

@@ -2,7 +2,8 @@
 import { randomUUID } from 'node:crypto';
 import type { FastifyInstance } from 'fastify';
 import { tiendaSugerida, type Hogar, type UltimoCambio } from '../tipos';
-import { buscarHogar, existeTienda, filaAHogar, filaAMedicion, listarCatalogo, pedidosDeHogar, perfilDe } from './datos';
+import { buscarHogar, existeTienda, filaAHogar, filaAMedicion, pedidosDeHogar, perfilDe } from './datos';
+import { catalogoDelHogar } from './plataforma';
 import { datosInvalidos, noEncontrado } from './errores';
 import { esquemaCambiarHogar, esquemaCrearHogar, esquemaIdHogar } from './esquemas';
 
@@ -137,7 +138,7 @@ export async function rutasHogares(app: FastifyInstance): Promise<void> {
     const hogar = await exigirHogar(id);
     const [{ rows }, catalogo] = await Promise.all([
       bd.query('SELECT * FROM mediciones WHERE hogar_id = $1 ORDER BY fecha DESC', [id]),
-      listarCatalogo(bd),
+      catalogoDelHogar(bd, hogar),
     ]);
     const perfil = perfilDe(hogar);
     return rows.map((fila) =>

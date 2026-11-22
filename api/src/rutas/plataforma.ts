@@ -3,7 +3,7 @@
 import { aDia, aIso, aIsoONulo, aNumeroONulo, type Bd } from '../bd';
 import { tiendaSugerida } from '../tipos';
 import type { Comercio, EstadoMembresia, ServicioConReporte, Tienda } from '../tipos';
-import { filaAPedido, filaATienda, SELECT_PEDIDO } from './datos';
+import { filaAPedido, filaATienda, listarCatalogo, SELECT_PEDIDO, type CartuchoCatalogo } from './datos';
 
 type Fila = Record<string, unknown>;
 type Consultable = Pick<Bd, 'query'>;
@@ -61,6 +61,19 @@ export function comercioDeHogarCon(
 ): string {
   const tienda = hogar.tienda_id ?? tiendaSugerida(hogar.zona);
   return comercioPorTienda.get(tienda) ?? COMERCIO_PRINCIPAL;
+}
+
+/** Comercio de un hogar: el de su tienda; sin tienda, el de la sugerida por su zona. */
+export async function comercioDelHogar(bd: Consultable, hogar: { tienda_id: string | null; zona: string }): Promise<string> {
+  return comercioDeTienda(bd, hogar.tienda_id ?? tiendaSugerida(hogar.zona));
+}
+
+/** Catálogo que ve el hogar: el general más los productos del comercio de su tienda. */
+export async function catalogoDelHogar(
+  bd: Consultable,
+  hogar: { tienda_id: string | null; zona: string },
+): Promise<CartuchoCatalogo[]> {
+  return listarCatalogo(bd, await comercioDelHogar(bd, hogar));
 }
 
 export async function mapaComercioPorTienda(bd: Consultable): Promise<Map<string, string>> {

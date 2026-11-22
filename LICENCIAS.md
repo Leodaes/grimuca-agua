@@ -8,7 +8,7 @@ Las licencias de esta página se leyeron del `package.json` de cada paquete inst
 
 ## Resumen
 
-- **Ninguna dependencia directa tiene licencia no permisiva.** Todas son MIT o Apache-2.0.
+- **Ninguna dependencia directa tiene licencia no permisiva.** Todas son MIT, Apache-2.0 o BSD-2-Clause (Leaflet).
 - No hay licencias con copyleft (GPL, LGPL, AGPL, MPL) ni en las directas ni en las indirectas.
 - Hay **cuatro puntos por resolver**, ninguno de dependencias de npm: falta el archivo `LICENSE`, falta el texto de la OFL junto a las fuentes, y están por confirmar la autorización de la marca Grimuca y la de las fotos y datos del catálogo.
 
@@ -41,6 +41,8 @@ Las licencias de esta página se leyeron del `package.json` de cada paquete inst
 | `react` | 18.3.1 | MIT | Interfaz |
 | `react-dom` | 18.3.1 | MIT | Interfaz |
 | `react-router-dom` | 6.30.6 | MIT | Rutas del front |
+| `leaflet` | 1.9.4 | BSD-2-Clause | Mapa real de las pestañas Rutas y Zonas del comercio. Permisiva: pide conservar su aviso de derechos al redistribuir (va dentro del paquete compilado) |
+| `@types/leaflet` | 1.9.22 | MIT | Tipos (solo desarrollo) |
 | `@testing-library/jest-dom` | 6.9.1 | MIT | Pruebas (solo desarrollo) |
 | `@testing-library/react` | 16.3.3 | MIT | Pruebas (solo desarrollo) |
 | `@testing-library/user-event` | 14.6.13 | MIT | Pruebas (solo desarrollo) |
@@ -72,6 +74,13 @@ Se recorrieron los 381 paquetes de terceros instalados (según la licencia que d
 |---|---|---|
 | `node:24-alpine` | Node.js: MIT. Alpine Linux incluye paquetes con otras licencias (entre ellas GPL) | Imagen base de la app. Se usa sin modificar y no se redistribuye |
 | `postgres:16-alpine` | PostgreSQL License (permisiva, similar a MIT) | Base de datos |
+
+## Datos y teselas del mapa
+
+| Elemento | Dónde | Licencia | Estado |
+|---|---|---|---|
+| Teselas del mapa (`tile.openstreetmap.org`) | Se cargan en vivo en las pestañas Rutas y Zonas del comercio; no se copian al repositorio | Datos © colaboradores de OpenStreetMap, Open Database License (ODbL 1.0) | Atribución visible en el mapa: "© OpenStreetMap" con enlace a openstreetmap.org/copyright. Uso de demo, dentro de la política de uso de teselas de OSM (poco tráfico, sin descarga masiva). Para producción conviene un proveedor de teselas propio o contratado |
+| Coordenadas de urbanizaciones y tiendas | `api/src/logistica/urbanizaciones.ts` (y su copia del front), tomadas de `docs/negocio/urbanizaciones-verificadas.md` | Datos © colaboradores de OpenStreetMap (ODbL 1.0) | Atribución en el mapa y en este archivo. Son coordenadas sueltas (3 decimales), no una copia de la base |
 
 ## Fuentes
 

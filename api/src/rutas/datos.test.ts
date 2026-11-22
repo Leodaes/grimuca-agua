@@ -64,6 +64,14 @@ describe('sugerirCartuchos', () => {
     expect(codigos(sugeridos)).not.toContain('X-OTRA');
     expect(sugeridos[0]).not.toHaveProperty('recomendable');
   });
+
+  it('a igualdad de criterio, los productos con foto van antes que los sin foto', () => {
+    const conFoto = [
+      cartucho('A-SINFOTO', 'cartucho', ['sedimentos']),
+      cartucho('B-CONFOTO', 'cartucho', ['sedimentos'], { foto_url: 'https://grimuca.com/b.jpg' }),
+    ];
+    expect(codigos(sugerirCartuchos(conFoto, { corrige: ['sedimentos'], tieneFiltro: true }))).toEqual(['B-CONFOTO', 'A-SINFOTO']);
+  });
 });
 
 describe('sugerirDesinfeccion', () => {

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useParams, useSearchParams } from 'react-router-dom';
 import { api } from '../../lib/api';
+import { hogarId } from '../../lib/sesion';
 import type { Cartucho, Pedido, Tienda } from '../../lib/tipos';
 import { Aviso, Boton, Cargando, EstadoVacio, Insignia } from '../../components/grimuca';
 import { TEXTO_SIN_COBRO, mensajeError } from '../resultado/textos';
@@ -34,7 +35,7 @@ export function PaginaPedido() {
     Promise.all([
       Promise.all(ids.map((uno) => api.pedido(uno))),
       api.tiendas().catch(() => [] as Tienda[]),
-      api.cartuchos().catch(() => [] as Cartucho[]),
+      api.cartuchos(hogarId()).catch(() => [] as Cartucho[]),
     ])
       .then(([pedidos, tiendas, cartuchos]) => vigente && setEstado({ tipo: 'listo', pedidos, tiendas, cartuchos }))
       .catch((error: unknown) => vigente && setEstado({ tipo: 'error', mensaje: mensajeError(error) }));

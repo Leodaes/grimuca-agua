@@ -2,8 +2,10 @@
 import type { FastifyInstance } from 'fastify';
 import { bdResponde } from '../bd';
 import type { Salud } from '../tipos';
-import { aCartuchoPublico, listarCatalogo, listarTiendas } from './datos';
-import { COMERCIO_PRINCIPAL } from './plataforma';
+import { aCartuchoPublico, buscarHogar, listarCatalogo, listarTiendas } from './datos';
+import { datosInvalidos } from './errores';
+import { esquemaUuid } from './esquemas';
+import { catalogoDelHogar, COMERCIO_PRINCIPAL } from './plataforma';
 
 export async function rutasCatalogo(app: FastifyInstance): Promise<void> {
   const { bd, config, medicion } = app.contexto;
@@ -21,7 +23,17 @@ export async function rutasCatalogo(app: FastifyInstance): Promise<void> {
     return listarTiendas(bd, comercio);
   });
 
-  app.get('/cartuchos', async () => (await listarCatalogo(bd)).map(aCartuchoPublico));
+  // Sin `?hogar_id=`, solo el catálogo general; con él, también los productos del comercio de la tienda del hogar.
+  // Un hogar que no existe ve el catálogo general.
+  app.get('/cartuchos', async (req) => {
+    const pedido = (req.query as { hogar_id?: unknown } | undefined)?.hogar_id;
+    if (pedido === undefined || pedido === '') return (await listarCatalogo(bd)).map(aCartuchoPublico);
+    const hogarId = esquemaUuid.safeParse(pedido);
+    if (!hogarId.success) throw datosInvalidos('El identificador del hogar (hogar_id) no es válido.');
+    const hogar = await buscarHogar(bd, hogarId.data);
+    const catalogo = hogar ? await catalogoDelHogar(bd, hogar) : await listarCatalogo(bd);
+    return catalogo.map(aCartuchoPublico);
+  });
 
   app.get('/config/tira', async () => medicion.tira);
 }

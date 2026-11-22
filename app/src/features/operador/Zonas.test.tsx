@@ -16,6 +16,8 @@ function urb(cambios: Partial<UrbanizacionMapa> & Pick<UrbanizacionMapa, 'id' | 
     grupo: null,
     verificada: true,
     tienda: null,
+    lat: 10.25,
+    lng: -68.01,
     hogares: 0,
     hogares_con_medicion_30_dias: 0,
     hogares_en_rojo_7_dias: 0,
@@ -41,18 +43,20 @@ const MAPA: UrbanizacionMapa[] = [
     parametros: ['nitrato'],
     pedidos_pendientes: 2,
   }),
-  urb({ id: 'manongo', nombre: 'Mañongo', col: 1, fila: 3, tienda: 'manongo' }),
+  urb({ id: 'manongo', nombre: 'Mañongo', col: 1, fila: 3, tienda: 'manongo', lat: 10.234, lng: -67.998 }),
   urb({
     id: 'trigal-norte',
     nombre: 'Trigal Norte',
     zona: 'Valencia norte',
     col: 1,
     fila: 5,
+    lat: 10.228,
+    lng: -67.997,
     hogares: 4,
     hogares_con_medicion_30_dias: 3,
     estado: 'verde',
   }),
-  urb({ id: 'otras-naguanagua', nombre: 'Otras de Naguanagua', col: null, fila: null, en_tablero: false, hogares: 1, estado: 'sin_medicion' }),
+  urb({ id: 'otras-naguanagua', nombre: 'Otras de Naguanagua', col: null, fila: null, lat: null, lng: null, en_tablero: false, hogares: 1, estado: 'sin_medicion' }),
 ];
 
 function montar() {
@@ -78,11 +82,42 @@ function montar() {
   return { servicios, ...vista };
 }
 
-describe('pestaña Zonas: mapa de hexágonos', () => {
+describe('pestaña Zonas: mapa real (por defecto)', () => {
+  it('muestra un círculo por urbanización con letra y color, y la tienda; al tocarlo abre el detalle', async () => {
+    const usuario = userEvent.setup();
+    const { container } = montar();
+    expect(await screen.findByRole('region', { name: 'Mapa de las urbanizaciones' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Mapa' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', { name: 'Tablero' })).toHaveAttribute('aria-pressed', 'false');
+
+    const retobo = container.querySelector('[data-id="el-retobo"]')!;
+    expect(retobo).toHaveAttribute('aria-label', expect.stringMatching(/^El Retobo, 4 hogares, estado rojo, en alerta/));
+    expect(retobo.querySelector('.mr-urb')).toHaveClass('mr-urb--rojo', 'mr-urb--alerta');
+    expect(retobo).toHaveTextContent('!');
+    expect(container.querySelector('[data-id="trigal-norte"] .mr-urb')).toHaveTextContent('V');
+    expect(container.querySelector('[data-id="manongo"] .mr-urb')).toHaveClass('mr-urb--vacio');
+    // Las "Otras de <zona>" no van en el mapa; la tienda sí, con su nombre.
+    expect(container.querySelector('[data-id="otras-naguanagua"]')).toBeNull();
+    expect(container.querySelector('[data-id="tienda-manongo"]')).toHaveTextContent('Mañongo');
+    expect(screen.getByText(/OpenStreetMap/)).toBeInTheDocument();
+
+    await usuario.click(retobo as HTMLElement);
+    const detalle = await screen.findByRole('complementary', { name: 'Detalle de El Retobo' });
+    expect(within(detalle).getByText('Posible problema en la zona.')).toBeInTheDocument();
+
+    // Vista Clientes sobre el mapa real: tono de azul con el número de hogares.
+    await usuario.click(screen.getByRole('button', { name: 'Clientes' }));
+    expect(container.querySelector('[data-id="el-retobo"] .mr-urb')).toHaveClass('mr-urb--azul-2');
+    expect(container.querySelector('[data-id="el-retobo"] .mr-urb')).toHaveTextContent('4');
+  });
+});
+
+describe('pestaña Zonas: tablero de hexágonos', () => {
   it('muestra las cifras, cambia de vista y abre el detalle al elegir un hexágono', async () => {
     const usuario = userEvent.setup();
     const { container } = montar();
 
+    await usuario.click(await screen.findByRole('button', { name: 'Tablero' }));
     const trigal = await screen.findByRole('button', { name: /^Trigal Norte, 4 hogares, estado verde/ });
     const cifras = screen.getByLabelText('Cifras del mapa');
     expect(within(cifras).getByText('Urbanizaciones con clientes').closest('div')).toHaveTextContent('2');

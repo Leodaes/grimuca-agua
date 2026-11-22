@@ -3,6 +3,7 @@
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import type { Bd } from '../bd';
+import { ordenServicios } from '../logistica/rutas-despacho';
 import { buscarPedido } from './datos';
 import { ErrorHttp, noEncontrado } from './errores';
 import { TAMANO_MAXIMO_FOTO } from './mediciones';
@@ -105,7 +106,23 @@ export async function rutasTecnico(app: FastifyInstance): Promise<void> {
 
   app.get('/tecnico/servicios', { preHandler: soloTecnico }, async (req) => {
     const { estado } = esquemaEstado.parse(req.query);
-    return serviciosDeComercio(bd, comercioDe(req), estado);
+    const servicios = await serviciosDeComercio(bd, comercioDe(req), estado);
+    // Cada pendiente lleva su número de parada en la ruta (null si el hogar no tiene ubicación);
+    // la lista de pendientes va en el orden de la ruta.
+    const orden = await ordenServicios(bd, comercioDe(req));
+    const conOrden = servicios.map((s) =>
+      s.estado === 'pendiente'
+        ? { ...s, orden_ruta: orden.get(s.id)?.orden ?? null, destino_ruta: orden.get(s.id)?.destino ?? null }
+        : s,
+    );
+    if (estado === 'atendido') return conOrden;
+    // Los pendientes primero, en el orden de la ruta (los sin ubicación al final); los atendidos, como venían.
+    const pendientes = conOrden
+      .map((s, i) => ({ s, i }))
+      .filter(({ s }) => s.estado === 'pendiente')
+      .sort((a, b) => (a.s.orden_ruta ?? Infinity) - (b.s.orden_ruta ?? Infinity) || a.i - b.i)
+      .map(({ s }) => s);
+    return [...pendientes, ...conOrden.filter((s) => s.estado !== 'pendiente')];
   });
 
   app.post('/tecnico/servicios/:id/atender', { preHandler: soloTecnico }, async (req) => {

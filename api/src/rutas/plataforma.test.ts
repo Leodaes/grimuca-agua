@@ -515,8 +515,25 @@ describe('productos del comercio', () => {
     expect(deGrimuca.some((p) => p.codigo === 'LARA-SED-10')).toBe(false);
     expect(deGrimuca[0].existencias.map((x) => x.tienda_id).sort()).toEqual(['biglow', 'cem', 'manongo']);
 
-    const catalogo = await e.app.inject({ method: 'GET', url: '/api/cartuchos' });
-    expect(catalogo.json().some((c: { codigo: string }) => c.codigo === 'LARA-SED-10')).toBe(true);
+    // El producto propio solo lo ven los clientes de Lara; sin hogar, solo el catálogo general.
+    const tiene = async (url: string) =>
+      (await e.app.inject({ method: 'GET', url })).json().some((c: { codigo: string }) => c.codigo === 'LARA-SED-10');
+    expect(await tiene('/api/cartuchos')).toBe(false);
+    expect(await tiene(`/api/cartuchos?hogar_id=${hogarLara}`)).toBe(true);
+    expect(await tiene(`/api/cartuchos?hogar_id=${hogarGrimuca}`)).toBe(false);
+    expect(await tiene('/api/cartuchos?hogar_id=7f3c2a8e-0000-4000-8000-000000000000')).toBe(false);
+    expect((await e.app.inject({ method: 'GET', url: '/api/cartuchos?hogar_id=x' })).statusCode).toBe(400);
+  });
+
+  it('los sugeridos de una medición solo traen productos propios del comercio del hogar', async () => {
+    const sugeridosDe = async (hogar: string) => {
+      await e.app.inject({ method: 'PATCH', url: `/api/hogares/${hogar}`, payload: { agua_turbia: true } });
+      const res = await e.app.inject({ method: 'POST', url: '/api/mediciones/manual', payload: { hogar_id: hogar, valores: { nitrato: 10 } } });
+      expect(res.statusCode).toBe(201);
+      return res.json().sugeridos.map((c: { codigo: string }) => c.codigo) as string[];
+    };
+    expect(await sugeridosDe(hogarGrimuca)).not.toContain('LARA-SED-10');
+    expect(await sugeridosDe(hogarLara)).toContain('LARA-SED-10');
   });
 
   it('rechaza un código repetido, claves de "corrige" desconocidas y tiendas de otro comercio', async () => {
