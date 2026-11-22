@@ -1,0 +1,94 @@
+/* Grimuca — design tokens (copia local)
+   Fuente: https://grimuca.com (CSS publicado, extraído 2026-11-21)
+   Nombres originales en español; alias semánticos incluidos. */
+
+@font-face {
+  font-family: "Archivo Variable";
+  font-style: normal; font-display: swap;
+  font-weight: 100 900; font-stretch: 62% 125%;
+  src: url("assets/fonts/archivo-latin-wdth-normal.woff2") format("woff2-variations");
+}
+@font-face {
+  font-family: "Source Sans 3 Variable";
+  font-style: normal; font-display: swap;
+  font-weight: 200 900;
+  src: url("assets/fonts/source-sans-3-latin-wght-normal.woff2") format("woff2-variations");
+}
+
+:root {
+  color-scheme: light; /* el sitio NO tiene modo oscuro */
+
+  /* ── Marca ── */
+  --azul:        #12437f;  /* primario: títulos, enlaces, chips activos, bandas */
+  --azul-700:    #0e325f;
+  --azul-900:    #092240;  /* footer, secciones oscuras, toast */
+  --azul-100:    #dbe3ec;  /* active/pressed, texto secundario sobre azul */
+  --azul-50:     #ecf0f5;  /* hover, fondos suaves, avisos */
+  --amarillo:    #fbe919;  /* acento: foco sobre azul, números/iconos sobre azul */
+  --naranja:     #ea5b13;  /* marca (logo); no se usa en botones */
+  --turquesa:    #53b4ba;  /* kicker de la sección "agua" */
+  --turquesa-700:#287379;
+
+  /* ── Acción (CTA primario) ── */
+  --accion:      #c94a0c;  /* botón principal (contraste AA con texto blanco) */
+  --accion-700:  #a63a06;  /* hover / active */
+
+  /* ── Neutros ── */
+  --fondo:       #ffffff;
+  --papel:       #f6f6f6;  /* fondos alternos, topbar, thumbs */
+  --tinta:       #1b2430;  /* texto principal */
+  --tinta-2:     #3d3d3c;  /* texto secundario */
+  --apagado:     #575756;  /* metadatos, SKU, placeholders */
+  --linea:       #e0e0e0;  /* bordes decorativos */
+  --borde-control:#8a8a89; /* bordes de controles (inputs, botones outline) */
+  --blanco:      #ffffff;
+
+  /* ── Sobre azul ── */
+  --borde-sobre-azul:   #ffffff59;
+  --texto-sobre-azul-2: #dbe3ec;
+  --texto-sobre-azul-3: #c9d3e0;
+  --footer-texto:       #dfe7f2;
+  --footer-chico:       #a3b1c4;
+
+  /* ── Estado ── */
+  --ok:        #166534;  --ok-bg:    #e8f6ee;
+  --error:     #b42318;  --error-bg: #fdeceb;
+  --wa:        #25d366;  /* WhatsApp (marca) */
+  --wa-sobre-claro: #128c4a; /* icono WhatsApp sobre fondo claro (contraste) */
+
+  /* ── Foco (accesibilidad) ── */
+  --foco: var(--azul);          /* sobre claro */
+  /* sobre azul/oscuro: --foco: var(--amarillo)  (clases .sobre-azul, footer) */
+
+  /* ── Tipografía ── */
+  --f-titulo: "Archivo Variable", "Arial Narrow", sans-serif;
+  --f-texto:  "Source Sans 3 Variable", "Segoe UI", Arial, sans-serif;
+  --t-1: .9375rem;                               /* 15px  small / meta */
+  --t0:  1.0625rem;                              /* 17px  cuerpo */
+  --t1:  1.1875rem;                              /* 19px  h4 / lead */
+  --t2:  clamp(1.25rem, 1.1rem + .6vw, 1.5rem);  /* h3 */
+  --t3:  clamp(1.625rem, 1.2rem + 1.6vw, 2.25rem); /* h2 */
+  --t4:  clamp(2rem, 1.3rem + 3vw, 3.5rem);      /* h1 */
+
+  /* ── Espaciado (base 4px) ── */
+  --s1: 4px;  --s2: 8px;  --s3: 12px; --s4: 16px; --s5: 24px;
+  --s6: 32px; --s7: 48px; --s8: 64px; --s9: 96px;
+  --sec: clamp(48px, 6vw, 88px);   /* padding vertical de sección */
+  --gutter: 16px;                  /* 24px en desktop */
+  --maxw: 1240px;
+  --maxw-texto: 70ch;
+
+  /* ── Forma ── */
+  --radio-control: 2px;  /* botones, inputs, chips, badges */
+  --radio-foco: 4px;
+  --r: 0;                /* tarjetas y paneles: esquinas rectas */
+  --shadow: none;        /* sin sombras; solo bordes (excepción: drawer y dropdown) */
+
+  /* ── Alias semánticos ── */
+  --brand: var(--azul); --accent: var(--accion);
+  --bg: var(--fondo);   --bg-soft: var(--papel);
+  --ink: var(--tinta);  --ink-2: var(--tinta-2); --muted: var(--apagado);
+  --line: var(--linea); --line-2: var(--borde-control);
+}
+
+@media (min-width: 900px) { :root { --gutter: 24px; } }
