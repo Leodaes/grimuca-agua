@@ -8,6 +8,7 @@ import type { Hogar, Medicion } from '../../../lib/tipos';
 import { AvisoRecambio } from '../../resultado/PaginaResultado';
 import { PALABRA_NIVEL, formatearFecha } from '../../resultado/textos';
 import { RecordatorioMedicion, SeccionCartucho } from '../../tutoriales/CambioCartucho';
+import { CentroMasCercano } from '../../centros/TarjetaCentro';
 import { PaginaAlta } from '../comun';
 import { BOTON_PEDIR, LEMA } from './Banners';
 import './portada.css';
@@ -146,6 +147,8 @@ export function Tablero({ id }: { id: string }) {
       )}
 
       {hogar?.tiene_filtro && <SeccionCartucho hogar={hogar} alCambiar={setHogar} />}
+
+      {hogar && <CentroMasCercano consulta={{ hogarId: id, zona: hogar.zona }} />}
 
       <Boton a="/medir" anchoCompleto icono={<Icono nombre="gota" />}>
         Medir mi agua

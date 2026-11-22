@@ -15,6 +15,7 @@ export function filaAComercio(fila: Fila): Comercio {
   return {
     id: String(fila.id),
     nombre: String(fila.nombre),
+    tipo: fila.tipo === 'centro_llenado' ? 'centro_llenado' : 'ferreteria',
     estado_pais: String(fila.estado_pais),
     ciudad: String(fila.ciudad),
     plan: fila.plan === 'premium' ? 'premium' : 'basico',
@@ -27,7 +28,7 @@ export function filaAComercio(fila: Fila): Comercio {
 }
 
 const COLUMNAS_COMERCIO =
-  'id, nombre, estado_pais, ciudad, plan, membresia_usd, fecha_alta, fin_periodo_gratis, activo, es_demostracion';
+  'id, nombre, tipo, estado_pais, ciudad, plan, membresia_usd, fecha_alta, fin_periodo_gratis, activo, es_demostracion';
 
 export async function listarComercios(bd: Consultable): Promise<Comercio[]> {
   const { rows } = await bd.query(`SELECT ${COLUMNAS_COMERCIO} FROM comercios ORDER BY fecha_alta, id`);
@@ -41,7 +42,7 @@ export async function buscarComercio(bd: Consultable, id: string): Promise<Comer
 
 export async function tiendasDeComercio(bd: Consultable, comercioId: string): Promise<Tienda[]> {
   const { rows } = await bd.query(
-    'SELECT id, nombre, horario, direccion, comercio_id FROM tiendas WHERE comercio_id = $1 ORDER BY nombre',
+    'SELECT id, nombre, horario, direccion, comercio_id, urbanizacion FROM tiendas WHERE comercio_id = $1 ORDER BY nombre',
     [comercioId],
   );
   return rows.map(filaATienda);

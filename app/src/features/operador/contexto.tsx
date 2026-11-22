@@ -6,6 +6,7 @@ import type {
   AlertaZona,
   EntradaProducto,
   FilaInventario,
+  PanelCentro,
   Pedido,
   ProductoComercio,
   ResumenTienda,
@@ -52,6 +53,8 @@ export interface ServiciosOperador {
   reportes?(token: string): Promise<ServicioConReporte[]>;
   /** URL de la foto del reporte para `<img src>`. */
   urlFoto?(token: string, pedidoId: number): string;
+  /** Centro de llenado: sus locales con los resultados publicados. */
+  panelCentro?(token: string): Promise<PanelCentro>;
   /** Devuelve la función para dejar de escuchar. */
   enVivo(token: string, manejadores: ManejadoresEnVivo): () => void;
 }

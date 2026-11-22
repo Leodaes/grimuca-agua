@@ -1,7 +1,8 @@
 import { act, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, useRoutes } from 'react-router-dom';
-import type { ServicioConReporte } from '../../lib/tipos';
+import type { CentroPublico, MedicionCentro, ServicioConReporte } from '../../lib/tipos';
+import { ErrorApi } from '../../lib/api';
 import { rutasTecnico } from './rutas';
 
 const sesion = vi.hoisted(() => ({
@@ -13,6 +14,10 @@ const api = vi.hoisted(() => ({
   tecnicoServicios: vi.fn(),
   atenderServicio: vi.fn(),
   urlFotoServicio: vi.fn((id: number) => `/api/servicios/${id}/foto?token=t-tec`),
+  tecnicoCentros: vi.fn(),
+  medirCentro: vi.fn(),
+  frascoCentro: vi.fn(),
+  configTira: vi.fn(),
 }));
 
 const enVivo = vi.hoisted(() => ({
@@ -184,5 +189,123 @@ describe('/tecnico', () => {
     montar();
     await usuario.click(await screen.findByRole('button', { name: 'Reintentar' }));
     expect(await screen.findByText('No tienes servicios pendientes.')).toBeInTheDocument();
+  });
+});
+
+function medicionCentro(c: Partial<MedicionCentro> = {}): MedicionCentro {
+  return {
+    id: 7,
+    tienda_id: 'llenado-el-tulipan',
+    fecha: '2026-11-21T14:00:00Z',
+    casillas: [
+      { clave: 'ph', nombre: 'pH', unidad: '', valor: 7.2, nivel: 'verde', referencia_desde: 6.5, referencia_hasta: 8.5, orientativo: false },
+      { clave: 'dureza', nombre: 'Dureza', unidad: 'mg/L', valor: 425, nivel: 'rojo', referencia_desde: null, referencia_hasta: 120, orientativo: false },
+    ],
+    casillas_en_rango: 1,
+    casillas_leidas: 2,
+    bacterias: 'pendiente',
+    fecha_bacterias: null,
+    nota: null,
+    medido_por: 'Técnico de Grimuca',
+    ...c,
+  };
+}
+
+function centro(c: Partial<CentroPublico> = {}): CentroPublico {
+  return {
+    tienda_id: 'llenado-el-naranjal',
+    comercio_id: 'centro-demo-naguanagua',
+    nombre: 'Centro de llenado Naguanagua',
+    local: 'Centro de llenado · El Naranjal',
+    direccion: null,
+    horario: 'Todos los días',
+    zona: 'Naguanagua',
+    urbanizacion: 'El Naranjal',
+    lat: 10.268,
+    lng: -68.027,
+    es_demostracion: true,
+    ultima: null,
+    vencida: true,
+    ...c,
+  };
+}
+
+describe('/tecnico · centros de llenado', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    sesion.tokenTecnico.mockReturnValue('t-tec');
+    api.tecnicoServicios.mockResolvedValue([]);
+    api.configTira.mockResolvedValue([
+      { clave: 'ph', nombre: 'pH', unidad: '', niveles: [6.2, 6.8, 7.2, 7.6, 8.4], orientativo: false },
+      { clave: 'dureza', nombre: 'Dureza', unidad: 'mg/L', niveles: [0, 50, 120, 250, 425], orientativo: false },
+    ]);
+  });
+
+  it('la lista de servicios sigue primero y los centros se cargan al abrir su pestaña', async () => {
+    montar();
+    expect(await screen.findByText('No tienes servicios pendientes.')).toBeInTheDocument();
+    expect(api.tecnicoCentros).not.toHaveBeenCalled();
+  });
+
+  it('mide un centro y publica la medición tal cual, con el enlace a su página pública', async () => {
+    const usuario = userEvent.setup();
+    api.tecnicoCentros.mockResolvedValue([centro()]);
+    api.medirCentro.mockResolvedValue(
+      medicionCentro({ tienda_id: 'llenado-el-naranjal', casillas_en_rango: 1, casillas_leidas: 2 }),
+    );
+    montar();
+    await usuario.click(await screen.findByRole('button', { name: 'Centros de llenado' }));
+
+    const lista = await screen.findByRole('list', { name: 'Centros de llenado' });
+    expect(api.tecnicoCentros).toHaveBeenCalledWith('t-tec');
+    expect(lista).toHaveTextContent('Sin medición');
+    expect(within(lista).getByText('Toca medir')).toBeInTheDocument();
+
+    await usuario.click(within(lista).getByRole('button', { name: /Medir/ }));
+    expect(await screen.findByRole('heading', { name: 'Medición del grifo de despacho' })).toBeInTheDocument();
+    expect(screen.getByText('Se publica tal cual, también lo que salga fuera de rango.')).toBeInTheDocument();
+    await usuario.selectOptions(screen.getByLabelText('pH'), '7.2');
+    await usuario.selectOptions(screen.getByLabelText('Dureza (mg/L)'), '425');
+    await usuario.type(screen.getByLabelText(/Nota/), 'Grifo de despacho');
+    await usuario.click(screen.getByRole('button', { name: 'Publicar medición' }));
+
+    expect(api.medirCentro).toHaveBeenCalledWith(
+      'llenado-el-naranjal',
+      { valores: { ph: 7.2, dureza: 425 }, nota: 'Grifo de despacho' },
+      't-tec',
+    );
+    expect((await screen.findAllByText(/1 de 2 casillas en rango/)).length).toBeGreaterThan(0);
+    expect(screen.getByRole('link', { name: 'Ver la página pública' })).toHaveAttribute('href', '/centros/llenado-el-naranjal');
+    expect(screen.getByText('Medición orientativa con tira, no es un análisis de laboratorio.')).toBeInTheDocument();
+    expect(screen.getByText(/Dureza: 425 mg\/L · Fuera de rango/)).toBeInTheDocument();
+  });
+
+  it('no publica una medición sin casillas', async () => {
+    const usuario = userEvent.setup();
+    api.tecnicoCentros.mockResolvedValue([centro()]);
+    montar();
+    await usuario.click(await screen.findByRole('button', { name: 'Centros de llenado' }));
+    await usuario.click(await screen.findByRole('button', { name: /Medir/ }));
+    await usuario.click(await screen.findByRole('button', { name: 'Publicar medición' }));
+    expect(await screen.findByText('Carga al menos una casilla de la tira.')).toBeInTheDocument();
+    expect(api.medirCentro).not.toHaveBeenCalled();
+  });
+
+  it('anota el frasco pendiente y muestra el mensaje si ya estaba anotado', async () => {
+    const usuario = userEvent.setup();
+    const pendiente = medicionCentro();
+    api.tecnicoCentros.mockResolvedValue([centro({ tienda_id: 'llenado-el-tulipan', ultima: pendiente, vencida: false })]);
+    api.frascoCentro.mockRejectedValueOnce(new ErrorApi('El resultado del frasco ya está publicado y no se cambia.', 409));
+    api.frascoCentro.mockResolvedValueOnce({ ...pendiente, bacterias: 'sin_cambio' });
+    montar();
+    await usuario.click(await screen.findByRole('button', { name: 'Centros de llenado' }));
+
+    await usuario.click(await screen.findByRole('button', { name: 'El frasco sigue igual' }));
+    expect(api.frascoCentro).toHaveBeenCalledWith(7, 'sin_cambio', 't-tec');
+    expect(await screen.findByText('El resultado del frasco ya está publicado y no se cambia.')).toBeInTheDocument();
+
+    await usuario.click(screen.getByRole('button', { name: 'El frasco sigue igual' }));
+    await waitFor(() => expect(screen.queryByRole('button', { name: 'El frasco sigue igual' })).not.toBeInTheDocument());
+    expect(screen.getByText('Medición vigente')).toBeInTheDocument();
   });
 });

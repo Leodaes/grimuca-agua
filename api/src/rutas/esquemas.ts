@@ -5,9 +5,11 @@ import {
   MOMENTOS_DIA,
   ORIGENES_AGUA,
   SERVICIOS_TECNICOS,
+  TIPOS_CLIENTE,
   ULTIMOS_CAMBIOS,
   ZONAS,
   type ClaveParametro,
+  type TipoCliente,
   type UltimoCambio,
   type MomentoDia,
   type OrigenAgua,
@@ -64,6 +66,8 @@ const camposHogar = {
   urbanizacion: textoONulo(80),
   mascotas: z.boolean(),
   ultimo_cambio: z.enum(ULTIMOS_CAMBIOS as [UltimoCambio, ...UltimoCambio[]]).nullable(),
+  tipo_cliente: z.enum(TIPOS_CLIENTE as [TipoCliente, ...TipoCliente[]]),
+  rubro: textoONulo(60),
 };
 
 export const esquemaCrearHogar = z.object({
@@ -81,6 +85,8 @@ export const esquemaCrearHogar = z.object({
   urbanizacion: camposHogar.urbanizacion.optional(),
   mascotas: camposHogar.mascotas.default(false),
   ultimo_cambio: camposHogar.ultimo_cambio.optional(),
+  tipo_cliente: camposHogar.tipo_cliente.default('hogar'),
+  rubro: camposHogar.rubro.optional(),
   consentimiento: z.literal(true, {
     errorMap: () => ({ message: 'Hace falta aceptar el aviso de privacidad para continuar.' }),
   }),
@@ -102,6 +108,8 @@ export const esquemaCambiarHogar = z
     urbanizacion: camposHogar.urbanizacion,
     mascotas: camposHogar.mascotas,
     ultimo_cambio: camposHogar.ultimo_cambio,
+    tipo_cliente: camposHogar.tipo_cliente,
+    rubro: camposHogar.rubro,
     ultimo_cartucho: textoONulo(120),
   })
   .partial();

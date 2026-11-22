@@ -103,3 +103,16 @@
   color: var(--azul);
   text-decoration: underline;
 }
+/* Centro de llenado en la lista: rótulo y fecha de su última medición publicada. */
+.red-centro {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  margin-top: 4px;
+}
+.red-centro__medicion {
+  font-weight: 400;
+  font-size: 0.875rem;
+  color: var(--apagado);
+}

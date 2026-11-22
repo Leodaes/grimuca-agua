@@ -1,0 +1,92 @@
+/* Centros de llenado con resultados públicos: tarjeta del más cercano y página pública. */
+
+.c-tarjeta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--s2);
+  padding: var(--s4);
+  border: 1px solid var(--linea);
+  border-top: 3px solid var(--turquesa-700);
+  background: var(--fondo);
+}
+.c-tarjeta > * {
+  margin: 0;
+}
+.c-tarjeta__kicker {
+  color: var(--turquesa-700);
+  font-size: var(--t-1);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.c-tarjeta__nombre {
+  color: var(--azul);
+  font-family: var(--f-titulo);
+  font-size: var(--t1);
+  font-weight: 700;
+}
+.c-tarjeta__lugar,
+.c-tarjeta__ultima {
+  color: var(--tinta-2);
+}
+.c-tarjeta__vencida {
+  color: var(--tinta);
+  font-weight: 600;
+}
+.c-tarjeta__enlace {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+.c-tarjeta__aviso {
+  font-size: var(--t-1);
+}
+
+.c-datos {
+  display: grid;
+  gap: var(--s2);
+  margin: 0;
+}
+.c-datos > div {
+  display: grid;
+  grid-template-columns: minmax(7rem, max-content) 1fr;
+  gap: var(--s3);
+}
+.c-datos dt {
+  color: var(--apagado);
+}
+.c-datos dd {
+  margin: 0;
+}
+
+.c-medicion {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s3);
+}
+.c-medicion > p {
+  margin: 0;
+}
+.c-medicion__meta {
+  color: var(--apagado);
+  font-size: var(--t-1);
+}
+.c-medicion__conteo {
+  color: var(--azul);
+  font-weight: 700;
+  font-size: var(--t1);
+}
+
+.c-historial {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s5);
+}
+.c-historial > li {
+  padding-top: var(--s4);
+  border-top: 1px solid var(--linea);
+}

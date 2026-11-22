@@ -20,6 +20,7 @@ export const serviciosReales: ServiciosOperador = {
   crearProducto: (token, datos) => api.crearProducto(datos, token),
   reportes: (token) => api.reportes(token),
   urlFoto: (token, pedidoId) => api.urlFotoServicio(pedidoId, token),
+  panelCentro: (token) => api.panelCentro(token),
   enVivo: (token, m) =>
     suscribirEventos(token, {
       pedido_nuevo: m.pedidoNuevo,
