@@ -170,11 +170,18 @@ function AvisarVecinos({ lugar, zona }: { lugar: string; zona: string }) {
  */
 function UrbanizacionesEnAlerta({ zona, mapa }: { zona: string; mapa: UrbanizacionMapa[] }) {
   const enAlerta = mapa.filter((u) => u.alerta && u.zona === zona && u.hogares > 0);
-  if (enAlerta.length === 0) return <AvisarVecinos key={zona} lugar={zona} zona={zona} />;
+  if (enAlerta.length === 0)
+    return (
+      <div className="op-invitar">
+        <div className="op-invitar__item">
+          <AvisarVecinos key={zona} lugar={zona} zona={zona} />
+        </div>
+      </div>
+    );
   return (
-    <div className="g-pila">
+    <div className="op-invitar">
       {enAlerta.map((u) => (
-        <div key={u.id} className="g-pila">
+        <div key={u.id} className="op-invitar__item">
           <p style={{ margin: 0 }}>
             <strong>{u.nombre}</strong>: {u.hogares_en_rojo_7_dias} hogares con casillas en rojo esta semana.
           </p>
@@ -296,9 +303,11 @@ export function Zonas({ token, version, alNoAutorizado }: Props) {
 
   return (
     <div className="g-pila g-pila--amplia">
-      <div>
-        <h1 className="g-h1">Zonas</h1>
-        <p>Resultados de la tira por urbanización y dónde hay (o no hay) clientes.</p>
+      <div className="op-cabecera">
+        <div className="op-cabecera__texto">
+          <h1 className="g-h1">Zonas</h1>
+          <p>Resultados de la tira por urbanización y dónde hay (o no hay) clientes.</p>
+        </div>
       </div>
 
       {estado === 'cargando' && !datos && <Cargando variante="esqueleto" lineas={4} texto="Cargando zonas…" />}
@@ -387,7 +396,7 @@ export function Zonas({ token, version, alNoAutorizado }: Props) {
             </>
           )}
 
-          <h2 className="g-h3" style={{ margin: 0 }}>Zonas para invitar a medir</h2>
+          <h2 className="g-h2 op-subtitulo">Zonas para invitar a medir</h2>
           {alertas.length === 0 ? (
             <Aviso tono="ok">Esta semana ninguna zona llega a 3 hogares con casillas en rojo.</Aviso>
           ) : (
@@ -407,7 +416,7 @@ export function Zonas({ token, version, alNoAutorizado }: Props) {
           )}
 
           {filas.length > 0 && (
-            <div style={{ overflowX: 'auto' }}>
+            <div className="op-tabla">
               <table className="g-tabla">
                 <thead>
                   <tr>
@@ -419,7 +428,7 @@ export function Zonas({ token, version, alNoAutorizado }: Props) {
                 </thead>
                 <tbody>
                   {filas.map((z) => (
-                    <tr key={z.zona} style={z.alerta ? { color: 'var(--error)', fontWeight: 700 } : undefined}>
+                    <tr key={z.zona} className={z.alerta ? 'op-fila-falta' : undefined}>
                       <td>{z.zona}</td>
                       <td className="g-tabla__numero">{z.hogares_en_rojo_7_dias}</td>
                       <td>{z.parametros.length > 0 ? z.parametros.map(nombreParametro).join(', ') : '—'}</td>
@@ -430,7 +439,7 @@ export function Zonas({ token, version, alNoAutorizado }: Props) {
               </table>
             </div>
           )}
-          <p style={{ color: 'var(--apagado)', fontSize: 'var(--t-1)' }}>
+          <p className="op-nota">
             Una zona o urbanización aparece aquí con 3 o más hogares con casillas en rojo en 7 días. Es una señal para
             invitar a medir, no un diagnóstico. Las posiciones del mapa son aproximadas.
           </p>

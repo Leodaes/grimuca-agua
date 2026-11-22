@@ -6,16 +6,16 @@ import { NOTA_FABRICANTE, ROTULO_DEMO, TUTORIALES } from './contenido';
 /** /tutoriales: lista de guías para cambiar los cartuchos (maqueta de la demo). */
 export function PaginaTutoriales() {
   return (
-    <main id="contenido" className="g-pantalla__contenido g-pila" tabIndex={-1}>
+    <main id="contenido" className="g-pantalla__contenido g-pantalla__contenido--ancho g-pila" tabIndex={-1}>
       <div>
         <Insignia tono="aviso">{ROTULO_DEMO}</Insignia>
       </div>
       <h1 className="g-h1">Aprende a cambiar tus cartuchos</h1>
       <p>Guías cortas, paso a paso, para cambiar los cartuchos de tu filtro en casa.</p>
 
-      <ul className="g-pila" style={{ listStyle: 'none', padding: 0, margin: 0 }} aria-label="Tutoriales">
+      <ul className="g-rejilla" style={{ listStyle: 'none', padding: 0, margin: 0 }} aria-label="Tutoriales">
         {TUTORIALES.map((t) => (
-          <li key={t.id}>
+          <li key={t.id} style={{ display: 'grid' }}>
             <article
               className="g-pila"
               style={{ border: '1px solid var(--linea)', padding: 'var(--s4)', gap: 'var(--s2)' }}

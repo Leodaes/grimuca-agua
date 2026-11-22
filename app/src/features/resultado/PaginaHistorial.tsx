@@ -5,6 +5,7 @@ import { hogarId } from '../../lib/sesion';
 import type { Medicion } from '../../lib/tipos';
 import { AvisoTira, Boton, Cargando, EstadoVacio, Semaforo } from '../../components/grimuca';
 import { PALABRA_NIVEL, formatearFecha, mensajeError } from './textos';
+import './resultado.css';
 
 type Estado =
   | { tipo: 'cargando' }
@@ -39,7 +40,7 @@ export function PaginaHistorial() {
   const estado = useMediciones(intento);
 
   return (
-    <main id="contenido" className="g-pantalla__contenido g-pila" tabIndex={-1}>
+    <main id="contenido" className="g-pantalla__contenido g-pila resultado-pagina" tabIndex={-1}>
       <h1 className="g-h1">Mis resultados</h1>
       {estado.tipo === 'cargando' && <Cargando texto="Un momento…" variante="esqueleto" lineas={4} />}
       {estado.tipo === 'sin_hogar' && (
@@ -133,7 +134,7 @@ export function RedireccionUltimo() {
   }, [navegar]);
 
   return (
-    <main id="contenido" className="g-pantalla__contenido g-pila" tabIndex={-1}>
+    <main id="contenido" className="g-pantalla__contenido g-pila resultado-pagina" tabIndex={-1}>
       <h1 className="g-h1">Tu resultado</h1>
       <Cargando texto="Buscando tu última medición…" />
     </main>

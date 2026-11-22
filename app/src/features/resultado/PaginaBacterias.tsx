@@ -16,6 +16,7 @@ import {
   mensajeError,
 } from './textos';
 import { CotizarWhatsApp } from './Producto';
+import './resultado.css';
 
 /** LITERAL (aprobado por legal). */
 const TEXTO_UV =
@@ -94,7 +95,7 @@ export function PaginaBacterias() {
   }
 
   return (
-    <main id="contenido" className="g-pantalla__contenido g-pila" tabIndex={-1}>
+    <main id="contenido" className="g-pantalla__contenido g-pila resultado-pagina" tabIndex={-1}>
       <h1 className="g-h1">{BACTERIAS_TITULO}</h1>
       <p>{BACTERIAS_EXPLICACION}</p>
 
@@ -239,7 +240,7 @@ function Reportada({ prueba, hogar }: { prueba: Prueba; hogar: Hogar | null }) {
         <section className="g-tarjeta-producto" aria-label="Opción para consultar en tienda" style={{ display: 'block' }}>
           <div className="g-tarjeta-producto__cuerpo g-pila">
             <p>{TEXTO_UV}</p>
-            <ul className="g-pila">
+            <ul className="g-pila bacterias-opciones">
               {sugeridos.map((cartucho) => (
                 <li key={cartucho.codigo}>
                   <p className="g-tarjeta-producto__nombre">{cartucho.nombre}</p>

@@ -250,3 +250,50 @@
 .resultado-detalle > p {
   margin: 0;
 }
+
+/* ── Computadora: dos columnas ──
+   Izquierda: conclusión, qué hacer hoy, detalle por casilla. Derecha: "Lo que te recomendamos".
+   El orden del documento es el mismo del teléfono; solo cambia dónde se dibuja. */
+@media (min-width: 900px) {
+  .resultado-cuerpo {
+    grid-template-columns: minmax(0, 1.45fr) minmax(340px, 1fr);
+    column-gap: var(--s7);
+    row-gap: var(--s5);
+    align-items: start;
+  }
+  .resultado-cuerpo > * {
+    grid-column: 1;
+    min-width: 0;
+  }
+  .resultado-cuerpo > .resultado-encabezado {
+    grid-column: 1 / -1;
+    max-width: 760px;
+  }
+  .resultado-cuerpo > .resultado-lateral {
+    grid-column: 2;
+    grid-row: 2 / span 6;
+    padding: var(--s5);
+    border: 1px solid var(--linea);
+    background: var(--papel);
+  }
+  .resultado-lateral .g-tarjeta-producto {
+    background: var(--fondo);
+  }
+}
+
+/* El <main> crece hasta el pie: sin esto, en pantallas cortas las filas se estiran (botones y avisos muy altos). */
+.resultado-pagina {
+  align-content: start;
+}
+
+/* /bacterias: las lámparas UV, separadas entre sí y en dos columnas en computadora. */
+.bacterias-opciones > li {
+  padding-top: var(--s3);
+  border-top: 1px solid var(--linea);
+}
+@media (min-width: 900px) {
+  .bacterias-opciones {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s5);
+  }
+}

@@ -6,6 +6,7 @@ import { hogarId } from '../../lib/sesion';
 import type { ClaveParametro, ParametroTira, ValoresMedicion } from '../../lib/tipos';
 import { QUE_MIDE } from '../resultado/textos';
 import { SinHogar } from './SinHogar';
+import './medicion.css';
 
 type Carga =
   | { fase: 'cargando' }
@@ -130,9 +131,9 @@ export function PaginaManual() {
   }
 
   return (
-    <main id="contenido" className="g-pantalla__contenido">
+    <main id="contenido" className="g-pantalla__contenido g-pantalla__contenido--ancho">
       <form className="g-pila g-pila--amplia" onSubmit={enviar} noValidate>
-        <div className="g-pila">
+        <div className="g-pila medir-texto">
           <h1 className="g-h1">
             {corrigiendo && confirmar
               ? '¿Esto es lo que ves en tu tira?'
@@ -159,6 +160,8 @@ export function PaginaManual() {
           <p className="g-apagado">Si quedas entre dos colores, marca el valor más alto.</p>
         </div>
 
+        {/* En computadora, las casillas van en dos columnas (medicion.css). */}
+        <div className="medir-casillas">
         {tira.map((parametro) => {
           const eleccion = elecciones[parametro.clave];
           return (
@@ -195,8 +198,9 @@ export function PaginaManual() {
             </fieldset>
           );
         })}
+        </div>
 
-        <div className="g-pila">
+        <div className="g-pila medir-enviar">
           <p className="g-apagado g-cifra" aria-live="polite">
             {hechas} de {tira.length} casillas
           </p>

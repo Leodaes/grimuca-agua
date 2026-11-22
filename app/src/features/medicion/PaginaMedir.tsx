@@ -5,6 +5,7 @@ import { api, ErrorApi } from '../../lib/api';
 import { hogarId } from '../../lib/sesion';
 import { reducirImagen } from './reducirImagen';
 import { SinHogar } from './SinHogar';
+import './medicion.css';
 
 type Estado =
   | { fase: 'guia' }
@@ -229,21 +230,24 @@ export function PaginaMedir() {
   }
 
   return (
-    <main id="contenido" className="g-pantalla__contenido">
+    <main id="contenido" className="g-pantalla__contenido g-pantalla__contenido--ancho">
       <div className="g-pila--amplia g-pila">
         <h1 className="g-h1" tabIndex={-1} ref={refTitulo}>
           Cómo medir tu agua en 4 pasos
         </h1>
-        <Pasos pasos={PASOS} etiqueta="Cómo medir tu agua" />
-        <div className="g-pila">
-          {entradas}
-          <Boton anchoCompleto icono={<Icono nombre="camara" tamano={20} />} onClick={tomarFoto}>
-            Tomar la foto
-          </Boton>
-          <Boton variante="secundario" anchoCompleto onClick={elegirFoto}>
-            Elegir una foto del teléfono
-          </Boton>
-          {enlaceManual}
+        {/* En computadora: los pasos a la izquierda y la foto a la derecha, a la vista mientras se lee. */}
+        <div className="g-columnas">
+          <Pasos pasos={PASOS} etiqueta="Cómo medir tu agua" />
+          <div className="g-pila g-columnas__lateral medir-acciones">
+            {entradas}
+            <Boton anchoCompleto icono={<Icono nombre="camara" tamano={20} />} onClick={tomarFoto}>
+              Tomar la foto
+            </Boton>
+            <Boton variante="secundario" anchoCompleto onClick={elegirFoto}>
+              Elegir una foto del teléfono
+            </Boton>
+            {enlaceManual}
+          </div>
         </div>
       </div>
     </main>

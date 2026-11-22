@@ -139,7 +139,11 @@ export function PaginaResultado() {
   }, [id, intento]);
 
   return (
-    <main id="contenido" className="g-pantalla__contenido g-pila" tabIndex={-1}>
+    <main
+      id="contenido"
+      className={estado.tipo === 'listo' ? 'g-pantalla__contenido g-pantalla__contenido--ancho g-pila resultado-pagina' : 'g-pantalla__contenido g-pila resultado-pagina'}
+      tabIndex={-1}
+    >
       {estado.tipo === 'cargando' && (
         <>
           <h1 className="g-h1">Tu resultado</h1>
@@ -196,8 +200,9 @@ function Resultado({ medicion }: { medicion: Medicion }) {
   const pasos = pasosQueHacerHoy({ ...entrada, hayRecomendado: sugeridos.length > 0 });
 
   // Hilo de la página: conclusión → qué hacer → productos → detalle. Los productos solo salen en "Lo que te recomendamos".
+  // En computadora, "Lo que te recomendamos" pasa a la columna derecha (resultado.css); el orden del documento no cambia.
   return (
-    <>
+    <div className="g-pila resultado-cuerpo">
       <div className="g-pila resultado-encabezado">
         <p className="g-apagado">
           Medición del {formatearFecha(medicion.fecha)} ·{' '}
@@ -250,12 +255,14 @@ function Resultado({ medicion }: { medicion: Medicion }) {
         />
       </section>
 
-      <Sugeridos
-        sugeridos={sugeridos}
-        datos={datos}
-        tieneFiltro={hogar?.tiene_filtro === true}
-        estadoLista={estadoLista}
-      />
+      <div className="resultado-lateral">
+        <Sugeridos
+          sugeridos={sugeridos}
+          datos={datos}
+          tieneFiltro={hogar?.tiene_filtro === true}
+          estadoLista={estadoLista}
+        />
+      </div>
 
       {hogar?.tiene_filtro === false && (
         <section className="g-pila" aria-labelledby="titulo-sin-filtro">
@@ -303,7 +310,7 @@ function Resultado({ medicion }: { medicion: Medicion }) {
           Medir otra vez
         </Boton>
       </nav>
-    </>
+    </div>
   );
 }
 

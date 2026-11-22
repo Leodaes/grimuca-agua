@@ -291,3 +291,16 @@
   padding-top: var(--s5);
   border-top: 1px solid var(--linea);
 }
+
+/* ── Computadora: títulos de formulario más contenidos (la columna es de 720px) ── */
+@media (min-width: 900px) {
+  .alta-pagina:not(.g-pantalla__contenido--ancho) .g-h1 {
+    font-size: clamp(2rem, 1.2rem + 1.6vw, 2.75rem);
+  }
+  .alta-tiendas {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .alta-tiendas > * {
+    height: 100%;
+  }
+}

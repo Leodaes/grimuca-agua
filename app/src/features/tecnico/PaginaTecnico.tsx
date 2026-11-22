@@ -313,6 +313,7 @@ function TecnicoConSesion({ token, alSalir }: { token: string; alSalir: () => vo
   return (
     <Pantalla
       conBarra={false}
+      className="tec-contenido"
       encabezado={
         <Encabezado
           rutaInicio="/tecnico"

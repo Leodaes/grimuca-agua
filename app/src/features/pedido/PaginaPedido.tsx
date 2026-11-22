@@ -7,6 +7,7 @@ import { Aviso, Boton, Cargando, EstadoVacio, Insignia, WhatsAppSimulado } from 
 import { TEXTO_SIN_COBRO, mensajeError } from '../resultado/textos';
 import { nombreServicio, textoFechaPreferida } from '../tutoriales/contenido';
 import { mensajeDespachadoCliente, mensajeRecibido } from './mensajesWhatsApp';
+import './pedido.css';
 
 const ESTILO_ENLACE = { minHeight: 44, display: 'inline-flex', alignItems: 'center' } as const;
 
@@ -96,10 +97,13 @@ export function PaginaPedido() {
   ];
 
   return (
-    <main id="contenido" className="g-pantalla__contenido g-pila" tabIndex={-1}>
-      <Insignia tono="ok" punto>
-        Pedido recibido
-      </Insignia>
+    <main id="contenido" className="g-pantalla__contenido g-pantalla__contenido--ancho g-pila g-pila--amplia pedido-pagina" tabIndex={-1}>
+      <div className="pedido-encabezado">
+      <div>
+        <Insignia tono="ok" punto>
+          Pedido recibido
+        </Insignia>
+      </div>
       <h1 className="g-h1">Listo, tu pedido ya está en la tienda</h1>
       {primero && (
         <p>
@@ -111,14 +115,13 @@ export function PaginaPedido() {
         </p>
       )}
       {horario && <p className="g-apagado">Horario: {horario}</p>}
+      </div>
 
-      <ul className="g-pila" aria-label="Pedidos">
+      <div className="g-columnas">
+      <div className="g-pila">
+      <ul className="pedido-tarjetas" aria-label="Pedidos">
         {estado.pedidos.map((pedido) => (
-          <li
-            key={pedido.id}
-            className="g-pila"
-            style={{ border: '1px solid var(--linea)', padding: 'var(--s4)', gap: 'var(--s2)' }}
-          >
+          <li key={pedido.id} className="pedido-tarjeta">
             <p className="g-h4">Pedido N.º {pedido.id}</p>
             <p>
               {nombreProducto(pedido)}
@@ -160,11 +163,13 @@ export function PaginaPedido() {
           <WhatsAppSimulado de={`Grimuca ${tiendaPrimero}`} mensaje={mensajesWa} hora={new Date(primero.fecha)} />
         </section>
       )}
+      </div>
 
+      <div className="g-columnas__lateral pedido-panel">
       <Aviso>{TEXTO_SIN_COBRO}</Aviso>
 
       {estado.pedidos.some((p) => p.tipo === 'cartucho') && (
-        <nav className="g-pila" aria-label="Cambiar el cartucho" style={{ gap: 'var(--s2)' }}>
+        <nav className="pedido-enlaces" aria-label="Cambiar el cartucho">
           <Link className="g-enlace" to="/tutoriales" style={ESTILO_ENLACE}>
             Cuando lo tengas, mira cómo cambiarlo
           </Link>
@@ -180,6 +185,8 @@ export function PaginaPedido() {
       <Boton a="/" variante="secundario" anchoCompleto>
         Ir al inicio
       </Boton>
+      </div>
+      </div>
     </main>
   );
 }

@@ -55,19 +55,21 @@ export function Despacho({ envivo }: { envivo: PedidosEnVivo }) {
   const totalVisibles = filtrados.filter((p) => tiendasVisibles.some((t) => t.id === p.tienda_id)).length;
 
   return (
-    <div className="g-pila g-pila--amplia">
-      <div className="flex flex-wrap items-center gap-3">
-        <div className="mr-auto">
+    <div className="g-pila g-pila--amplia op-despacho">
+      <div className="op-cabecera">
+        <div className="op-cabecera__texto">
           <h1 className="g-h1">Despacho</h1>
           <p>Sobres, cartuchos y servicios técnicos por atender, por tienda y zona.</p>
         </div>
-        <Insignia tono="azul">{totalVisibles} por despachar</Insignia>
-        <Insignia tono={envivo.contadorNuevos > 0 ? 'oscuro' : 'neutro'}>Nuevos: {envivo.contadorNuevos}</Insignia>
-        {envivo.contadorNuevos > 0 && (
-          <Boton variante="secundario" onClick={envivo.reiniciarNuevos}>
-            Marcar vistos
-          </Boton>
-        )}
+        <div className="op-cabecera__acciones">
+          <Insignia tono="azul">{totalVisibles} por despachar</Insignia>
+          <Insignia tono={envivo.contadorNuevos > 0 ? 'oscuro' : 'neutro'}>Nuevos: {envivo.contadorNuevos}</Insignia>
+          {envivo.contadorNuevos > 0 && (
+            <Boton variante="secundario" onClick={envivo.reiniciarNuevos}>
+              Marcar vistos
+            </Boton>
+          )}
+        </div>
       </div>
 
       {conexion === 'reconectando' && (
@@ -76,7 +78,7 @@ export function Despacho({ envivo }: { envivo: PedidosEnVivo }) {
         </p>
       )}
 
-      <div className="flex flex-wrap items-end gap-4">
+      <div className="op-filtros">
         <fieldset className="g-grupo">
           <legend>Tienda</legend>
           <div className="g-chips">
@@ -122,7 +124,7 @@ export function Despacho({ envivo }: { envivo: PedidosEnVivo }) {
                 extra={<Insignia tono="azul">{deTienda.length} pendientes</Insignia>}
               >
                 {deTienda.length === 0 ? (
-                  <p style={{ color: 'var(--apagado)' }}>No hay nada por despachar en {t.nombre}.</p>
+                  <p className="op-vacio">No hay nada por despachar en {t.nombre}.</p>
                 ) : (
                   <ListaPedidos etiqueta={`Pedidos de ${t.nombre}`}>
                     {deTienda.map((p) => (

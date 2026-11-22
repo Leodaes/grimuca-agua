@@ -1,0 +1,54 @@
+/* Mi lista y confirmación del pedido: solo maquetación; en teléfono queda en una columna. */
+/* La página no reparte el alto sobrante entre sus filas (si no, quedan huecos cuando la lista es corta). */
+.pedido-pagina {
+  align-content: start;
+}
+.pedido-encabezado {
+  display: grid;
+  gap: var(--s2);
+}
+.pedido-encabezado.pedido-encabezado > * {
+  margin: 0;
+}
+.pedido-panel {
+  display: grid;
+  gap: var(--s4);
+  padding: var(--s4);
+  border: 1px solid var(--linea);
+  background: var(--fondo);
+}
+.pedido-panel.pedido-panel > * {
+  margin: 0;
+}
+.pedido-tarjetas {
+  display: grid;
+  gap: var(--s3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.pedido-tarjeta {
+  display: grid;
+  gap: var(--s2);
+  padding: var(--s4);
+  border: 1px solid var(--linea);
+  border-left: 4px solid var(--azul);
+}
+.pedido-tarjeta.pedido-tarjeta > * {
+  margin: 0;
+}
+.pedido-enlaces {
+  display: grid;
+  gap: var(--s2);
+}
+.pedido-enlaces a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+@media (min-width: 900px) {
+  .pedido-panel {
+    padding: var(--s5);
+    background: var(--papel);
+  }
+}

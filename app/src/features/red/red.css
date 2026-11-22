@@ -103,3 +103,67 @@
   color: var(--azul);
   text-decoration: underline;
 }
+
+/* ── Ajustes de legibilidad ── */
+/* La fecha de alta y la ubicación no se parten en tres renglones. */
+.red-tabla td:last-child {
+  white-space: nowrap;
+}
+.red-tabla .g-tabla td,
+.red-tabla .g-tabla th {
+  vertical-align: middle;
+}
+.red-bloque {
+  padding: var(--s5);
+}
+.red-bloque > h2 {
+  padding-bottom: var(--s3);
+  border-bottom: 1px solid var(--linea);
+}
+.red-cobertura li {
+  padding: var(--s2) 0;
+  border-bottom: 1px solid var(--linea);
+}
+.red-cobertura li:last-child {
+  border-bottom: 0;
+}
+
+/* Página /modulos: cuatro tarjetas parejas, con la acción a la vista. */
+.mod-rejilla {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+@media (min-width: 1200px) {
+  .mod-rejilla {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+.mod-rejilla > li {
+  display: flex;
+}
+.mod-tarjeta {
+  flex: 1;
+  grid-template-rows: auto 1fr auto auto;
+  gap: var(--s3);
+  min-height: 240px;
+}
+.mod-tarjeta__ruta {
+  font-size: var(--t-1);
+  color: var(--apagado);
+}
+.mod-tarjeta__abrir {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 var(--s4);
+  border: 1px solid var(--azul);
+  border-radius: var(--radio-control);
+  text-decoration: none;
+}
+.mod-tarjeta:hover .mod-tarjeta__abrir,
+.mod-tarjeta:focus-visible .mod-tarjeta__abrir {
+  background: var(--azul);
+  color: var(--blanco);
+}

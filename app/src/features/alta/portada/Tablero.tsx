@@ -119,10 +119,14 @@ export function Tablero({ id }: { id: string }) {
   const hayAvisoRecambio = hogar?.tiene_filtro !== false && (dias !== null || (Boolean(hogar?.tiene_filtro) && ultimoCambio !== null));
 
   return (
-    <PaginaAlta>
-      <p className="g-kicker">Grimuca Agua</p>
-      <h1 className="g-h1">{nombre ? `Hola, ${nombre}` : 'Tu agua en casa'}</h1>
+    <PaginaAlta ancho>
+      <div className="p-tablero__saludo">
+        <p className="g-kicker">Grimuca Agua</p>
+        <h1 className="g-h1">{nombre ? `Hola, ${nombre}` : 'Tu agua en casa'}</h1>
+      </div>
 
+      <div className="g-columnas p-tablero">
+      <div className="g-pila p-tablero__principal">
       <section className="p-tarjeta-resultado" aria-labelledby="p-ultimo-titulo">
         <h2 className="p-tarjeta-resultado__titulo" id="p-ultimo-titulo">
           Tu último resultado
@@ -157,7 +161,9 @@ export function Tablero({ id }: { id: string }) {
       )}
 
       {hogar?.tiene_filtro && <SeccionCartucho hogar={hogar} alCambiar={setHogar} />}
+      </div>
 
+      <div className="g-pila g-columnas__lateral p-tablero__lateral">
       <Boton a="/medir" anchoCompleto icono={<Icono nombre="gota" />}>
         Medir mi agua
       </Boton>
@@ -176,7 +182,10 @@ export function Tablero({ id }: { id: string }) {
       </nav>
 
       <CerrarSesion />
+      </div>
+      </div>
 
+      <div className="g-pila p-tablero__pie">
       <p className="g-apagado p-pie-tablero">
         {LEMA}. Medición orientativa con tira. No es un análisis de laboratorio.
       </p>
@@ -194,6 +203,7 @@ export function Tablero({ id }: { id: string }) {
           Términos de uso
         </Link>
       </p>
+      </div>
     </PaginaAlta>
   );
 }

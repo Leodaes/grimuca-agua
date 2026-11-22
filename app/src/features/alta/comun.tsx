@@ -408,9 +408,14 @@ export function nombreConMarca(nombre: string): string {
 }
 
 /** Contenedor de página de alta: el layout general pone encabezado y barra. */
-export function PaginaAlta({ children }: { children: ReactNode }) {
+export function PaginaAlta({ children, ancho = false }: { children: ReactNode; ancho?: boolean }) {
   return (
-    <main id="contenido" className="g-pantalla__contenido" lang="es-VE" tabIndex={-1}>
+    <main
+      id="contenido"
+      className={ancho ? 'g-pantalla__contenido g-pantalla__contenido--ancho alta-pagina' : 'g-pantalla__contenido alta-pagina'}
+      lang="es-VE"
+      tabIndex={-1}
+    >
       <div className="g-pila">{children}</div>
     </main>
   );

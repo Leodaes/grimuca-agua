@@ -15,6 +15,7 @@ import { RutasDespacho } from './RutasDespacho';
 import { usePedidosEnVivo } from './usePedidosEnVivo';
 import { Zonas } from './Zonas';
 import './comercio.css';
+import './panel.css';
 
 function EntradaPin({ base, alEntrar }: { base: string; alEntrar: (token: string) => void }) {
   const servicios = useServicios();
@@ -43,10 +44,16 @@ function EntradaPin({ base, alEntrar }: { base: string; alEntrar: (token: string
   }
 
   return (
-    <Pantalla ancho="operador" encabezado={<Encabezado variante="operador" rutaInicio={base} titulo="Comercio" />}>
-      <form onSubmit={enviar} className="g-pila" style={{ maxWidth: 360, margin: '48px auto', width: '100%' }} noValidate>
-        <h1 className="g-h1">Panel del comercio</h1>
-        <p>Entra con el PIN de tu ferretería.</p>
+    <Pantalla
+      ancho="operador"
+      className="op-panel"
+      encabezado={<Encabezado variante="operador" rutaInicio={base} titulo="Comercio" />}
+    >
+      <form onSubmit={enviar} className="g-pila op-entrada" noValidate>
+        <div className="op-entrada__cabeza">
+          <h1 className="g-h1">Panel del comercio</h1>
+          <p>Entra con el PIN de tu ferretería.</p>
+        </div>
         <Campo
           etiqueta="PIN"
           type="password"
@@ -149,6 +156,7 @@ function PanelConSesion({ base, token, alSalir }: { base: string; token: string;
     <ContextoPanel.Provider value={panel}>
       <Pantalla
         ancho="operador"
+        className="op-panel"
         encabezado={
           <Encabezado
             variante="operador"
@@ -173,7 +181,7 @@ function PanelConSesion({ base, token, alSalir }: { base: string; token: string;
                 {comercio.es_demostracion && <Insignia tono="aviso">Demostración</Insignia>}
               </div>
             )}
-            <nav className="g-pestanas" aria-label="Secciones">
+            <nav className="g-pestanas op-pestanas" aria-label="Secciones">
               <Chip a={`${base}/despacho`}>
                 Despacho{envivo.contadorNuevos > 0 ? ` (${envivo.contadorNuevos} nuevos)` : ''}
               </Chip>

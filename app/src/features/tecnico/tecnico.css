@@ -103,3 +103,33 @@
   font-weight: 700;
   color: var(--azul);
 }
+
+/* Cabecera de la tarjeta: estado y parada juntos a la izquierda, número a la derecha. */
+.tec-tarjeta__cabecera {
+  justify-content: flex-start;
+}
+.tec-tarjeta__cabecera > :last-child {
+  margin-left: auto;
+}
+.tec-tarjeta {
+  padding: var(--s4) var(--s5) var(--s5);
+}
+.tec-datos {
+  padding: var(--s3) 0;
+  border-top: 1px solid var(--linea);
+  border-bottom: 1px solid var(--linea);
+}
+.tec-llegar {
+  justify-self: start;
+}
+/* En computadora: el tablero del técnico usa el ancho y las tarjetas van en dos columnas. */
+@media (min-width: 900px) {
+  .tec-contenido {
+    width: min(1180px, 100%);
+  }
+  .tec-lista {
+    grid-template-columns: repeat(auto-fill, minmax(440px, 1fr));
+    gap: var(--s5);
+    align-items: start;
+  }
+}
