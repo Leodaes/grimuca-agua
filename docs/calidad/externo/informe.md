@@ -4,6 +4,54 @@ Pruebas de navegador contra https://agua.oydo.app, hechas desde una máquina dis
 
 Cómo correrlas: `cd pruebas/externas && npm install && npx playwright install chromium && npx playwright test`. Revisión del repositorio: `node pruebas/externas/revisar-repo.js` desde la raíz.
 
+## Pasada 17 · dom 22 nov, 3:50 a.m. (solo lectura)
+
+**Resumen:** sin cambios: misma versión publicada. **Pasan las 24 revisiones de lectura, sin fallas**, y se saltan 2. Ninguna falla rompe la demo.
+
+**Repositorio:** 405 archivos, sin hallazgos.
+
+**Orquestador: ALERTA otra vez.** Su último commit fue a la 1:55 a.m., hace 115 minutos, y el sitio no cambia desde entonces. Se reabrió `ALERTA.md`. Lo más probable, por lo que explicó el equipo en la primera alerta, es que terminó su cola y espera una decisión de Leonardo que no bloquea nada. No se abrió issue ni se tomó el control.
+
+## Pasada 16 · dom 22 nov, 3:20 a.m. (solo lectura)
+
+**Resumen:** sin cambios: misma versión publicada. **Pasan las 24 revisiones de lectura, sin fallas**, y se saltan 2. Ninguna falla rompe la demo.
+
+**Repositorio:** 405 archivos, sin hallazgos. **Orquestador:** último commit a la 1:55 a.m., hace 85 minutos. El sitio responde. Está cerca del umbral de alerta (90 minutos); se revisa en la próxima pasada.
+
+## Pasada 15 · dom 22 nov, 2:50 a.m. (solo lectura)
+
+**Resumen:** sin cambios desde la pasada 14: misma versión publicada (`index-CbGoXz-a.js`). **Pasan las 24 revisiones de lectura, sin fallas**, y se saltan 2 (el recorrido que crea pedidos). Ninguna falla rompe la demo.
+
+**Repositorio:** 405 archivos, sin hallazgos. **Orquestador:** último commit a la 1:55 a.m., hace 55 minutos. El sitio responde. No hay alerta.
+
+## Pasada 14 · dom 22 nov, 2:20 a.m. (solo lectura)
+
+**Resumen:** el orquestador volvió con un despliegue a la 1:55 a.m.: botones de 44 px en el catálogo y en el aviso de recambio, README con los cuatro módulos, guía de calibración de la tira y bloqueos al día (`a724202`). **Pasan las 24 revisiones de lectura, sin fallas.** Se saltan 2: el recorrido que crea pedidos, por el acuerdo de no crear pedidos después de la medianoche.
+
+| Revisión | Teléfono (375 px) | Escritorio |
+|---|---|---|
+| Portada y 7 páginas públicas | Cargan y cumplen, incluido el tamaño | Cargan y cumplen |
+| Paneles `/operador`, `/comercio`, `/tecnico`, `/red` piden PIN | Sí | Sí |
+| No dice «potable» | Cumple | Cumple |
+| Recorrido completo del cliente | Sin probar desde las 11:51 p.m. (no se crean pedidos de madrugada); funcionó en la pasada 8 | Igual |
+| Pedido en vivo en Despacho sin recargar | Certificado por la Calidad interna | Certificado por la Calidad interna |
+
+**Repositorio:** 405 archivos revisados, sin hallazgos.
+
+**Orquestador:** último commit a la 1:55 a.m. El sitio responde con una versión nueva (`index-CbGoXz-a.js`). **`ALERTA.md` queda resuelta.**
+
+### Fallas abiertas
+
+**Rompe la demo**
+- Ninguna.
+
+**Confunde**
+- «Cotizar por WhatsApp» (filtro guardado) y «Mira cómo cambiarlo» (resultado): no se pueden revisar sin crear pedidos. El commit dice que se arregló «el aviso de recambio», lo que probablemente cubre «Mira cómo cambiarlo». Queda por confirmar en la prueba de la mañana.
+
+**Resueltas en esta pasada**
+- ~~«Medir mi agua» de menos de 44 px en `/catalogo`~~: corregido.
+- ~~Alerta por orquestador sin commits~~: resuelta.
+
 ## Pasada 13 · dom 22 nov, 1:50 a.m. (solo lectura)
 
 **Resumen:** sin cambios en la app: misma versión publicada. Pasan 23 revisiones, falla 1 (tamaño de «Medir mi agua» en `/catalogo`) y se saltan 2. Ninguna falla rompe la demo.

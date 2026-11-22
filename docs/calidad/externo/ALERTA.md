@@ -1,5 +1,20 @@
 # Alerta: el orquestador parece detenido
 
+## Segunda alerta · ABIERTA desde el dom 22 nov, 3:50 a.m.
+
+- **Último commit del orquestador en main:** dom 22 nov a la 1:55 a.m. (`a724202` y `79e92cc`). Desde entonces solo hay commits de esta revisión externa.
+- **Tiempo sin commits suyos:** 115 minutos a las 3:50 a.m.
+- **El sitio no cambió:** https://agua.oydo.app responde 200 con la misma versión (`index-CbGoXz-a.js`) desde la 1:55 a.m.
+- **El sitio funciona:** pasan las 24 revisiones de solo lectura, sin fallas. Nada rompe la demo.
+- **Contexto:** en la primera alerta, el equipo explicó que el orquestador seguía activo, revisando el correo cada 20 minutos, y que esperaba una decisión de Leonardo que no bloquea nada. Es probable que la situación sea la misma: terminó su cola. Que siga avanzando o no hasta las 5:30 a.m. lo decide Leonardo.
+- **Qué no se hizo:** no se abrió issue, no se tocó el servidor ni la app y no se tomó el control.
+
+---
+
+## Primera alerta (1:50 a.m.)
+
+> **RESUELTA el dom 22 nov a las 2:20 a.m.:** el orquestador volvió a hacer commits a la 1:55 a.m. (`a724202`, `79e92cc`) y publicó una versión nueva del sitio. Fueron 118 minutos sin commits, sin caída del sitio.
+
 Escrita por la revisión de Calidad externa el dom 22 nov a la 1:50 a.m. (hora de Caracas). Es una señal para que Leonardo decida en la mañana; esta revisión no tomó el control ni tocó nada fuera de sus carpetas.
 
 ## Qué se vio
