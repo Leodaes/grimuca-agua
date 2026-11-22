@@ -4,6 +4,14 @@ Pruebas de navegador contra https://agua.oydo.app, hechas desde una máquina dis
 
 Cómo correrlas: `cd pruebas/externas && npm install && npx playwright install chromium && npx playwright test`. Revisión del repositorio: `node pruebas/externas/revisar-repo.js` desde la raíz.
 
+## Pasada 17 · dom 22 nov, 3:50 a.m. (solo lectura)
+
+**Resumen:** sin cambios: misma versión publicada. **Pasan las 24 revisiones de lectura, sin fallas**, y se saltan 2. Ninguna falla rompe la demo.
+
+**Repositorio:** 405 archivos, sin hallazgos.
+
+**Orquestador: ALERTA otra vez.** Su último commit fue a la 1:55 a.m., hace 115 minutos, y el sitio no cambia desde entonces. Se reabrió `ALERTA.md`. Lo más probable, por lo que explicó el equipo en la primera alerta, es que terminó su cola y espera una decisión de Leonardo que no bloquea nada. No se abrió issue ni se tomó el control.
+
 ## Pasada 16 · dom 22 nov, 3:20 a.m. (solo lectura)
 
 **Resumen:** sin cambios: misma versión publicada. **Pasan las 24 revisiones de lectura, sin fallas**, y se saltan 2. Ninguna falla rompe la demo.
