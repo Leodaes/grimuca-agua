@@ -140,7 +140,7 @@ function Detalle({ u }: { u: UrbanizacionMapa | undefined }) {
     <aside className="mapa-detalle" aria-live="polite" aria-label={`Detalle de ${u.nombre}`}>
       <h2 className="g-h3" style={{ margin: 0 }}>{u.nombre}</h2>
       {u.alerta && (
-        <Aviso tono="error" titulo="Posible problema en la zona.">
+        <Aviso tono="error" titulo="Varios hogares de la zona reportaron resultados fuera de rango.">
           Conviene revisar y avisar a los hogares.
         </Aviso>
       )}

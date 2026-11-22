@@ -103,7 +103,7 @@ describe('pestaña Zonas: mapa real (por defecto)', () => {
 
     await usuario.click(retobo as HTMLElement);
     const detalle = await screen.findByRole('complementary', { name: 'Detalle de El Retobo' });
-    expect(within(detalle).getByText('Posible problema en la zona.')).toBeInTheDocument();
+    expect(within(detalle).getByText('Varios hogares de la zona reportaron resultados fuera de rango.')).toBeInTheDocument();
 
     // Vista Clientes sobre el mapa real: tono de azul con el número de hogares.
     await usuario.click(screen.getByRole('button', { name: 'Clientes' }));
@@ -141,7 +141,7 @@ describe('pestaña Zonas: tablero de hexágonos', () => {
 
     await usuario.click(screen.getByRole('button', { name: /^El Retobo, 4 hogares, estado rojo, en alerta/ }));
     const detalle = screen.getByRole('complementary', { name: 'Detalle de El Retobo' });
-    expect(within(detalle).getByText('Posible problema en la zona.')).toBeInTheDocument();
+    expect(within(detalle).getByText('Varios hogares de la zona reportaron resultados fuera de rango.')).toBeInTheDocument();
     expect(within(detalle).getByText('Conviene revisar y avisar a los hogares.')).toBeInTheDocument();
     expect(within(detalle).getByText('nitrato')).toBeInTheDocument();
     expect(within(detalle).getByText('Grimuca Mañongo')).toBeInTheDocument();

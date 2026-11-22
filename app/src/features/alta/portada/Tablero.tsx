@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Boton, Cargando, Icono, Semaforo } from '../../../components/grimuca';
+import { Boton, Cargando, Icono, Semaforo, TEXTO_AVISO_TIRA } from '../../../components/grimuca';
 import type { NombreIcono } from '../../../components/grimuca';
 import { api } from '../../../lib/api';
 import type { Hogar, Medicion } from '../../../lib/tipos';
@@ -124,6 +124,7 @@ export function Tablero({ id }: { id: string }) {
       <p className="g-apagado p-pie-tablero">
         {LEMA}. Medición orientativa con tira. No es un análisis de laboratorio.
       </p>
+      <p className="g-apagado p-pie-tablero">{TEXTO_AVISO_TIRA}</p>
       <p className="p-pie-tablero">
         <Link className="g-enlace" to="/tiendas">
           Grimuca · Mañongo · Big Low · CC CEM

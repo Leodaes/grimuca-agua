@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { api } from '../../lib/api';
 import { hogarId } from '../../lib/sesion';
 import type { Medicion } from '../../lib/tipos';
-import { Boton, Cargando, EstadoVacio, Semaforo } from '../../components/grimuca';
+import { AvisoTira, Boton, Cargando, EstadoVacio, Semaforo } from '../../components/grimuca';
 import { PALABRA_NIVEL, formatearFecha, mensajeError } from './textos';
 
 type Estado =
@@ -102,6 +102,7 @@ export function PaginaHistorial() {
           <Boton a="/medir" anchoCompleto>
             Medir otra vez
           </Boton>
+          <AvisoTira />
         </>
       )}
     </main>

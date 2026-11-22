@@ -29,7 +29,7 @@ La ferretería compra, almacena y despacha repuestos a ciegas, porque nadie sabe
 
 ## Notas
 
-- Ninguna de las dos versiones dice "potable", "segura" ni "apta para tomar", ni "agua de calidad" ni "permanente". La palabra "certifica" aparece solo en negativo.
+- Ninguna de las dos versiones dice "potable", "segura" ni "apta para tomar", ni "agua de calidad" ni "permanente". La palabra "certifica" aparece solo en negativo. La medición es orientativa y la prueba de bacterias no certifica el agua; si el portal pide una línea legal, usar: "Grimuca Agua ofrece mediciones caseras orientativas. No certifica agua ni reemplaza un análisis de laboratorio."
 - Si el portal pide aclarar qué funciona de verdad, agregar al final: "Es una demo con datos sembrados: el pago del sobre es simulado, la membresía no se cobra y los comercios de Lara y Aragua son de demostración. Cuentas por usuario, comisión por transacción y plan premium son el siguiente paso."
 - Cifras en el portal: ninguna. El modelo con sus supuestos va en el deck y en `docs/negocio/modelo.md`.
-- Cliente final, por si el portal lo pide: padres y madres de clase media y media alta en Valencia, preocupados por el agua que toman sus hijos (Tulio). Cliente que paga: la ferretería.
+- Cliente final, por si el portal lo pide: padres y madres de clase media y media alta en Valencia, que quieren saber más del agua de su casa (Tulio). Cliente que paga: la ferretería.

@@ -47,8 +47,8 @@ const EXPLICACION: Partial<Record<ClaveParametro, string>> = {
   dureza: 'es el sarro que mancha la grifería',
   cloro_libre: 'es lo que cambia el sabor y el olor del agua',
   hierro: 'es lo que deja el agua amarilla y mancha la ropa',
-  nitrato: 'es una señal de alerta que conviene atender',
-  nitrito: 'es una señal de alerta que conviene atender',
+  nitrato: 'es una casilla para vigilar',
+  nitrito: 'es una casilla para vigilar',
   alcalinidad: 'tiene que ver con el sarro y la corrosión',
   ph: 'dice si el agua está ácida o alcalina',
 };
@@ -265,7 +265,7 @@ export function motivoDe(
 
   // Lo del hogar que más pesa va al final; máximo dos oraciones de hogar.
   oraciones.push(...hogarAlFinal.slice(-2));
-  if (parametros.some((p) => p.clave === 'plomo' || p.clave === 'cobre')) oraciones.push(NOTA_LABORATORIO);
+  if (parametros.some((p) => ['plomo', 'cobre', 'nitrato', 'nitrito'].includes(p.clave))) oraciones.push(NOTA_LABORATORIO);
 
   return { motivo: oraciones.join(' '), atiende };
 }

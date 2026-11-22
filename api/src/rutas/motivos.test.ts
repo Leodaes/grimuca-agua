@@ -91,7 +91,7 @@ describe('motivoDe', () => {
     const osmosis = producto({ categoria: 'sistema_osmosis_inversa', nombre: 'Sistema de Ósmosis Inversa 5 Etapas', corrige: ['nitrato', 'dureza', 'sedimentos'] });
     const { motivo, atiende } = motivoDe(osmosis, contexto({ dureza: 'amarillo', nitrato: 'rojo', ph: 'verde' }, { personas: 5 }));
     expect(motivo).toBe(
-      'Te recomendamos esta ósmosis inversa porque tu medición dio Nitrato en Rojo y Dureza en Amarillo. Está pensada para esas casillas. Son 5 en casa y todavía no tienen filtro.',
+      'Te recomendamos esta ósmosis inversa porque tu medición dio Nitrato en Rojo y Dureza en Amarillo. Está pensada para esas casillas. Son 5 en casa y todavía no tienen filtro. La tira solo orienta: confirma con un laboratorio.',
     );
     expect(atiende).toEqual([
       { clave: 'nitrato', nombre: 'Nitrato', nivel: 'rojo' },

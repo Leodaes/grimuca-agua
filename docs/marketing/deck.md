@@ -1,6 +1,8 @@
 # Deck · Grimuca Agua · 6 láminas
 
-Versión 4 (21 nov, noche), enfoque B2B2C por decisión de Leonardo: Grimuca opera una **plataforma para ferreterías**. La familia mide su agua (entrada y señal) y la ferretería es el cliente que paga. Deck final: domingo 1:30 p.m.
+**Supuesto de costo del sobre: $4,00 (variante $2,94: ver nota)** · para cambiarlo basta tocar esta cifra y la nota de la lámina 5.
+
+Versión 4.1 (22 nov): costo del sobre en $4,00 como base, rutas en la lámina de logística y revisión legal. Versión 4 (21 nov, noche), enfoque B2B2C por decisión de Leonardo: Grimuca opera una **plataforma para ferreterías**. La familia mide su agua (entrada y señal) y la ferretería es el cliente que paga. Deck final: domingo 1:30 p.m.
 
 **Lema del cliente final:** Saber qué tomas empieza en casa
 **Frase para el lado empresa (propuesta):** Clientes que llegan sabiendo qué necesitan
@@ -52,7 +54,7 @@ Versión 4 (21 nov, noche), enfoque B2B2C por decisión de Leonardo: Grimuca ope
 - La ferretería recibe clientes ya medidos, inventario contra demanda y recambios con fecha. Grimuca opera la red.
 - La familia mide y entiende en Verde, Amarillo o Rojo; la ferretería despacha y un técnico visita.
 
-**Nota del orador (Tulio):** "Esto lo vamos a ejecutar a largo plazo; hoy les mostramos una demo." Decir siempre, sin que lo pregunten: "La tira no mide todo y no certificamos el agua. Con plomo y cobre decimos 'posible presencia' y mandamos al laboratorio. Somos una ferretería, no un laboratorio." La tabla de colores de la imagen es ilustrativa.
+**Nota del orador (Tulio):** "Esto lo vamos a ejecutar a largo plazo; hoy les mostramos una demo." Decir siempre, sin que lo pregunten: "La tira no mide todo y no certificamos el agua; la prueba de bacterias tampoco certifica nada, salga como salga. Con plomo y cobre decimos 'posible presencia' y mandamos al laboratorio. Somos una ferretería, no un laboratorio." La tabla de colores de la imagen es ilustrativa.
 
 ---
 
@@ -65,6 +67,7 @@ Versión 4 (21 nov, noche), enfoque B2B2C por decisión de Leonardo: Grimuca ope
 4. Técnico (`/tecnico`): servicio asignado con "Ya fui". *Captura nueva pendiente.*
 
 **Título:** Un mismo pedido recorre los cuatro módulos
+**Pie legal en la lámina:** Grimuca Agua ofrece mediciones caseras orientativas. No certifica agua ni reemplaza un análisis de laboratorio.
 
 - Red y Comercio: la ferretería ve su despacho, su inventario contra demanda y el mapa por urbanización.
 - Cliente: mide, ve por qué se le recomienda un producto y pide. El pedido aparece en vivo en el comercio.
@@ -76,27 +79,30 @@ Versión 4 (21 nov, noche), enfoque B2B2C por decisión de Leonardo: Grimuca ope
 
 ## Lámina 4 · Por qué es logística
 
-**Imagen:** `33-operador-inventario.png` (faltantes en rojo) y `34-operador-zonas.png`
-**Título:** Lo que deja de existir es el pedido sorpresa
+**Imagen:** `33-operador-inventario.png` (faltantes en rojo) y la captura del mapa con las rutas de despacho (datos de demostración)
+**Título:** Lo que deja de existir es el pedido sorpresa y el viaje suelto
 
-- Con la medición y la fecha del último cambio, cada cartucho tiene fecha y referencia conocidas con semanas de anticipación.
-- Surtido disperso, venta concentrada: una de cada tres referencias casi no se mueve y una sola hace la mitad de la venta de cartuchos (dato de Grimuca, 90 días al 21 nov 2026).
-- Qué cambia: se compra contra fechas de recambio conocidas; los quiebres se ven antes; las entregas y visitas técnicas se agrupan por urbanización y por semana.
-- Última milla con operadores que ya tienen red; la foto del filtro evita el cartucho equivocado y la segunda visita.
+- **Rutas (cálculo con datos de demostración):** 15 entregas en 3 rutas contra 15 viajes sueltos: 51,9 km contra 110,9 km, 53% menos.
+- **Surtido disperso, venta concentrada:** una de cada tres referencias casi no se mueve y una sola hace la mitad de la venta de cartuchos (dato de Grimuca, 90 días al 21 nov 2026).
+- **Qué cambia:** con la fecha de cada recambio se compra lo que se va a vender, los quiebres se ven antes y las entregas y visitas técnicas salen agrupadas por urbanización.
 
-**Nota del orador (Tulio):** "Una ferretería compra, almacena y despacha a ciegas. Nosotros le damos la fecha de cada cartucho." Frase pública con el dato real de Grimuca (90 días al 21 nov 2026): "Grimuca reparte su surtido de agua entre tres tiendas: una de cada tres referencias casi no se mueve y una sola hace la mitad de la venta de cartuchos. Con la fecha de cada recambio se compra lo que se va a vender y las entregas salen agrupadas por urbanización." Honestidad si preguntan por el ahorro: en dólares el inventario de agua de una ferretería es pequeño; el valor está en no perder ventas por faltantes, no inmovilizar lo que no rota y agrupar entregas. No se afirma un ahorro de industria. Supuesto ilustrativo, rotulado así: bajar el inventario de unos 70 a unos 35 días de venta lo reduce a la mitad. Un hogar con filtro mueve unos 6 kg al año contra 2.370 a 2.844 kg en botellones (estimación de Tulio y pesos supuestos). SAMA Logística 3 cubre Valencia, con tarifas por cotizar; en otros estados todavía no hay operador confirmado.
+**Nota del orador (Tulio):** "Una ferretería compra, almacena y despacha a ciegas. Nosotros le damos la fecha de cada cartucho." Frase pública con el dato real de Grimuca (90 días al 21 nov 2026): "Grimuca reparte su surtido de agua entre tres tiendas: una de cada tres referencias casi no se mueve y una sola hace la mitad de la venta de cartuchos. Con la fecha de cada recambio se compra lo que se va a vender y las entregas salen agrupadas por urbanización." La cifra de las rutas sale de los datos de demostración del despacho (15 entregas, 3 rutas, 51,9 km contra 110,9 km): se dice "con los datos de demostración" y no se presenta como ahorro medido en una operación real. Honestidad si preguntan por el ahorro: en dólares el inventario de agua de una ferretería es pequeño; el valor está en no perder ventas por faltantes, no inmovilizar lo que no rota y agrupar entregas. No se afirma un ahorro de industria. Supuesto ilustrativo, rotulado así: bajar el inventario de unos 70 a unos 35 días de venta lo reduce a la mitad. Un hogar con filtro mueve unos 6 kg al año contra 2.370 a 2.844 kg en botellones (estimación de Tulio y pesos supuestos). SAMA Logística 3 cubre Valencia, con tarifas por cotizar; en otros estados todavía no hay operador confirmado.
 
 ---
 
 ## Lámina 5 · Modelo de negocio
 
+**Supuesto de costo del sobre: $4,00 (variante $2,94: ver nota)**
+
 **Título:** Tres líneas de ingreso, y la ferretería es la que paga
 
 - **Sobre de $9** al cliente final (Tulio). **Membresía de la ferretería: $30 al mes con 1 a 3 meses gratis (SUPUESTO).** **Sobres al mayor a $5,50 (SUPUESTO).**
 - La ferretería recibe unos $140 al mes en margen de las familias asignadas (cálculo con márgenes de Tulio y 20 familias, supuesto; $280 con las 40 de la meta) y recupera la membresía con 5 familias.
-- Cada ferretería deja a la red entre $66 y $87 al mes (cálculo con 20 familias; el rango depende del costo del sobre, $4,00 o $2,94, por decidir); 6 a 7 ferreterías pagando cubren los fijos de la red. Siguiente paso: comisión por transacción y plan premium.
+- Cada ferretería deja a la red unos $66 al mes (cálculo con 20 familias y el sobre a $4,00); 7 ferreterías pagando cubren los fijos de la red. Siguiente paso: comisión por transacción y plan premium.
 
-**Nota del orador (Tulio):** "El que paga todos los meses es la ferretería. La familia entra por la medición y paga $9." Honestidad en tarima: "No hay todavía ninguna ferretería aliada; la membresía, el precio al mayor y el número de ferreterías son supuestos que el piloto confirma." Si preguntan por caja: el primer año de la red es de inversión (base de 20 familias: −$3.105 con el sobre a $2,94 y −$4.669 con $4,00; con las 40 de la meta, +$1.094 y −$2.035); la operación mensual es positiva desde el mes 6. Grimuca vende hoy del orden de un centenar de cartuchos al mes, así que 40 familias por ferretería es meta de crecimiento y no continuidad. La variable que lo tumba es cuántas familias medidas le llegan a cada ferretería al mes: con 35 a 56 el año 1 cierra en cero. Las tres tiendas propias de Carabobo siguen con su economía (hipótesis de Tulio: +$65.500 en el base del modelo anterior).
+**Nota al pie de la lámina (variante del costo del sobre).** Base de la lámina: sobre a $4,00 puesto en Venezuela (asesoría, sin desglose). Variante: $2,94 (fábrica $1,94 de Tulio más $1,00 de importación y empaque, supuesto). Lo que cambia si se usa $2,94: aporte por ferretería $87 en vez de $66; ferreterías que cubren los fijos 6 en vez de 7; margen del sobre a domicilio $3,38 en vez de $2,38; caja de la red al cierre del año 1, base −$3.105 en vez de −$4.669, conservador −$8.909 en vez de −$9.969, meta de 40 familias +$1.094 en vez de −$2.035; familias por ferretería para cerrar el año 1 en cero, 35 en vez de 56. Lo demás no cambia. Fuente: `docs/negocio/modelo.md`, sección 0.
+
+**Nota del orador (Tulio):** "El que paga todos los meses es la ferretería. La familia entra por la medición y paga $9." Honestidad en tarima: "No hay todavía ninguna ferretería aliada; la membresía, el precio al mayor y el número de ferreterías son supuestos que el piloto confirma." Si preguntan por caja: el primer año de la red es de inversión (base de 20 familias: −$4.669 con el sobre a $4,00; con las 40 de la meta, −$2.035); la operación mensual es positiva desde el mes 6. Grimuca vende hoy del orden de un centenar de cartuchos al mes, así que 40 familias por ferretería es meta de crecimiento y no continuidad. La variable que lo tumba es cuántas familias medidas le llegan a cada ferretería al mes: con 56 el año 1 cierra en cero. Las tres tiendas propias de Carabobo siguen con su economía (hipótesis de Tulio, sin venta real).
 
 ---
 
@@ -121,10 +127,10 @@ Las 21 respuestas con su número están en `docs/negocio/preguntas-jurado.md`. L
 
 | Pregunta | Respuesta |
 |---|---|
-| ¿Por qué pagaría una ferretería? | Recibe familias ya medidas y inventario contra demanda; con 20 familias al mes gana unos $140 y paga $30 (cálculo, supuestos). |
-| ¿Cuál es el problema logístico? | Surtido disperso y venta concentrada: una de cada tres referencias casi no se mueve y una hace la mitad de la venta de cartuchos; la fecha de cada cartucho permite comprar lo que se vende, ver los quiebres antes y agrupar entregas. |
+| ¿Por qué pagaría una ferretería? | Recibe familias ya medidas y inventario contra demanda; con 20 familias al mes gana unos $140 y paga $30 (cálculo, supuestos); a la red le deja unos $66 con el sobre a $4,00. |
+| ¿Cuál es el problema logístico? | Surtido disperso y venta concentrada: una de cada tres referencias casi no se mueve y una hace la mitad de la venta de cartuchos; con la fecha de cada cartucho se compra lo que se vende, se ven los quiebres antes y las entregas se agrupan (15 entregas en 3 rutas: 51,9 km contra 110,9 km, datos de demostración). |
 | ¿Quién es el cliente? | La familia entra por la medición y paga $9; la ferretería paga cada mes. |
-| ¿Certifican el agua? | No. Orientamos con una medición casera y despachamos el cartucho correcto. |
+| ¿Certifican el agua? | No. Es una medición casera orientativa; la prueba de bacterias tampoco certifica. Con plomo o cobre decimos "posible presencia, confirma con un laboratorio". |
 
 ## Cifras que siguen pendientes
 
@@ -132,5 +138,19 @@ Las 21 respuestas con su número están en `docs/negocio/preguntas-jurado.md`. L
 |---|---|---|
 | 4 | Dinero en inventario, días de rotación, faltantes y entregas por semana de Grimuca | Tulio |
 | 5 | Precio de membresía, precio al mayor, cuántas ferreterías entran y cuántas pagan | Tulio |
-| 5 | Costo del sobre puesto en Venezuela: $2,94 o $4,00 | Leonardo |
+| 5 | Costo del sobre puesto en Venezuela: la lámina usa $4,00; $2,94 queda como variante en la nota | Leonardo |
 | 3 | Capturas de `/red`, `/tecnico` y Productos | Calidad o Leonardo, tras desplegar la migración 008 |
+
+## Criterios del jurado → lámina, minuto y evidencia
+
+Cada criterio vale 25%. Los minutos son los de `guion-demo.md` (versión 4).
+
+| Criterio del jurado | Lámina y minuto del guion que lo responde | Evidencia en la demo |
+|---|---|---|
+| Modelo de negocio | Lámina 5 y bloque 7 (2:40 a 3:00); la Red en el bloque 1 (0:00 a 0:25) | Tres líneas de ingreso con supuestos rotulados (sobre $9, membresía $30, mayor $5,50), costo del sobre en $4,00 con la variante en nota; `/red` muestra comercios con plan y periodo gratis |
+| Producto: problema claro | Lámina 1 y bloque 1 (0:00 a 0:25); lámina 4 y bloque 2 (0:25 a 0:50) | Ferretería que compra a ciegas y hogar que no mide; inventario con faltantes en rojo y dato real de Grimuca (una de cada tres referencias casi no se mueve) |
+| Producto: caso de uso demostrado | Láminas 2 y 3; bloques 3 a 5 (0:50 a 2:25) | Un solo pedido recorre cliente, comercio, técnico y red; "Ya fui" con foto; aviso fijo en el resultado |
+| Calidad técnica | Lámina 3; bloque 4 (1:35 a 1:55, momento clave) | El pedido aparece solo en el despacho del comercio, en vivo, sin recargar; mapa real con rutas; aviso legal literal en resultado y bacterias |
+| Innovación y potencial en Latinoamérica | Lámina 4 y bloque 2 (0:25 a 0:50); lámina 6 y bloque 7 (2:40 a 3:00) | Rutas: 15 entregas en 3 rutas contra 15 viajes sueltos, 51,9 km contra 110,9 km (53% menos, datos de demostración); una ferretería por estado cubre el estado; México 98% y República Dominicana 84,3% (con fuente, si preguntan) |
+
+**Pendiente fuera de este archivo:** el bloque 2 del guion aún no dice la cifra de las rutas; hoy dice "una ruta en vez de viajes sueltos". Sugerido para quien ensaya: "15 entregas en 3 rutas: 51,9 kilómetros contra 110,9, con los datos de demostración".

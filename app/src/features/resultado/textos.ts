@@ -25,8 +25,8 @@ export const QUE_MIDE: Record<ClaveParametro, string> = {
   hierro: 'Es lo que deja el agua amarilla y mancha la ropa y el baño.',
   cobre: 'Vienen de las tuberías viejas. Con esto no se juega.',
   plomo: 'Vienen de las tuberías viejas. Con esto no se juega.',
-  nitrato: 'Vienen de la tierra, de abonos o del pozo séptico. Es una señal de alerta de contaminación.',
-  nitrito: 'Vienen de la tierra, de abonos o del pozo séptico. Es una señal de alerta de contaminación.',
+  nitrato: 'Vienen de la tierra, de abonos o del pozo séptico. Es una casilla para vigilar: confírmala con un laboratorio.',
+  nitrito: 'Vienen de la tierra, de abonos o del pozo séptico. Es una casilla para vigilar: confírmala con un laboratorio.',
 };
 
 /** Pie del resultado, debajo del aviso fijo. */

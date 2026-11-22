@@ -30,9 +30,9 @@ const INDICADORES: { nombre: string; frase: string }[] = [
   { nombre: 'Dureza', frase: 'El sarro que mancha la grifería.' },
   { nombre: 'Alcalinidad', frase: 'Qué tan estable es el agua.' },
   { nombre: 'Nitrato', frase: 'Viene de abonos o del pozo séptico.' },
-  { nombre: 'Nitrito', frase: 'Igual que el nitrato: señal de alerta.' },
-  { nombre: 'Cobre', frase: 'Posible presencia, de tuberías viejas.' },
-  { nombre: 'Plomo', frase: 'Posible presencia, de tuberías viejas.' },
+  { nombre: 'Nitrito', frase: 'Igual que el nitrato: una casilla para vigilar.' },
+  { nombre: 'Cobre', frase: 'Posible presencia; confirma con un laboratorio.' },
+  { nombre: 'Plomo', frase: 'Posible presencia; confirma con un laboratorio.' },
 ];
 
 const MUESTRA = [
