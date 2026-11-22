@@ -203,6 +203,14 @@ function Resultado({ medicion }: { medicion: Medicion }) {
           Medición del {formatearFecha(medicion.fecha)} ·{' '}
           {medicion.origen === 'foto' ? 'con foto' : 'anotada a mano'}
         </p>
+        {medicion.origen === 'foto' && (
+          <p style={{ margin: 0 }}>
+            ¿No coincide con lo que ves en tu tira?{' '}
+            <Link className="g-enlace" to={`/medir/manual?desde=${encodeURIComponent(medicion.id)}`} style={ESTILO_ENLACE}>
+              Corrígela a mano
+            </Link>
+          </p>
+        )}
         <Semaforo nivel={evaluacion.semaforo} palabra={PALABRA_NIVEL[evaluacion.semaforo]} tamano="grande" />
         <h1 className="g-h1">{resumen.titulo}</h1>
         <p>{resumen.frase}</p>
@@ -264,7 +272,7 @@ function Resultado({ medicion }: { medicion: Medicion }) {
 
       {consecuencias.length > 0 && <SiNoHacesNada consecuencias={consecuencias} />}
 
-      <Casillas parametros={parametros} />
+      <Casillas parametros={parametros} medicionId={medicion.id} />
 
       <p className="g-apagado">{PIE_ORIENTACION}</p>
 
@@ -515,7 +523,7 @@ function enumerarNombres(nombres: string[]): string {
  * "Tu agua, casilla por casilla": las filas en rojo y amarillo a la vista; las verdes agrupadas en un
  * solo plegable; las que no se leyeron, en una línea con su enlace para completarlas.
  */
-function Casillas({ parametros }: { parametros: ResultadoParametro[] }) {
+function Casillas({ parametros, medicionId }: { parametros: ResultadoParametro[]; medicionId: string }) {
   const marcadas = parametros.filter((p) => p.nivel === 'rojo' || p.nivel === 'amarillo');
   const verdes = parametros.filter((p) => p.nivel === 'verde');
   const sinLectura = parametros.filter((p) => p.nivel === 'sin_dato');
@@ -547,7 +555,7 @@ function Casillas({ parametros }: { parametros: ResultadoParametro[] }) {
       {sinLectura.length > 0 && (
         <p className="resultado-sin-lectura">
           Sin lectura: {enumerarNombres(sinLectura.map((p) => p.nombre))}.{' '}
-          <Link className="g-enlace" to="/medir/manual" style={ESTILO_ENLACE}>
+          <Link className="g-enlace" to={`/medir/manual?desde=${encodeURIComponent(medicionId)}`} style={ESTILO_ENLACE}>
             Completarlas a mano
           </Link>
         </p>

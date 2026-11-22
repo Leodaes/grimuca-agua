@@ -370,7 +370,7 @@ describe('PaginaResultado', () => {
     const casillas = screen.getByRole('region', { name: 'Tu agua, casilla por casilla' });
     expect(within(casillas).getByText('1 casilla en verde: cloro libre')).toBeInTheDocument();
     expect(within(casillas).getByText(/Sin lectura: Hierro\./)).toBeInTheDocument();
-    expect(within(casillas).getByRole('link', { name: 'Completarlas a mano' })).toHaveAttribute('href', '/medir/manual');
+    expect(within(casillas).getByRole('link', { name: 'Completarlas a mano' })).toHaveAttribute('href', expect.stringMatching(/^\/medir\/manual\?desde=/));
   });
 
   it('hogar sin filtro: puerta al filtro por WhatsApp', async () => {
