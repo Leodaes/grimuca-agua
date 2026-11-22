@@ -4,6 +4,14 @@ Pruebas de navegador contra https://agua.oydo.app, hechas desde una máquina dis
 
 Cómo correrlas: `cd pruebas/externas && npm install && npx playwright install chromium && npx playwright test`. Revisión del repositorio: `node pruebas/externas/revisar-repo.js` desde la raíz.
 
+## Pasada 11 · dom 22 nov, 12:50 a.m. (solo lectura)
+
+**Resumen:** sin cambios desde la pasada 10: mismo código y misma versión publicada (`index-t8kfX0Rf.js`). Pasan 23 revisiones, falla 1 (tamaño) y se saltan 2 (el recorrido que crea pedidos). El recorrido completo sigue sin probarse tras el despliegue de las 11:51 p.m.; la última prueba completa (pasada 8) funcionó. El pedido en vivo en Despacho sigue certificado por la Calidad interna.
+
+**Repositorio:** 404 archivos, sin hallazgos. **Orquestador:** último commit a las 11:57 p.m., hace 53 minutos. El sitio responde. No hay alerta: el umbral es de 90 minutos sin commits y con el sitio sin cambios.
+
+**Fallas abiertas:** las mismas de la pasada 10. Ninguna rompe la demo. «Medir mi agua» mide menos de 44 px en `/catalogo`.
+
 ## Pasada 10 · dom 22 nov, 12:20 a.m. (solo lectura)
 
 **Resumen:** hay un despliegue nuevo publicado: mapa real con rutas de despacho, catálogo por comercio, filtro que se guarda al confirmar, correcciones de Calidad y encabezado del panel sin desborde en teléfono (`ea4d452`, `3faa413`). Por el acuerdo con el orquestador, desde la medianoche esta revisión no crea pedidos. **Por eso el recorrido completo del cliente no se volvió a probar después de estos cambios.** La última prueba completa (pasada 8, 11:25 p.m.) funcionó. Pasan 23 revisiones, falla 1 (tamaño) y se saltan 2.
