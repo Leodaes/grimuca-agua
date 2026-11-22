@@ -11,7 +11,7 @@ import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import { aIso, aIsoONulo, aJson, type Bd } from '../bd';
 import { distanciaKm } from '../logistica/rutas-despacho';
-import { buscarUrbanizacion, type Coordenada, type Urbanizacion } from '../logistica/urbanizaciones';
+import { buscarUrbanizacion, UBICACION_TIENDAS, type Coordenada, type Urbanizacion } from '../logistica/urbanizaciones';
 import { umbrales } from '../medicion/config/umbrales';
 import {
   CLAVES_PARAMETRO,
@@ -107,8 +107,13 @@ export function filaAMedicionCentro(fila: Fila, evaluar: Evaluador): MedicionCen
 
 // ---------- Consultas ----------
 
-/** Ubicación del centro: centro aproximado de su urbanización (si está en la lista). */
-function ubicacionDe(urbanizacion: Urbanizacion | undefined): Coordenada | null {
+/**
+ * Ubicación del centro: la del local si está en UBICACION_TIENDAS (puntos de Google Maps que dio Leonardo);
+ * si no, el centro aproximado de su urbanización (si está en la lista).
+ */
+function ubicacionDe(urbanizacion: Urbanizacion | undefined, tiendaId?: string): Coordenada | null {
+  const local = tiendaId ? UBICACION_TIENDAS[tiendaId] : undefined;
+  if (local) return { lat: local.lat, lng: local.lng };
   return urbanizacion ? { lat: urbanizacion.lat, lng: urbanizacion.lng } : null;
 }
 
@@ -157,7 +162,7 @@ export async function leerCentros(
 
   return rows.map((fila) => {
     const urbanizacion = buscarUrbanizacion(fila.urbanizacion as string | null);
-    const ubicacion = ubicacionDe(urbanizacion);
+    const ubicacion = ubicacionDe(urbanizacion, String(fila.tienda_id));
     const historial = porTienda.get(String(fila.tienda_id)) ?? [];
     const ultima = historial[0] ?? null;
     return {
