@@ -9,6 +9,7 @@ import { rutasPedido } from './features/pedido/rutas';
 import { rutasFiltro } from './features/filtro/rutas';
 import { rutasCatalogo } from './features/catalogo/rutas';
 import { rutasTutoriales } from './features/tutoriales/rutas';
+import { rutasCentros } from './features/centros/rutas';
 import { PaginaModulos } from './features/red/PaginaModulos';
 
 // Los paneles del comercio, la red y el técnico se descargan solo cuando se abren:
@@ -51,7 +52,7 @@ const rutas: RouteObject[] = [
   { path: '/tecnico/*', element: <Diferido><PaginaTecnico /></Diferido> },
   {
     element: <Marco />,
-    children: [...rutasAlta, ...rutasMedicion, ...rutasResultado, ...rutasPedido, ...rutasFiltro, ...rutasCatalogo, ...rutasTutoriales, { path: '*', element: <NoEncontrada /> }],
+    children: [...rutasAlta, ...rutasMedicion, ...rutasResultado, ...rutasPedido, ...rutasFiltro, ...rutasCatalogo, ...rutasTutoriales, ...rutasCentros, { path: '*', element: <NoEncontrada /> }],
   },
 ];
 

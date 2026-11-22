@@ -34,6 +34,10 @@ export const CLAVES_PARAMETRO: readonly ClaveParametro[] = [
 
 export const ORIGENES_AGUA: readonly OrigenAgua[] = ['chorro', 'botellon', 'filtro', 'tanque', 'pozo'];
 
+/** Quién se registra: un hogar o un negocio (restaurante, oficina…). */
+export type TipoCliente = 'hogar' | 'negocio';
+export const TIPOS_CLIENTE: readonly TipoCliente[] = ['hogar', 'negocio'];
+
 export const ZONAS: readonly string[] = ['Naguanagua', 'San Diego', 'Valencia norte', 'Valencia sur', 'Otra'];
 
 export const IDS_TIENDA: readonly string[] = ['manongo', 'biglow', 'cem'];
@@ -56,6 +60,8 @@ export interface Tienda {
   direccion: string | null;
   /** Comercio dueño de la tienda (plataforma). */
   comercio_id?: string;
+  /** Urbanización donde queda (centros de llenado); null o ausente si no se indicó. */
+  urbanizacion?: string | null;
 }
 
 /** GET /api/config/tira */
@@ -94,6 +100,10 @@ export interface Hogar {
   consentimiento_fecha: string;
   /** Filtro registrado (por foto o a mano); null si no hay o aún no se identificó. */
   filtro?: FiltroHogar | null;
+  /** Hogar o negocio. La API siempre lo trae; ausente en datos viejos = 'hogar'. */
+  tipo_cliente?: TipoCliente;
+  /** Solo negocios: a qué se dedica ("Restaurante", "Oficina"…); null si no lo dijo. */
+  rubro?: string | null;
 }
 
 /** Cuerpo de POST /api/hogares. `consentimiento` debe ser `true`. Sin `tienda_id`, el servidor pone la sugerida por zona. */
@@ -113,6 +123,10 @@ export interface EntradaHogar {
   mascotas?: boolean;
   /** Si viene, el servidor deriva `fecha_ultimo_cambio` (menos de un mes: hoy − 15 días; más de tres meses: hoy − 100; no me acuerdo: null). */
   ultimo_cambio?: UltimoCambio | null;
+  /** Sin dato: 'hogar'. */
+  tipo_cliente?: TipoCliente;
+  /** Solo negocios (máx. 60). */
+  rubro?: string | null;
   consentimiento: true;
 }
 
@@ -490,10 +504,15 @@ export type RolPlataforma = 'comercio' | 'superadmin' | 'tecnico';
 export type PlanComercio = 'basico' | 'premium';
 export const PLANES_COMERCIO: readonly PlanComercio[] = ['basico', 'premium'];
 export type EstadoMembresia = 'periodo_gratis' | 'activa' | 'vencida';
+/** Ferretería (filtros y cartuchos) o centro de llenado de botellones (resultados públicos y venta del sobre). */
+export type TipoComercio = 'ferreteria' | 'centro_llenado';
+export const TIPOS_COMERCIO: readonly TipoComercio[] = ['ferreteria', 'centro_llenado'];
 
 export interface Comercio {
   id: string;
   nombre: string;
+  /** La API siempre lo trae; ausente en datos viejos = 'ferreteria'. */
+  tipo?: TipoComercio;
   estado_pais: string;
   ciudad: string;
   plan: PlanComercio;
@@ -516,6 +535,8 @@ export interface ComercioEnRed extends Comercio {
   estado_membresia: EstadoMembresia;
   /** Solo en periodo gratis; null en los demás estados. */
   dias_gratis_restantes: number | null;
+  /** Centros de llenado: fecha de su medición más reciente (null si no tiene). Ausente en las ferreterías. */
+  ultima_medicion_centro?: string | null;
 }
 
 export interface ResumenRed {
@@ -540,6 +561,10 @@ export interface EntradaComercio {
   meses_gratis: number;
   tienda_nombre: string;
   tienda_direccion?: string | null;
+  /** Sin dato: 'ferreteria'. */
+  tipo?: TipoComercio;
+  /** Obligatoria para un centro de llenado: urbanización de la lista (Carabobo) donde queda su local. */
+  urbanizacion?: string | null;
 }
 
 /** Respuesta de POST /api/operador/entrar y POST /api/tecnico/entrar. */
@@ -646,6 +671,86 @@ export interface RutasDespacho {
     ahorro_km: number;
     ahorro_porcentaje: number;
   };
+}
+
+// --- Centros de llenado con resultados públicos (docs/negocio/idea-centros-de-llenado.md) ---
+
+/** Días que una medición del centro se muestra como vigente; después se marca "medición vencida". */
+export const DIAS_VIGENCIA_MEDICION_CENTRO = 35;
+
+export type ResultadoBacteriasCentro = 'cambio' | 'sin_cambio' | 'pendiente';
+
+/** Una casilla publicada: el valor leído y el rango de referencia con que se compara (sin calificar el agua). */
+export interface CasillaCentro {
+  clave: ClaveParametro;
+  nombre: string;
+  unidad: string;
+  valor: number | null;
+  /** En rango, para vigilar, fuera de rango o sin dato, frente a la referencia de umbrales.ts. */
+  nivel: Nivel;
+  /** Rango "en rango" de la referencia; null en el extremo que no tiene límite. */
+  referencia_desde: number | null;
+  referencia_hasta: number | null;
+  /** Plomo y cobre: lectura orientativa. */
+  orientativo: boolean;
+}
+
+export interface MedicionCentro {
+  id: number;
+  tienda_id: string;
+  fecha: string;
+  casillas: CasillaCentro[];
+  /** Conteo publicado: casillas leídas que quedaron en rango, de cuántas se leyeron. */
+  casillas_en_rango: number;
+  casillas_leidas: number;
+  bacterias: ResultadoBacteriasCentro;
+  fecha_bacterias: string | null;
+  nota: string | null;
+  medido_por: string;
+}
+
+/** Un centro de llenado con su medición más reciente (lo que ve cualquiera, sin sesión). */
+export interface CentroPublico {
+  tienda_id: string;
+  comercio_id: string;
+  /** Nombre del comercio. */
+  nombre: string;
+  /** Nombre del local (tienda). */
+  local: string;
+  direccion: string | null;
+  horario: string;
+  zona: string | null;
+  urbanizacion: string | null;
+  /** Centro aproximado de la urbanización; null si no tiene urbanización de la lista. */
+  lat: number | null;
+  lng: number | null;
+  es_demostracion: boolean;
+  ultima: MedicionCentro | null;
+  /** La medición más reciente tiene más de DIAS_VIGENCIA_MEDICION_CENTRO días (o no hay ninguna). */
+  vencida: boolean;
+}
+
+/** GET /api/centros?hogar_id= | ?urbanizacion=&zona= : el más cercano primero. */
+export interface CentroCercano extends CentroPublico {
+  /** Distancia aproximada por calle desde la urbanización del cliente; null si no se pudo calcular. */
+  distancia_km: number | null;
+}
+
+/** GET /api/centros/:tienda_id */
+export interface DetalleCentro extends CentroPublico {
+  /** Todas sus mediciones, la más reciente primero (nunca se borran). */
+  historial: MedicionCentro[];
+}
+
+/** Cuerpo de POST /api/tecnico/centros/:tienda_id/mediciones */
+export interface EntradaMedicionCentro {
+  valores: ValoresMedicion;
+  nota?: string | null;
+}
+
+/** GET /api/operador/centro (comercio que es centro de llenado). */
+export interface PanelCentro {
+  centros: Array<DetalleCentro & { clientes_cercanos: number }>;
 }
 
 // --- Otros ---

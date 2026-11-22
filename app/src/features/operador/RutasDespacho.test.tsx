@@ -98,7 +98,8 @@ describe('pestaña Rutas', () => {
     expect(within(banda).getByText('Ahorro (51 %)').closest('div')).toHaveTextContent('23,0 km');
 
     expect(screen.getByRole('region', { name: 'Mapa de las rutas de despacho' })).toBeInTheDocument();
-    expect(container.querySelector('[data-id="tienda-manongo"]')).toHaveTextContent('Mañongo');
+    // Leaflet dibuja las marcas un instante después de la región: se espera a que estén.
+    await vi.waitFor(() => expect(container.querySelector('[data-id="tienda-manongo"]')).toHaveTextContent('Mañongo'));
     expect(container.querySelector('[data-id="parada-manongo-2"]')).toHaveTextContent('2');
     expect(screen.getByText(NOTA_DISTANCIAS)).toBeInTheDocument();
 

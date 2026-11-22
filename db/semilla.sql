@@ -4,7 +4,7 @@
 -- Requiere el catálogo cargado antes (db/semilla_cartuchos.sql): el stock y los pedidos usan sus códigos.
 -- Lo aplica `npm run migrar -w api -- --semilla`, solo si la tabla hogares está vacía.
 -- Las fechas son relativas a now(): la semilla siempre queda "reciente".
--- Contenido: 3 comercios (Grimuca y 2 aliados "de demostración"), 5 tiendas, 70 hogares
+-- Contenido: 5 comercios (Grimuca, 2 aliados y 2 centros de llenado "de demostración"), 7 tiendas, 70 hogares
 -- (60 de Grimuca), 98 mediciones, 99 pedidos
 -- (16 pendientes de Grimuca, 3 del aliado de Lara y 4 servicios técnicos),
 -- 37 filas de stock y 5 pruebas de bacterias.
@@ -469,3 +469,24 @@ INSERT INTO pruebas_bacterias (id, hogar_id, fecha_inicio, fecha_reporte, result
   ('00000000-0000-4000-8200-000000000013', '00000000-0000-4000-8000-000000000013', now() - interval '6 days', now() - interval '4 days', 'sin_cambio'),
   ('00000000-0000-4000-8200-000000000021', '00000000-0000-4000-8000-000000000021', now() - interval '2 days', NULL, 'pendiente'),
   ('00000000-0000-4000-8200-000000000032', '00000000-0000-4000-8000-000000000032', now() - interval '3 days', NULL, 'pendiente');
+
+-- Centros de llenado INVENTADOS (comercio de demostración), con resultados públicos (migración 010).
+-- Sus mediciones se publican siempre, también las fuera de rango; nunca se borran.
+INSERT INTO comercios (id, nombre, tipo, estado_pais, ciudad, plan, membresia_usd, fecha_alta, fin_periodo_gratis, activo, es_demostracion) VALUES
+  ('centro-demo-naguanagua', 'Centro de llenado Naguanagua (comercio de demostración)', 'centro_llenado', 'Carabobo', 'Naguanagua', 'basico', NULL, now() - interval '75 days', NULL, true, true),
+  ('centro-demo-san-diego', 'Centro de llenado San Diego (comercio de demostración)', 'centro_llenado', 'Carabobo', 'San Diego', 'basico', NULL, now() - interval '40 days', (now() + interval '50 days')::date, true, true)
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO tiendas (id, nombre, horario, direccion, comercio_id, urbanizacion) VALUES
+  ('llenado-el-naranjal', 'Centro de llenado · El Naranjal', 'Todos los días de 7:00 a.m. a 7:00 p.m.', 'Calle 4, local 2, El Naranjal (dato de prueba)', 'centro-demo-naguanagua', 'El Naranjal'),
+  ('llenado-el-tulipan', 'Centro de llenado · El Tulipán', 'Lunes a sábado de 7:00 a.m. a 6:00 p.m.', 'Av. principal, local 5, El Tulipán (dato de prueba)', 'centro-demo-san-diego', 'El Tulipán')
+ON CONFLICT (id) DO NOTHING;
+
+-- El Naranjal: tres mediciones mensuales con todas las casillas en rango. El Tulipán: una en rango hace 38 días y
+-- la de ayer con la dureza fuera de rango y el frasco todavía en lectura (se publica igual).
+INSERT INTO mediciones_centro (tienda_id, fecha, valores, bacterias, fecha_bacterias, nota, medido_por) VALUES
+  ('llenado-el-naranjal', now() - interval '70 days', '{"alcalinidad": 80, "dureza": 50, "cobre": 0, "nitrato": 0, "cloro_libre": 0.5, "plomo": 0, "ph": 7.2, "nitrito": 0}'::jsonb, 'sin_cambio', now() - interval '68 days', 'Muestra del grifo de despacho.', 'Técnico de Grimuca'),
+  ('llenado-el-naranjal', now() - interval '40 days', '{"alcalinidad": 80, "dureza": 50, "cobre": 0, "nitrato": 0, "cloro_libre": 0.5, "plomo": 0, "ph": 7.2, "nitrito": 0}'::jsonb, 'sin_cambio', now() - interval '38 days', 'Muestra del grifo de despacho.', 'Técnico de Grimuca'),
+  ('llenado-el-naranjal', now() - interval '10 days', '{"alcalinidad": 120, "dureza": 120, "cobre": 0, "nitrato": 0, "cloro_libre": 0.5, "plomo": 0, "ph": 7.2, "nitrito": 0}'::jsonb, 'sin_cambio', now() - interval '8 days', 'Muestra del grifo de despacho.', 'Técnico de Grimuca'),
+  ('llenado-el-tulipan', now() - interval '38 days', '{"alcalinidad": 80, "dureza": 50, "cobre": 0, "nitrato": 0, "cloro_libre": 0.5, "plomo": 0, "ph": 7.2, "nitrito": 0}'::jsonb, 'sin_cambio', now() - interval '36 days', 'Muestra del grifo de despacho.', 'Técnico de Grimuca'),
+  ('llenado-el-tulipan', now() - interval '1 day', '{"alcalinidad": 240, "dureza": 425, "cobre": 0, "nitrato": 0, "cloro_libre": 0.5, "plomo": 0, "ph": 7.2, "nitrito": 0}'::jsonb, 'pendiente', NULL, 'Muestra del grifo de despacho. El frasco se lee mañana.', 'Técnico de Grimuca');

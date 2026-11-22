@@ -20,6 +20,7 @@ import { reducirImagen } from '../medicion/reducirImagen';
 import { EntradaConPin, esNoAutorizado, fechaLarga, hora, mensajeDe } from '../red/comun';
 import { escucharEventos } from '../red/enVivo';
 import { nombreServicio, textoFechaPreferida } from '../tutoriales/contenido';
+import { CentrosDeLlenado } from './CentrosTecnico';
 import './tecnico.css';
 
 const REFRESCO_MS = 30_000;
@@ -243,7 +244,7 @@ function aServicio(p: Pedido): ServicioConReporte {
 function TecnicoConSesion({ token, alSalir }: { token: string; alSalir: () => void }) {
   const [servicios, setServicios] = useState<ServicioConReporte[] | null>(null);
   const [estado, setEstado] = useState<'cargando' | 'listo' | 'error'>('cargando');
-  const [vista, setVista] = useState<'pendientes' | 'atendidos'>('pendientes');
+  const [vista, setVista] = useState<'pendientes' | 'atendidos' | 'centros'>('pendientes');
   const [abierto, setAbierto] = useState<number | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const [miniaturas, setMiniaturas] = useState<Record<number, string>>({});
@@ -339,10 +340,17 @@ function TecnicoConSesion({ token, alSalir }: { token: string; alSalir: () => vo
           <Chip activo={vista === 'atendidos'} onClick={() => setVista('atendidos')}>
             Atendidos ({atendidos.length})
           </Chip>
+          <Chip activo={vista === 'centros'} onClick={() => setVista('centros')}>
+            Centros de llenado
+          </Chip>
         </div>
 
-        {estado === 'cargando' && !servicios && <Cargando variante="esqueleto" lineas={4} texto="Cargando servicios…" />}
-        {estado === 'error' && !servicios && (
+        {vista === 'centros' && <CentrosDeLlenado token={token} alNoAutorizado={alSalir} />}
+
+        {vista !== 'centros' && estado === 'cargando' && !servicios && (
+          <Cargando variante="esqueleto" lineas={4} texto="Cargando servicios…" />
+        )}
+        {vista !== 'centros' && estado === 'error' && !servicios && (
           <EstadoVacio
             tono="error"
             titulo="No se pudieron cargar los servicios."

@@ -88,7 +88,7 @@ describe('panel del comercio', () => {
   it('pide el PIN de la ferretería en /comercio', async () => {
     montar('/comercio', { leerToken: () => null });
     expect(screen.getByRole('heading', { name: 'Panel del comercio' })).toBeInTheDocument();
-    expect(screen.getByText('Entra con el PIN de tu ferretería.')).toBeInTheDocument();
+    expect(screen.getByText('Entra con el PIN de tu comercio.')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Entrar' })).toBeInTheDocument();
   });
 

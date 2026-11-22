@@ -160,6 +160,8 @@ describe('/red', () => {
         meses_gratis: 3,
         tienda_nombre: 'Del Lago Centro',
         tienda_direccion: null,
+        tipo: 'ferreteria',
+        urbanizacion: null,
       },
       't-red',
     );
@@ -168,6 +170,99 @@ describe('/red', () => {
     expect(within(tabla).getByText('Ferretería del Lago')).toBeInTheDocument();
     expect(within(screen.getByLabelText('Cifras de la red')).getByText('Comercios en la red').closest('div')).toHaveTextContent('4');
     expect(screen.getByText(/Zulia:/).closest('li')).toHaveTextContent('Ferretería del Lago');
+  });
+
+  it('marca los centros de llenado con la fecha de su última medición; las ferreterías se ven igual', async () => {
+    api.redResumen.mockResolvedValue({
+      ...RESUMEN,
+      comercios: [
+        ...RESUMEN.comercios,
+        comercio({
+          id: 'centro-naranjal',
+          nombre: 'Centro de llenado El Naranjal',
+          tipo: 'centro_llenado',
+          ciudad: 'Naguanagua',
+          fecha_alta: '2026-11-18T12:00:00Z',
+          ultima_medicion_centro: '2026-11-12T15:00:00Z',
+        }),
+        comercio({
+          id: 'centro-tulipan',
+          nombre: 'Centro de llenado El Tulipán',
+          tipo: 'centro_llenado',
+          ciudad: 'San Diego',
+          fecha_alta: '2026-11-19T12:00:00Z',
+          ultima_medicion_centro: null,
+        }),
+      ],
+    });
+    montar();
+    const tabla = await screen.findByRole('table', { name: 'Comercios de la red' });
+    const fila = (texto: string) => within(tabla).getByText(texto).closest('tr') as HTMLElement;
+    expect(within(fila('Centro de llenado El Naranjal')).getByText('Centro de llenado')).toBeInTheDocument();
+    expect(fila('Centro de llenado El Naranjal')).toHaveTextContent('Última medición: 12 de noviembre de 2026');
+    expect(fila('Centro de llenado El Tulipán')).toHaveTextContent('Sin medición todavía');
+    expect(within(fila('Grimuca')).queryByText('Centro de llenado')).not.toBeInTheDocument();
+    expect(fila('Grimuca')).not.toHaveTextContent(/medición/i);
+  });
+
+  it('da de alta un centro de llenado con la urbanización del local (obligatoria)', async () => {
+    const usuario = userEvent.setup();
+    api.crearComercio.mockResolvedValue(
+      comercio({
+        id: 'centro-tulipan',
+        nombre: 'Agua El Tulipán',
+        tipo: 'centro_llenado',
+        ciudad: 'San Diego',
+        fecha_alta: '2026-11-22T12:00:00Z',
+        ultima_medicion_centro: null,
+      }),
+    );
+    montar();
+    await screen.findByRole('table', { name: 'Comercios de la red' });
+
+    // Con ferretería no se pide urbanización.
+    expect(screen.queryByLabelText('Urbanización del local')).not.toBeInTheDocument();
+    await usuario.selectOptions(screen.getByLabelText('Tipo de comercio'), 'centro_llenado');
+    const urbanizacion = screen.getByLabelText('Urbanización del local');
+    expect(
+      screen.getByText('Sirve para mostrarlo como el centro con resultados públicos más cercano a cada cliente.'),
+    ).toBeInTheDocument();
+    // Agrupada por zona.
+    const grupos = within(urbanizacion).getAllByRole('group').map((g) => g.getAttribute('label'));
+    expect(grupos).toEqual(['Naguanagua', 'San Diego', 'Valencia norte']);
+
+    await usuario.type(screen.getByLabelText('Nombre del comercio'), 'Agua El Tulipán');
+    await usuario.selectOptions(screen.getByLabelText('Estado'), 'Carabobo');
+    await usuario.type(screen.getByLabelText('Ciudad'), 'San Diego');
+    await usuario.type(screen.getByLabelText('Nombre de su primera tienda'), 'Local El Tulipán');
+    await usuario.click(screen.getByRole('button', { name: 'Dar de alta' }));
+    expect(screen.getByText('Elige la urbanización del local.')).toBeInTheDocument();
+    expect(api.crearComercio).not.toHaveBeenCalled();
+
+    await usuario.selectOptions(urbanizacion, 'El Tulipán');
+    expect(screen.queryByText('Elige la urbanización del local.')).not.toBeInTheDocument();
+    await usuario.click(screen.getByRole('button', { name: 'Dar de alta' }));
+    expect(api.crearComercio).toHaveBeenCalledWith(
+      expect.objectContaining({ nombre: 'Agua El Tulipán', tipo: 'centro_llenado', urbanizacion: 'El Tulipán' }),
+      't-red',
+    );
+    const tabla = await screen.findByRole('table', { name: 'Comercios de la red' });
+    const fila = within(tabla).getByText('Agua El Tulipán').closest('tr') as HTMLElement;
+    expect(await within(fila).findByText('Centro de llenado')).toBeInTheDocument();
+    expect(fila).toHaveTextContent('Sin medición todavía');
+    // El formulario vuelve a ferretería.
+    expect(screen.getByLabelText('Tipo de comercio')).toHaveValue('ferreteria');
+    expect(screen.queryByLabelText('Urbanización del local')).not.toBeInTheDocument();
+  });
+
+  it('los textos de la red no califican el agua', async () => {
+    const usuario = userEvent.setup();
+    montar();
+    await screen.findByRole('table', { name: 'Comercios de la red' });
+    await usuario.selectOptions(screen.getByLabelText('Tipo de comercio'), 'centro_llenado');
+    expect(document.body).not.toHaveTextContent(
+      /verificad|certificad|aprobad|garantizad|potable|segura|\bapta\b|agua de calidad|\bbuena\b|\bmala\b/i,
+    );
   });
 
   it('/modulos muestra los cuatro módulos con su dirección', () => {

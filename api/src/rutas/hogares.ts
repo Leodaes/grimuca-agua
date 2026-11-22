@@ -24,6 +24,8 @@ const COLUMNAS_EDITABLES = [
   'mascotas',
   'ultimo_cambio',
   'ultimo_cartucho',
+  'tipo_cliente',
+  'rubro',
 ] as const;
 
 /** Días hacia atrás que se anotan como fecha del último cambio según la respuesta cerrada del perfil. */
@@ -66,8 +68,8 @@ export async function rutasHogares(app: FastifyInstance): Promise<void> {
     const { rows } = await bd.query(
       `INSERT INTO hogares (id, nombre, zona, origen_agua, personas, tiene_filtro, etapas_filtro,
                             fecha_ultimo_cambio, agua_turbia, whatsapp, direccion, tienda_id, urbanizacion, mascotas,
-                            ultimo_cambio, consentimiento_fecha)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, now())
+                            ultimo_cambio, tipo_cliente, rubro, consentimiento_fecha)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, now())
        RETURNING *`,
       [
         randomUUID(),
@@ -85,6 +87,9 @@ export async function rutasHogares(app: FastifyInstance): Promise<void> {
         datos.urbanizacion ?? null,
         datos.mascotas,
         ultimoCambio,
+        datos.tipo_cliente,
+        // El rubro solo es de los negocios.
+        datos.tipo_cliente === 'negocio' ? (datos.rubro ?? null) : null,
       ],
     );
     return reply.code(201).send(filaAHogar(rows[0]));
@@ -101,6 +106,8 @@ export async function rutasHogares(app: FastifyInstance): Promise<void> {
     const actual = await exigirHogar(id);
 
     if (cambios.tienda_id) await exigirTienda(cambios.tienda_id);
+    // Un hogar no lleva rubro: al pasar a hogar se borra.
+    if (cambios.tipo_cliente === 'hogar') cambios.rubro = null;
     // Sin filtro no hay etapas ni fecha de cambio.
     if (cambios.tiene_filtro === false) {
       cambios.etapas_filtro = null;

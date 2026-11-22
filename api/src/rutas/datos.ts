@@ -32,6 +32,7 @@ export function filaATienda(fila: Fila): Tienda {
     horario: String(fila.horario),
     direccion: (fila.direccion as string | null) ?? null,
     ...(typeof fila.comercio_id === 'string' ? { comercio_id: fila.comercio_id } : {}),
+    ...(typeof fila.urbanizacion === 'string' && fila.urbanizacion ? { urbanizacion: fila.urbanizacion } : {}),
   };
 }
 
@@ -91,6 +92,8 @@ export function filaAHogar(fila: Fila): Hogar {
     ultimo_cartucho: typeof fila.ultimo_cartucho === 'string' ? fila.ultimo_cartucho : null,
     consentimiento_fecha: aIso(fila.consentimiento_fecha),
     filtro: filaAFiltro(fila),
+    tipo_cliente: fila.tipo_cliente === 'negocio' ? 'negocio' : 'hogar',
+    rubro: typeof fila.rubro === 'string' && fila.rubro ? fila.rubro : null,
   };
 }
 

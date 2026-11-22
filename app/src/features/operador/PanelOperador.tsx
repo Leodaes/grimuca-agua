@@ -11,6 +11,7 @@ import { ContextoPanel, NOMBRE_PLAN } from './panel';
 import type { DatosPanel } from './panel';
 import { Productos } from './Productos';
 import { Resumen } from './Resumen';
+import { ResultadosCentro } from './ResultadosCentro';
 import { RutasDespacho } from './RutasDespacho';
 import { usePedidosEnVivo } from './usePedidosEnVivo';
 import { Zonas } from './Zonas';
@@ -52,7 +53,7 @@ function EntradaPin({ base, alEntrar }: { base: string; alEntrar: (token: string
       <form onSubmit={enviar} className="g-pila op-entrada" noValidate>
         <div className="op-entrada__cabeza">
           <h1 className="g-h1">Panel del comercio</h1>
-          <p>Entra con el PIN de tu ferretería.</p>
+          <p>Entra con el PIN de tu comercio.</p>
         </div>
         <Campo
           etiqueta="PIN"
@@ -151,6 +152,7 @@ function PanelConSesion({ base, token, alSalir }: { base: string; token: string;
   const propsDatos = { token, version: envivo.version, alNoAutorizado: alSalir };
   const esAvisoNuevo = toast?.startsWith('Pedido nuevo') ?? false;
   const comercio = panel.comercio;
+  const esCentro = comercio?.tipo === 'centro_llenado';
 
   return (
     <ContextoPanel.Provider value={panel}>
@@ -190,6 +192,7 @@ function PanelConSesion({ base, token, alSalir }: { base: string; token: string;
               <Chip a={`${base}/productos`}>Productos</Chip>
               <Chip a={`${base}/rutas`}>Rutas</Chip>
               <Chip a={`${base}/zonas`}>Zonas</Chip>
+              {esCentro && <Chip a={`${base}/resultados`}>Resultados públicos</Chip>}
             </nav>
           </Encabezado>
         }
@@ -218,6 +221,7 @@ function PanelConSesion({ base, token, alSalir }: { base: string; token: string;
             <Route path="productos" element={<Productos {...propsDatos} />} />
             <Route path="rutas" element={<RutasDespacho {...propsDatos} />} />
             <Route path="zonas" element={<Zonas {...propsDatos} />} />
+            {esCentro && <Route path="resultados" element={<ResultadosCentro {...propsDatos} />} />}
             <Route path="*" element={<Navigate to="despacho" replace />} />
           </Routes>
         )}

@@ -19,6 +19,7 @@ import { rutasMediciones, TAMANO_MAXIMO_FOTO } from './rutas/mediciones';
 import { rutasOperador } from './rutas/operador';
 import { rutasPedidos } from './rutas/pedidos';
 import { rutasProductos } from './rutas/productos';
+import { rutasCentros } from './rutas/centros';
 import { rutasRed } from './rutas/red';
 import { rutasTecnico } from './rutas/tecnico';
 import type { Evaluacion, LecturaTira, ParametroTira, PerfilHogar, ValoresMedicion } from './tipos';
@@ -188,6 +189,7 @@ export async function crearApp(opciones: OpcionesApp): Promise<FastifyInstance> 
     rutasRed,
     rutasTecnico,
     rutasProductos,
+    rutasCentros,
   ]) {
     await app.register(rutas, { prefix: '/api' });
   }

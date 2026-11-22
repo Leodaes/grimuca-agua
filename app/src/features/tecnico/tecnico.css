@@ -133,3 +133,11 @@
     align-items: start;
   }
 }
+
+/* Centros de llenado: casillas de la medición publicada. */
+.tec-casillas {
+  margin: 0;
+  padding-left: 1.2em;
+  display: grid;
+  gap: 2px;
+}

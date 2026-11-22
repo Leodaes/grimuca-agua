@@ -4,7 +4,8 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Aviso, Boton, Campo, Cargando, Casilla, Icono } from '../../components/grimuca';
 import { api } from '../../lib/api';
 import { guardarHogarId, hogarId } from '../../lib/sesion';
-import type { Hogar, OrigenAgua, UltimoCambio } from '../../lib/tipos';
+import type { Hogar, OrigenAgua, TipoCliente, UltimoCambio } from '../../lib/tipos';
+import { CentroMasCercano } from '../centros/TarjetaCentro';
 import {
   CODIGO_PAIS_POR_DEFECTO,
   CODIGOS_PAIS,
@@ -33,6 +34,10 @@ import {
 } from './comun';
 
 interface Formulario {
+  /** 'hogar' | 'negocio' */
+  tipo_cliente: string;
+  /** Solo negocios: a qué se dedica (opcional). */
+  rubro: string;
   /** Nombre de pila. La API guarda un solo campo `nombre`: al guardar se une con el apellido. */
   nombre: string;
   apellido: string;
@@ -72,6 +77,8 @@ type ClaveError =
 type Errores = Partial<Record<ClaveError, string>>;
 
 const VACIO: Formulario = {
+  tipo_cliente: 'hogar',
+  rubro: '',
   nombre: '',
   apellido: '',
   zona: '',
@@ -94,6 +101,14 @@ const SI_NO = [
   { valor: 'si', etiqueta: 'Sí' },
   { valor: 'no', etiqueta: 'No' },
 ];
+
+/** "¿Para quién es?": un hogar o un negocio (restaurante, oficina…). */
+const TIPOS_CLIENTE_OPCIONES = [
+  { valor: 'hogar', etiqueta: 'Hogar', ayuda: 'Tu casa o apartamento.' },
+  { valor: 'negocio', etiqueta: 'Negocio', ayuda: 'Restaurante, oficina, consultorio…' },
+];
+
+const LARGO_RUBRO = 60;
 
 const FALTA = 'Este dato hace falta.';
 const VE = '58';
@@ -186,6 +201,8 @@ function desdeHogar(h: Hogar): Formulario {
   const telefono = partirTelefono(h.whatsapp);
   const ve = telefono.codigo === VE ? partirOperadora(telefono.nacional) : { operadora: '', numero: '' };
   return {
+    tipo_cliente: h.tipo_cliente ?? 'hogar',
+    rubro: h.rubro ?? '',
     ...partirNombre(h.nombre),
     zona: h.zona ?? '',
     urbanizacion: h.urbanizacion ?? '',
@@ -362,13 +379,18 @@ export function Perfil() {
 
     const tieneFiltro = tieneFiltroEn(f);
     const telefono = telefonoDe(f);
+    const negocio = f.tipo_cliente === 'negocio';
     const perfil = {
+      tipo_cliente: (negocio ? 'negocio' : 'hogar') as TipoCliente,
+      // El rubro solo es de los negocios.
+      rubro: negocio ? f.rubro.trim().slice(0, LARGO_RUBRO) || null : null,
       nombre: unirNombre(f.nombre, f.apellido),
       zona: f.zona,
       urbanizacion: f.urbanizacion && f.urbanizacion !== OTRA ? f.urbanizacion : null,
       origen_agua: f.origen_agua as OrigenAgua,
       personas: Number(f.personas),
-      mascotas: f.mascotas === 'si',
+      // Un negocio no responde lo de las mascotas (la pregunta solo sale para hogares).
+      mascotas: !negocio && f.mascotas === 'si',
       tiene_filtro: tieneFiltro,
       // Las etapas ya no se preguntan aquí: salen de la foto del filtro (o de la carga a mano en /mi-filtro).
       etapas_filtro: tieneFiltro ? (f.etapas_filtro ? Number(f.etapas_filtro) : undefined) : null,
@@ -400,11 +422,12 @@ export function Perfil() {
     }
   }
 
+  const esNegocio = f.tipo_cliente === 'negocio';
   const cabecera = (
     <>
       <Atras a="/" texto="Volver al inicio" />
       {indicador}
-      <h1 className="g-h1">Cuéntanos de tu casa</h1>
+      <h1 className="g-h1">{esNegocio ? 'Cuéntanos de tu negocio' : 'Cuéntanos de tu casa'}</h1>
     </>
   );
 
@@ -448,14 +471,40 @@ export function Perfil() {
       <form className="g-pila g-pila--amplia" noValidate onSubmit={enviar}>
         <ResumenErrores errores={resumen} alIr={(clave) => irAError(clave as ClaveError)} />
 
+        <section className="alta-bloque" aria-labelledby="bloque-para-quien">
+          <h2 className="alta-bloque__titulo" id="bloque-para-quien">
+            Para quién es
+          </h2>
+          <OpcionesRadio
+            pregunta="¿Para quién es?"
+            nombre="tipo_cliente"
+            opciones={TIPOS_CLIENTE_OPCIONES}
+            columnas={2}
+            valor={f.tipo_cliente}
+            onCambio={(v) => poner('tipo_cliente', v)}
+          />
+          {esNegocio && (
+            <Campo
+              id="perfil-rubro"
+              etiqueta="¿A qué se dedica?"
+              ayuda="Por ejemplo: restaurante, oficina, consultorio."
+              opcional
+              name="rubro"
+              maxLength={LARGO_RUBRO}
+              value={f.rubro}
+              onChange={(e) => poner('rubro', e.target.value)}
+            />
+          )}
+        </section>
+
         <section className="alta-bloque" aria-labelledby="bloque-casa">
           <h2 className="alta-bloque__titulo" id="bloque-casa">
-            Tu casa
+            {esNegocio ? 'Tu negocio' : 'Tu casa'}
           </h2>
           <Campo
             como="select"
             id="perfil-zona"
-            etiqueta="¿En qué zona vives?"
+            etiqueta={esNegocio ? '¿En qué zona queda?' : '¿En qué zona vives?'}
             ayuda="Así sabemos qué tienda te queda más cerca."
             name="zona"
             marcador="Elige tu zona"
@@ -484,10 +533,16 @@ export function Perfil() {
             onChange={(e) => poner('urbanizacion', e.target.value)}
           />
 
+          {f.zona && (
+            <CentroMasCercano
+              consulta={{ zona: f.zona, urbanizacion: f.urbanizacion && f.urbanizacion !== OTRA ? f.urbanizacion : null }}
+            />
+          )}
+
           <SelectorCantidad
             id="perfil-personas"
             name="personas"
-            etiqueta="¿Cuántos viven en la casa?"
+            etiqueta={esNegocio ? '¿Cuántas personas toman agua ahí?' : '¿Cuántos viven en la casa?'}
             ayuda="Contando niños. Mientras más gente, más rápido se gasta el cartucho."
             valor={f.personas}
             min={1}
@@ -501,15 +556,17 @@ export function Perfil() {
             error={errores.personas}
           />
 
-          <OpcionesRadio
-            pregunta="¿Hay mascotas en casa?"
-            ayuda="Ellas también toman de esa agua."
-            nombre="mascotas"
-            opciones={SI_NO}
-            columnas={2}
-            valor={f.mascotas}
-            onCambio={(v) => poner('mascotas', v)}
-          />
+          {!esNegocio && (
+            <OpcionesRadio
+              pregunta="¿Hay mascotas en casa?"
+              ayuda="Ellas también toman de esa agua."
+              nombre="mascotas"
+              opciones={SI_NO}
+              columnas={2}
+              valor={f.mascotas}
+              onCambio={(v) => poner('mascotas', v)}
+            />
+          )}
         </section>
 
         <section className="alta-bloque" aria-labelledby="bloque-agua">
@@ -517,7 +574,7 @@ export function Perfil() {
             Tu agua
           </h2>
           <OpcionesRadio
-            pregunta="¿De dónde sale el agua que toman en casa?"
+            pregunta={esNegocio ? '¿De dónde sale el agua que toman ahí?' : '¿De dónde sale el agua que toman en casa?'}
             ayuda="Marca la que más usan."
             nombre="origen_agua"
             opciones={ORIGENES.map((o) => ({ ...o, icono: <IconoOrigen tipo={o.valor} /> }))}
@@ -546,7 +603,7 @@ export function Perfil() {
           {/* Si el agua sale de un filtro, ya se sabe que tienen uno: se pasa directo al cartucho. */}
           {f.origen_agua !== 'filtro' && (
             <OpcionesRadio
-              pregunta="¿Tienen filtro en casa?"
+              pregunta={esNegocio ? '¿Tienen filtro ahí?' : '¿Tienen filtro en casa?'}
               nombre="tiene_filtro"
               opciones={SI_NO}
               columnas={2}

@@ -13,6 +13,14 @@ import {
   vaciarLista,
 } from './sesion';
 import type {
+  CentroCercano,
+  CentroPublico,
+  DetalleCentro,
+  EntradaMedicionCentro,
+  MedicionCentro,
+  PanelCentro,
+} from './tipos';
+import type {
   ComercioEnRed,
   EntradaComercio,
   EntradaConComercio,
@@ -353,6 +361,35 @@ export const api = {
     });
   },
   urlFotoServicio,
+
+  // --- Centros de llenado con resultados públicos ---
+  /**
+   * El más cercano primero. Con `hogarId`, desde la urbanización de ese cliente; si no, desde `urbanizacion` y `zona`
+   * (sin urbanización: primero los de la zona, con `distancia_km` null).
+   */
+  centrosCercanos: (consulta: { hogarId?: string | null; zona?: string | null; urbanizacion?: string | null } = {}) => {
+    const partes: string[] = [];
+    if (consulta.hogarId) partes.push(`hogar_id=${encodeURIComponent(consulta.hogarId)}`);
+    if (consulta.zona) partes.push(`zona=${encodeURIComponent(consulta.zona)}`);
+    if (consulta.urbanizacion) partes.push(`urbanizacion=${encodeURIComponent(consulta.urbanizacion)}`);
+    return pedir<CentroCercano[]>(`/centros${partes.length ? `?${partes.join('&')}` : ''}`);
+  },
+  /** Página pública del centro: su medición más reciente y todo el historial. */
+  centro: (tiendaId: string) => pedir<DetalleCentro>(`/centros/${id(tiendaId)}`),
+  /** Técnico de Grimuca: centros a medir (los que no tienen medición vigente primero). */
+  tecnicoCentros: (token?: string) => pedirComoTecnico<CentroPublico[]>('/tecnico/centros', { token }),
+  /** Técnico de Grimuca: publica una medición del grifo de despacho (al menos una casilla). */
+  medirCentro: (tiendaId: string, datos: EntradaMedicionCentro, token?: string) =>
+    pedirComoTecnico<MedicionCentro>(`/tecnico/centros/${id(tiendaId)}/mediciones`, { metodo: 'POST', cuerpo: datos, token }),
+  /** Técnico de Grimuca: resultado del frasco a las 48 horas (una sola vez; repetir responde 409). */
+  frascoCentro: (medicionId: number | string, resultado: 'cambio' | 'sin_cambio', token?: string) =>
+    pedirComoTecnico<MedicionCentro>(`/tecnico/centros/mediciones/${id(medicionId)}/bacterias`, {
+      metodo: 'POST',
+      cuerpo: { resultado },
+      token,
+    }),
+  /** Comercio que es centro de llenado: sus locales con el historial y cuántos clientes lo tienen como el más cercano. */
+  panelCentro: (token?: string) => pedirComoOperador<PanelCentro>('/operador/centro', { token }),
 };
 
 export type Api = typeof api;

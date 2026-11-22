@@ -127,8 +127,8 @@ describe('db/semilla.sql (datos de demostración)', () => {
     await bd.query(sql);
   });
 
-  it('carga 5 tiendas, 60 hogares de Grimuca en sus tres zonas y 10 de los dos aliados', async () => {
-    expect(await total(bd, 'tiendas')).toBe(5);
+  it('carga 7 tiendas (5 de ferreterías y 2 centros de llenado), 60 hogares de Grimuca en sus tres zonas y 10 de los dos aliados', async () => {
+    expect(await total(bd, 'tiendas')).toBe(7);
     const { rows } = await bd.query('SELECT zona, count(*) AS total FROM hogares GROUP BY zona ORDER BY zona');
     expect(rows.map((fila) => [fila.zona, Number(fila.total)])).toEqual([
       ['Barquisimeto', 6],
@@ -139,11 +139,18 @@ describe('db/semilla.sql (datos de demostración)', () => {
     ]);
   });
 
-  it('trae los comercios de la red: Grimuca y dos aliados rotulados como de demostración', async () => {
-    const { rows } = await bd.query('SELECT id, nombre, plan, membresia_usd, es_demostracion FROM comercios ORDER BY id');
-    expect(rows.map((fila) => fila.id)).toEqual(['aliado-aragua', 'aliado-lara', 'grimuca']);
+  it('trae los comercios de la red: Grimuca, dos aliados y dos centros de llenado rotulados como de demostración', async () => {
+    const { rows } = await bd.query('SELECT id, nombre, tipo, plan, membresia_usd, es_demostracion FROM comercios ORDER BY id');
+    expect(rows.map((fila) => fila.id)).toEqual([
+      'aliado-aragua',
+      'aliado-lara',
+      'centro-demo-naguanagua',
+      'centro-demo-san-diego',
+      'grimuca',
+    ]);
     for (const fila of rows) {
       expect(fila.membresia_usd).toBeNull();
+      expect(fila.tipo).toBe(fila.id.startsWith('centro-demo') ? 'centro_llenado' : 'ferreteria');
       if (fila.id === 'grimuca') expect(fila.es_demostracion).toBe(false);
       else expect(fila.nombre.endsWith('(comercio de demostración)')).toBe(true);
     }
@@ -151,7 +158,15 @@ describe('db/semilla.sql (datos de demostración)', () => {
     expect(tiendas.rows.map((fila) => [fila.comercio_id, Number(fila.total)])).toEqual([
       ['aliado-aragua', 1],
       ['aliado-lara', 1],
+      ['centro-demo-naguanagua', 1],
+      ['centro-demo-san-diego', 1],
       ['grimuca', 3],
+    ]);
+    // Los centros publican todo: también la medición de El Tulipán con la dureza fuera de rango.
+    const mediciones = await bd.query('SELECT tienda_id, count(*) AS total FROM mediciones_centro GROUP BY tienda_id ORDER BY tienda_id');
+    expect(mediciones.rows.map((fila) => [fila.tienda_id, Number(fila.total)])).toEqual([
+      ['llenado-el-naranjal', 3],
+      ['llenado-el-tulipan', 2],
     ]);
     const stockLara = await bd.query("SELECT count(*) AS total FROM stock WHERE tienda_id = 'lara-centro'");
     expect(Number(stockLara.rows[0].total)).toBe(6);
@@ -328,7 +343,13 @@ describe('db/semilla.sql (datos de demostración)', () => {
           [c.estado_membresia, c.hogares],
         ]),
       );
-      expect(estados).toEqual({ grimuca: ['activa', 60], 'aliado-lara': ['periodo_gratis', 6], 'aliado-aragua': ['vencida', 4] });
+      expect(estados).toEqual({
+        grimuca: ['activa', 60],
+        'aliado-lara': ['periodo_gratis', 6],
+        'aliado-aragua': ['vencida', 4],
+        'centro-demo-naguanagua': ['activa', 0],
+        'centro-demo-san-diego': ['periodo_gratis', 0],
+      });
       // Grimuca es el comercio más antiguo de la red (no aparece como recién dado de alta).
       const altas = Object.fromEntries(
         (resumen.json().comercios as Array<{ id: string; fecha_alta: string }>).map((c) => [c.id, Date.parse(c.fecha_alta)]),

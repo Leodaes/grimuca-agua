@@ -167,3 +167,39 @@
   height: auto;
   border: 1px solid var(--linea);
 }
+
+/* Pestaña "Resultados públicos" (centro de llenado). */
+.op-centro__cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px 12px;
+}
+.op-centro__fecha {
+  margin: 0;
+  font-size: 1rem;
+}
+.op-centro__casillas {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.op-centro__casilla {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 4px 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--linea);
+}
+.op-centro__referencia {
+  grid-column: 1 / -1;
+  font-size: 0.875rem;
+}
+.op-centro__historial summary {
+  cursor: pointer;
+  font-weight: 600;
+  margin-bottom: 8px;
+}

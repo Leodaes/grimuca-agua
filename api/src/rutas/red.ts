@@ -2,8 +2,17 @@
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import type { Bd } from '../bd';
-import { PLANES_COMERCIO, type Comercio, type ComercioEnRed, type PlanComercio, type ResumenRed } from '../tipos';
-import { ErrorHttp } from './errores';
+import { buscarUrbanizacion } from '../logistica/urbanizaciones';
+import {
+  PLANES_COMERCIO,
+  TIPOS_COMERCIO,
+  type Comercio,
+  type ComercioEnRed,
+  type PlanComercio,
+  type ResumenRed,
+  type TipoComercio,
+} from '../tipos';
+import { datosInvalidos, ErrorHttp } from './errores';
 import { crearTokenConRol, esquemaEntrar, exigirRol, frenoDeEntrada, pinCorrecto } from './operador';
 import {
   aKebab,
@@ -35,7 +44,31 @@ const esquemaComercio = z.object({
     .union([z.string().trim().max(200), z.null()])
     .optional()
     .transform((valor) => (valor ? valor : null)),
+  tipo: z.enum(TIPOS_COMERCIO as [TipoComercio, ...TipoComercio[]]).default('ferreteria'),
+  urbanizacion: z
+    .union([z.string().trim().max(80), z.null()])
+    .optional()
+    .transform((valor) => (valor ? valor : null)),
 });
+
+/** Un centro de llenado necesita su urbanización (de la lista de Carabobo) para salir como "el más cercano". */
+function urbanizacionDelAlta(datos: { tipo: TipoComercio; urbanizacion: string | null }): string | null {
+  if (!datos.urbanizacion) {
+    if (datos.tipo === 'centro_llenado') {
+      throw datosInvalidos('Elige la urbanización del centro de llenado.', [
+        { campo: 'urbanizacion', mensaje: 'Elige la urbanización del centro de llenado.' },
+      ]);
+    }
+    return null;
+  }
+  const urbanizacion = buscarUrbanizacion(datos.urbanizacion);
+  if (!urbanizacion) {
+    throw datosInvalidos('Esa urbanización no está en la lista.', [
+      { campo: 'urbanizacion', mensaje: 'Esa urbanización no está en la lista.' },
+    ]);
+  }
+  return urbanizacion.nombre;
+}
 
 interface Conteo {
   tiendas: number;
@@ -55,20 +88,37 @@ const vacio = (): Conteo => ({
   productos_propios: 0,
 });
 
-export function aComercioEnRed(comercio: Comercio, conteo: Conteo, hoy: string = hoyEnVenezuela()): ComercioEnRed {
-  return { ...comercio, ...conteo, ...estadoMembresia(comercio, hoy) };
+export function aComercioEnRed(
+  comercio: Comercio,
+  conteo: Conteo,
+  hoy: string = hoyEnVenezuela(),
+  ultimaMedicionCentro: string | null = null,
+): ComercioEnRed {
+  const base: ComercioEnRed = { ...comercio, ...conteo, ...estadoMembresia(comercio, hoy) };
+  return comercio.tipo === 'centro_llenado' ? { ...base, ultima_medicion_centro: ultimaMedicionCentro } : base;
 }
 
 export async function resumenDeLaRed(bd: Consultable, ahora: Date = new Date()): Promise<ResumenRed> {
   const desde = new Date(ahora.getTime() - DIAS_DEL_MES * 86_400_000);
-  const [comercios, comercioPorTienda, hogaresRes, medicionesRes, pedidosRes, productosRes] = await Promise.all([
-    listarComercios(bd),
-    mapaComercioPorTienda(bd),
-    bd.query('SELECT id, zona, tienda_id FROM hogares'),
-    bd.query('SELECT hogar_id FROM mediciones WHERE fecha >= $1', [desde]),
-    bd.query('SELECT tienda_id, estado, fecha FROM pedidos'),
-    bd.query('SELECT comercio_id FROM cartuchos WHERE comercio_id IS NOT NULL'),
-  ]);
+  const [comercios, comercioPorTienda, hogaresRes, medicionesRes, pedidosRes, productosRes, centrosRes] =
+    await Promise.all([
+      listarComercios(bd),
+      mapaComercioPorTienda(bd),
+      bd.query('SELECT id, zona, tienda_id FROM hogares'),
+      bd.query('SELECT hogar_id FROM mediciones WHERE fecha >= $1', [desde]),
+      bd.query('SELECT tienda_id, estado, fecha FROM pedidos'),
+      bd.query('SELECT comercio_id FROM cartuchos WHERE comercio_id IS NOT NULL'),
+      bd.query('SELECT tienda_id, fecha FROM mediciones_centro'),
+    ]);
+  // Fecha de la medición más reciente de cada centro de llenado.
+  const ultimaPorComercio = new Map<string, string>();
+  for (const fila of centrosRes.rows) {
+    const comercio = comercioPorTienda.get(String(fila.tienda_id));
+    if (!comercio) continue;
+    const fecha = new Date(fila.fecha as string).toISOString();
+    const previa = ultimaPorComercio.get(comercio);
+    if (!previa || fecha > previa) ultimaPorComercio.set(comercio, fecha);
+  }
 
   const conteos = new Map<string, Conteo>(comercios.map((c) => [c.id, vacio()]));
   const de = (id: string) => {
@@ -103,7 +153,9 @@ export async function resumenDeLaRed(bd: Consultable, ahora: Date = new Date()):
   for (const fila of productosRes.rows) de(String(fila.comercio_id)).productos_propios += 1;
 
   const hoy = hoyEnVenezuela(ahora);
-  const lista = comercios.map((c) => aComercioEnRed(c, conteos.get(c.id) ?? vacio(), hoy));
+  const lista = comercios.map((c) =>
+    aComercioEnRed(c, conteos.get(c.id) ?? vacio(), hoy, ultimaPorComercio.get(c.id) ?? null),
+  );
   const suma = (campo: keyof Conteo) => lista.reduce((total, c) => total + c[campo], 0);
   return {
     comercios: lista,
@@ -142,6 +194,7 @@ export async function rutasRed(app: FastifyInstance): Promise<void> {
 
   app.post('/red/comercios', { preHandler: soloRed }, async (req, reply) => {
     const datos = esquemaComercio.parse(req.body);
+    const urbanizacion = urbanizacionDelAlta(datos);
     const hoy = hoyEnVenezuela();
     const finGratis = datos.meses_gratis > 0 ? sumarMeses(hoy, datos.meses_gratis) : null;
 
@@ -152,13 +205,13 @@ export async function rutasRed(app: FastifyInstance): Promise<void> {
       comercioId = await idLibre(cliente, 'comercios', aKebab(datos.nombre, 40));
       const tiendaId = await idLibre(cliente, 'tiendas', aKebab(datos.tienda_nombre, 40));
       await cliente.query(
-        `INSERT INTO comercios (id, nombre, estado_pais, ciudad, plan, membresia_usd, fin_periodo_gratis, activo, es_demostracion)
-         VALUES ($1, $2, $3, $4, $5, NULL, $6, true, false)`,
-        [comercioId, datos.nombre, datos.estado_pais, datos.ciudad, datos.plan, finGratis],
+        `INSERT INTO comercios (id, nombre, tipo, estado_pais, ciudad, plan, membresia_usd, fin_periodo_gratis, activo, es_demostracion)
+         VALUES ($1, $2, $3, $4, $5, $6, NULL, $7, true, false)`,
+        [comercioId, datos.nombre, datos.tipo, datos.estado_pais, datos.ciudad, datos.plan, finGratis],
       );
       await cliente.query(
-        'INSERT INTO tiendas (id, nombre, horario, direccion, comercio_id) VALUES ($1, $2, $3, $4, $5)',
-        [tiendaId, datos.tienda_nombre, 'Por confirmar', datos.tienda_direccion, comercioId],
+        'INSERT INTO tiendas (id, nombre, horario, direccion, comercio_id, urbanizacion) VALUES ($1, $2, $3, $4, $5, $6)',
+        [tiendaId, datos.tienda_nombre, 'Por confirmar', datos.tienda_direccion, comercioId, urbanizacion],
       );
       await cliente.query('COMMIT');
     } catch (error) {

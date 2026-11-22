@@ -506,13 +506,37 @@ if ((rojosRecientesPorZona.get(N) ?? 0) < 3) {
   throw new Error('Naguanagua debe tener 3 o más hogares en rojo en los últimos 7 días.');
 }
 
+/** Centros de llenado de demostración (migración 010): fijos, con fechas relativas a now(). */
+const SQL_CENTROS = `
+-- Centros de llenado INVENTADOS (comercio de demostración), con resultados públicos (migración 010).
+-- Sus mediciones se publican siempre, también las fuera de rango; nunca se borran.
+INSERT INTO comercios (id, nombre, tipo, estado_pais, ciudad, plan, membresia_usd, fecha_alta, fin_periodo_gratis, activo, es_demostracion) VALUES
+  ('centro-demo-naguanagua', 'Centro de llenado Naguanagua (comercio de demostración)', 'centro_llenado', 'Carabobo', 'Naguanagua', 'basico', NULL, now() - interval '75 days', NULL, true, true),
+  ('centro-demo-san-diego', 'Centro de llenado San Diego (comercio de demostración)', 'centro_llenado', 'Carabobo', 'San Diego', 'basico', NULL, now() - interval '40 days', (now() + interval '50 days')::date, true, true)
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO tiendas (id, nombre, horario, direccion, comercio_id, urbanizacion) VALUES
+  ('llenado-el-naranjal', 'Centro de llenado · El Naranjal', 'Todos los días de 7:00 a.m. a 7:00 p.m.', 'Calle 4, local 2, El Naranjal (dato de prueba)', 'centro-demo-naguanagua', 'El Naranjal'),
+  ('llenado-el-tulipan', 'Centro de llenado · El Tulipán', 'Lunes a sábado de 7:00 a.m. a 6:00 p.m.', 'Av. principal, local 5, El Tulipán (dato de prueba)', 'centro-demo-san-diego', 'El Tulipán')
+ON CONFLICT (id) DO NOTHING;
+
+-- El Naranjal: tres mediciones mensuales con todas las casillas en rango. El Tulipán: una en rango hace 38 días y
+-- la de ayer con la dureza fuera de rango y el frasco todavía en lectura (se publica igual).
+INSERT INTO mediciones_centro (tienda_id, fecha, valores, bacterias, fecha_bacterias, nota, medido_por) VALUES
+  ('llenado-el-naranjal', now() - interval '70 days', '{"alcalinidad": 80, "dureza": 50, "cobre": 0, "nitrato": 0, "cloro_libre": 0.5, "plomo": 0, "ph": 7.2, "nitrito": 0}'::jsonb, 'sin_cambio', now() - interval '68 days', 'Muestra del grifo de despacho.', 'Técnico de Grimuca'),
+  ('llenado-el-naranjal', now() - interval '40 days', '{"alcalinidad": 80, "dureza": 50, "cobre": 0, "nitrato": 0, "cloro_libre": 0.5, "plomo": 0, "ph": 7.2, "nitrito": 0}'::jsonb, 'sin_cambio', now() - interval '38 days', 'Muestra del grifo de despacho.', 'Técnico de Grimuca'),
+  ('llenado-el-naranjal', now() - interval '10 days', '{"alcalinidad": 120, "dureza": 120, "cobre": 0, "nitrato": 0, "cloro_libre": 0.5, "plomo": 0, "ph": 7.2, "nitrito": 0}'::jsonb, 'sin_cambio', now() - interval '8 days', 'Muestra del grifo de despacho.', 'Técnico de Grimuca'),
+  ('llenado-el-tulipan', now() - interval '38 days', '{"alcalinidad": 80, "dureza": 50, "cobre": 0, "nitrato": 0, "cloro_libre": 0.5, "plomo": 0, "ph": 7.2, "nitrito": 0}'::jsonb, 'sin_cambio', now() - interval '36 days', 'Muestra del grifo de despacho.', 'Técnico de Grimuca'),
+  ('llenado-el-tulipan', now() - interval '1 day', '{"alcalinidad": 240, "dureza": 425, "cobre": 0, "nitrato": 0, "cloro_libre": 0.5, "plomo": 0, "ph": 7.2, "nitrito": 0}'::jsonb, 'pendiente', NULL, 'Muestra del grifo de despacho. El frasco se lee mañana.', 'Técnico de Grimuca');
+`;
+
 const sql = `-- Datos de demostración de Grimuca Agua. TODO ES INVENTADO: nombres, teléfonos (0414-555-01xx) y direcciones
 -- son de prueba y no corresponden a ninguna persona real.
 -- Generado por db/generar_semilla.ts (no editar a mano; cambia el generador y vuelve a correrlo).
 -- Requiere el catálogo cargado antes (db/semilla_cartuchos.sql): el stock y los pedidos usan sus códigos.
 -- Lo aplica \`npm run migrar -w api -- --semilla\`, solo si la tabla hogares está vacía.
 -- Las fechas son relativas a now(): la semilla siempre queda "reciente".
--- Contenido: 3 comercios (Grimuca y 2 aliados "de demostración"), 5 tiendas, ${TODOS_LOS_HOGARES.length} hogares
+-- Contenido: 5 comercios (Grimuca, 2 aliados y 2 centros de llenado "de demostración"), 7 tiendas, ${TODOS_LOS_HOGARES.length} hogares
 -- (${HOGARES.length} de Grimuca), ${totalMediciones} mediciones, ${filasPedidos.length + filasServicios.length} pedidos
 -- (${PENDIENTES.length} pendientes de Grimuca, ${PENDIENTES_LARA.length} del aliado de Lara y ${filasServicios.length} servicios técnicos),
 -- ${filasStock.length} filas de stock y ${filasBacterias.length} pruebas de bacterias.
@@ -570,7 +594,7 @@ ${filasReportes.join('\n')}
 -- Pruebas de bacterias.
 INSERT INTO pruebas_bacterias (id, hogar_id, fecha_inicio, fecha_reporte, resultado) VALUES
 ${filasBacterias.join(',\n')};
-`;
+${SQL_CENTROS}`;
 
 const destino = path.join(AQUI, 'semilla.sql');
 writeFileSync(destino, sql);

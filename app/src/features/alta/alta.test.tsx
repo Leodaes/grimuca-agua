@@ -3,6 +3,9 @@ import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+// Las pruebas que llenan el perfil completo tardan de 2 a 3 s solas; con la suite entera en paralelo pasaban de 5 s.
+vi.setConfig({ testTimeout: 15_000 });
+
 vi.mock('../../lib/api', () => ({
   api: {
     crearHogar: vi.fn(),

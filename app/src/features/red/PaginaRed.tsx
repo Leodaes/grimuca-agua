@@ -1,5 +1,5 @@
 // Módulo Red (/red): superadmin de Grimuca. Comercios de la red, cifras, cobertura, actividad en vivo y alta.
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
 import {
   Aviso,
@@ -10,11 +10,13 @@ import {
   Encabezado,
   EstadoVacio,
   Insignia,
+  Icono,
   Pantalla,
 } from '../../components/grimuca';
 import { api } from '../../lib/api';
 import { guardarTokenRed, tokenRed } from '../../lib/sesion';
-import type { ComercioEnRed, Pedido, PlanComercio, ResumenRed } from '../../lib/tipos';
+import type { ComercioEnRed, Pedido, PlanComercio, ResumenRed, TipoComercio } from '../../lib/tipos';
+import { urbanizacionesDeZona } from '../../lib/urbanizaciones';
 import { EntradaConPin, dondeFue, esNoAutorizado, fechaLarga, hora, mensajeDe, queLleva } from './comun';
 import { escucharEventos } from './enVivo';
 import './red.css';
@@ -47,6 +49,27 @@ export const ESTADOS_VENEZUELA = [
 ] as const;
 
 const NOMBRE_PLAN: Record<PlanComercio, string> = { basico: 'Básico', premium: 'Premium' };
+
+/** Zonas con lista de urbanizaciones (el mapa de Carabobo). */
+export const ZONAS_CON_URBANIZACIONES = ['Naguanagua', 'San Diego', 'Valencia norte'] as const;
+
+export const AYUDA_URBANIZACION_CENTRO =
+  'Sirve para mostrarlo como el centro con resultados públicos más cercano a cada cliente.';
+
+/** Rótulo del centro de llenado en la lista: su última medición publicada. */
+export function textoUltimaMedicion(fecha: string | null | undefined): string {
+  return fecha ? `Última medición: ${fechaLarga(fecha)}` : 'Sin medición todavía';
+}
+
+function CentroDeLlenado({ c }: { c: ComercioEnRed }) {
+  if (c.tipo !== 'centro_llenado') return null;
+  return (
+    <span className="red-centro">
+      <Insignia tono="azul">Centro de llenado</Insignia>{' '}
+      <span className="red-centro__medicion">{textoUltimaMedicion(c.ultima_medicion_centro)}</span>
+    </span>
+  );
+}
 const REFRESCO_MS = 30_000;
 const MAX_ACTIVIDAD = 8;
 
@@ -97,6 +120,7 @@ function TablaComercios({ comercios, resaltado }: { comercios: ComercioEnRed[]; 
                     <Insignia tono="neutro">Demostración</Insignia>
                   </>
                 )}
+                <CentroDeLlenado c={c} />
               </th>
               <td>
                 {c.ciudad}, {c.estado_pais}
@@ -171,6 +195,49 @@ interface ErroresAlta {
   estado?: string;
   ciudad?: string;
   tienda?: string;
+  urbanizacion?: string;
+}
+
+/** Lista de urbanizaciones agrupada por zona (Campo no arma grupos, por eso va el select a mano). */
+function CampoUrbanizacion({ valor, alCambiar, error }: { valor: string; alCambiar: (v: string) => void; error?: string }) {
+  const id = useId();
+  const idAyuda = `${id}-ayuda`;
+  const idError = `${id}-error`;
+  return (
+    <div className="g-campo">
+      <label className="g-campo__etiqueta" htmlFor={id}>
+        Urbanización del local
+      </label>
+      <select
+        id={id}
+        className="g-control"
+        value={valor}
+        onChange={(e) => alCambiar(e.target.value)}
+        aria-invalid={error ? true : undefined}
+        aria-describedby={error ? `${idAyuda} ${idError}` : idAyuda}
+      >
+        <option value="">Elige la urbanización</option>
+        {ZONAS_CON_URBANIZACIONES.map((zona) => (
+          <optgroup key={zona} label={zona}>
+            {urbanizacionesDeZona(zona).map((u) => (
+              <option key={u.id} value={u.nombre}>
+                {u.nombre}
+              </option>
+            ))}
+          </optgroup>
+        ))}
+      </select>
+      <p className="g-campo__ayuda" id={idAyuda}>
+        {AYUDA_URBANIZACION_CENTRO}
+      </p>
+      {error && (
+        <p className="g-campo__error" id={idError}>
+          <Icono nombre="alerta" tamano={18} />
+          <span>{error}</span>
+        </p>
+      )}
+    </div>
+  );
 }
 
 function FormularioAlta({
@@ -182,6 +249,8 @@ function FormularioAlta({
   alCrear: (c: ComercioEnRed) => void;
   alNoAutorizado: () => void;
 }) {
+  const [tipo, setTipo] = useState<TipoComercio>('ferreteria');
+  const [urbanizacion, setUrbanizacion] = useState('');
   const [nombre, setNombre] = useState('');
   const [estado, setEstado] = useState('');
   const [ciudad, setCiudad] = useState('');
@@ -200,6 +269,7 @@ function FormularioAlta({
     if (!estado) e.estado = 'Elige el estado.';
     if (!ciudad.trim()) e.ciudad = 'Escribe la ciudad.';
     if (!tienda.trim()) e.tienda = 'Escribe el nombre de su primera tienda.';
+    if (tipo === 'centro_llenado' && !urbanizacion) e.urbanizacion = 'Elige la urbanización del local.';
     setErrores(e);
     setErrorGeneral(null);
     if (Object.keys(e).length > 0) return;
@@ -214,6 +284,8 @@ function FormularioAlta({
           meses_gratis: Number(meses),
           tienda_nombre: tienda.trim(),
           tienda_direccion: direccion.trim() || null,
+          tipo,
+          urbanizacion: tipo === 'centro_llenado' ? urbanizacion : null,
         },
         token,
       );
@@ -225,6 +297,8 @@ function FormularioAlta({
       setMeses('3');
       setTienda('');
       setDireccion('');
+      setTipo('ferreteria');
+      setUrbanizacion('');
     } catch (error) {
       if (esNoAutorizado(error)) alNoAutorizado();
       else setErrorGeneral(mensajeDe(error, 'No se pudo dar de alta el comercio. Intenta otra vez.'));
@@ -238,6 +312,19 @@ function FormularioAlta({
       <h2 className="g-h3" id="titulo-alta">
         Dar de alta un comercio
       </h2>
+      <Campo
+        como="select"
+        etiqueta="Tipo de comercio"
+        value={tipo}
+        onChange={(e) => {
+          setTipo(e.target.value as TipoComercio);
+          setErrores((previos) => ({ ...previos, urbanizacion: undefined }));
+        }}
+        opciones={[
+          { valor: 'ferreteria', etiqueta: 'Ferretería' },
+          { valor: 'centro_llenado', etiqueta: 'Centro de llenado' },
+        ]}
+      />
       <Campo etiqueta="Nombre del comercio" value={nombre} onChange={(e) => setNombre(e.target.value)} error={errores.nombre} />
       <div className="red-dos">
         <Campo
@@ -282,6 +369,16 @@ function FormularioAlta({
         value={direccion}
         onChange={(e) => setDireccion(e.target.value)}
       />
+      {tipo === 'centro_llenado' && (
+        <CampoUrbanizacion
+          valor={urbanizacion}
+          alCambiar={(v) => {
+            setUrbanizacion(v);
+            setErrores((previos) => ({ ...previos, urbanizacion: undefined }));
+          }}
+          error={errores.urbanizacion}
+        />
+      )}
       {errorGeneral && (
         <Aviso tono="error" rol="alert">
           {errorGeneral}
