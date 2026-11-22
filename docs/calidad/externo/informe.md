@@ -4,6 +4,42 @@ Pruebas de navegador contra https://agua.oydo.app, hechas desde una máquina dis
 
 Cómo correrlas: `cd pruebas/externas && npm install && npx playwright install chromium && npx playwright test`. Revisión del repositorio: `node pruebas/externas/revisar-repo.js` desde la raíz.
 
+## Pasada 4 · sáb 21 nov, 9:22 p.m.
+
+**Resumen:** la app ya está publicada en https://agua.oydo.app. **El recorrido completo del cliente funciona en teléfono y en escritorio**: bienvenida → perfil → dirección → pago simulado → «Ya me llegó el sobre» → carga manual → semáforo por parámetro con el aviso fijo → cartucho Oasis sugerido → pedido confirmado. **El pedido en vivo en el panel no se pudo verificar**: el panel pide PIN y esta máquina no lo tiene.
+
+| Revisión | Teléfono (375 px) | Escritorio |
+|---|---|---|
+| La bienvenida carga | Sí | Sí |
+| No dice «potable» | Cumple en todas las pantallas | Cumple |
+| Recorrido completo del cliente | **Sí** | **Sí** |
+| Semáforo por parámetro | Sí (rojo, amarillo y verde por casilla) | Sí |
+| Aviso fijo en el resultado | **Sí**, literal | **Sí** |
+| Producto sugerido y pedido | Sí: 3 cartuchos Oasis, pedido confirmado | Sí |
+| Controles de 44 px o más | **No:** «Cotizar por WhatsApp» mide 26 px | No aplica |
+| Panel del operador carga y pide PIN | Sí («Panel de tiendas») | Sí |
+| Pedido en vivo en Despacho sin recargar | **Sin verificar: falta PIN** | **Sin verificar: falta PIN** |
+
+**Repositorio:** 205 archivos revisados, sin hallazgos reales. Ya existen `LICENCIAS.md` y las pruebas internas en `pruebas/e2e/`. Hubo tres falsos positivos, ya ajustados en `revisar-repo.js`: una clave ficticia en `api/src/config.test.ts`, «potable» dentro de una prueba que verifica que no aparezca, y el WhatsApp de las tiendas (+58 414-4409396), que es público en grimuca.com.
+
+**Señales de vida del orquestador:** último commit a las 9:05 p.m. (`9eecc72`). El sitio responde con la app. No hay alerta.
+
+**Capturas:** `capturas/pasada4-resultado-telefono.png`, `capturas/pasada4-pedido-telefono.png` y `capturas/pasada4-resultado-escritorio.png`.
+
+### Fallas abiertas
+
+**Rompe la demo**
+- Ninguna encontrada en el recorrido del cliente.
+- **Sin verificar:** el momento clave, el pedido apareciendo en Despacho sin recargar. Para probarlo hace falta correr `PIN_OPERADOR=<PIN> npx playwright test` en esta máquina. El PIN no está aquí y no se buscó en el servidor.
+
+**Confunde**
+- **«Cotizar por WhatsApp» mide 26 px de alto** en las tarjetas de producto del resultado (teléfono). La regla de diseño exige 44 px o más.
+- **Pedidos de prueba en producción:** cada corrida del recorrido crea un pedido de sobre y uno de cartucho a nombre de «Prueba Calidad» (WhatsApp 0414 123 4567, Calle Prueba 123). Hay 4 de esta pasada más los de los ajustes. Conviene borrarlos o marcarlos como despachados antes de la demo. Desde ahora el recorrido externo solo corre cuando cambia el código de la app.
+
+**Cosmético**
+- Los cartuchos sugeridos no muestran foto: sale un recuadro gris. El catálogo tiene `url_foto` pública para cada producto Oasis.
+- La especificación dice «Empezar», «Guardar y seguir» y «Pagar $9 (simulación)», pero la app dice «Pedir el sobre a domicilio ($9)», «Continuar», «Continuar al pago» y «Simular pago de $9». La app manda; conviene actualizar `docs/diseno/especificacion.md`.
+
 ## Pasada 3 · sáb 21 nov, 8:46 p.m.
 
 **Resumen:** el orquestador avanza rápido: componentes, especificación de pantallas, contenedores y guion de despliegue (último commit `4cc3a9a`, 8:44 p.m.). La URL pública sigue con la página provisional y las rutas del operador siguen vacías en el código. El recorrido aún no se puede probar.
