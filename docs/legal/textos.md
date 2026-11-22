@@ -93,6 +93,14 @@ Confirmación:
 
 Reglas: la pantalla **no tiene** campos de tarjeta, banco, cédula ni pago móvil, ni siquiera de adorno. Si el equipo sí va a enviar sobres reales, se quita solo la frase "y no se envía un sobre real".
 
+## (g) Sugerencia de lámpara UV (agregado en la revisión 2)
+
+Solo cuando el reporte del frasco es "Cambió de color". Tarjeta aparte, debajo del resultado (e) y del aviso fijo (d):
+
+> Opción para consultar en tienda: lámpara UV, pensada para reducir bacterias según el fabricante. No significa que el agua quede apta para tomar. Sigue hirviendo el agua y confirma con un laboratorio.
+
+Reglas: nunca con "Sigue igual". "Pensada para reducir bacterias según el fabricante" solo si la ficha del producto lo declara; sin ficha queda "Opción para consultar en tienda: lámpara UV." más las dos frases finales. Mientras el catálogo sea de ejemplo, lleva "Producto y precio de ejemplo". Botón: "Consultar en tienda" o "Agregar a mi lista"; nada de "Compra ya", "Soluciónalo" ni "Protege a tu familia". Condiciones completas en `revision-2.md`.
+
 ## Extras cortos (mismo criterio)
 
 **Bajo la bienvenida:**
@@ -110,6 +118,10 @@ Reglas: la pantalla **no tiene** campos de tarjeta, banco, cédula ni pago móvi
 **Plomo o cobre fuera de rango:**
 
 > Posible presencia de [plomo / cobre]. Una tira casera no lo confirma. Confirma con un laboratorio.
+
+**Plomo o cobre en rojo, línea que se agrega (revisión 2):**
+
+> Por precaución, mientras confirmas, usa otra agua para tomar y cocinar. Hervirla no quita el [plomo / cobre].
 
 **Plomo en rango:**
 

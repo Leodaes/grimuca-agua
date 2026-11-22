@@ -2,7 +2,7 @@
 
 Autor: Especialista de agua · sáb 21 nov 2026 · una sola corrida, antes del código.
 Uso: `api/src/medicion/config/umbrales.ts`, textos de la pantalla de resultado, reglas de producto sugerido.
-**Pendiente:** el Asesor legal revisa las secciones 2, 4 y 5 antes de que lleguen a la app.
+**Revisado por el Asesor legal (revisión 2, sáb 21 nov):** secciones 2, 4 y 5 corregidas en este archivo. Cambios en `docs/legal/revision-2.md`. Los textos de bacterias son literales de `docs/legal/textos.md` (e).
 
 Estado de cada dato:
 - **confirmado** = lo contrasté hoy con la fuente o con una tabla que la cita.
@@ -39,25 +39,28 @@ Reglas de lectura para Desarrollo:
 ## 2. Frase simple por hallazgo
 
 Para verde, una sola frase genérica: **"Esta medida salió dentro de lo esperado."** (siempre acompañada del aviso fijo de Tulio).
+Excepción, `plomo` en verde: **"La tira no marcó presencia de plomo. Una tira casera puede no detectar cantidades bajas."**
 
 | Clave | Amarillo | Rojo |
 |---|---|---|
 | `alcalinidad` | Baja: "Tu agua tiene poca defensa y puede ponerse agresiva con las tuberías." · Alta: "Tu agua viene cargada de minerales. Puede dejar sabor y sarro." | No aplica. |
-| `dureza` | "Tu agua es dura. Deja sarro en la ducha, las ollas y el calentador. No es un tema de salud, pero le acorta la vida a tus equipos." | "Tu agua es muy dura. Vas a ver sarro por todos lados y tus equipos van a sufrir. Aquí conviene un ablandador." |
-| `cobre` | "La tira marca posible presencia de cobre. Puede venir de las tuberías. Confirma con un laboratorio." | "La tira marca posible presencia alta de cobre. No es un diagnóstico: confirma con un laboratorio. Mientras tanto, usa otra agua para tomar y cocinar." |
-| `nitrato` | "Aparecen nitratos en nivel medio. Pasa mucho con pozos y tanques. Repite la prueba y no lo pierdas de vista." | "Los nitratos salieron altos. Ojo: hervir el agua no los quita. Si en casa hay bebés o embarazadas, usa otra agua para tomar y preparar teteros, y confirma con un laboratorio." |
-| `cloro_libre` | "Tu agua trae bastante cloro. Se nota en el olor y el sabor. Un filtro de carbón lo resuelve." | "El cloro salió muy alto. Si acabas de clorar el tanque, espera unas horas y repite la prueba. Si sigue igual, no la tomes así: pásala por un filtro de carbón." |
-| `cloro_libre` = 0 (regla opcional) | "Tu agua no trae cloro. Si viene de tanque o pozo, no tiene protección contra microbios. Haz la prueba de bacterias del sobre." | No aplica. |
-| `plomo` | "La tira marca posible presencia de plomo. Una tira casera no alcanza para asegurarlo: confirma con un laboratorio." | "La tira marca posible presencia de plomo en nivel alto. No es un diagnóstico. Confirma con un laboratorio y, mientras tanto, usa otra agua para tomar y cocinar, sobre todo si hay niños o embarazadas. Hervirla no quita el plomo." |
+| `dureza` | "Tu agua es dura. Deja sarro en la ducha, las ollas y el calentador, y le acorta la vida a tus equipos." | "Tu agua es muy dura. Vas a ver sarro por todos lados y tus equipos van a sufrir. Aquí conviene un ablandador." |
+| `cobre` | "Posible presencia de cobre. Una tira casera no lo confirma. Confirma con un laboratorio." | "Posible presencia de cobre. Una tira casera no lo confirma. Confirma con un laboratorio. Por precaución, mientras confirmas, usa otra agua para tomar y cocinar. Hervirla no quita el cobre." |
+| `nitrato` | "La tira marca nitratos en nivel medio. Pasa mucho con pozos y tanques. Repite la prueba y no lo pierdas de vista." | "La tira marca nitratos altos. Confirma con un laboratorio. Por precaución, mientras confirmas, usa otra agua para tomar, cocinar y preparar teteros. Hervirla no quita los nitratos." |
+| `cloro_libre` | "Tu agua trae bastante cloro. Se nota en el olor y el sabor. Un filtro de carbón está pensado para reducirlo." | "El cloro salió muy alto. Si acabas de clorar el tanque, espera unas horas y repite la prueba. Si sigue igual, por precaución usa otra agua para tomar mientras lo revisas. Un filtro de carbón está pensado para reducir el cloro." |
+| `cloro_libre` = 0 (regla opcional) | "La tira no marcó cloro. Si tu agua viene de tanque o pozo, vale la pena hacer la prueba de bacterias del sobre." | No aplica. |
+| `plomo` | "Posible presencia de plomo. Una tira casera no lo confirma. Confirma con un laboratorio." | "Posible presencia de plomo. Una tira casera no lo confirma. Confirma con un laboratorio. Por precaución, mientras confirmas, usa otra agua para tomar y cocinar. Hervirla no quita el plomo." |
 | `ph` | Bajo: "Tu agua salió algo ácida. Puede desgastar tuberías y griferías." · Alto: "Tu agua salió algo alcalina. Puede saber raro, sentirse jabonosa y dejar sarro." | No aplica en esta tira. |
-| `nitrito` | "Aparecen nitritos. Puede ser señal de contaminación reciente. Repite la prueba y haz la de bacterias." | "Los nitritos salieron altos. No uses esta agua para bebés ni teteros, no intentes arreglarla hirviéndola y confirma con un laboratorio." |
+| `nitrito` | "La tira marca nitritos. Repite la prueba y haz también la de bacterias del sobre." | "La tira marca nitritos altos. Confirma con un laboratorio. Por precaución, mientras confirmas, usa otra agua para tomar, cocinar y preparar teteros. Hervirla no quita los nitritos." |
 | `hierro` | "Tu agua trae hierro. Mancha de marrón la ropa, la poceta y el lavamanos, y da sabor a metal." | "Tu agua trae mucho hierro. Vas a ver manchas marrones y sabor fuerte a metal. Hace falta un filtro para hierro antes que cualquier otro." |
 
-Reglas de redacción: plomo y cobre siempre "posible presencia, confirma con un laboratorio". Nunca "potable", "segura", "apta", "limpia", "contaminada" ni "tóxica". Ninguna frase promete que un cartucho resuelve un tema de salud.
+Reglas de redacción (Asesor legal, revisión 2): plomo y cobre siempre "posible presencia, confirma con un laboratorio". Nunca "potable", "segura", "apta", "limpia", "contaminada", "tóxica" ni "diagnóstico". Ninguna frase dice que un cartucho "resuelve", "elimina" o "corrige": solo "pensado para reducir X", y solo si la ficha del fabricante lo declara. Ninguna frase nombra efectos en la salud ni grupos de personas (niños, embarazadas); la precaución se dice sin explicar la enfermedad. Estas frases se pegan literal.
 
 ---
 
 ## 3. Parámetro → tipo de cartucho que lo corrige
+
+> Nota del Asesor legal: esta sección es **interna** (reglas de producto sugerido). "Corrige", "muy bien", "quita" y "desinfecta" no pasan a la app. En pantalla solo va "Pensado para reducir X (según el fabricante)", y solo si la ficha del producto lo declara.
 
 | Clave | Tipo de cartucho o equipo | Qué tan bien | No sirve para esto | Referencia |
 |---|---|---|---|---|
@@ -91,27 +94,29 @@ Los alcances de las normas NSF/ANSI están citados de memoria: **verificar** en 
 
 ## 4. Lo que la app NO puede afirmar
 
-- **Nunca "potable"**, ni "segura", "apta para tomar", "limpia" o "sin riesgo". Tampoco "contaminada" o "tóxica" como diagnóstico.
+- **Nunca "potable"** (ni en negativo), ni "segura", "apta para tomar", "limpia", "pura" o "sin riesgo". Tampoco "contaminada", "tóxica" o "diagnóstico". "Apta" solo aparece, en negativo, dentro de los textos literales de `docs/legal/textos.md`.
+- Nunca "tu agua tiene plomo", "libre de plomo", "tu agua tiene bacterias", "libre de bacterias" ni "detectamos E. coli".
+- Nunca que un filtro, cartucho o lámpara "elimina", "purifica", "corrige", "protege a tu familia" o "previene enfermedades".
 - La tira casera es **orientativa**: da rangos por color, no cifras exactas, y cambia con la luz, el tiempo de lectura y la tira usada.
 - **Plomo y cobre son orientativos.** Solo "posible presencia, confirma con un laboratorio". Un cero en la tira no descarta plomo.
 - **La tira no mide bacterias, virus ni parásitos.** Tampoco arsénico, flúor, pesticidas ni otros químicos.
 - La prueba de bacterias del frasco es de **presencia o ausencia**: no dice cuántas bacterias hay, ni cuáles, ni si alguien se va a enfermar.
 - **Un frasco sin cambio no certifica el agua.** Es una muestra, de un día, de un solo punto.
-- Todo verde **no** significa que el agua esté bien. Aviso fijo en cada resultado: "Esta tira no mide todo. Un buen resultado no significa que el agua sea apta para tomar."
-- La app no diagnostica enfermedades ni atribuye síntomas al agua.
-- La app no promete que un cartucho deja el agua lista para tomar: dice qué tipo de cartucho **reduce** qué cosa.
+- Todo verde **no** significa que el agua esté bien. Aviso fijo en cada resultado, también en el de bacterias: "Esta tira no mide todo. Un buen resultado no significa que el agua sea apta para tomar."
+- La app no diagnostica enfermedades, no atribuye síntomas al agua y no nombra efectos en la salud atados al resultado.
+- La app no promete que un cartucho o equipo deja el agua lista para tomar: dice para qué está **pensado** ("pensado para reducir X, según el fabricante").
 - Ningún resultado reemplaza un análisis de laboratorio.
 
 ---
 
-## 5. Prueba de bacterias (E. coli y coliformes, frasco a 48 horas)
+## 5. Prueba de bacterias (coliformes, frasco a 48 horas)
 
 Cómo funciona, en simple: el frasco trae un polvo que alimenta a las bacterias coliformes. Si hay alguna en la muestra, crece y le cambia el color al líquido. Si no hay, el líquido queda como estaba.
 
 | Punto | Interpretación |
 |---|---|
-| Qué son los coliformes | Bacterias "señal": avisan que el agua pudo tener contacto con suciedad. E. coli, en particular, apunta a contaminación con heces. |
-| Cambió de color | Hay coliformes en esa muestra. No dice cuántos, ni si son E. coli, ni si enferman. |
+| Qué son los coliformes (contexto interno, no va en la app) | Bacterias "señal": avisan que el agua pudo tener contacto con suciedad. E. coli, en particular, apunta a contaminación con heces. |
+| Cambió de color | Posible presencia de coliformes en esa muestra. No dice cuántos, ni si son E. coli, ni si enferman. Se confirma en laboratorio. |
 | Sigue igual | No se detectaron coliformes en esa muestra. No descarta otros microbios ni químicos. |
 | Cuándo leer | A las 48 horas, a temperatura ambiente. Un cambio que aparece días después no cuenta. |
 | Errores comunes | Tocar la boca del frasco o la tapa con los dedos, o llenar con una llave sucia, puede dar un cambio de color falso. |
@@ -119,15 +124,13 @@ Cómo funciona, en simple: el frasco trae un polvo que alimenta a las bacterias 
 
 Si el frasco solo detecta coliformes totales y no distingue E. coli, la app no debe mencionar E. coli en el resultado: **verificar con el instructivo**.
 
-**Texto propuesto · "Cambió de color"**
-> Tu frasco cambió de color. Eso indica que en esa muestra hay bacterias coliformes, una señal de que el agua pudo ensuciarse en el camino. La prueba no dice cuántas hay ni si te vas a enfermar.
-> Mientras lo resuelves: hierve el agua que vas a tomar y a usar para cocinar (que hierva a borbotones al menos 1 minuto), lava y desinfecta el tanque o los botellones, y repite la prueba. Para saberlo con certeza, lleva una muestra a un laboratorio.
+**Texto aprobado · "Cambió de color"** (literal de `docs/legal/textos.md`, sección e)
+> El frasco cambió de color. Eso indica posible presencia de bacterias coliformes en la muestra. Es una prueba casera orientativa, no un análisis de laboratorio. Por precaución, hierve el agua antes de tomarla y confirma el resultado con un laboratorio. Si alguien en casa se siente mal, consulta a un médico.
 
-**Texto propuesto · "Sigue igual"**
-> Tu frasco no cambió de color. En esa muestra no se detectaron bacterias coliformes. Es una buena señal, pero es una sola muestra de un solo día. Esta prueba no revisa virus, parásitos ni químicos, y no certifica tu agua.
-> Repítela si cambias de fuente, después de lavar el tanque, o si el agua cambia de olor, color o sabor.
+**Texto aprobado · "Sigue igual"** (literal de `docs/legal/textos.md`, sección e)
+> El frasco no cambió de color. La prueba no detectó bacterias coliformes en esta muestra. Esto no certifica el agua ni significa que sea apta para tomar: es una prueba casera orientativa, depende de cómo se tomó la muestra y no detecta virus, parásitos ni otros contaminantes. Si quieres certeza, pide un análisis de laboratorio.
 
-Ambos textos pasan por el Asesor legal antes de publicarse. El minuto de hervor viene de la recomendación usual de salud pública: **verificar**.
+Reglas del Asesor legal: los dos textos se pegan literal, sin agregarles frases. "Cambió" va en rojo o amarillo; "Sigue igual" va en color neutro (azul o gris), nunca verde ni con ícono de aprobado. Debajo de ambos va el aviso fijo. Línea opcional, aparte y debajo: "Repite la prueba si cambias de fuente, después de lavar el tanque o si el agua cambia de olor, color o sabor." El minuto de hervor y el lavado del tanque no van en el resultado hasta **verificar** la fuente.
 
 ---
 
@@ -175,4 +178,4 @@ Ajustes sugeridos para `diasParaRecambio` (todos **supuestos**, verificar con Tu
 2. Valores de la norma venezolana (Gaceta 36.395).
 3. Instructivo del frasco de bacterias: colores, temperatura y si distingue E. coli.
 4. Alcances NSF/ANSI y cortes operativos marcados "verificar".
-5. Revisión del Asesor legal de las secciones 2, 4 y 5.
+5. Revisión del Asesor legal de las secciones 2, 4 y 5: **hecha** (ver `docs/legal/revision-2.md`).

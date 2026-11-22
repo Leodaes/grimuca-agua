@@ -204,7 +204,7 @@ En cualquier pestaña, cuando entra un pedido: `Toast` "Pedido nuevo en {tienda}
 
 ### Despacho (momento clave de la demo)
 - **Propósito:** ver qué sale de cada tienda y marcarlo como despachado.
-- **Componentes:** `TarjetaTienda` (una por tienda, 3 columnas), `FilaPedido`, `Chip` (filtros), `Insignia`, `Toast`.
+- **Componentes:** `TarjetaTienda` (una por tienda, 3 columnas con la clase `g-rejilla-tiendas`), `ListaPedidos` + `FilaPedido`, `Chip` (filtros), `Insignia`, `Toast`.
 - **Contenido:** (1) h1 "Despacho de hoy" + filtros: Todos · Sobres · Cartuchos; (2) tres tarjetas: **Mañongo · Big Low · CC CEM**, cada una con `extra` = `Insignia` "{n} pendientes"; (3) dentro, una `FilaPedido` por pedido, del más nuevo al más viejo:
   - línea 1: `Insignia` de tipo (**Sobre** / **Cartucho**) + qué es ("Sobre de medición" o nombre del cartucho) + **hora** a la derecha (cifras tabulares);
   - línea 2: **zona** · **modalidad** (icono + "Retiro en tienda" o "Envío: {dirección}") + botón **"Despachado"** (secundario).
@@ -216,7 +216,7 @@ En cualquier pestaña, cuando entra un pedido: `Toast` "Pedido nuevo en {tienda}
 ### Inventario
 - **Propósito:** saber qué va a faltar.
 - **Componentes:** tabla (`g-tabla`), `Insignia`, `Chip` (filtro por tienda).
-- **Contenido:** tabla con columnas: Cartucho · Tienda · En stock · Demanda a 30 días · Diferencia. Si falta: `Insignia tono="error"` "Faltan {n}" (icono + palabra, no solo rojo); si alcanza: `Insignia tono="ok"` "Alcanza". Faltantes primero. Encabezado de tabla fijo.
+- **Contenido:** tabla con columnas: Cartucho · Tienda · En stock · Demanda a 30 días · Diferencia. Si falta: `Insignia tono="error"` "Faltan {n}" (icono + palabra, no solo rojo); si alcanza: `Insignia tono="ok"` "Alcanza". Faltantes primero. Columnas de números alineadas a la derecha (`g-tabla__numero`).
 - **Estados:** esqueleto; vacío "No hay cartuchos cargados."; error con "Reintentar". Nota al pie mientras el catálogo sea de ejemplo: "Catálogo de ejemplo."
 
 ### Zonas

@@ -172,3 +172,4 @@ Tablas de la sección 6 del documento de traspaso, con estos ajustes: `tiendas.i
 ## Cambios
 
 (Anota aquí cualquier desviación: fecha, quién, qué.)
+- sáb 21 nov, orquestador · Catálogo real (solo Oasis): `Cartucho` suma `categoria`, `url_producto` y `disponible`; todos los productos vienen sin precio (`precio_usd: null`). Los sugeridos de una medición son máximo 4, solo productos recomendables y disponibles. Las lámparas UV no se sugieren desde la tira: `GET/PUT /bacterias/:hogar_id` devuelven además `sugeridos: Cartucho[]`, que solo trae productos cuando el resultado es `cambio`. `MARCAS_EXCLUIDAS` deja de usarse.

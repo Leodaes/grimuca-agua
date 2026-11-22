@@ -1251,8 +1251,6 @@ button.g-toast__accion {
   vertical-align: middle;
 }
 .g-tabla thead th {
-  position: sticky;
-  top: 0;
   background: var(--papel);
   color: var(--tinta-2);
   font-size: var(--t-1);

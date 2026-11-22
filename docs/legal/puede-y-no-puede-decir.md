@@ -106,6 +106,8 @@ Revisados `docs/marketing/textos-app.md`, `deck.md`, `portal.md` y los dos guion
 | `deck.md` lámina 2, nota | "qué salió bien" | "qué salió en rango" | Baja |
 | `textos-app.md` §4 pago | Rótulo "SIMULACIÓN · No se cobra nada" y botón "Pagar $9 (simulación)" | Se aceptan. Debajo del rótulo va la línea completa del texto (f). | Baja |
 
+**Revisión 2 (21 nov):** las correcciones de `textos-app.md` de esta tabla ya están aplicadas en el archivo, y `docs/negocio/agua.md` quedó corregido. Detalle en `revision-2.md`. Siguen abiertas las de `deck.md`, `portal.md` y `resumen-para-tulio.md`.
+
 Aprobado tal cual: aviso fijo literal, textos de plomo y cobre, "Pensado para", etiquetas "En rango / Para vigilar / Fuera de rango", "Todo lo que medimos salió en rango" (con el aviso fijo pegado), la frase del orador "Somos una ferretería, no un laboratorio".
 
 ## Para Calidad

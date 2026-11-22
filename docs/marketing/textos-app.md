@@ -6,7 +6,7 @@ Borrador de Marketing para validar con Tulio. Listos para pegar.
 - Lo que va entre `{llaves}` lo pone la app (nombre, tienda, número).
 - Lo que va entre `[CORCHETES]` es un dato que falta; no se inventa.
 - Trato: de "tú", como en el mostrador.
-- Marcado **(legal)**: texto provisional que el Asesor legal debe aprobar antes de publicarse.
+- Revisado por el Asesor legal (revisión 2, sáb 21 nov; cambios en `docs/legal/revision-2.md`). Los textos de consentimiento, aviso fijo, plomo, cobre, bacterias y pago simulado son literales de `docs/legal/textos.md`: se pegan tal cual, sin ajustar el tono.
 
 **Reglas que no se rompen**
 - La app nunca dice "potable", "segura" ni "apta para tomar" como afirmación.
@@ -37,7 +37,8 @@ Borrador de Marketing para validar con Tulio. Listos para pegar.
 | Elemento | Texto |
 |---|---|
 | Título | Descubre la calidad del agua de tu casa |
-| Subtítulo | Te mandamos un sobre con la prueba, la haces tú mismo y en minutos te decimos qué está saliendo por tu chorro y qué hacer. |
+| Línea fija bajo el título | Medición orientativa con tira. No es un análisis de laboratorio. |
+| Subtítulo | Te mandamos un sobre con la prueba, la haces tú mismo y en minutos te decimos qué marcó la tira y qué hacer. |
 | Beneficio 1 | **Mides en tu casa.** Una tira, una gota por casilla y una foto. |
 | Beneficio 2 | **Te lo explicamos claro.** Verde, amarillo o rojo, casilla por casilla. |
 | Beneficio 3 | **Te decimos qué cartucho va.** Y sale de la tienda Grimuca que te quede más cerca. |
@@ -73,8 +74,9 @@ Borrador de Marketing para validar con Tulio. Listos para pegar.
 
 | Elemento | Texto |
 |---|---|
-| Casilla de consentimiento **(legal)** | Acepto que Grimuca use estos datos para enviarme el sobre y atender mis pedidos. |
-| Enlace | Ver aviso de privacidad |
+| Casilla de consentimiento (desmarcada por defecto, obligatoria) | Acepto que Grimuca Agua use mi nombre, zona, WhatsApp, dirección y los datos de mi hogar para enviarme el sobre, mostrarme mis resultados y atender mis pedidos, como explica el Aviso de privacidad. |
+| Enlace | "Aviso de privacidad", dentro del texto de la casilla, abre el aviso. |
+| Línea bajo la casilla (solo en la demo) | Esto es una demostración: puedes usar datos de prueba. |
 | Error: falta consentimiento | Marca la casilla para poder seguir. |
 | Error: WhatsApp | Revisa el número: deben ser 11 dígitos, empezando por 04. |
 | Error: personas | Escribe un número del 1 en adelante. |
@@ -96,7 +98,7 @@ Borrador de Marketing para validar con Tulio. Listos para pegar.
 | Cambiar tienda | Prefiero otra tienda |
 | Qué trae el sobre (título) | Qué te llega |
 | Qué trae 1 | 1 tira para medir tu agua |
-| Qué trae 2 | 1 prueba de bacterias (E. coli y coliformes) |
+| Qué trae 2 | 1 prueba casera de bacterias coliformes |
 | Qué trae 3 | La tabla de colores impresa |
 | Qué trae 4 | Un código QR con el video de cómo se hace |
 | Nota | El sobre es para una sola medición. |
@@ -109,20 +111,24 @@ Borrador de Marketing para validar con Tulio. Listos para pegar.
 
 | Elemento | Texto |
 |---|---|
-| Título | Paga tu sobre |
-| Rótulo fijo (visible arriba) | SIMULACIÓN · No se cobra nada |
+| Título | Pide tu sobre |
+| Etiqueta corta (visible arriba) | SIMULACIÓN · No se cobra nada |
+| Rótulo fijo (completo, arriba del botón) | Pago simulado. Esto es una demostración: no se cobra nada, no se piden datos de tarjeta ni de banco y no se envía un sobre real. |
 | Resumen: producto | Sobre de medición Grimuca Agua |
 | Resumen: precio | $9 |
 | Resumen: envío | A {zona}, desde Grimuca {tienda} |
 | Explicación | Esto es una demostración: al tocar el botón no sale dinero de ningún lado. Solo se registra tu pedido. |
 | Botón | Pagar $9 (simulación) |
 | Procesando | Registrando tu pedido… |
+| Confirmación: línea fija | Pago simulado registrado. No se hizo ningún cobro. |
 | Confirmación: título | Listo, {nombre}. Tu sobre está pedido. |
 | Confirmación: detalle | Pedido N.º {numero} · Sale de Grimuca {tienda} |
 | Confirmación: qué sigue | Cuando te llegue, abre la app y toca "Ya me llegó el sobre". |
 | Botón | Entendido |
 | Botón de la demo | Ya me llegó el sobre (saltar la espera) |
 | Error | No se pudo registrar el pedido. No se cobró nada. Intenta otra vez. |
+
+> Nota legal: esta pantalla no lleva campos de tarjeta, banco, cédula ni pago móvil, ni de adorno. Si el equipo sí va a mandar sobres reales, del rótulo se quita solo "y no se envía un sobre real".
 
 ---
 
@@ -227,7 +233,7 @@ Borrador de Marketing para validar con Tulio. Listos para pegar.
 | Estado | Título | Línea de apoyo |
 |---|---|---|
 | Verde | Todo lo que medimos salió en rango | Ninguna casilla salió fuera de lo esperado en esta medición. |
-| Amarillo | Hay casillas para vigilar | Nada urgente, pero conviene atenderlo antes de que empeore. |
+| Amarillo | Hay casillas para vigilar | Una o más casillas salieron cerca del límite. Abajo te decimos cuáles. |
 | Rojo | Hay casillas que atender | Una o más casillas salieron fuera de rango. Abajo te decimos cuáles y qué hacer. |
 
 **Aviso fijo (siempre visible, debajo del encabezado, no se puede cerrar)**
@@ -248,9 +254,11 @@ Borrador de Marketing para validar con Tulio. Listos para pegar.
 |---|---|
 | Título de la sección | Tu agua, casilla por casilla |
 | Fecha | Medición del {fecha} · {origen: con foto / anotada a mano} |
-| Plomo en amarillo o rojo **(legal)** | Posible presencia de plomo. Confirma con un laboratorio. |
-| Cobre en amarillo o rojo **(legal)** | Posible presencia de cobre. Confirma con un laboratorio. |
-| Nota de plomo y cobre | Una tira casera orienta, no confirma. |
+| Aviso de lectura (si fue con foto) | Lectura automática: puede equivocarse. Compara con la tabla de colores y corrige si hace falta. |
+| Plomo en amarillo o rojo | Posible presencia de plomo. Una tira casera no lo confirma. Confirma con un laboratorio. |
+| Cobre en amarillo o rojo | Posible presencia de cobre. Una tira casera no lo confirma. Confirma con un laboratorio. |
+| Plomo o cobre en rojo: línea que se agrega | Por precaución, mientras confirmas, usa otra agua para tomar y cocinar. Hervirla no quita el {plomo / cobre}. |
+| Plomo en verde | La tira no marcó presencia de plomo. Una tira casera puede no detectar cantidades bajas. |
 | Recambio: a tiempo | Te toca cambiar el cartucho en unos {dias} días. |
 | Recambio: vencido | Ya te toca cambiar el cartucho. |
 | Recambio: sin fecha | No sabemos cuándo cambiaste el cartucho. Si pasó mucho tiempo, pregunta en la tienda. |
@@ -284,11 +292,11 @@ Borrador de Marketing para validar con Tulio. Listos para pegar.
 | Botón de la tarjeta | Agregar a mi lista |
 | Ya agregado | En tu lista |
 | Aviso al agregar | Agregado a tu lista |
-| Marcador de catálogo | Producto de ejemplo. El catálogo real está por llegar. |
-| Sin productos (todo en verde) | Por ahora no hace falta cambiar nada. Vuelve a medir cuando cambies el cartucho o si notas el agua distinta. |
+| Marcador de catálogo | Sugerido según tu resultado. Producto y precio de ejemplo. |
+| Sin productos (todo en verde) | Con esta medición no tenemos un cartucho que recomendarte. Vuelve a medir cuando cambies el cartucho o si notas el agua distinta. |
 | Pie | ¿Dudas? Pasa por la tienda y lo vemos contigo. |
 
-> Nota: "Pensado para" en vez de "corrige" o "elimina": no prometemos lo que hace el cartucho hasta tener la ficha del fabricante.
+> Nota: "Pensado para" en vez de "corrige" o "elimina": no prometemos lo que hace el cartucho. Con la ficha del fabricante en mano se puede decir "Pensado para reducir {hallazgo} (según el fabricante)"; sin ficha, no se afirma nada.
 
 ---
 
@@ -349,23 +357,28 @@ Borrador de Marketing para validar con Tulio. Listos para pegar.
 | Elemento | Texto |
 |---|---|
 | Título | Reporta tu prueba de bacterias a las 48 horas |
-| Subtítulo | El frasco que vino en el sobre busca E. coli y coliformes. Necesita 48 horas quieto para dar resultado. |
+| Subtítulo | El frasco que vino en el sobre busca bacterias coliformes. Necesita 48 horas quieto para dar resultado. |
 | Cómo hacerla | Sigue las instrucciones que trae el frasco y toca "Ya la puse" para empezar a contar. |
 | Botón de inicio | Ya la puse |
 | Contando | Faltan {horas} horas para revisar el frasco. |
 | Mientras esperas | Déjalo quieto, tapado y lejos del sol. |
 | Llegó la hora | Ya pasaron 48 horas. Mira el frasco. |
+| Antes de elegir | Reporta solo cuando hayan pasado 48 horas completas desde que llenaste el frasco. |
 | Pregunta | ¿Cómo está el frasco? |
 | Opción 1 | Cambió de color |
 | Opción 2 | Sigue igual |
 | Botón | Reportar |
-| Resultado: cambió **(legal)** | El frasco cambió de color: posible presencia de bacterias. Confirma con un laboratorio y pasa por la tienda para orientarte. |
-| Resultado: sigue igual **(legal)** | El frasco no cambió de color. Es buena señal, pero esta prueba no certifica el agua. |
-| Aviso fijo de esta pantalla **(legal)** | Esta prueba es orientativa. No reemplaza un análisis de laboratorio. |
+| Resultado: cambió (rojo o amarillo) | El frasco cambió de color. Eso indica posible presencia de bacterias coliformes en la muestra. Es una prueba casera orientativa, no un análisis de laboratorio. Por precaución, hierve el agua antes de tomarla y confirma el resultado con un laboratorio. Si alguien en casa se siente mal, consulta a un médico. |
+| Resultado: sigue igual (azul o gris, nunca verde ni con ícono de aprobado) | El frasco no cambió de color. La prueba no detectó bacterias coliformes en esta muestra. Esto no certifica el agua ni significa que sea apta para tomar: es una prueba casera orientativa, depende de cómo se tomó la muestra y no detecta virus, parásitos ni otros contaminantes. Si quieres certeza, pide un análisis de laboratorio. |
+| Aviso fijo de esta pantalla (debajo de ambos resultados) | Esta tira no mide todo. Un buen resultado no significa que el agua sea apta para tomar. |
+| Invitación a la tienda (aparte, debajo; solo si cambió) | ¿Quieres orientación? Pasa por la tienda o escríbenos por WhatsApp y lo vemos contigo. |
+| Sugerencia de lámpara UV (tarjeta aparte, debajo; solo si cambió) | Opción para consultar en tienda: lámpara UV, pensada para reducir bacterias según el fabricante. No significa que el agua quede apta para tomar. Sigue hirviendo el agua y confirma con un laboratorio. |
 | Reportada | Prueba reportada el {fecha}. Gracias. |
 | Aún no la hace | Todavía no has puesto la prueba de bacterias. Está en tu sobre. |
 
 > Nota: las instrucciones exactas del frasco (cuánta agua, de qué color a qué color cambia) dependen del producto que se consiga. Falta: [INSTRUCCIONES DEL FRASCO: pendiente de Tulio].
+>
+> Nota legal: los dos resultados y el aviso fijo se pegan literal. "E. coli" solo se nombra si la caja del frasco real lo dice. La tarjeta de la lámpara UV lleva "Producto y precio de ejemplo" mientras el catálogo sea de ejemplo; si el producto no tiene ficha del fabricante, queda solo "Opción para consultar en tienda: lámpara UV." más las dos frases finales. Condiciones completas en `docs/legal/revision-2.md`.
 
 ---
 

@@ -288,15 +288,15 @@ Reducción: **99,8% menos kilos y 94% menos entregas** por hogar.
 |---|---|---|
 | Kilos al año | 2.054 toneladas | 1,9 toneladas |
 | Entregas al año | 52.000 | 3.000 |
-| Semana típica | 39,5 toneladas en 1.000 visitas | 35 kg en 38 envíos |
+| Semana típica | 39,5 toneladas en 1.000 visitas | 36 kg en 58 envíos |
 
 Lo que hoy pide camiones toda la semana pasa a caber en el morral de un motorizado.
 
-**En el escenario base, año 1:** 353 hogares con filtro. Si todos dejaran el botellón (SUPUESTO; si lo deja la mitad, la mitad): 725 toneladas y 18.300 entregas al año que dejan de moverse, contra 0,6 toneladas y unos 700 envíos de cartuchos.
+**En el escenario base, año 1:** 353 hogares con filtro. Si todos dejaran el botellón (SUPUESTO; si lo deja la mitad, la mitad): 725 toneladas y 18.300 entregas al año que dejan de moverse, contra 0,7 toneladas y unos 1.060 envíos pequeños.
 
 **Aclaratoria:** Grimuca no reparte botellones hoy. Ese ahorro es de la familia y de la ciudad, no un costo que Grimuca se quite. Lo que Grimuca gana en logística es esto:
 
-- **Las 3 tiendas son almacenes de despacho.** No hace falta galpón ni flota. El stock de un mes de una tienda en el base (80 sobres, unos 5 kg, más unos 9 juegos de cartuchos) cabe en una gaveta.
+- **Las 3 tiendas son almacenes de despacho.** No hace falta galpón ni flota. El stock de un mes de una tienda en el base (80 sobres, que pesan unos 5 kg, más 12 filtros y unos 9 juegos de cartuchos) cabe en un estante.
 - **Demanda prevista por zona.** Cada medición y cada fecha de último cambio dicen cuándo toca el próximo recambio. El operador ve los recambios a 7 y 30 días por tienda y compra solo lo que va a salir.
 - **Envíos agrupados.** Si una zona tiene varios hogares con recambio en la misma semana (o entra en alerta), sale una sola ruta. A $2,50 por envío (SUPUESTO), agrupar 3 pedidos en una ruta baja el costo por pedido a menos de $1.
 - **El sobre también es un despacho.** Sale de la misma tienda, con la misma lista y el mismo botón de "despachado".
