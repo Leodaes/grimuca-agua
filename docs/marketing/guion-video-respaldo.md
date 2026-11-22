@@ -23,8 +23,8 @@ Versión 4 (22 nov), puesta al día contra la app real y contra `guion-demo.md` 
 - **Se dice:** "Una ferretería compra y despacha repuestos a ciegas, porque nadie sabe cuándo le toca el cartucho a cada casa. Grimuca opera una red de ferreterías que recibe clientes ya medidos."
 
 ### 2 · 0:10 a 0:28 · 18 s · La Red y el comercio
-- **Se ve:** `01-red.png` (0:10 a 0:15; o `video-red.webm`, primeros 5 s) → `02a-comercio-despacho.png` (0:15 a 0:18) → `02b-comercio-inventario.png` (0:18 a 0:21) → `02c-comercio-zonas-mapa.png` (0:21 a 0:24) → `02e-comercio-rutas.png` (0:24 a 0:28). `02d-comercio-productos.png` no va. Textos: "Una ferretería por estado cubre el estado" y, en Rutas, "15 entregas · 3 rutas · 51,9 km contra 110,9 km (datos de demostración)".
-- **Se dice:** "Esta es la Red: Grimuca en Carabobo y dos comercios de demostración, cada uno con su plan y su membresía: activa, en periodo gratis o vencida. En el panel de un comercio se ven el despacho, el inventario contra los próximos treinta días y las zonas por urbanización. En Rutas, 15 entregas salen en 3 rutas: 51,9 kilómetros contra 110,9 si se hicieran viajes sueltos. Son datos de demostración."
+- **Se ve:** `01-red.png` (0:10 a 0:15; o `video-red.webm`, primeros 5 s) → `02a-comercio-despacho.png` (0:15 a 0:18) → `02b-comercio-inventario.png` (0:18 a 0:21) → `02c-comercio-zonas-mapa.png` (0:21 a 0:24) → `02e-comercio-rutas.png` (0:24 a 0:28). `02d-comercio-productos.png` no va. Textos: "Una ferretería por estado cubre el estado" y, en Rutas, "15 entregas · 3 rutas · 51,0 km contra 109,4 km (datos de demostración)".
+- **Se dice:** "Esta es la Red: Grimuca en Carabobo y dos comercios de demostración, cada uno con su plan y su membresía: activa, en periodo gratis o vencida. En el panel de un comercio se ven el despacho, el inventario contra los próximos treinta días y las zonas por urbanización. En Rutas, 15 entregas salen en 3 rutas: 51 kilómetros contra 109,4 si se hicieran viajes sueltos. Son datos de demostración."
 
 ### 2b · unos 10 s · Invitar a medir (nuevo, 22 nov; texto revisado por Tulio a las 12:44; corre los tiempos siguientes unos 10 s)
 - **Se ve:** Comercio → Zonas, "Zonas para invitar a medir" → se toca "Invitar a los vecinos de {urbanización} a medir" → WhatsApp simulado con "Enviado (simulado)". Se graba en la toma de las 3:00 p.m.
@@ -82,7 +82,7 @@ Son unas 215 palabras de voz a 150 por minuto, unos 86 s: queda justo. Se prueba
 ## Antes de dar el video por bueno
 
 - No aparece "potable", "segura" ni "apta" en la voz ni en los textos que se escriben; la medición se llama orientativa. El aviso fijo y el pie de la app se muestran tal como salen en pantalla.
-- La cifra de rutas dice 15 entregas, 3 rutas, 51,9 km contra 110,9 km, con "datos de demostración". No se dice que el pedido va "al comercio más cercano", ni "resultado ya escrito".
+- La cifra de rutas dice 15 entregas, 3 rutas, 51,0 km contra 109,4 km, con "datos de demostración". No se dice que el pedido va "al comercio más cercano", ni "resultado ya escrito".
 - El pedido aparece en el despacho en una sola toma continua, sin corte.
 - Se ve `agua.oydo.app` al final y el rótulo de demo.
 - Dura 90 segundos o menos y se entiende sin sonido.

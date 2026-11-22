@@ -14,7 +14,7 @@ Texto para la lámina del modelo del deck. Seis cifras, las de la lista final. L
 
 **Ingresos.** Tres líneas. (1) El sobre de $9 al cliente final. (2) La membresía mensual de la ferretería, de **$30** al mes con 1 a 3 meses gratis de entrada. (3) Sobres que Grimuca importa y vende al mayor a la ferretería a **$5,50**. Siguiente paso: comisión por transacción y plan premium con prioridad de asignación.
 
-**Logística.** Grimuca reparte su surtido de agua entre tres tiendas: una de cada tres referencias casi no se mueve y una sola hace la mitad de la venta de cartuchos (dato de Grimuca, 90 días al 21 nov 2026). Con la fecha de cada recambio se compra lo que se va a vender, los quiebres se ven antes y las entregas salen agrupadas por urbanización. Con los datos de demostración, 15 entregas en 3 rutas contra 15 viajes sueltos: 51,9 km contra 110,9 km, 53% menos (cálculo sobre datos de demostración, no ahorro medido).
+**Logística.** Grimuca reparte su surtido de agua entre tres tiendas: una de cada tres referencias casi no se mueve y una sola hace la mitad de la venta de cartuchos (dato de Grimuca, 90 días al 21 nov 2026). Con la fecha de cada recambio se compra lo que se va a vender, los quiebres se ven antes y las entregas salen agrupadas por urbanización. Con los datos de demostración, 15 entregas en 3 rutas contra 15 viajes sueltos: 51,0 km contra 109,4 km, 53% menos (cálculo sobre datos de demostración, no ahorro medido).
 
 **Red y expansión.** Grimuca es el comercio de Carabobo y opera la red. En otros estados entra una ferretería aliada por estado, y con una por estado ese estado queda cubierto. La última milla la hacen operadores que ya tienen red.
 

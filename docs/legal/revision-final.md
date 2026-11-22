@@ -7,7 +7,7 @@ Asesor legal · domingo 22 nov 2026 · solo lectura sobre `app/src/` (sin `*.tes
 
 - Deck, portal, página única y preguntas: sin "potable", "segura" ni "apta" como afirmación (aparecen solo en la lista de lo que no se dice y en negativo), sin "elimina", "purifica" ni promesas de salud. Plomo y cobre solo como "posible presencia, confirma con un laboratorio".
 - Cambios hechos: pie legal en la lámina 3 (la lámina con resultados), frase de que la prueba de bacterias no certifica en la lámina 2, en el portal y en la pregunta 13, y el cliente final del portal pasa de "preocupados por el agua que toman sus hijos" a "que quieren saber más del agua de su casa" (se evita atar el mensaje a la salud de los hijos).
-- Las cifras de rutas (15 entregas en 3 rutas, 51,9 km contra 110,9 km, 53% menos) se rotulan como cálculo sobre datos de demostración, no como ahorro medido.
+- Las cifras de rutas (15 entregas en 3 rutas, 51,0 km contra 109,4 km, 53% menos) se rotulan como cálculo sobre datos de demostración, no como ahorro medido.
 
 ## 2. App y API: lo que está bien
 

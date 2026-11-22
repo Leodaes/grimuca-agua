@@ -24,5 +24,5 @@ Todos son MP4 H.264, 1280×720, 30 fps y sin audio. No llevan rótulos: los tít
 
 - La lectura por foto usa `docs/calibracion/tira-ejemplo.jpg`. Las fotos reales de Leonardo que muestran solo la tira no traen la tabla de colores, y sin la tabla el lector no lee; la única con tabla es la del fabricante, que no se usa.
 - En el teléfono, las fechas de los campos de fecha salen como 11/22/2026 (el navegador de la grabación estaba en inglés), en `09` y `12`.
-- Las cifras de las rutas salen de los pedidos pendientes de ese momento (51,0 km contra 109,4 km); el deck usa 51,9 contra 110,9 de un ensayo anterior.
+- Las cifras de las rutas del clip (51,0 km contra 109,4 km, 53 % menos) son las mismas del deck, el guion y el README.
 - Sin voz: no llegó la clave.
