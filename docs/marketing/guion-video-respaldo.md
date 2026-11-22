@@ -26,6 +26,12 @@ Versión 4 (22 nov), puesta al día contra la app real y contra `guion-demo.md` 
 - **Se ve:** `01-red.png` (0:10 a 0:15; o `video-red.webm`, primeros 5 s) → `02a-comercio-despacho.png` (0:15 a 0:18) → `02b-comercio-inventario.png` (0:18 a 0:21) → `02c-comercio-zonas-mapa.png` (0:21 a 0:24) → `02e-comercio-rutas.png` (0:24 a 0:28). `02d-comercio-productos.png` no va. Textos: "Una ferretería por estado cubre el estado" y, en Rutas, "15 entregas · 3 rutas · 51,9 km contra 110,9 km (datos de demostración)".
 - **Se dice:** "Esta es la Red: Grimuca en Carabobo y dos comercios de demostración, cada uno con su plan y su membresía: activa, en periodo gratis o vencida. En el panel de un comercio se ven el despacho, el inventario contra los próximos treinta días y las zonas por urbanización. En Rutas, 15 entregas salen en 3 rutas: 51,9 kilómetros contra 110,9 si se hicieran viajes sueltos. Son datos de demostración."
 
+### 2b · unos 10 s · Alerta por zona (nuevo, 22 nov 11:15; corre los tiempos siguientes unos 10 s)
+- **Se ve:** Comercio → Zonas, "Alertas por zona" → se toca "Avisar a los vecinos de la zona" → WhatsApp simulado con "Enviado (simulado)". Se graba en la toma de las 3:00 p.m.
+- **Texto en pantalla:** "Avisos solo a quien los aceptó · datos agregados y anónimos".
+- **Se dice (Tulio):** "Cuando varios hogares de una zona salen fuera de rango en la misma semana, la red lo detecta y avisa a los vecinos que aceptaron recibir avisos, para que midan su agua. Esos datos, agregados y sin nombres, también sirven para estudios por zona con universidades e instituciones públicas. Son mediciones caseras orientativas."
+- **Si el video se pasa de tiempo:** este bloque es el primero que se corta.
+
 ### 3 · 0:28 a 0:52 · 24 s · La familia mide y pide
 - **Se ve:** `03c-cliente-medir.png` (0:28 a 0:31) → `03d-cliente-foto-se-ve-bien.png` (0:31 a 0:34) → `03f-cliente-resultado-semaforo.png` (0:34 a 0:38) → `03g-cliente-casilla-por-casilla.png` (0:38 a 0:42, aviso fijo y pie completos, 3 s como mínimo) → `03h-cliente-por-que-te-lo-recomendamos.png` (0:42 a 0:46) → `03i-cliente-mi-lista.png` (0:46 a 0:49) → `03j-cliente-pedido-confirmado.png` (0:49 a 0:52). Alternativa en movimiento: `video-cliente.webm`, de la portada al pedido, acelerado. Si hace falta mostrar el sobre físico, va una toma suelta antes de 03c; la app no escanea el QR por dentro, así que no se muestra ningún escaneo.
 - **Texto en pantalla:** "Esta tira no mide todo. La medición es orientativa."

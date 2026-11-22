@@ -23,7 +23,7 @@ Versión 4.1 (22 nov): costo del sobre en $2,94 como base (decisión de Leonardo
 - Lámina 2: `03-sobre.jpg` (la tabla de colores es ilustrativa) y un esquema de tres cajas: familia, plataforma y ferretería.
 - Lámina 3: cuatro capturas, una por módulo (detalle abajo). **Las de `/red`, `/tecnico` y la pestaña Productos de `/comercio` no existen todavía**: se toman cuando la migración `008_red_de_comercios.sql` esté desplegada.
 - Lámina 4: `33-operador-inventario.png` y `34-operador-zonas.png`.
-- Lámina 5: sin imagen; tabla de las tres líneas de ingreso.
+- Lámina 5: sin imagen; tabla de las cuatro líneas de ingreso.
 - Lámina 6: mapa de Venezuela con estados cubiertos (la Red lo muestra como cifra) y `01-saber-que-tomas.jpg` de fondo.
 
 **Qué pilar del jurado trabaja cada lámina:** 1 y 2 producto; 3 calidad técnica y producto; 4 innovación y logística; 5 modelo de negocio; 6 modelo e innovación.
@@ -94,15 +94,15 @@ Versión 4.1 (22 nov): costo del sobre en $2,94 como base (decisión de Leonardo
 
 **Costo del sobre puesto en Venezuela: $2,94 (decisión del equipo; incluye fábrica y un supuesto de $1,00 de flete, aduana y empaque)**
 
-**Título:** Tres líneas de ingreso, y la ferretería es la que paga
+**Título:** Cuatro líneas de ingreso, y la ferretería es la que paga
 
-- **Sobre de $9** al cliente final (Tulio). **Membresía de la ferretería: $30 al mes con 1 a 3 meses gratis (SUPUESTO).** **Sobres al mayor a $5,50 (SUPUESTO).**
+- **Sobre de $9** al cliente final (Tulio). **Membresía de la ferretería: $30 al mes con 1 a 3 meses gratis (SUPUESTO).** **Sobres al mayor a $5,50 (SUPUESTO).** **Estudios de calidad del agua por zona para universidades e instituciones públicas, con datos agregados y anónimos (SUPUESTO, sin precio todavía).**
 - La ferretería recibe unos $140 al mes en margen de las familias asignadas (cálculo con márgenes de Tulio y 20 familias, supuesto; $280 con las 40 de la meta) y recupera la membresía con 5 familias.
 - Cada ferretería deja a la red unos $87 al mes (cálculo con 20 familias y el sobre a $2,94); 6 ferreterías pagando cubren los fijos de la red. Siguiente paso: comisión por transacción y plan premium.
 
 **Nota al pie de la lámina (sensibilidad del costo del sobre).** Base de la lámina: sobre a $2,94 puesto en Venezuela (decisión del equipo: fábrica $1,94 de Tulio más un supuesto de $1,00 de flete, aduana y empaque). Sensibilidad: si el costo sube a $4,00, cifra que se mencionó en la asesoría, el aporte por ferretería baja a $66 en vez de $87; las ferreterías que cubren los fijos pasan de 6 a 7; el margen del sobre a domicilio baja de $3,38 a $2,38; la caja de la red al cierre del año 1 baja a −$4.669 en vez de −$3.105 en el base, −$9.969 en vez de −$8.909 en el conservador y −$2.035 en vez de +$1.094 en la meta de 40 familias; las familias por ferretería para cerrar el año 1 en cero suben de 35 a 56. Lo demás no cambia. Fuente: `docs/negocio/modelo.md`, sección 0.
 
-**Nota del orador (Tulio):** "El que paga todos los meses es la ferretería. La familia entra por la medición y paga $9." Honestidad en tarima: "No hay todavía ninguna ferretería aliada; la membresía, el precio al mayor y el número de ferreterías son supuestos que el piloto confirma." Si preguntan por caja: el primer año de la red es de inversión (base de 20 familias: −$3.105 con el sobre a $2,94; con las 40 de la meta, +$1.094); la operación mensual es positiva desde el mes 6. Grimuca vende hoy del orden de un centenar de cartuchos al mes, así que 40 familias por ferretería es meta de crecimiento y no continuidad. La variable que lo tumba es cuántas familias medidas le llegan a cada ferretería al mes: con 35 el año 1 cierra en cero. Las tres tiendas propias de Carabobo siguen con su economía (hipótesis de Tulio, sin venta real).
+**Nota del orador (Tulio):** "El que paga todos los meses es la ferretería. La familia entra por la medición y paga $9." Honestidad en tarima: "No hay todavía ninguna ferretería aliada; la membresía, el precio al mayor y el número de ferreterías son supuestos que el piloto confirma." Si preguntan por caja: el primer año de la red es de inversión (base de 20 familias: −$3.105 con el sobre a $2,94; con las 40 de la meta, +$1.094); la operación mensual es positiva desde el mes 6. Grimuca vende hoy del orden de un centenar de cartuchos al mes, así que 40 familias por ferretería es meta de crecimiento y no continuidad. La variable que lo tumba es cuántas familias medidas le llegan a cada ferretería al mes: con 35 el año 1 cierra en cero. Las tres tiendas propias de Carabobo siguen con su economía (hipótesis de Tulio, sin venta real). Si preguntan por los estudios: "Cada medición casera queda en un mapa por zona. Agregados y sin nombrar hogares, esos datos le sirven a una universidad o a una institución pública para ver dónde mirar primero. Son mediciones caseras orientativas, no análisis de laboratorio; solo entran los hogares que dieron su consentimiento. No tenemos todavía cliente ni precio para esta línea."
 
 ---
 
@@ -117,13 +117,13 @@ Versión 4.1 (22 nov): costo del sobre en $2,94 como base (decisión de Leonardo
 
 **Lema en pantalla, abajo:** Clientes que llegan sabiendo qué necesitan · Saber qué tomas empieza en casa
 
-**Nota del orador (Tulio):** "Empezamos en Valencia con tres tiendas que ya existen." En la demo hay dos comercios de demostración (Barquisimeto y Maracay), rotulados así. Datos de la región con fuente, si piden (`modelo.md` sección 11): México, 98% de los hogares compra agua embotellada (Kantar Worldpanel, 2017); República Dominicana, 84,3% usa agua de botellón (ONE, Censo 2022). Cerrar con la dirección `agua.oydo.app` en pantalla y los nombres: Leonardo Dávila y Tulio Dávila.
+**Nota del orador (Tulio):** "Empezamos en Valencia con tres tiendas que ya existen." Alerta temprana (no cabe como cuarta viñeta, va aquí): "Cuando varios hogares de una zona salen fuera de rango en la misma semana, la red lo detecta y avisa a los vecinos que aceptaron recibir avisos, para que midan su agua. No nombramos hogares y no decimos que el agua esté contaminada." En la demo hay dos comercios de demostración (Barquisimeto y Maracay), rotulados así. Datos de la región con fuente, si piden (`modelo.md` sección 11): México, 98% de los hogares compra agua embotellada (Kantar Worldpanel, 2017); República Dominicana, 84,3% usa agua de botellón (ONE, Censo 2022). Cerrar con la dirección `agua.oydo.app` en pantalla y los nombres: Leonardo Dávila y Tulio Dávila.
 
 ---
 
 ## Preguntas probables del jurado y respuesta corta
 
-Las 21 respuestas con su número están en `docs/negocio/preguntas-jurado.md`. Las cuatro que más se hacen:
+Las 23 respuestas con su número están en `docs/negocio/preguntas-jurado.md`. Las cuatro que más se hacen:
 
 | Pregunta | Respuesta |
 |---|---|
@@ -147,7 +147,7 @@ Cada criterio vale 25%. Los minutos son los de `guion-demo.md` (versión 4).
 
 | Criterio del jurado | Lámina y minuto del guion que lo responde | Evidencia en la demo |
 |---|---|---|
-| Modelo de negocio | Lámina 5 y bloque 7 (2:40 a 3:00); la Red en el bloque 1 (0:00 a 0:25) | Tres líneas de ingreso con supuestos rotulados (sobre $9, membresía $30, mayor $5,50), costo del sobre en $2,94 con la sensibilidad de $4,00 en nota; `/red` muestra comercios con plan y periodo gratis |
+| Modelo de negocio | Lámina 5 y bloque 7 (2:40 a 3:00); la Red en el bloque 1 (0:00 a 0:25) | Cuatro líneas de ingreso con supuestos rotulados (sobre $9, membresía $30, mayor $5,50, estudios por zona sin precio), costo del sobre en $2,94 con la sensibilidad de $4,00 en nota; `/red` muestra comercios con plan y periodo gratis |
 | Producto: problema claro | Lámina 1 y bloque 1 (0:00 a 0:25); lámina 4 y bloque 2 (0:25 a 0:50) | Ferretería que compra a ciegas y hogar que no mide; inventario con faltantes en rojo y dato real de Grimuca (una de cada tres referencias casi no se mueve) |
 | Producto: caso de uso demostrado | Láminas 2 y 3; bloques 3 a 5 (0:50 a 2:25) | Un solo pedido recorre cliente, comercio, técnico y red; "Ya fui" con foto; aviso fijo en el resultado |
 | Calidad técnica | Lámina 3; bloque 4 (1:35 a 1:55, momento clave) | El pedido aparece solo en el despacho del comercio, en vivo, sin recargar; mapa real con rutas; aviso legal literal en resultado y bacterias |
