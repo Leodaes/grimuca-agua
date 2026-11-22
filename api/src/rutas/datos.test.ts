@@ -57,6 +57,9 @@ describe('sugerirCartuchos', () => {
   it('si lo único por corregir son bacterias, la tira no sugiere nada', () => {
     expect(sugerirCartuchos(catalogo, { corrige: ['bacterias'], tieneFiltro: false })).toEqual([]);
     expect(sugerirCartuchos(catalogo, { corrige: [], tieneFiltro: true })).toEqual([]);
+    // Un repuesto que dice "bacterias" pero no es de desinfección tampoco entra por la tira (tanque todo en verde).
+    const conRepuesto = [...catalogo, cartucho('Z-BACT', 'repuesto', ['bacterias'])];
+    expect(sugerirCartuchos(conRepuesto, { corrige: ['bacterias'], tieneFiltro: true })).toEqual([]);
   });
 
   it('respeta las marcas excluidas sin importar mayúsculas y no expone campos internos', () => {

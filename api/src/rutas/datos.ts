@@ -308,7 +308,9 @@ export function sugerirCartuchos(catalogo: CartuchoCatalogo[], criterio: Criteri
 }
 
 function ordenarCandidatos(catalogo: CartuchoCatalogo[], criterio: CriterioSugeridos) {
-  const pedidas = new Set(criterio.corrige);
+  // La tira no mide bacterias: un producto no entra a los sugeridos de la tira solo por decir "bacterias".
+  // Lo de bacterias va con la prueba del sobre (sugerirDesinfeccion).
+  const pedidas = new Set(criterio.corrige.filter((clave) => clave !== 'bacterias'));
   const excluidas = new Set((criterio.marcasExcluidas ?? []).map((marca) => marca.trim().toLowerCase()));
   const preferidas = criterio.tieneFiltro ? ['cartucho'] : ['filtro', 'sistema_osmosis_inversa'];
   return catalogo
