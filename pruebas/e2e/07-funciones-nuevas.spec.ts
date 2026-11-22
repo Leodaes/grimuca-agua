@@ -635,7 +635,7 @@ test.describe('Funciones nuevas · operador', () => {
     notas.laBegonaDetalle = (await detalle.innerText()).replace(/\n+/g, ' | ');
     expect(begona?.alerta, 'Con los datos sembrados La Begoña está en alerta').toBe(true);
     await expect(
-      detalle.getByText(/varios hogares de la zona reportaron resultados fuera de rango/i),
+      detalle.getByText(/varios hogares de la zona tienen casillas en rojo esta semana/i),
       'El detalle muestra la alerta',
     ).toBeVisible();
     await expect(detalle).toContainText(String(begona.hogares_en_rojo_7_dias));

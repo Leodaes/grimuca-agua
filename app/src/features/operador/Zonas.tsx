@@ -128,45 +128,34 @@ function Leyenda({ vista, forma }: { vista: VistaMapa; forma: FormaMapa }) {
   );
 }
 
-/** "nitrato", "nitrato y plomo", "nitrato, cloro libre y plomo". */
-function enumerar(lista: string[]): string {
-  if (lista.length <= 1) return lista.join('');
-  return `${lista.slice(0, -1).join(', ')} y ${lista[lista.length - 1]}`;
-}
-
 /**
- * Aviso a vecinos en dos burbujas (aprobado por Leonardo, 22 nov; revisado contra docs/legal/riesgos.md M3):
- * no nombra hogares, no dice "contaminada", aclara que no dice nada de la casa de quien lo recibe y trae la baja.
+ * Invitación a medir para los vecinos, en dos burbujas (revisión de Tulio, 22 nov 12:44): no vende con miedo,
+ * no le pone etiqueta a la urbanización y no dice "fuera de rango" ni nombra parámetros. Trae la baja.
  */
-export function mensajesAvisoVecinos(zona: string, tienda: string, parametros: string[]): [string, string] {
-  const cuales = parametros.length > 0 ? `, sobre todo en ${enumerar(parametros)}.` : '.';
+export function mensajesAvisoVecinos(zona: string, tienda: string): [string, string] {
   return [
-    `Hola, vecina o vecino de ${zona}. Te escribe Grimuca ${tienda}, la ferretería de tu zona. Esta semana varios hogares de ${zona} midieron su agua con nosotros y en algunos salió fuera de rango${cuales}`,
-    'Eso no dice nada de tu casa: para saberlo hay que medir. El sobre cuesta $9 con envío y tienes el resultado de la tira en 5 minutos. ¿Te apartamos uno esta semana? Responde SÍ. (Para no recibir más avisos, responde BAJA.)',
+    `Hola, vecina o vecino de ${zona}. Te escribe Grimuca ${tienda}, la ferretería de tu zona. Esta semana varias familias de ${zona} midieron su agua en casa con nosotros y ya saben si su filtro les está funcionando.`,
+    'Si quieres saber cómo está la tuya, el sobre cuesta $9 con envío y la tira te da el resultado en 5 minutos. ¿Te apartamos uno esta semana? Responde SÍ. (Para no recibir más avisos, responde BAJA.)',
   ];
 }
 
 /**
- * Aviso a los vecinos de una urbanización en alerta: en la demo solo muestra el WhatsApp simulado, no envía nada.
+ * Invitación a medir para los vecinos de una urbanización: en la demo solo muestra el WhatsApp simulado, no envía nada.
  * `lugar` es la urbanización (lo que el vecino reconoce); `zona` es el municipio, que decide la tienda.
  */
-function AvisarVecinos({ lugar, zona, parametros }: { lugar: string; zona: string; parametros: string[] }) {
+function AvisarVecinos({ lugar, zona }: { lugar: string; zona: string }) {
   const tienda = nombreTienda(tiendaDeZona(zona));
   const [enviado, setEnviado] = useState(false);
   if (!enviado) {
     return (
       <Boton variante="secundario" onClick={() => setEnviado(true)}>
-        Avisar a los vecinos de {lugar}
+        Invitar a los vecinos de {lugar} a medir
       </Boton>
     );
   }
   return (
     <div className="g-pila" role="status">
-      <WhatsAppSimulado
-        de={`Grimuca ${tienda}`}
-        para={`Vecinos de ${lugar}`}
-        mensaje={mensajesAvisoVecinos(lugar, tienda, parametros.map(nombreParametro))}
-      />
+      <WhatsAppSimulado de={`Grimuca ${tienda}`} para={`Vecinos de ${lugar}`} mensaje={mensajesAvisoVecinos(lugar, tienda)} />
       <p>
         <strong>Enviado (simulado)</strong> solo a los hogares de {lugar} que aceptaron recibir avisos. No se nombra a ningún hogar.
       </p>
@@ -179,17 +168,17 @@ function AvisarVecinos({ lugar, zona, parametros }: { lugar: string; zona: strin
  * el sector que el vecino reconoce. Si ninguna urbanización llega al umbral (hogares sin urbanización), se avisa
  * con el nombre del municipio.
  */
-function UrbanizacionesEnAlerta({ zona, mapa, parametros }: { zona: string; mapa: UrbanizacionMapa[]; parametros: string[] }) {
+function UrbanizacionesEnAlerta({ zona, mapa }: { zona: string; mapa: UrbanizacionMapa[] }) {
   const enAlerta = mapa.filter((u) => u.alerta && u.zona === zona && u.hogares > 0);
-  if (enAlerta.length === 0) return <AvisarVecinos key={zona} lugar={zona} zona={zona} parametros={parametros} />;
+  if (enAlerta.length === 0) return <AvisarVecinos key={zona} lugar={zona} zona={zona} />;
   return (
     <div className="g-pila">
       {enAlerta.map((u) => (
         <div key={u.id} className="g-pila">
           <p style={{ margin: 0 }}>
-            <strong>{u.nombre}</strong>: {u.hogares_en_rojo_7_dias} hogares en rojo en 7 días.
+            <strong>{u.nombre}</strong>: {u.hogares_en_rojo_7_dias} hogares con casillas en rojo esta semana.
           </p>
-          <AvisarVecinos lugar={u.nombre} zona={u.zona} parametros={u.parametros} />
+          <AvisarVecinos lugar={u.nombre} zona={u.zona} />
         </div>
       ))}
     </div>
@@ -208,9 +197,9 @@ function Detalle({ u }: { u: UrbanizacionMapa | undefined }) {
     <aside className="mapa-detalle" aria-live="polite" aria-label={`Detalle de ${u.nombre}`}>
       <h2 className="g-h3" style={{ margin: 0 }}>{u.nombre}</h2>
       {u.alerta && (
-        <Aviso tono="error" titulo="Varios hogares de la zona reportaron resultados fuera de rango.">
-          Conviene revisar y avisar a los hogares.
-          <AvisarVecinos key={u.id} lugar={u.nombre} zona={u.zona} parametros={u.parametros} />
+        <Aviso tono="error" titulo="Varios hogares de la zona tienen casillas en rojo esta semana.">
+          Buen momento para invitar a los vecinos a medir.
+          <AvisarVecinos key={u.id} lugar={u.nombre} zona={u.zona} />
         </Aviso>
       )}
       <dl>
@@ -398,21 +387,21 @@ export function Zonas({ token, version, alNoAutorizado }: Props) {
             </>
           )}
 
-          <h2 className="g-h3" style={{ margin: 0 }}>Alertas por zona</h2>
+          <h2 className="g-h3" style={{ margin: 0 }}>Zonas para invitar a medir</h2>
           {alertas.length === 0 ? (
-            <Aviso tono="ok">Ninguna zona en alerta esta semana.</Aviso>
+            <Aviso tono="ok">Esta semana ninguna zona llega a 3 hogares con casillas en rojo.</Aviso>
           ) : (
             alertas.map((z) => (
-              <Aviso key={z.zona} tono="error" rol="alert" titulo={`Alerta en ${z.zona}: ${z.hogares_en_rojo_7_dias} hogares en rojo en los últimos 7 días.`}>
+              <Aviso key={z.zona} tono="error" rol="alert" titulo={`${z.zona}: ${z.hogares_en_rojo_7_dias} hogares con casillas en rojo esta semana.`}>
                 <p>
-                  Posible problema en la zona, conviene revisar.
+                  Buen momento para invitar a los vecinos a medir.
                   {z.parametros.length > 0 && <> Lo que más se repite: {z.parametros.map(nombreParametro).join(', ')}.</>}
                 </p>
                 <p>Revisa el inventario de Grimuca {nombreTienda(tiendaDeZona(z.zona))}, que es la que atiende esa zona.</p>
                 <Boton variante="secundario" a={`${base}/inventario`}>
                   Ver inventario
                 </Boton>
-                <UrbanizacionesEnAlerta zona={z.zona} mapa={mapa} parametros={z.parametros} />
+                <UrbanizacionesEnAlerta zona={z.zona} mapa={mapa} />
               </Aviso>
             ))
           )}
@@ -442,8 +431,8 @@ export function Zonas({ token, version, alNoAutorizado }: Props) {
             </div>
           )}
           <p style={{ color: 'var(--apagado)', fontSize: 'var(--t-1)' }}>
-            Una zona o urbanización entra en alerta con 3 o más hogares en rojo en 7 días. Es una señal para revisar, no un
-            diagnóstico. Las posiciones del mapa son aproximadas.
+            Una zona o urbanización aparece aquí con 3 o más hogares con casillas en rojo en 7 días. Es una señal para
+            invitar a medir, no un diagnóstico. Las posiciones del mapa son aproximadas.
           </p>
         </>
       )}
