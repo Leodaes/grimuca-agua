@@ -8,11 +8,13 @@ import {
   SOLO_LECTURA,
   cabeceraOperador,
   crearHogar,
+  crearPedido,
   entrarOperador,
   marca,
   medirManual,
   obtenerTira,
   planDeValores,
+  primerCartucho,
   type ParametroTira,
 } from './apoyo/datos';
 import { CONTEXTO_MOVIL, REGION } from './apoyo/dispositivos';
@@ -105,6 +107,8 @@ test.describe('Funciones nuevas · teléfono', () => {
     actual = '50-perfil-nuevo';
     await page.goto('/perfil?ya=1');
     await expect(page.getByRole('combobox', { name: /c[oó]digo de pa[ií]s/i }), '+58 por defecto').toHaveValue('58');
+    await expect.soft(page.getByRole('combobox', { name: /^\s*operadora\s*$/i }), 'Operadora sin preselección').toHaveValue('');
+    await expect(page.getByRole('textbox', { name: /^\s*apellido/i }), 'El perfil pide "Apellido" aparte').toBeVisible();
     await llenarPerfil(page, {
       nombre: `Prueba Calidad ${m} telefono`,
       urbanizacion: /el naranjal/i,
@@ -133,7 +137,8 @@ test.describe('Funciones nuevas · teléfono', () => {
     const id = String(await leerGuardado(page, 'agua.hogar_id'));
     const hogar = await getJson(page.request, `/api/hogares/${id}`);
     notas.hogarGuardado = { whatsapp: hogar.whatsapp, urbanizacion: hogar.urbanizacion, mascotas: hogar.mascotas, tiene_filtro: hogar.tiene_filtro };
-    expect(hogar.whatsapp, '0414 + 555-0199 se guarda como +584145550199').toBe('+584145550199');
+    expect(hogar.whatsapp, 'Operadora 0414 + Número 555-0199 se guarda armado como +584145550199').toBe('+584145550199');
+    expect(hogar.nombre, 'Nombre y Apellido se guardan juntos').toBe(`Prueba Calidad ${m} telefono`);
     expect(hogar.urbanizacion).toBe('El Naranjal');
     expect(hogar.mascotas).toBe(true);
   });
@@ -226,6 +231,25 @@ test.describe('Funciones nuevas · teléfono', () => {
     await page.goto(`/resultado/${medicion.id}`);
     await expect(page.getByRole('heading', { name: /lo que te recomendamos/i })).toBeVisible();
     await expect(page.getByText(AVISO_FIJO), 'Aviso fijo literal').toBeVisible();
+    // Resultado del 22 nov: conclusión, "Si no haces nada", "Qué hacer hoy" y casillas con "Qué mide y por qué importa".
+    const conclusion = page.getByRole('region', { name: /tu conclusi[oó]n/i });
+    await expect(conclusion, '"Tu conclusión"').toBeVisible();
+    notas.conclusionNitrato = await conclusion.innerText();
+    await expect(page.getByRole('heading', { name: /si no haces nada/i }), 'Nitrato en rojo → "Si no haces nada"').toBeVisible();
+    const hoy = page.getByRole('list', { name: /qu[eé] hacer hoy/i });
+    await expect(hoy, '"Qué hacer hoy"').toBeVisible();
+    notas.queHacerHoyNitrato = (await hoy.innerText()).replace(/\n+/g, ' | ').slice(0, 800);
+    await expect(hoy.getByRole('heading', { name: /protege a tu familia hoy/i }), 'Nitrato en rojo → paso 1 "Protege a tu familia hoy"').toBeVisible();
+    // El paso 1 se completa cuando carga el hogar (llega después de la medición): la aserción espera.
+    await expect(hoy.getByRole('listitem').first(), 'Con mascotas, el paso 1 las nombra').toContainText(/dales esa misma agua a tus mascotas/i);
+    const casillas = page.getByRole('region', { name: /casilla por casilla/i });
+    const filaNitrato = casillas.locator('li').filter({ hasText: /^\s*Nitrato\b/ }).first();
+    await expect(filaNitrato, 'Fila "Nitrato" con su palabra').toContainText(/Rojo/);
+    // Resultado compacto (en camino): la fila roja trae "Ver qué te recomendamos" → #titulo-sugeridos. Tolera ambas versiones.
+    const verRecomendados = filaNitrato.getByRole('link', { name: /ver qu[eé] te recomendamos/i });
+    if (await verRecomendados.count()) await expect(verRecomendados.first()).toHaveAttribute('href', /#titulo-sugeridos$/);
+    await expect.soft(casillas.getByText(/qu[eé] mide y por qu[eé] importa/i).first(), 'Detalle desplegable por casilla').toBeVisible();
+    expect(await page.locator('main').innerText(), 'Se quitó "Qué encontramos"').not.toMatch(/qu[eé] encontramos/i);
     const mejor = page.locator('article.g-tarjeta-producto--destacado').first();
     await expect(mejor.getByText(/la mejor opci[oó]n para tu casa/i)).toBeVisible();
     const nombreMejor = await mejor.locator('.g-tarjeta-producto__nombre').innerText();
@@ -290,8 +314,10 @@ test.describe('Funciones nuevas · teléfono', () => {
     notas.fotosSugeridosConFiltro = await fotosDeProducto(page);
     await revisar(page, '59-resultado-con-filtro.png');
 
-    // B. Todo en verde, con filtro, sin agua turbia y cambio reciente.
-    const verde = await crearHogar(page.request, { tiene_filtro: true, etapas_filtro: 3, agua_turbia: false, ultimo_cambio: 'menos_de_un_mes', fecha_ultimo_cambio: null }, `${m} verde`);
+    // B. Todo en verde, con filtro, sin agua turbia y cambio reciente. Agua de chorro: con tanque o pozo la API
+    // pide "bacterias" (desinfección) y cualquier producto de un comercio marcado "Pensado para: Bacterias"
+    // entra a los sugeridos; eso se anota aparte como falla de la app (pasada 3), no se mezcla con este caso.
+    const verde = await crearHogar(page.request, { origen_agua: 'chorro', tiene_filtro: true, etapas_filtro: 3, agua_turbia: false, ultimo_cambio: 'menos_de_un_mes', fecha_ultimo_cambio: null }, `${m} verde`);
     const mv = await medirManual(page.request, verde.id, valoresTira(tira, null));
     notas.todoVerde = { semaforo: mv.evaluacion?.semaforo, sugeridos: (mv.sugeridos ?? []).map((s: any) => s.codigo) };
     const ctx = await page.context().browser()!.newContext({ ...CONTEXTO_MOVIL, ...REGION, baseURL: test.info().project.use.baseURL });
@@ -302,6 +328,19 @@ test.describe('Funciones nuevas · teléfono', () => {
     await esperarPantalla(p2);
     await revisar(p2, '60-resultado-todo-verde.png');
     expect.soft(mv.evaluacion?.semaforo, 'Todo en rango → semáforo verde').toBe('verde');
+    // Todo en verde (22 nov): conclusión prudente, sin "Si no haces nada", y "Qué hacer hoy" con volver a medir.
+    const conclusionVerde = p2.getByRole('region', { name: /tu conclusi[oó]n/i });
+    await expect(conclusionVerde, '"Tu conclusión" en todo verde').toBeVisible();
+    notas.conclusionVerde = await conclusionVerde.innerText();
+    await expect(conclusionVerde, 'Todo verde no certifica el agua').toContainText(/no certifica/i);
+    await expect(p2.getByRole('heading', { name: /si no haces nada/i }), 'Todo verde no lleva "Si no haces nada"').toHaveCount(0);
+    const hoyVerde = p2.getByRole('list', { name: /qu[eé] hacer hoy/i });
+    await expect(hoyVerde.getByRole('heading', { name: /vuelve a medir en 3 meses/i }), '"Qué hacer hoy" → volver a medir').toBeVisible();
+    const recordar = hoyVerde.getByRole('button', { name: /recu[eé]rdame cu[aá]ndo hacer mi pr[oó]xima medici[oó]n/i });
+    await expect(recordar).toBeVisible();
+    await recordar.click();
+    await expect(p2.getByRole('group', { name: /d[oó]nde guardar el recordatorio/i }), 'El recordatorio ofrece dónde guardarlo').toBeVisible();
+    notas.sugeridosVerde = (mv.sugeridos ?? []).map((s: any) => s.codigo);
     await expect(p2.getByRole('heading', { name: /lo que sigue/i }), 'Todo en verde → "Lo que sigue"').toBeVisible();
     const recambio = p2.getByRole('link', { name: /cotizar el recambio de mi filtro por whatsapp/i });
     await expect(recambio).toBeVisible();
@@ -318,7 +357,8 @@ test.describe('Funciones nuevas · teléfono', () => {
     const hogar = await crearHogar(page.request, { tiene_filtro: false, etapas_filtro: null, fecha_ultimo_cambio: null }, `${m} catalogo`);
     await medirManual(page.request, hogar.id, valoresTira(await obtenerTira(page.request), 50));
     await sembrarDispositivo(page.context(), hogar.id);
-    const catalogoApi = await (await page.request.get('/api/cartuchos')).json();
+    // Con hogar, el catálogo es el general más los productos propios del comercio de su tienda (Mañongo → Grimuca).
+    const catalogoApi = await (await page.request.get(`/api/cartuchos?hogar_id=${hogar.id}`)).json();
 
     actual = '61-catalogo';
     const desde = Date.now();
@@ -354,6 +394,62 @@ test.describe('Funciones nuevas · teléfono', () => {
     const lista = await leerGuardado(page, 'agua.lista');
     expect(Array.isArray(lista) && lista.some((a: any) => a.codigo === objetivo.codigo), 'Queda en Mi lista').toBe(true);
     await revisar(page, '63-catalogo-busqueda-agregado.png');
+  });
+
+  test('pedido confirmado: WhatsApp simulado con su rótulo "Simulación"', async ({ page }) => {
+    const m = marca();
+    const hogar = await crearHogar(page.request, {}, `${m} whatsapp`);
+    const cartucho = await primerCartucho(page.request);
+    expect(cartucho, 'El catálogo tiene al menos un cartucho').toBeTruthy();
+    const pedido = await crearPedido(page.request, {
+      hogar_id: hogar.id, tipo: 'cartucho', cartucho_codigo: cartucho!.codigo, cantidad: 1, modalidad: 'retiro', tienda_id: 'manongo',
+    });
+    await sembrarDispositivo(page.context(), hogar.id);
+    try {
+      actual = '73-pedido-whatsapp-simulado';
+      await page.goto(`/pedido/${pedido.id}`);
+      await expect(page.getByRole('heading', { name: /te escribimos por whatsapp/i }), 'El pedido muestra "Te escribimos por WhatsApp"').toBeVisible({ timeout: 15_000 });
+      const wa = page.getByRole('status', { name: /whatsapp simulado de grimuca/i });
+      await expect(wa, 'Tarjeta "WhatsApp simulado de Grimuca …"').toBeVisible();
+      await expect(wa, 'Rótulo "Simulación"').toContainText(/simulaci[oó]n:\s*en la demo no se env[ií]a un whatsapp real/i);
+      notas.whatsappPedido = (await wa.innerText()).replace(/\n+/g, ' | ');
+      expect(notas.whatsappPedido as string).not.toMatch(/undefined|null|NaN|potable/i);
+      await revisar(page, '73-pedido-whatsapp-simulado.png');
+    } finally {
+      // Que el pedido de prueba no quede pendiente en el Despacho de Grimuca (no se borra: se despacha).
+      if (PIN_OPERADOR) {
+        const token = await entrarOperador(page.request).catch(() => '');
+        if (token) await page.request.post(`/api/operador/pedidos/${pedido.id}/despachar`, { headers: cabeceraOperador(token) }).catch(() => undefined);
+      }
+    }
+  });
+
+  test('tablero: "Registrar cambio de cartucho" guarda la fecha', async ({ page }) => {
+    const m = marca();
+    const hogar = await crearHogar(page.request, { tiene_filtro: true, etapas_filtro: 3, ultimo_cambio: 'mas_de_tres_meses' }, `${m} cartucho`);
+    await sembrarDispositivo(page.context(), hogar.id);
+    const fecha = new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+
+    actual = '74-registrar-cambio';
+    await page.goto('/');
+    const seccion = page.getByRole('region', { name: /^\s*tu cartucho\s*$/i });
+    await expect(seccion, 'Con filtro, el tablero muestra "Tu cartucho"').toBeVisible({ timeout: 15_000 });
+    await expect(page.getByRole('button', { name: /cerrar sesi[oó]n/i }), 'El tablero tiene "Cerrar sesión"').toBeVisible();
+    await seccion.getByRole('button', { name: /registrar cambio de cartucho/i }).click();
+    const formulario = seccion.getByRole('form', { name: /registrar cambio de cartucho/i });
+    await formulario.getByLabel(/qu[eé] d[ií]a lo cambiaste/i).fill(fecha);
+    const cual = formulario.getByRole('textbox', { name: /cu[aá]l cartucho cambiaste/i });
+    if (await cual.count()) await cual.fill('Sedimentos');
+    await formulario.getByRole('button', { name: /guardar el cambio/i }).click();
+    await expect(seccion.getByText(/listo\. registramos el cambio/i), 'Confirma "Listo. Registramos el cambio…"').toBeVisible({ timeout: 15_000 });
+    await expect(seccion.getByText(/simulaci[oó]n:/i).first(), 'WhatsApp simulado de la tienda con su rótulo').toBeVisible();
+    await expect(seccion.getByRole('button', { name: /crear recordatorio de cambio de cartucho/i }), 'Ofrece el recordatorio del próximo cambio').toBeVisible();
+    await revisar(page, '74-registrar-cambio.png');
+
+    const guardado = await getJson(page.request, `/api/hogares/${hogar.id}`);
+    notas.cambioRegistrado = { fecha_ultimo_cambio: guardado.fecha_ultimo_cambio, ultimo_cambio: guardado.ultimo_cambio, ultimo_cartucho: guardado.ultimo_cartucho };
+    expect(String(guardado.fecha_ultimo_cambio ?? ''), 'La API guarda la fecha del cambio').toContain(fecha);
+    expect.soft(guardado.ultimo_cambio, 'Hace 10 días → "menos de un mes"').toBe('menos_de_un_mes');
   });
 
   test('tutoriales, tutorial y experto: pantallas', async ({ page }) => {
@@ -481,6 +577,10 @@ test.describe('Funciones nuevas · operador', () => {
       expect(api.tipo).toBe('servicio');
 
       await fila.getByRole('button', { name: /atendido/i }).click();
+      // 22 nov: al despachar sale un aviso "WhatsApp simulado enviado a <hogar>" (dura unos 6 s).
+      const avisoWa = page.getByText(/whatsapp simulado enviado a/i).first();
+      await expect.soft(avisoWa, 'Despacho muestra "WhatsApp simulado enviado a …"').toBeVisible({ timeout: 5_000 });
+      notas.avisoWhatsAppDespacho = await avisoWa.innerText().catch(() => null);
       await expect(fila, '"Atendido" lo saca de pendientes').toHaveCount(0, { timeout: 10_000 });
       const despues = await (await movil.request.get(`/api/pedidos/${pedidoId}`)).json();
       notas.estadoTrasAtendido = despues.estado;

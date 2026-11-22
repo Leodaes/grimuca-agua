@@ -267,10 +267,18 @@ test.describe('Compuerta 2 · recorrido del cliente con carga manual', () => {
         amarillo: T.nivelAmarillo,
         rojo: T.nivelRojo,
       };
+      // Resultado del 22 nov: las filas viven en la sección "Tu agua, casilla por casilla"
+      // (antes de ella están "Si no haces nada" y "Qué hacer hoy", que también nombran casillas).
+      const casillas = page.getByRole('region', { name: /casilla por casilla/i });
+      await expect(casillas, 'Falta la sección "Tu agua, casilla por casilla"').toBeVisible();
+      await expect(page.getByRole('heading', { name: /tu conclusi[oó]n/i }), 'Falta "Tu conclusión"').toBeVisible();
+      await expect(page.getByRole('heading', { name: /qu[eé] hacer hoy/i }), 'Falta "Qué hacer hoy"').toBeVisible();
       for (const resultado of medicion.evaluacion.porParametro) {
         if (!palabraDe[resultado.nivel]) continue;
-        const fila = page
-          .locator('li, tr, [role="listitem"], [role="row"]')
+        // `li` por CSS (no por rol): también encuentra las casillas en verde si quedan dentro de un
+        // <details> plegado (cambio en camino al resultado compacto); toContainText no exige que se vean.
+        const fila = casillas
+          .locator('li')
           .filter({ hasText: palabra(resultado.nombre) })
           .first();
         const mensaje = `La fila de "${resultado.nombre}" debe mostrar su semáforo (${resultado.nivel}) con palabra`;

@@ -143,12 +143,18 @@ async function revisarFoco(page: Page, pasos = 8): Promise<{ recorridos: number;
     const foco = await page.evaluate(() => {
       const elemento = document.activeElement;
       if (!elemento || elemento === document.body || elemento === document.documentElement) return null;
-      const estilo = window.getComputedStyle(elemento);
-      const contorno = estilo.outlineStyle !== 'none' && parseFloat(estilo.outlineWidth) > 0;
-      const sombra = estilo.boxShadow !== 'none' && estilo.boxShadow !== '';
+      const conIndicador = (nodo: Element) => {
+        const estilo = window.getComputedStyle(nodo);
+        const contorno = estilo.outlineStyle !== 'none' && parseFloat(estilo.outlineWidth) > 0;
+        const sombra = estilo.boxShadow !== 'none' && estilo.boxShadow !== '';
+        return contorno || sombra;
+      };
+      // Una casilla o radio dentro de una tarjeta-etiqueta puede dibujar el foco en la tarjeta
+      // entera (perfil: `.alta-opcion:has(input:focus-visible)`): también cuenta.
+      const envoltura = elemento.tagName === 'INPUT' ? elemento.closest('label') : null;
       const clases = typeof elemento.className === 'string' && elemento.className ? `.${elemento.className.trim().split(/\s+/).join('.')}` : '';
       const nombre = (elemento.textContent || elemento.getAttribute('aria-label') || '').replace(/\s+/g, ' ').trim().slice(0, 40);
-      return { visible: contorno || sombra, descripcion: `<${elemento.tagName.toLowerCase()}${clases}>${nombre ? ` "${nombre}"` : ''}` };
+      return { visible: conIndicador(elemento) || (envoltura !== null && conIndicador(envoltura)), descripcion: `<${elemento.tagName.toLowerCase()}${clases}>${nombre ? ` "${nombre}"` : ''}` };
     });
     if (!foco) continue;
     recorridos += 1;

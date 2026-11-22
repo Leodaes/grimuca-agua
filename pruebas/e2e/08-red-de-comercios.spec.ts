@@ -244,7 +244,11 @@ test.describe('Red de comercios · el recorrido de la demo', () => {
         const filas = red.locator('table[aria-label="Comercios de la red"] tbody tr');
         await expect(filas.first()).toBeVisible();
         notas.comerciosRed = (await filas.allInnerTexts()).map((t) => t.replace(/\s+/g, ' ').trim());
-        expect.soft(await filas.count(), 'Con los datos recién reiniciados hay 3 comercios').toBe(3);
+        // La base de la demo no se reinicia mientras el equipo prueba: puede haber comercios "Prueba …"
+        // (de Calidad o de Tulio). Se cuentan solo los de la demo y se exige que estén los tres.
+        const deLaDemo = (notas.comerciosRed as string[]).filter((t) => !/^prueba\b/i.test(t));
+        notas.comerciosDeLaDemo = deLaDemo.length;
+        expect.soft(deLaDemo.length, 'Sin contar los "Prueba …", hay 3 comercios').toBe(3);
 
         const g = await filaComercio(red, /^\s*grimuca\s*$/i);
         const l = await filaComercio(red, /aliado lara/i);
@@ -255,8 +259,8 @@ test.describe('Red de comercios · el recorrido de la demo', () => {
         await expect.soft(g, 'Grimuca: membresía activa').toContainText(/activa/i);
         await expect.soft(l, 'Aliado Lara: periodo gratis con días').toContainText(/periodo gratis: quedan \d+ d[ií]as?/i);
         await expect.soft(a, 'Aliado Aragua: vencida').toContainText(/vencida/i);
-        expect.soft(cifrasAntes['Estados cubiertos'], 'Estados cubiertos = 3').toBe(3);
-        expect.soft(cifrasAntes['Comercios en la red'], 'Comercios en la red = 3').toBe(3);
+        expect.soft(cifrasAntes['Estados cubiertos'], 'Estados cubiertos: al menos 3').toBeGreaterThanOrEqual(3);
+        expect.soft(cifrasAntes['Comercios en la red'], 'Comercios en la red = filas de la tabla').toBe(await filas.count());
         await expect.soft(red.getByText(/en vivo/i).first(), 'La red se ve "En vivo"').toBeVisible({ timeout: 10_000 });
 
         // Contraste con la API.
@@ -521,6 +525,17 @@ test.describe('Red de comercios · el recorrido de la demo', () => {
         const tabla = grimuca.locator('table[aria-label="Productos del comercio"]');
         await expect(tabla).toBeVisible({ timeout: 15_000 });
         notas.productosAntes = await tabla.locator('tbody tr').count();
+        // Pasada 3: la base no se reinicia y no se borra nada. Si ya hay un PC-PRUEBA de una pasada anterior,
+        // no se crea otro (cada producto de prueba entra a los sugeridos y al catálogo de los clientes de Grimuca).
+        const previo = tabla.locator('tbody tr').filter({ hasText: /PC-PRUEBA-/ });
+        if (await previo.count()) {
+          notas.productoReusado = (await previo.first().innerText()).replace(/\s+/g, ' ');
+          test.info().annotations.push({ type: 'producto de prueba reusado', description: String(notas.productoReusado) });
+          await expect(previo.first(), 'El producto de prueba anterior sigue en la tabla').toBeVisible();
+          await expect.soft(previo.first(), 'Marcado "Cargado por ti"').toContainText(/cargado por ti/i);
+          await revisar(grimuca, '82-comercio-productos.png', { movil: false, desborde: true });
+          return;
+        }
         await grimuca.getByRole('textbox', { name: /^\s*c[oó]digo/i }).fill(codigoProducto);
         await grimuca.getByRole('textbox', { name: /^\s*nombre/i }).fill(`Prueba Calidad producto ${m}`);
         await grimuca.getByRole('combobox', { name: /^\s*tipo/i }).selectOption({ label: 'Repuesto' });
@@ -543,6 +558,19 @@ test.describe('Red de comercios · el recorrido de la demo', () => {
 
       // ------------------------------------------------------------------ k
       await paso('k', `Red → "Dar de alta" "${nombreComercioNuevo}" en Zulia; aparece en la lista`, async () => {
+        // Pasada 3: si "Prueba Calidad Comercio" ya existe (de una pasada anterior), no se da de alta otro igual.
+        const yaExiste = await filaComercio(red, new RegExp(nombreComercioNuevo, 'i'));
+        if (await yaExiste.count()) {
+          notas.comercioReusado = (await yaExiste.first().innerText()).replace(/\s+/g, ' ');
+          test.info().annotations.push({ type: 'comercio de prueba reusado', description: String(notas.comercioReusado) });
+          await expect.soft(yaExiste.first(), 'En Zulia').toContainText(/zulia/i);
+          await expect(red.getByRole('heading', { name: /dar de alta un comercio/i }), 'El formulario "Dar de alta" está').toBeVisible();
+          const cifras = await cifrasDeLaRed(red);
+          notas.cifrasTrasAlta = cifras;
+          expect.soft(cifras['Estados cubiertos'], 'Con el comercio de Zulia, al menos 4 estados').toBeGreaterThanOrEqual(4);
+          await red.screenshot({ path: path.join(CARPETA, '93-red-tras-dar-de-alta.png'), fullPage: true, scale: 'css' });
+          return;
+        }
         const formulario = red.locator('form').filter({ has: red.getByRole('heading', { name: /dar de alta un comercio/i }) });
         await formulario.getByRole('textbox', { name: /nombre del comercio/i }).fill(nombreComercioNuevo);
         await formulario.getByRole('combobox', { name: /^\s*estado/i }).selectOption({ label: 'Zulia' });
