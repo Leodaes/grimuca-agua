@@ -34,7 +34,9 @@ for (const f of files) {
     .replace(/(['"])[^'"\s]*(prueba|test|falsa|fake|ejemplo|dummy)[^'"\s]*\1/gi, '""');
   for (const [re, label] of secretRes) if (re.test(scrubbed)) problems.push(`${label} en ${f}`);
   // Docs name the word to forbid it, and tests assert its absence; only shipped code counts.
-  if (/potable/i.test(body) && /^(app|api|db)\//.test(f) && !/\.test\.|\.spec\./.test(f)) problems.push(`La palabra "potable" aparece en ${f}`);
+  // Lines that forbid the word (comments, PALABRAS_PROHIBIDAS lists) are fine.
+  const potable = body.split('\n').filter(l => /potable/i.test(l) && !/prohibid|^\s*(\/\/|\*|\/\*)/i.test(l));
+  if (potable.length && /^(app|api|db)\//.test(f) && !/\.test\.|\.spec\./.test(f)) problems.push(`La palabra "potable" aparece en ${f}`);
 }
 
 if (problems.length) { console.log('PROBLEMAS:\n- ' + problems.join('\n- ')); process.exitCode = 1; }

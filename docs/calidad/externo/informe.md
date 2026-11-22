@@ -4,6 +4,45 @@ Pruebas de navegador contra https://agua.oydo.app, hechas desde una máquina dis
 
 Cómo correrlas: `cd pruebas/externas && npm install && npx playwright install chromium && npx playwright test`. Revisión del repositorio: `node pruebas/externas/revisar-repo.js` desde la raíz.
 
+## Pasada 6 · sáb 21 nov, 10:22 p.m.
+
+**Resumen:** está publicado el despliegue con «Por qué te lo recomendamos», WhatsApp con código de país, la pregunta del último cambio de cartucho con tres opciones y el catálogo ajustado (`e279d35`, `451ba33`). **El recorrido completo del cliente funciona en teléfono y en escritorio.** El pedido en vivo en Despacho sigue certificado por la Calidad interna.
+
+| Revisión | Teléfono (375 px) | Escritorio |
+|---|---|---|
+| La bienvenida carga | Sí | Sí |
+| No dice «potable» | Cumple | Cumple |
+| Recorrido completo del cliente | **Sí** | **Sí** |
+| Perfil con la pregunta nueva del último cambio | Sí | Sí |
+| Semáforo por parámetro y aviso fijo literal | Sí | Sí |
+| Producto sugerido y pedido | Sí | Sí |
+| Controles de 44 px o más | **No:** 2 casos (ver abajo) | No aplica |
+| Panel del operador carga y pide PIN | Sí | Sí |
+| Pedido en vivo en Despacho sin recargar | Certificado por la Calidad interna | Certificado por la Calidad interna |
+
+**Repositorio:** 301 archivos revisados, sin hallazgos. `api/src/rutas/motivos.ts` contiene «potable», pero dentro de la lista `PALABRAS_PROHIBIDAS`, que es justo lo correcto; el revisor ya ignora esas líneas.
+
+**Señales de vida del orquestador:** último commit a las 10:09 p.m. (`264f454`, «Contrato de la red de comercios y registro del cambio de enfoque»). El sitio responde. No hay alerta.
+
+**Ajustes a las pruebas:** cubren la pregunta que aparece después de responder que hay filtro. Además, la casilla de consentimiento se marca con un clic directo, porque en teléfono la barra inferior fija la tapa y un clic forzado caía en «Medir». Eso lo causaba la prueba, no es una falla de la app.
+
+**Captura:** `capturas/pasada6-resultado-telefono.png`.
+
+### Fallas abiertas
+
+**Rompe la demo**
+- Ninguna.
+
+**Confunde**
+- **«Cotizar por WhatsApp» sigue en 26 px** en la pantalla «Listo, guardamos tu filtro» (4 veces). En el resultado ya quedó corregido.
+- **Enlace nuevo de menos de 44 px:** «Mira cómo cambiarlo», en el resultado (teléfono).
+
+**Cosmético**
+- Ninguna nueva.
+
+**Resueltas desde la pasada 5**
+- ~~«Cotizar por WhatsApp» de 26 px en el resultado~~: corregido.
+
 ## Pasada 5 · sáb 21 nov, 9:52 p.m.
 
 **Resumen:** ya está publicado el despliegue con foto del filtro, mascotas, mapa por urbanización, tutoriales y «contrata a un experto» (`93bb76c`). **El recorrido completo del cliente funciona en teléfono y en escritorio**, incluido el paso nuevo del filtro. El pedido en vivo en Despacho no lo verifica esta revisión: lo certificó la Calidad interna (Compuerta 3, `8a57cae`).

@@ -44,11 +44,26 @@ async function fillForm(page) {
       : /whats|tel/.test(hint) || type === 'tel' ? '04141234567'
       : /direc/.test(hint) ? 'Calle Prueba 123, Naguanagua' : NOMBRE_PRUEBA);
   }
-  // Choice chips: pick the first option of every group that has nothing chosen yet.
+  // Twice: some questions only appear after an earlier answer (e.g. "last cartridge change" after "has a filter").
+  for (let pass = 0; pass < 2; pass++) await chooseOptions(page);
+  // Selects last: some only appear after a choice above (e.g. filter stages). Native selects may be visually styled, so no :visible.
+  for (const sel of await page.locator('select').all()) {
+    const opts = await sel.locator('option').evaluateAll(os => os.filter(o => o.value && !o.disabled).map(o => o.value));
+    if (opts.length && !(await sel.inputValue())) await sel.selectOption(opts[0], { force: true });
+  }
+  for (const cb of await page.getByRole('checkbox').all()) {
+    if (await cb.isChecked()) continue;
+    // Normal click first; on phones the fixed bottom bar can cover it, so fall back to the element's own click
+    // (a forced coordinate click would land on the bar's "Medir" link).
+    await cb.check({ timeout: 3_000 }).catch(() => cb.evaluate(el => el.click()));
+  }
+}
+
+async function chooseOptions(page) {
+  // Toggle chips only (buttons with aria-pressed); other buttons in a group may be tutorials or links.
   for (const group of await page.locator('[role=group]:visible, [role=radiogroup]:visible, fieldset:visible').all()) {
-    const chosen = await group.locator('[aria-pressed=true], [aria-checked=true], input:checked').count();
-    const first = group.locator('button, [role=radio]').first();
-    if (!chosen && await first.count()) await first.click();
+    const chips = group.locator('button[aria-pressed]');
+    if (await chips.count() && !(await group.locator('[aria-pressed=true]').count())) await chips.first().click();
   }
   const radioGroups = new Set(await page.locator('input[type=radio]').evaluateAll(rs => rs.map(r => r.name).filter(Boolean)));
   for (const name of radioGroups) {
@@ -57,16 +72,7 @@ async function fillForm(page) {
     const id = await page.locator(`input[type=radio][name="${name}"]`).first().getAttribute('id');
     const label = page.locator(`label[for="${id}"]`);
     if (id && await label.count()) await label.first().click();
-    else await page.locator(`input[type=radio][name="${name}"]`).first().click({ force: true }).catch(() => {});
-  }
-  // Selects last: some only appear after a choice above (e.g. filter stages). Native selects may be visually styled, so no :visible.
-  for (const sel of await page.locator('select').all()) {
-    const opts = await sel.locator('option').evaluateAll(os => os.filter(o => o.value && !o.disabled).map(o => o.value));
-    if (opts.length && !(await sel.inputValue())) await sel.selectOption(opts[0], { force: true });
-  }
-  for (const cb of await page.getByRole('checkbox').all()) {
-    if (await cb.isChecked()) continue;
-    await cb.click({ force: true });
+    else await page.locator(`input[type=radio][name="${name}"]`).first().evaluate(el => el.click());
   }
 }
 
