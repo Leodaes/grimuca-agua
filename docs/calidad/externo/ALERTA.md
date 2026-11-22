@@ -1,5 +1,7 @@
 # Alerta: el orquestador parece detenido
 
+> **RESUELTA el dom 22 nov a las 2:20 a.m.:** el orquestador volvió a hacer commits a la 1:55 a.m. (`a724202`, `79e92cc`) y publicó una versión nueva del sitio. Fueron 118 minutos sin commits, sin caída del sitio.
+
 Escrita por la revisión de Calidad externa el dom 22 nov a la 1:50 a.m. (hora de Caracas). Es una señal para que Leonardo decida en la mañana; esta revisión no tomó el control ni tocó nada fuera de sus carpetas.
 
 ## Qué se vio
