@@ -1378,3 +1378,91 @@ button.g-toast__accion {
     background: var(--azul-50);
   }
 }
+
+/* ── Cliente en computadora ──
+   En teléfono todo sigue igual (columna de 480px y barra fija abajo).
+   Desde 900px: la barra de accesos sube y queda fija bajo el encabezado, como menú horizontal,
+   la columna base crece a 720px y las pantallas que lo piden usan el ancho completo:
+   - `.g-pantalla__contenido--ancho` en el <main>: hasta 1180px.
+   - `.g-columnas`: dos columnas (principal y lateral); `.g-columnas__lateral` queda fija al desplazar.
+   - `.g-rejilla`: tarjetas en rejilla que se acomodan solas (1 columna en teléfono). */
+.g-columnas {
+  display: grid;
+  gap: var(--s5);
+  align-items: start;
+}
+.g-columnas > * {
+  min-width: 0;
+}
+.g-rejilla {
+  display: grid;
+  gap: var(--s4);
+}
+@media (min-width: 900px) {
+  .g-pantalla--con-barra {
+    --g-alto-barra: 0px;
+    --g-alto-menu: 52px;
+  }
+  .g-pantalla__contenido {
+    width: min(720px, 100%);
+    padding: var(--s6) var(--s5) var(--s8);
+  }
+  .g-pantalla--con-barra .g-pantalla__contenido {
+    padding-top: calc(var(--g-alto-menu) + var(--s6));
+  }
+  .g-pantalla__contenido--ancho {
+    width: min(1180px, 100%);
+  }
+  .g-encabezado--cliente .g-encabezado__barra {
+    width: min(1180px, 100%);
+    margin: 0 auto;
+    padding: 0 var(--s5);
+  }
+  .g-barra-inferior {
+    top: 56px;
+    bottom: auto;
+    border-top: 0;
+    border-bottom: 1px solid var(--linea);
+    padding-bottom: 0;
+  }
+  .g-barra-inferior__lista {
+    display: flex;
+    gap: var(--s1);
+    width: min(1180px, 100%);
+    padding: 0 var(--s5);
+  }
+  .g-barra-inferior__acceso {
+    flex-direction: row;
+    gap: var(--s2);
+    min-height: 52px;
+    padding: 0 var(--s4);
+    border-top: 0;
+    border-bottom: 3px solid transparent;
+    font-size: var(--t-1);
+  }
+  .g-barra-inferior__acceso[aria-current='page'] {
+    border-bottom-color: var(--azul);
+  }
+  .g-barra-inferior li:last-child {
+    margin-left: auto;
+  }
+  .g-columnas {
+    grid-template-columns: minmax(0, 1.5fr) minmax(320px, 1fr);
+    gap: var(--s7);
+  }
+  .g-columnas--mitades {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .g-columnas__lateral {
+    position: sticky;
+    top: calc(56px + var(--g-alto-menu, 0px) + var(--s5));
+  }
+  .g-rejilla {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--s5);
+  }
+  .g-marco__aviso {
+    width: min(720px, 100%);
+    padding-top: calc(52px + var(--s4));
+  }
+}
