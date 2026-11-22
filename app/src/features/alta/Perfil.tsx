@@ -205,6 +205,11 @@ function desdeHogar(h: Hogar): Formulario {
   };
 }
 
+/** Si el agua que toman "sale de un filtro", ya tienen filtro: no se vuelve a preguntar. */
+function tieneFiltroEn(f: Formulario): boolean {
+  return f.origen_agua === 'filtro' || f.tiene_filtro === 'si';
+}
+
 export function validarPerfil(f: Formulario): Errores {
   const e: Errores = {};
   if (!f.zona) e.zona = FALTA;
@@ -214,8 +219,8 @@ export function validarPerfil(f: Formulario): Errores {
   }
   if (!f.origen_agua) e.origen_agua = FALTA;
   if (!f.agua_turbia) e.agua_turbia = FALTA;
-  if (!f.tiene_filtro) e.tiene_filtro = FALTA;
-  if (f.tiene_filtro === 'si' && !f.ultimo_cambio) e.ultimo_cambio = 'Elige una opción.';
+  if (!f.tiene_filtro && f.origen_agua !== 'filtro') e.tiene_filtro = FALTA;
+  if (tieneFiltroEn(f) && !f.ultimo_cambio) e.ultimo_cambio = 'Elige una opción.';
   if (!f.nombre.trim()) e.nombre = FALTA;
   if (!f.apellido.trim()) e.apellido = 'Escribe tu apellido. Con uno basta.';
   const telefono = telefonoDe(f);
@@ -355,7 +360,7 @@ export function Perfil() {
       return;
     }
 
-    const tieneFiltro = f.tiene_filtro === 'si';
+    const tieneFiltro = tieneFiltroEn(f);
     const telefono = telefonoDe(f);
     const perfil = {
       nombre: unirNombre(f.nombre, f.apellido),
@@ -421,7 +426,7 @@ export function Perfil() {
     );
   }
 
-  const tieneFiltro = f.tiene_filtro === 'si';
+  const tieneFiltro = tieneFiltroEn(f);
   const esVenezuela = f.codigo_pais === VE;
   const nuevo = !(idExistente && carga.datos);
   const resumen = intentoEnviar
@@ -538,16 +543,19 @@ export function Perfil() {
           <h2 className="alta-bloque__titulo" id="bloque-filtro">
             Tu filtro
           </h2>
-          <OpcionesRadio
-            pregunta="¿Tienen filtro en casa?"
-            nombre="tiene_filtro"
-            opciones={SI_NO}
-            columnas={2}
-            valor={f.tiene_filtro}
-            onCambio={(v) => poner('tiene_filtro', v)}
-            error={errores.tiene_filtro}
-            anunciarError={false}
-          />
+          {/* Si el agua sale de un filtro, ya se sabe que tienen uno: se pasa directo al cartucho. */}
+          {f.origen_agua !== 'filtro' && (
+            <OpcionesRadio
+              pregunta="¿Tienen filtro en casa?"
+              nombre="tiene_filtro"
+              opciones={SI_NO}
+              columnas={2}
+              valor={f.tiene_filtro}
+              onCambio={(v) => poner('tiene_filtro', v)}
+              error={errores.tiene_filtro}
+              anunciarError={false}
+            />
+          )}
 
           {tieneFiltro && (
             <>
